@@ -280,7 +280,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         otherPlayer.giveHitFn_(frame)
     this.lastHitFrame_[who] = hitID;
     this.lastHit_ = {x:hitX,y:hitY};
-    if(!!isProjectile && !!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat.Has(COMBAT_FLAGS.IGNORE_PROJECTILES)))
+    if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
     var move = null;
     var slideAmount = 0;
