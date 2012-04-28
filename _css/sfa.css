@@ -1,5 +1,5 @@
 ﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:10px}
-div.stage{left:0px !important;height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
+div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
 div.stage img.ken-bg0{position:absolute;top:-47px;left:0px;}
 div.stage img.ken-bg1{position:absolute;bottom:0px;left:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
