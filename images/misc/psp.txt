@@ -1,0 +1,4 @@
+768 576
+
+Ken all		blue tolerance - 109
+Ken fireball	blue tolerance - 61
