@@ -74,7 +74,7 @@ Player.prototype.AlignX = function(deltaX) { this.x_ += (deltaX * -this.directio
 Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.image_.style.right = value+"px"; } else {this.image_.style.left = value+"px";}}
 Player.prototype.SetImageY = function(value) { this.image_.style.bottom = value+"px"; }
 Player.prototype.IsOnGround = function() { return this.y_ == STAGE.FLOORY; }
-Player.prototype.IsAirborne = function() { return this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE) || this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE_FB); }
+Player.prototype.IsAirborne = function() { return this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE) || this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
 Player.prototype.CanBeJuggled = function()
 {
     return this.IsAirborne()
