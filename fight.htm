@@ -1,0 +1,76 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Street Figther Alpha - Web</title>
+    <link rel="StyleSheet" type="text/css" href="_css/sfa.css" />
+</head>
+<body>
+    <div id="pnlStage" class="stage" style="width:768px;visibility:hidden;">
+        <script type="text/javascript">
+            function OnStageImagesLoaded() {}
+        </script>
+        <img onload="OnStageImagesLoaded()" id="bg0" class="ken-bg0" src="images/misc/stage/ken1.25.bg.jpg" style="left:0px" />
+        <img onload="OnStageImagesLoaded()" id="bg1" class="ken-bg1" src="images/misc/stage/ken.bg.png" style="left:0px" />
+        <!--<div class="time"></div>-->
+        <!--<div class="overlay"></div>-->
+        <div id="pnlTeam1" class="team team1">
+            <div id="pnlHealthbarTeam1" class="health-bar"></div>
+            <img id="imgPortriatTeam1" class="portriat" />
+            <img id="imgNameTeam1" class="name" />
+            <div id="pnlEnergyBarTeam1" class="energy-bar"></div>
+        </div>
+        <div id="pnlTeam2" class="team team2">
+            <div id="pnlHealthbarTeam2" class="health-bar"></div>
+            <img id="imgPortriatTeam2" class="portriat" />
+            <img id="imgNameTeam2" class="name" />
+            <div id="pnlEnergyBarTeam2" class="energy-bar"></div>
+        </div>
+        <div id="pnlText" class="Text"></div>
+        <div id="pnlTeam1ComboText" class="Text"></div>
+        <div id="pnlTeam2ComboText" class="Text"></div>
+    </div>
+    <div id="pnlStatus">
+        <br />frame rate: <span id="spnFPS">0</span> fps
+        <br />game speed: <span id="spnLag">0</span>%
+        <br /><span id="spnMsg"></span>
+    </div>
+    <div class="loading">Loading: <span id="spnImagesLoading">0</span>%</div>
+    <script type="text/javascript" src="script/flags.js"></script>
+    <script type="text/javascript" src="script/fontsystem.js"></script>
+    <script type="text/javascript" src="script/animation-trial.js"></script>
+    <script type="text/javascript" src="script/game.js"></script>
+    <script type="text/javascript" src="script/energy-bar.js"></script>
+    <script type="text/javascript" src="script/health-bar.js"></script>
+    <script type="text/javascript" src="script/hitsystem.js"></script>
+    <script type="text/javascript" src="script/team.js"></script>
+    <script type="text/javascript" src="script/stage.js"></script>
+    <script type="text/javascript" src="script/match.js"></script>
+    <script type="text/javascript" src="script/circle.js"></script>
+    <script type="text/javascript" src="script/physics.js"></script>
+    <script type="text/javascript" src="script/animation.js"></script>
+    <script type="text/javascript" src="script/player-utils.js"></script>
+    <script type="text/javascript" src="script/player.js"></script>
+    <script type="text/javascript" src="script/player.combat.js"></script>
+    <script type="text/javascript" src="script/player.animation.js"></script>
+    <script type="text/javascript" src="script/player.input.js"></script>
+    <script type="text/javascript" src="script/player.motion.js"></script>
+    <script type="text/javascript" src="script/player.debug.js"></script>
+    <script type="text/javascript" src="script/player-common.js"></script>
+    <script type="text/javascript" src="script/player-ken.js"></script>
+    <script type="text/javascript" src="script/player-ryu.js"></script>
+    <!--<script type="text/javascript" src="script/player-mbison.js"></script>-->
+
+    <script type="text/javascript">
+        var game_ = new Game();
+        var p1_ = Player.prototype.CreateRyu(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M);
+        var p2_ = Player.prototype.CreateKen(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C);
+        game_.StartMatch([p1_],[p2_]);
+
+        //overriden OnStageImagesLoaded function, just incase the images load too slow
+        function OnStageImagesLoaded()
+        {
+            game_.match_.CenterStage();
+        }
+    </script>
+</body>
+</html>
