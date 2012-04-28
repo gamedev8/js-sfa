@@ -220,9 +220,6 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     this.registeredHit_.AttackDirection = attackDirection;
     this.registeredHit_.HitID = hitID;
     this.registeredHit_.MoveOverrideFlags = moveOverrideFlags;
-    this.registeredHit_.PlayerPoseState = this.poseState_;
-    //this.registeredHit_.PlayerPoseState = this.flags_.PoseFlags.Get();
-    this.registeredHit_.PlayerState = this.state_;
     this.registeredHit_.AttackForceX = fx || 1;
     this.registeredHit_.AttackForceY = fy || 1;
     this.registeredHit_.BehaviorFlags = behaviorFlags;
@@ -283,7 +280,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         otherPlayer.giveHitFn_(frame)
     this.lastHitFrame_[who] = hitID;
     this.lastHit_ = {x:hitX,y:hitY};
-    if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
+    if(!!isProjectile && !!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat.Has(COMBAT_FLAGS.IGNORE_PROJECTILES)))
         return false;
     var move = null;
     var slideAmount = 0;
@@ -388,6 +385,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
     {
         if(!!flags)
             this.SpawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
+        /*if any player is dead, then the whole team is dead.*/
         this.ForceTeamLose(frame,attackDirection);
         if(!!this.isBeingThrown_)
         {
