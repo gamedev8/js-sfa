@@ -367,7 +367,7 @@ var Projectile = function(player,animation,disintegrationAnimation, xOffset, yOf
 }
 Projectile.prototype.Count = 0;
 /*Stops the projectile*/
-Projectile.prototype.Cancel = function()
+Projectile.prototype.Cancel = function(ignoreOnGoneEvent)
 {
     this.element_.style.display="none";
     this.x_ = this.offsetX_;
@@ -375,7 +375,8 @@ Projectile.prototype.Cancel = function()
     this.t_ = 0;
     this.isActive_ = false;
     this.isDisintegrating_ = false;
-    this.owner_.onProjectileGoneFn_(this.id_);
+    if(!ignoreOnGoneEvent)
+        this.owner_.onProjectileGoneFn_(this.id_);
 }
 
 /*

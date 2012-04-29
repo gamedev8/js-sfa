@@ -675,7 +675,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         projectile.baseDamage_ = 25;
 
         /*this formula is applied each frame to compute the X coordinate of the projectile*/
-        projectile.animation_.vxFn_ = function(args) { return function(xSpeed,t) { return xSpeed * 0.1; } }
+        projectile.animation_.vxFn_ = function(args) { return function(xSpeed,t) { return xSpeed; } }
         /*this formula is applied each frame to compute the Y coordinate of the projectile*/
         projectile.animation_.vyFn_ = function(args) { return function(ySpeed,t) { return ySpeed; } }
 

@@ -159,6 +159,13 @@ Player.prototype.HandleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
     }
 }
 
+Player.prototype.ClearProjectiles = function()
+{
+    for(var i = 0, length = this.projectiles_.length; i < length; ++i)
+    {
+        this.projectiles_[i].Cancel(true);
+    }
+}
 
 /*Allows the players projectile to advance*/
 Player.prototype.HandleProjectiles = function(frame,stageX,stageY)

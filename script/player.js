@@ -187,8 +187,6 @@ Player.prototype.Reset = function(ignoreDirection)
         this.direction_ = 1;
     this.health_ = 100;
     this.flags_ = new PlayerFlags(this);
-    /*this.state_ = FLAGS.MOBILE;*/
-    /*this.poseState_ = POSE_FLAGS.STANDING;*/
     this.keyState_ = 0;
     this.keyStates_ = [];
     /*only used for optimization*/
@@ -226,6 +224,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.winningFrame_ = CONSTANTS.NO_FRAME;
     this.SetX(0);
     this.SetY(STAGE.FLOORY);
+    this.ClearProjectiles();
 }
 
 
@@ -300,17 +299,9 @@ Player.prototype.ResetSpeed = function()
     for(var i in this.moves_)
         this.moves_[i].frameSpeed_ = 0;
 }
-/*Simply returns the count of all of the frames, plus 1*/
+/*Simply returns the count of all of the frames*/
 Player.prototype.GetNextFrameID = function()
 {
-    /*
-    var id = 0;
-    for(var i in this.moves_)
-        for(var x = 0; x < this.moves_[i].baseAnimation_.frames_.length; ++x)
-            ++id;
-
-    return id + 1;
-    */
     return this.nbFrames_;
 }
 /*If the move is a projectile, and a projectile is already active, then this returns true;*/
