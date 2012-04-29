@@ -714,6 +714,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         else if(x == 2) button = BUTTONS.HARD_KICK;
 
         var spinkick = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB|POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD,"spinkick k" + (x+1),100,[BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.BACK,BUTTONS.BACK, BUTTONS.BACK|button],0,true,true);
+        spinkick.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
         spinkick.adjustShadowPosition_ = false;
         spinkick.userData_ = {Type:USER_DATA_TYPES.OFFSET,topOffset:0,bottomOffset:125};
         spinkick.vy_ = 200 * (x + 1);
