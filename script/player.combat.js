@@ -45,9 +45,10 @@ Player.prototype.RemoveBlockableAttack = function(attackId)
         if(this.blockedAttacks_[i].AttackId == attackId)
         {
             this.blockedAttacks_.splice(i,1);
-            return;
+            return true;
         }
     }
+    return false;
 }
 Player.prototype.AddBlockableAirAttack = function(attackId)
 {
@@ -67,9 +68,10 @@ Player.prototype.RemoveBlockableAirAttack = function(attackId)
         if(this.blockedAirAttacks_[i].AttackId == attackId)
         {
             this.blockedAirAttacks_.splice(i,1);
-            return;
+            return true;
         }
     }
+    return false;
 }
 /*Allows/disallows blocking*/
 Player.prototype.SetAllowBlock = function(attackId,frame,isAllowed,x,y)
@@ -78,7 +80,7 @@ Player.prototype.SetAllowBlock = function(attackId,frame,isAllowed,x,y)
     {
         /*the attack must be within a certain distance for the block animation to be allowed*/
         if(this.GetDistanceFromSq(x,y) > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
-            return;
+            return this.SetAllowBlock(attackId,frame,false,x,y);
 
         /*Check if the move is already blockable*/
         if(!this.AddBlockableAttack(attackId))
@@ -90,14 +92,16 @@ Player.prototype.SetAllowBlock = function(attackId,frame,isAllowed,x,y)
     else
     {
         /*remove the attack from the array of blocked attacks*/
-        this.RemoveBlockableAttack(attackId)
-        /*if there are no more attacks, remove the ability to block*/
-        if(this.blockedAttacks_.length == 0)
+        if(this.RemoveBlockableAttack(attackId))
         {
-            this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
-            /*if the player is blocking, then remove it*/
-            if(this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING))
-                this.ignoreHoldFrame_ = true; /*ignores the hold frame on the current animation, which then causes the animation to continue, and then end*/
+            /*if there are no more attacks, remove the ability to block*/
+            if(this.blockedAttacks_.length == 0)
+            {
+                this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
+                /*if the player is blocking, then remove it*/
+                if(this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING))
+                    this.ignoreHoldFrame_ = true; /*ignores the hold frame on the current animation, which then causes the animation to continue, and then end*/
+            }
         }
     }
 }
@@ -108,7 +112,7 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
     {
         /*the attack must be within a certain distance for the block animation to be allowed*/
         if(this.GetDistanceFromSq(x,y) > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
-            return;
+            return this.SetAllowAirBlock(attackId,frame,false,x,y);
 
         /*Check if the move is already blockable*/
         if(!this.AddBlockableAirAttack(attackId))
@@ -121,13 +125,14 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
     else
     {
         /*remove the attack from the array of blocked attacks*/
-        this.RemoveBlockableAirAttack(attackId)
-
-        /*if there are no more attacks, remove the ability to block*/
-        if(this.blockedAirAttacks_.length == 0)
-            this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_AIR_BLOCK);
-        /*air attacks can also be blocked on the ground*/
-        this.SetAllowBlock(attackId,frame,isAllowed,x,y);
+        if(this.RemoveBlockableAirAttack(attackId))
+        {
+            /*if there are no more attacks, remove the ability to block*/
+            if(this.blockedAirAttacks_.length == 0)
+                this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_AIR_BLOCK);
+            /*air attacks can also be blocked on the ground*/
+            this.SetAllowBlock(attackId,frame,isAllowed,x,y);
+        }
     }
 }
 
