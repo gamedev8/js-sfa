@@ -629,10 +629,11 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     b_jump.AddRepeatingFrame(player,"","images/misc/ken/x-f-jump-2.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
     b_jump.Chain(jump_land);
 
-
+    var xSpeed = 0;
     for(var x = 0; x < 3; ++x)
     {
-        var projectile = player.AddProjectile("projectile",160,140,(x+2));
+        xSpeed = x + 2;
+        var projectile = player.AddProjectile("projectile",160,140,xSpeed);
 
         projectile.fx_ = 0.5;
         projectile.fy_ = 0.5;
@@ -650,9 +651,9 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         projectile.baseDamage_ = 25;
 
         /*this formula is applied each frame to compute the X coordinate of the projectile*/
-        projectile.animation_.vxFn_ = function(args) { return function(dx,t) { return dx; } }
+        projectile.animation_.vxFn_ = function(args) { return function(xSpeed,t) { return xSpeed; } }
         /*this formula is applied each frame to compute the Y coordinate of the projectile*/
-        projectile.animation_.vyFn_ = function(args) { return function(dy,t) { return dy; } }
+        projectile.animation_.vyFn_ = function(args) { return function(ySpeed,t) { return ySpeed; } }
 
         projectile.animation_.AddFrame(player,"","images/misc/ken/x-fb-projectile-1.png",2,0,0,30);
         projectile.animation_.AddFrame(player,"","images/misc/ken/x-fb-projectile-2.png",2,0,0,0);

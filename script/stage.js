@@ -127,7 +127,7 @@ Stage.prototype.MoveX = function(amount)
 
 
 
-/*Checks for physics with the state*/
+/*Checks for physics with the stage*/
 Stage.prototype.MoveStageX = function(amount,p1,p2,match,dontOverrideSign)
 {
 
@@ -181,7 +181,8 @@ Stage.prototype.MoveStageX = function(amount,p1,p2,match,dontOverrideSign)
 
     var fn = function(p2NewX)
     {
-        match.MoveStageHoriz(-amount,p2NewX);
+        //match.MoveStageHoriz(-amount,p2NewX);
+        match.MoveStageX(-amount,false,p2NewX);
     }
 
     var isP1InLeftThreshold = p1NewMidX >= CONSTANTS.MOVEMENT_THRESHOLD_LEFT;

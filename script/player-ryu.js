@@ -302,6 +302,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
 
     var throw1X = -4;
     var throw1 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_shoulder_throw");
+    throw1.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
     throw1.AddAlternateKeySequence([BUTTONS.HARD_PUNCH]);
     throw1.SetGrappleDistance(100);
     throw1.AddFrame(player,"","images/misc/ryu/x-throw-0-0.png",8,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
@@ -314,6 +315,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
 
     var throw2X = -4;
     var throw2 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_fk_throw");
+    throw2.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
     throw2.AddAlternateKeySequence([BUTTONS.HARD_KICK]);
     throw2.SetGrappleDistance(100);
     throw2.AddFrame(player,"","images/misc/ryu/x-throw-0-0.png",12,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
@@ -650,12 +652,15 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     b_jump.AddRepeatingFrame(player,"","images/misc/ryu/x-f-jump-2.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
     b_jump.Chain(jump_land);
 
-
+    var xSpeed = 0;
     for(var x = 0; x < 3; ++x)
     {
-        var projectile = player.AddProjectile("projectile",160,140,(x+2));
+        xSpeed = x + 2;
+        var projectile = player.AddProjectile("projectile",160,140,xSpeed);
         projectile.fx_ = 0.5;
         projectile.fy_ = 0.5;
+
+
         projectile.energyToAdd_ = 10;
         projectile.attackState_ = ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE_HARD;
         projectile.hitState_ = HIT_FLAGS.FAR;
@@ -670,9 +675,9 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         projectile.baseDamage_ = 25;
 
         /*this formula is applied each frame to compute the X coordinate of the projectile*/
-        projectile.animation_.vxFn_ = function(args) { return function(dx,t) { return dx; } }
+        projectile.animation_.vxFn_ = function(args) { return function(xSpeed,t) { return xSpeed * 0.1; } }
         /*this formula is applied each frame to compute the Y coordinate of the projectile*/
-        projectile.animation_.vyFn_ = function(args) { return function(dy,t) { return dy; } }
+        projectile.animation_.vyFn_ = function(args) { return function(ySpeed,t) { return ySpeed; } }
 
         projectile.animation_.AddFrame(player,"","images/misc/ryu/x-fb-projectile-1.png",2,0,0,30);
         projectile.animation_.AddFrame(player,"","images/misc/ryu/x-fb-projectile-2.png",2,0,0,0);
@@ -806,9 +811,9 @@ Player.prototype.CreateRyuSuperMoves = function(player)
         projectile.baseDamage_ = 25;
 
         /*this formula is applied each frame to compute the X coordinate of the projectile*/
-        projectile.animation_.vxFn_ = function(args) { return function(dx,t) { return dx; } }
+        projectile.animation_.vxFn_ = function(args) { return function(xSpeed,t) { return xSpeed; } }
         /*this formula is applied each frame to compute the Y coordinate of the projectile*/
-        projectile.animation_.vyFn_ = function(args) { return function(dy,t) { return dy; } }
+        projectile.animation_.vyFn_ = function(args) { return function(ySpeed,t) { return ySpeed; } }
 
         var fOffset = -70;
         var f1 = fOffset + 70;

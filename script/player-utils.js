@@ -1,119 +1,4 @@
-﻿var BUTTONS = 
-{
-    FORWARD:1
-    ,BACK:2
-    ,JUMP:4
-    ,CROUCH:8
-    ,LIGHT_PUNCH:16
-    ,MEDIUM_PUNCH:32
-    ,HARD_PUNCH:64
-    ,LIGHT_KICK:128
-    ,MEDIUM_KICK:256
-    ,HARD_KICK:512
-}
-/*
-var IGNORE_FLAGS = 
-{
-    NONE:0
-    ,THROWS:1 << 0
-};
-var FLAGS =
-{
-    NONE:0
-    ,FORWARD:1 << 0
-    ,MOBILE:1 << 0
-    ,BACK:1 << 0
-    ,INVULNERABLE:1 << 1
-    ,MUST_HOLD_KEY:1 << 2
-    ,ATTACK:1 << 3
-    ,HOLD_FRAME:1 << 4
-    ,AIRBORNE:1 << 5
-    ,DEAD:1 << 6
-    ,BLOCKING:1 << 7
-    ,ALLOW_BLOCK:1 << 8
-    ,SPAWN_PROJECTILE:1 << 9
-    ,PROJECTILE_ACTIVE:1 << 10
-    ,LOOP_IF_KEYDOWN:1 << 11
-    ,CROUCHING:1 << 12
-    ,STANDING:1 << 13
-    ,WALKING_FORWARD:1 << 14
-    ,WALKING_BACKWARD:1 << 15
-    ,AIRBORNE_FB:1 << 16
-    ,ALLOW_CHANGE_DIRECTION:1 << 17
-    ,HOLD_ZINDEX:1 << 18
-    ,ATTACK:1 << 19
-    ,MOVE_TO_FRONT:1 << 20
-    ,MOVE_TO_BACK:1 << 21
-    ,IGNORE_PROJECTILES:1 << 22
-    ,USE_ATTACK_DIRECTION:1 << 23
-    ,CAN_BE_BLOCKED:1 << 24
-    ,CAN_BE_AIR_BLOCKED:1 << 25
-    ,SPAWN_BIGDIRT:1 << 26
-    ,SPAWN_SMALLDIRT:1 << 27
-    ,SMALLER_AABB:1 << 28
-    ,IGNORE_COLLISIONS:1 << 29
-    ,ALLOW_AIR_BLOCK:1 << 30
-    ,MORE:1 << 31
-};
-var MORE_FLAGS = 
-{
-};
-var BEHAVIOR_FLAGS = 
-{
-    THROW:1 << 0
-};
-var ATTACK_FLAGS = 
-{
-     FRONT:1 << 0
-    ,REAR:1 << 1
-    ,LIGHT:1 << 2
-    ,MEDIUM:1 << 3
-    ,HARD:1 << 4
-    ,SPIT1:1 << 5
-    ,SPIT2:1 << 6
-    ,DIRT:1 << 7
-    ,SPECIAL:1 << 8
-    ,SPECIAL1:1 << 9
-    ,SPECIAL2:1 << 10
-    ,SPECIAL3:1 << 11
-    ,SUPER:1 << 12
-    ,BLOCK:1 << 13
-    ,TRIP:1 << 14
-    ,FLOOR_AIRBORNE:1 << 15
-    ,KNOCKDOWN:1 << 16
-    ,HITS_LOW:1 << 17
-    ,HITS_HIGH:1 << 18
-    ,THROW_START:1 << 19
-    ,THROW_EJECT:1 << 20
-    ,PROJECTILE:1 << 21
-    ,NO_HIT_DELAY:1 << 22
-    ,FLOOR_AIRBORNE_HARD:1 << 23
-    ,CAN_AIR_JUGGLE:1 << 24
-};
-var MOVE_FLAGS = 
-{
-    NONE:1 << 0
-    ,MOVE_WITH_PLAYER:1 << 1
-};
-var HIT_FLAGS = 
-{
-    FAR:1 << 0
-    ,MEDIUM:1 << 1
-    ,NEAR:1 << 2
-    ,TRIP:1 << 3
-}
-var JUGGLE_FLAGS
-{
-    
-}
-*/
-var MAX = 
-{
-    KEY_SEQUENCE:20
-    ,FRAME:999
-    ,MAX_IMAGES:10
-};
-var DEAD_TIME = 1000;
+﻿
 /************************************************************************/
 /************************************************************************/
 var Key = function(name,keyCode,bit)
@@ -609,11 +494,12 @@ Projectile.prototype.Advance = function(frame,stageX,stageY)
     {
         if(!this.isDisintegrating_)
         {
-            var dx = (this.xSpeed_ * 2) + (this.direction_ > 0 ? (this.stageX_ - stageX) : (stageX - this.stageX_));
-            var dy = (this.ySpeed_) + (this.stageY_ - stageY);
+            var xSpeed = this.vxFn_(this.xSpeed_,this.t_);
+            var ySpeed = this.vyFn_(this.ySpeed_,this.t_);
 
-            dx = this.vxFn_(dx,this.t_);
-            dy = this.vyFn_(dy,this.t_);
+            var dx = (xSpeed) + (this.direction_ > 0 ? (this.stageX_ - stageX) : (stageX - this.stageX_));
+            var dy = (ySpeed) + (this.stageY_ - stageY);
+
 
             this.x_ += dx;
             this.y_ += dy;

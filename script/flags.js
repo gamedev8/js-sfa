@@ -1,4 +1,26 @@
-﻿var MISC_FLAGS = 
+﻿var BUTTONS = 
+{
+    FORWARD:1
+    ,BACK:2
+    ,JUMP:4
+    ,CROUCH:8
+    ,LIGHT_PUNCH:16
+    ,MEDIUM_PUNCH:32
+    ,HARD_PUNCH:64
+    ,LIGHT_KICK:128
+    ,MEDIUM_KICK:256
+    ,HARD_KICK:512
+}
+
+var MAX = 
+{
+    KEY_SEQUENCE:20
+    ,FRAME:999
+    ,MAX_IMAGES:10
+};
+var DEAD_TIME = 1000;
+
+var MISC_FLAGS = 
 {
     NONE:0
 }

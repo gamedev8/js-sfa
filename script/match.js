@@ -103,7 +103,7 @@ Match.prototype.CenterStage = function()
     this.x0 = parseFloat(this.bgImg0_.element.style.left);
     this.x1 = parseFloat(this.bgImg1_.element.style.left);
 
-    this.MoveStageHoriz(0);
+    this.MoveStageX(0,true);
 }
 /* If any two players are at the edges of the screen, then the screen can not be moved */
 Match.prototype.CanStageScroll = function ()
@@ -146,6 +146,7 @@ Match.prototype.MoveStageHoriz = function(amount,px)
 
     this.x_ += amount;
 
+    this.deltaX_ = amount;
     if(this.x1 > 0)
     {
         //floating point error will cause them to be off a little, this will fix
@@ -153,7 +154,6 @@ Match.prototype.MoveStageHoriz = function(amount,px)
         this.x0 = 0;
         this.x1 = 0;
         this.x_ = STAGE.MAX_STAGEX;
-        return;
     }
     if(this.x0 < STAGE.MAX_BG0_SCROLL || this.x1 < STAGE.MAX_BG1_SCROLL)
     {
@@ -162,19 +162,22 @@ Match.prototype.MoveStageHoriz = function(amount,px)
         this.x0 = STAGE.MAX_BG0_SCROLL;
         this.x1 = STAGE.MAX_BG1_SCROLL;
         this.x_ = 0;
-        return;
     }
-    this.deltaX_ = amount;
     this.AlignPlayersX();
 }
 
 /* Scrolls the backgrounds horizontally */
-Match.prototype.MoveStageX = function(amount)
+Match.prototype.MoveStageX = function(amount,dontAlignPlayers,px)
 {
     if(!this.CanStageScroll())
     {
         this.deltaX_ = 0;
         return 0;
+    }
+
+    if(!!px && (px <= 0 || px >= STAGE.MAX_X))
+    {
+        amount = 0;
     }
 
     this.x0 += amount * this.bgRate_;
@@ -188,7 +191,9 @@ Match.prototype.MoveStageX = function(amount)
         //floating point error will cause them to be off a little, this will fix
         this.x0 = 0;
         this.x1 = 0;
-        this.deltaX_ = this.x_ - STAGE.MAX_STAGEX;
+        !dontAlignPlayers
+            ? this.deltaX_ = 0
+            : this.deltaX_ = this.x_ - STAGE.MAX_STAGEX;
         this.x_ = STAGE.MAX_STAGEX;
     }
     if(this.x0 < STAGE.MAX_BG0_SCROLL || this.x1 < STAGE.MAX_BG1_SCROLL)
@@ -196,10 +201,13 @@ Match.prototype.MoveStageX = function(amount)
         //floating point error will cause them to be off a little, this will fix
         this.x0 = STAGE.MAX_BG0_SCROLL;
         this.x1 = STAGE.MAX_BG1_SCROLL;
-        this.deltaX_ = 0 - this.x_;
+        !dontAlignPlayers
+            ? this.deltaX_ = 0
+            : this.deltaX_ = 0 - this.x_;
         this.x_ = 0;
     }
-    this.AlignPlayersX();
+    if(!dontAlignPlayers)
+        this.AlignPlayersX();
     return this.deltaX_;
 }
 
