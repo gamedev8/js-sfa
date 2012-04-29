@@ -732,7 +732,7 @@ Projectile.prototype._SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX
                 {
                     if(!!thisValue.isDisintegrating_)
                     {
-                        if(this.direction_ > 0)
+                        if(thisValue.direction_ > 0)
                         {
                             this.style.left = (offsetX + FlipCoord(thisValue.x_,this.width)) + "px";
                             this.style.right = "";

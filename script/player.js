@@ -100,6 +100,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.onDecComboRefCountFn_ = null;
     this.getCurrentComboCountFn_ = null;
 
+    this.nbFrames_ = 0;
     this.projectiles_ = [];
     this.width_ = width;
     this.halfWidth_ = width/2;
@@ -302,12 +303,15 @@ Player.prototype.ResetSpeed = function()
 /*Simply returns the count of all of the frames, plus 1*/
 Player.prototype.GetNextFrameID = function()
 {
+    /*
     var id = 0;
     for(var i in this.moves_)
         for(var x = 0; x < this.moves_[i].baseAnimation_.frames_.length; ++x)
             ++id;
 
     return id + 1;
+    */
+    return this.nbFrames_;
 }
 /*If the move is a projectile, and a projectile is already active, then this returns true;*/
 Player.prototype.IsProjectileInUse = function(move)

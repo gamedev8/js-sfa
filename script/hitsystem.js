@@ -70,6 +70,23 @@ var ActionSystem = function(actionFrameDelay)
 }
 
 
+ActionSystem.prototype.CanOverride = function(key,index)
+{
+    var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
+    var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
+
+    var retVal  = false;
+    if(!!first.OtherPlayer && !!first.Player.currentAnimation_.Animation)
+    {
+        retVal = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
+            || first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
+            || first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags)
+            ;
+    }
+    return retVal;
+}
+
+
 ActionSystem.prototype.FrameMove = function(frame)
 {
     for(var i in this.Actions)
@@ -80,12 +97,31 @@ ActionSystem.prototype.FrameMove = function(frame)
             var canP1Hit = !!item[0] && this.Test(item[0].Key,0);
             var canP2Hit = !!item[1] && this.Test(item[1].Key,1);
 
-            if(!!item[0] && (canP1Hit || (!canP1Hit && !canP2Hit)))
+            var canP1HitBeOverriden = !!item[0] && this.CanOverride(item[0].Key,0);
+            var canP2HitBeOverriden = !!item[1] && this.CanOverride(item[1].Key,1);
+
+            if(canP1HitBeOverriden && canP2HitBeOverriden)
+            {
+                canP1Hit = true;
+                canP2Hit = true;
+            }
+            else
+            {
+                if(canP1HitBeOverriden) canP1Hit = false;
+                if(canP2HitBeOverriden) canP2Hit = false;
+            }
+
+            /*if both hits can hit, or if nobody can hit, then allow double hit*/
+            var canDoubleHit = ((canP1Hit && !canP1HitBeOverriden) && (canP2Hit && !canP2HitBeOverriden))
+                                || (!canP1Hit && !canP1HitBeOverriden && !canP2Hit && !canP2HitBeOverriden);
+
+
+            if(!!item[0] && (canP1Hit || canDoubleHit))
             {
                 /*player 1 registers action*/
                 item[0].Player.RegisterHit(frame);
             }
-            if(!!item[1] && (canP2Hit || (!canP1Hit && !canP2Hit)))
+            if(!!item[1] && (canP2Hit || canDoubleHit))
             {
                 /*player 2 registers action*/
                 item[1].Player.RegisterHit(frame);
@@ -113,22 +149,7 @@ ActionSystem.prototype.Test = function(key,index)
 
     if(!second)
     {
-        if(!first.OtherPlayer)
-        {
-            return true;
-        }
-        else
-        {
-            /*Is the current player doing a move that overrides the one that is hitting him?*/
-            if(!!first.Player.currentAnimation_.Animation && first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
-        }
+        return true;
     }
     if(first.MoveOverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE))
     {

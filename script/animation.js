@@ -5,18 +5,23 @@
     this.name_ = name;
     this.isAttack_ = isAttack == undefined ? true : isAttack;
     this.allowAirBlock_ = allowAirBlock;
+    this.lastFrameOffset = 0;
 }
-
 /*
 Adds a frame to the move
 */
 BaseAnimation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
 {
-    var frameOffset = 0;
-    for(var i = 0; i < this.frames_.length; ++i)
-        frameOffset += this.frames_[i].Frames;
+    if(!!this.frames_.length > 0)
+        this.lastFrameOffset += this.frames_[this.frames_.length - 1].Frames;
+    var frameOffset = this.lastFrameOffset;
+    //for(var i = 0; i < this.frames_.length; ++i)
+    //    frameOffset += this.frames_[i].Frames;
+
+
     if(shadowImage == "" && !!player)
         shadowImage = player.defaultShadowImageSrc_;
+    ++player.nbFrames_;
     this.frames_[this.frames_.length] = new Frame(this.frames_.length,player.GetNextFrameID(),shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd);
 
     var currentFrame = this.frames_[this.frames_.length-1];
