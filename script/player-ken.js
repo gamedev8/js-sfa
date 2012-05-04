@@ -151,8 +151,8 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     hitReact_bounce.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
     hitReact_bounce.vx_ = 20;
     hitReact_bounce.vy_ = 80;
-    hitReact_bounce.AddFrame(player,"","images/misc/ken/x-hit-air-2.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_bounce.AddFrame(player,"","images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE});
+    hitReact_bounce.AddFrame(player,"","images/misc/ken/x-hit-air-2.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
+    hitReact_bounce.AddFrame(player,"","images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.SUPER_INVULNERABLE});
     hitReact_bounce.Chain(getup);
 
     var hitReact_trip = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"tripped",0,["hr_trip"],0,false);
@@ -164,7 +164,6 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     hitReact_trip.AddFrame(player,"","images/misc/ken/x-hit-air-6.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.INVULNERABLE});
     hitReact_trip.Chain(hitReact_bounce);
 
-
     var hitReact_air = player.AddAnimation(POSE_FLAGS.AIRBORNE,"clocked",0,["hr_air"],0,false);
     hitReact_air.allowJuggle_ = true;
     hitReact_air.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
@@ -175,7 +174,7 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     hitReact_air.AddFrame(player,"","images/misc/ken/x-f-jump-4.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE});
     hitReact_air.AddFrame(player,"","images/misc/ken/x-f-jump-3.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE});
     hitReact_air.AddFrame(player,"","images/misc/ken/x-f-jump-2.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE});
-    hitReact_air.AddFrame(player,"","images/misc/ken/x-jump-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.INVULNERABLE});
+    hitReact_air.AddFrame(player,"","images/misc/ken/x-jump-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
 
     var hitReact_knockDown = player.AddAnimation(POSE_FLAGS.STANDING,"clocked",0,["hr_knockdown"],0,false);
     hitReact_knockDown.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
@@ -184,20 +183,20 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     hitReact_knockDown.AddFrame(player,"","images/misc/ken/x-hit-b-1.png", 8,{Player:PLAYER_FLAGS.INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE},0,1);
     hitReact_knockDown.AddFrame(player,"","images/misc/ken/x-hit-a-1.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE});
     hitReact_knockDown.AddFrame(player,"","images/misc/ken/x-hit-air-0.png", 16,{Player:PLAYER_FLAGS.INVULNERABLE});
-    hitReact_knockDown.AddFrame(player,"","images/misc/ken/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.INVULNERABLE});
+    hitReact_knockDown.AddFrame(player,"","images/misc/ken/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
     hitReact_knockDown.Chain(hitReact_bounce);
 
     var down = player.AddAnimation(MISC_FLAGS.NONE,"getup",0,["hr_down"],0,false);
     down.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
-    down.AddFrame(player,"","images/misc/ken/x-down.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
+    down.AddFrame(player,"","images/misc/ken/x-down.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE|PLAYER_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
 
 
     var hitReact_deadBounce = player.AddAnimation(MISC_FLAGS.NONE,"dead bounce",0,["hr_deadbounce"],0,false);
     hitReact_deadBounce.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
     hitReact_deadBounce.vx_ = 10;
     hitReact_deadBounce.vy_ = 80;
-    hitReact_deadBounce.AddFrame(player,"","images/misc/ken/x-hit-air-2.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_deadBounce.AddFrame(player,"","images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS});
+    hitReact_deadBounce.AddFrame(player,"","images/misc/ken/x-hit-air-2.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
+    hitReact_deadBounce.AddFrame(player,"","images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.SUPER_INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS});
     hitReact_deadBounce.Chain(down);
 
     var hitReact_dead = player.AddAnimation(POSE_FLAGS.STANDING,"clocked",0,["hr_dead"],0,false);
@@ -205,7 +204,7 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     hitReact_dead.vx_ = 35;
     hitReact_dead.vy_ = 200;
     hitReact_dead.AddFrame(player,"","images/misc/ken/x-hit-air-0.png", 32,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS},0,1);
-    hitReact_dead.AddFrame(player,"","images/misc/ken/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS});
+    hitReact_dead.AddFrame(player,"","images/misc/ken/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISION});
     hitReact_dead.Chain(hitReact_deadBounce);
 
     var hitReact_eject = player.AddAnimation(POSE_FLAGS.STANDING,"eject",0,["eject"],0,false);
@@ -213,27 +212,27 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     hitReact_eject.vx_ = 35;
     hitReact_eject.vy_ = 200;
     hitReact_eject.AddFrame(player,"","images/misc/ken/x-hit-air-0.png", 32,{Player:PLAYER_FLAGS.INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_eject.AddFrame(player,"","images/misc/ken/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.INVULNERABLE});
+    hitReact_eject.AddFrame(player,"","images/misc/ken/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
     hitReact_eject.Chain(hitReact_bounce);
 
 
     var hitReact_shoulder_throw = player.AddAnimation(POSE_FLAGS.ANY,"shoulder throw",0,["shoulder_throw"],0,false);
     hitReact_shoulder_throw.isImplicit_ = true;
     hitReact_shoulder_throw.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
-    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/x-hit-b-2.png", 8,{Player:PLAYER_FLAGS.INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE});
-    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/x-hit-b-2.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,-20,20);
-    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/#-hit-a-1a.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,-60,180);
-    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/#-hit-c-1a.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,80,150);
-    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/#-hit-b-1a.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},MISC_FLAGS.NONE,-100,100,0,0,0,0,0);
+    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/x-hit-b-2.png", 8,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE});
+    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/x-hit-b-2.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,-20,20);
+    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/#-hit-a-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABL},MISC_FLAGS.NONE,0,0,0,0,0,-60,180);
+    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/#-hit-c-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,80,150);
+    hitReact_shoulder_throw.AddFrame(player,"","images/misc/ken/#-hit-b-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,-100,100,0,0,0,0,0);
 
 
     var hitReact_fk_throw = player.AddAnimation(POSE_FLAGS.ANY,"shoulder throw",0,["fk_throw"],0,false);
     hitReact_fk_throw.isImplicit_ = true;
     hitReact_fk_throw.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
-    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/x-hit-a-2.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE});
-    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/x-hit-b-2.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,0,-40,0);
-    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/#-hit-a-1a.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,0,105);
-    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/#-hit-b-1a.png", 4,{Player:PLAYER_FLAGS.INVULNERABLE},MISC_FLAGS.NONE,-160,100,0,0,0,0,0);
+    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/x-hit-a-2.png", 4, {Player:PLAYER_FLAGS.SUPER_INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE});
+    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/x-hit-b-2.png", 4, {Player:PLAYER_FLAGS.SUPER_INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,0,-40,0);
+    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/#-hit-a-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,0,105);
+    hitReact_fk_throw.AddFrame(player,"","images/misc/ken/#-hit-b-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,-160,100,0,0,0,0,0);
 
 
 
@@ -252,7 +251,7 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     
     var cblock = player.AddAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.ALLOW_BLOCK,"crouch block",0,[BUTTONS.CROUCH|BUTTONS.BACK],-1,false);
     //cblock.poseState_ = POSE_FLAGS.CROUCHING|POSE_FLAGS.ALLOW_BLOCK;
-    cblock.flags_ = {Player:PLAYER_FLAGS.BLOCKING};
+    cblock.flags_ = {Player:PLAYER_FLAGS.BLOCKING,Pose:POSE_FLAGS.CROUCHING};
     cblock.AddFrame(player,"","images/misc/ken/x-crouch-block-0.png",4,{Player:PLAYER_FLAGS.BLOCKING});
     cblock.AddFrame(player,"","images/misc/ken/x-crouch-block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MUST_HOLD_KEY});
     cblock.AddFrame(player,"","images/misc/ken/x-crouch-block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.HOLD_FRAME});
@@ -632,7 +631,7 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     var xSpeed = 0;
     for(var x = 0; x < 3; ++x)
     {
-        xSpeed = x + 2;
+        xSpeed = x + 7;
         var projectile = player.AddProjectile("projectile",160,140,xSpeed);
 
         projectile.fx_ = 0.5;
@@ -683,7 +682,7 @@ Player.prototype.CreateKen = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         fireball.AddFrame(player,"168","images/misc/ken/x-fb-1.png",4);
         fireball.AddFrame(player,"200","images/misc/ken/x-fb-2.png",4);
         fireball.AddFrame(player,"200","images/misc/ken/x-fb-3.png",1,{Combat:COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE},0,0,0,0,0,x);
-        fireball.AddFrame(player,"200","images/misc/ken/x-fb-3.png",44);
+        fireball.AddFrame(player,"200","images/misc/ken/x-fb-3.png",34);
         fireball.AddFrame(player,"","images/misc/ken/x-k1-4.png",4);
     }
 

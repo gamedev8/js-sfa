@@ -642,6 +642,6 @@ Player.prototype.SetLastHit = function(animation,type,offsetX,offsetY)
     };
     animation.initialPlayerX_ = this.x_;
     animation.initialPlayerY_ = this.y_;
-    animation.initialStageX_ = this.GetMatch().x_;
-    animation.initialStageY_ = this.GetMatch().y_;
+    animation.initialStageX_ = this.GetStage().x_;
+    animation.initialStageY_ = this.GetStage().y_;
 }

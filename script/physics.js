@@ -5,21 +5,25 @@ var Physics = function()
 
 
 Physics.prototype.GetMatch = function() { return game_.match_; }
+Physics.prototype.GetStage = function() { return this.GetMatch().stage_; }
+
 
 /*Test each player to see if the hit region intersects with them*/
 Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName)
 {
+    if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
+        return;
     /*frame can not hit more than once*/
     /*if the attack is a throw, it can not grab more than one player*/
     if(p2.lastHitFrame_[p1.id_] == p1.GetHitFrameID(hitID))
         return;
     if(!!p1.grappledPlayerId_ && (p1.grappledPlayerId_ != p2.id_))
         return;
-    if(!!(attackFlags & ATTACK_FLAGS.CAN_AIR_JUGGLE) && p2.CanBeJuggled())
+    if(p2.IsAirborne() && !!(attackFlags & ATTACK_FLAGS.CAN_AIR_JUGGLE))
     {
-        //do nothing, yet
+        //return;
     }
-    else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
+    else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE))
         return;
     var p1Left = p1.GetLeftX();
     var p1Right = p1.GetRightX();
@@ -73,13 +77,17 @@ Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsTo
 /*Handles projectiles hitting a player*/
 Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
 {
+    if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE))
+        return;
+    //if(p2.flags_.Player.Has(PLAYER_FLAGS.DEAD))
+    //    return;
     if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_PROJECTILES))
         return;
     if(p2.IsAirborne() && !!projectile && !!(projectile.flagsToSend_ & ATTACK_FLAGS.SUPER) && !!projectile.canJuggle_)
     {
-        /*allows super fireballs to hit multiple times in the air
-        /*do nothing, yet.*/
+        /*allows super fireballs to hit multiple times in the air*/
     }
+
     else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE) || !projectile)
         return;
     if(!projectile.CanHit(frame))
@@ -457,7 +465,7 @@ Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,d
                 if(!!impededAmount)
                 {
                     if(collisions[i].IsRightCornered())
-                        impededAmount = this.GetMatch().stage_.MoveX(impededAmount/2);
+                        impededAmount = this.GetStage().MoveX(impededAmount/2);
 
                     /*if both players are on the ground, or both players in air, then they can push each other*/
                     if((player.IsOnGround() && collisions[i].IsOnGround()) || (!player.IsOnGround() && !collisions[i].IsOnGround()) || (collisions[i].IsRightCornered()))
@@ -489,7 +497,7 @@ Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,d
                     if(!!impededAmount)
                     {
                         if(collisions[i].IsLeftCornered())
-                            impededAmount = this.GetMatch().stage_.MoveX(impededAmount/2);
+                            impededAmount = this.GetStage().MoveX(impededAmount/2);
 
                         this.MoveX(impededAmount,collisions[i],true);
                     }
@@ -519,7 +527,7 @@ Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,d
                 if(!!impededAmount)
                 {
                     if(collisions[i].IsLeftCornered())
-                        impededAmount = this.GetMatch().stage_.MoveX(impededAmount/2);
+                        impededAmount = this.GetStage().MoveX(impededAmount/2);
                     /*if both players are on the ground, or both players in air, then they can push each other*/
                     if((player.IsOnGround() && collisions[i].IsOnGround()) || (!player.IsOnGround() && !collisions[i].IsOnGround()) || (collisions[i].IsRightCornered()))
                     {
@@ -550,7 +558,7 @@ Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,d
                     if(!!impededAmount)
                     {
                         if(collisions[i].IsRightCornered())
-                            impededAmount = this.GetMatch().stage_.MoveX(impededAmount/2);
+                            impededAmount = this.GetStage().MoveX(impededAmount/2);
 
                         this.MoveX(impededAmount,collisions[i],true);
                     }
@@ -560,7 +568,7 @@ Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,d
         }
         amount = player.WarpX(amount,true);
         if(!!canFixStageX && !!stageFixX)
-            this.GetMatch().stage_.FixX(stageFixX);
+            this.GetStage().FixX(stageFixX);
     }
 
 
@@ -578,7 +586,7 @@ Physics.prototype.MoveY = function(amount,player)
         var myMidX = player.GetMidX();
         if(amount > 0) /*moving up*/
         {
-            amount = this.GetMatch().stage_.ClampY(myRect.Top,amount);
+            amount = this.GetStage().ClampY(myRect.Top,amount);
             if(!amount) return amount;
             player.MoveCircleToTop();
 
@@ -619,7 +627,7 @@ Physics.prototype.MoveY = function(amount,player)
         }
         else /*moving down*/
         {
-            amount = this.GetMatch().stage_.ClampY(myRect.Bottom,amount);
+            amount = this.GetStage().ClampY(myRect.Bottom,amount);
             if(!amount) return amount;
             player.MoveCircleToBottom();
 
@@ -680,3 +688,150 @@ Physics.prototype.MoveY = function(amount,player)
     return amount;
 }
 
+
+
+
+/*Returns the player closest to the left side of the screen*/
+Physics.prototype.GetLeftMostPlayer = function()
+{
+    var match = this.GetMatch();
+
+    var minX = STAGE.MAX_STAGEX;
+    var retVal = null;
+    for(var i = 0, length = match.teamA_.Players.length; i < length; ++i)
+    {
+        if(match.teamA_.Players[i].GetLeftX() < minX)
+        {
+            minX = match.teamA_.Players[i].GetLeftX();
+            retVal = match.teamA_.Players[i];
+        }
+    }
+    for(var i = 0, length = match.teamB_.Players.length; i < length; ++i)
+    {
+        if(match.teamB_.Players[i].GetLeftX() < minX)
+        {
+            minX = match.teamB_.Players[i].GetLeftX();
+            retVal = match.teamB_.Players[i];
+        }
+    }
+
+    return retVal;
+}
+/*Returns the player closest to the right side of the screen*/
+Physics.prototype.GetRightMostPlayer = function()
+{
+    var match = this.GetMatch();
+
+    var maxX = STAGE.MIN_STAGEX;
+    var retVal = null;
+    for(var i = 0, length = match.teamA_.Players.length; i < length; ++i)
+    {
+        if(match.teamA_.Players[i].GetLeftX() > maxX)
+        {
+            maxX = match.teamA_.Players[i].GetLeftX();
+            retVal = match.teamA_.Players[i];
+        }
+    }
+    for(var i = 0, length = match.teamB_.Players.length; i < length; ++i)
+    {
+        if(match.teamB_.Players[i].GetLeftX() > maxX)
+        {
+            maxX = match.teamB_.Players[i].GetLeftX();
+            retVal = match.teamB_.Players[i];
+        }
+    }
+
+    return retVal;
+}
+/**/
+Physics.prototype.IsLeftMostPlayer = function(id)
+{
+    var p = this.GetLeftMostPlayer();
+    return p.id_ == id;
+}
+/**/
+Physics.prototype.IsRightMostPlayer = function(id)
+{
+    var p = this.GetRightMostPlayer();
+    return p.id_ == id;
+}
+
+/*checks if any player from ther other team is within the given distance*/
+Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
+{
+    var match = this.GetMatch();
+    switch(team)
+    {
+        case CONSTANTS.TEAM1:
+        {
+            for(var i = 0; i < match.teamB_.Players.length; ++i)
+                if((Math.abs(x - match.teamB_.Players[i].GetMidX()) < distance)
+                    && (Math.abs(y - match.teamB_.Players[i].y_) < distance)
+                    && (!(match.teamB_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
+                    && (!match.teamB_.Players[i].grappledPlayer_)
+                    )
+                    return true;
+            break;
+        }
+        case CONSTANTS.TEAM2:
+        {
+            for(var i = 0; i < match.teamA_.Players.length; ++i)
+                if((Math.abs(x - match.teamA_.Players[i].GetMidX()) < distance)
+                    && (Math.abs(y - match.teamA_.Players[i].y_) < distance)
+                    && (!(match.teamA_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
+                    && (!match.teamA_.Players[i].grappledPlayer_)
+                    )
+                    return true;
+            break;
+        }
+    }
+    return false;
+}
+
+/*Returns true if any player from the other team is on the left*/
+Physics.prototype.IsAnyPlayerFromOtherTeamMoreLeft = function(x,team)
+{
+    var match = this.GetMatch();
+    switch(team)
+    {
+        case CONSTANTS.TEAM1:
+        {
+            for(var i = 0; i < match.teamB_.Players.length; ++i)
+                if(match.teamB_.Players[i].GetMidX() < x)
+                    return true;
+            break;
+        }
+        case CONSTANTS.TEAM2:
+        {
+            for(var i = 0; i < match.teamA_.Players.length; ++i)
+                if(match.teamA_.Players[i].GetMidX() < x)
+                    return true;
+            break;
+        }
+    }
+    return false;
+}
+
+/*Returns true if any player from the other team is on the right*/
+Physics.prototype.IsAnyPlayerFromOtherTeamMoreRight = function(x,team)
+{
+    var match = this.GetMatch();
+    switch(team)
+    {
+        case CONSTANTS.TEAM1:
+        {
+            for(var i = 0; i < match.teamB_.Players.length; ++i)
+                if(match.teamB_.Players[i].GetMidX() > x)
+                    return true;
+            break;
+        }
+        case CONSTANTS.TEAM2:
+        {
+            for(var i = 0; i < match.teamA_.Players.length; ++i)
+                if(match.teamA_.Players[i].GetMidX() > x)
+                    return true;
+            break;
+        }
+    }
+    return false;
+}

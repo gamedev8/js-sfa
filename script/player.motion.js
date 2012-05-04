@@ -73,6 +73,7 @@ Player.prototype.SetX = function(value)
 Player.prototype.AlignX = function(deltaX) { this.x_ += (deltaX * -this.direction_); }
 Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.image_.style.right = value+"px"; } else {this.image_.style.left = value+"px";}}
 Player.prototype.SetImageY = function(value) { this.image_.style.bottom = value+"px"; }
+Player.prototype.IsCrouching = function() { return this.flags_.Pose.Has(POSE_FLAGS.CROUCHING); }
 Player.prototype.IsOnGround = function() { return this.y_ == STAGE.FLOORY; }
 Player.prototype.IsAirborne = function() { return this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE) || this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
 Player.prototype.CanBeJuggled = function()
@@ -208,15 +209,15 @@ Player.prototype.OffsetImageY = function(amount)
 }
 Player.prototype.CheckDirection = function()
 {
-    if(this.GetMatch().IsRightMostPlayer(this.id_) && this.direction_ == -1)
+    if(this.GetPhysics().IsRightMostPlayer(this.id_) && this.direction_ == -1)
         this.TurnAround();
-    else if(this.GetMatch().IsLeftMostPlayer(this.id_) && this.direction_ == 1)
+    else if(this.GetPhysics().IsLeftMostPlayer(this.id_) && this.direction_ == 1)
         this.TurnAround();
     else
     {
-        if((this.direction_ == 1) && !this.GetMatch().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_))
+        if((this.direction_ == 1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_))
             this.TurnAround();
-        else if((this.direction_ == -1) && !this.GetMatch().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_))
+        else if((this.direction_ == -1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_))
             this.TurnAround();
     }
 }
@@ -289,7 +290,7 @@ Player.prototype.IsLeftCornered = function(x)
 }
 Player.prototype.IsLeftCorneredInStage = function(x)
 {
-    return this.IsLeftCornered() && this.GetMatch().IsStageLeftCornered();
+    return this.IsLeftCornered() && this.GetStage().IsLeftCornered();
 }
 Player.prototype.IsRightCornered = function(x)
 {
@@ -303,7 +304,7 @@ Player.prototype.IsRightCornered = function(x)
 }
 Player.prototype.IsRightCorneredInStage = function(x)
 {
-    return this.IsRightCornered() && this.GetMatch().IsStageRightCornered();
+    return this.IsRightCornered() && this.GetStage().IsRightCornered();
 }
 /*Shows the dirt animation when a player is floored*/
 Player.prototype.ShowBigDirt = function(frame)

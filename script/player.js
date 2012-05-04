@@ -1,35 +1,4 @@
-﻿var Flags = function(owner)
-{
-    this.Value = 0;
-    this.IsPlayer = false;
-    this.Owner = owner || null;
-}
-
-Flags.prototype.Clear = function() { this.Set(0); }
-Flags.prototype.Set = function(value) { this.Value = value || MISC_FLAGS.NONE; return this.Value; }
-Flags.prototype.Get = function()      { return this.Value; }
-Flags.prototype.Has = function(value) { return !!(this.Value & value); }
-Flags.prototype.Add = function(value)
-{
-    if(this.IsPlayer && !!this.Owner)
-    {
-        if(!!(value & PLAYER_FLAGS.MOBILE) && !this.Has(PLAYER_FLAGS.MOBILE))
-            this.Owner.ResetCombo();
-    }
-    return this.Value |= (value || MISC_FLAGS.NONE);
-}
-Flags.prototype.Remove = function(value) { return this.Value = (this.Value | value) ^ value; }
-
-var PlayerFlags = function(owner)
-{
-    this.Owner = owner;
-    this.Player = new Flags(owner);
-    this.Player.IsPlayer = true;
-    this.Pose = new Flags();
-    this.Combat = new Flags();
-    this.Spawn = new Flags();
-}
-
+﻿
 
 /*Encapsulates a new player*/
 var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameImageSrc,portriatImageSrc,slideFactor)
@@ -107,6 +76,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
     this.headOffsetX_ = 40;
     this.headOffsetY_ = 10;
+    this.ai_ = new AIProxy(this);
     /**/
     this.slideFactor_ = slideFactor || 30;
     this.baseTakeHitDelay_ = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
@@ -119,44 +89,19 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.Reset();
     this.AddGenericAnimations();
 }
+Player.prototype.SetAI = function(ai) { this.ai_.Managed = ai; }
 Player.prototype.PlayerCount = 0;
 Player.prototype.TakeDamage = function(amount) { this.takeDamageFn_(amount); }
 Player.prototype.ChangeEnergy = function(amount) { if(!!amount) this.changeEnergyFn_(amount); }
-Player.prototype.GetMatch = function() { return game_.match_; }
+Player.prototype.GetMatch = function() { return this.GetGame().match_; }
+Player.prototype.GetPhysics = function() { return this.GetMatch().physics_; }
+Player.prototype.GetStage = function() { return this.GetMatch().stage_; }
 Player.prototype.GetGame = function() { return game_; }
 Player.prototype.GetHealth = function() { return this.getHealthFn_(); }
 Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
 Player.prototype.GetName = function() { return this.name_; }
 Player.prototype.IsDead = function() { return !this.GetHealth(); }
-/*
-Player.prototype.HasState = function(flag){return (flag & this.state_) > 0}
-Player.prototype.RemoveState = function(flag){this.state_ = (this.state_ | flag) ^ flag;}
-Player.prototype.AddState = function(flag)
-{
-    if(!!(flag & FLAGS.MOBILE) && !(this.state_ & FLAGS.MOBILE))
-    {
-        this.ResetCombo();
-    }
-    this.state_ |= flag;
-}
 
-Player.prototype.HasPoseFlags = function(flag){return !!(flag & this.poseState_);}
-Player.prototype.RemovePoseFlags = function(flag){this.poseState_ = (this.poseState_ | flag) ^ flag;}
-Player.prototype.AddPoseFlags = function (flag){this.poseState_ |= flag;}
-Player.prototype.SetPoseFlags = function(flag)
-{
-    if(!!(this.poseState_ & FLAGS.AIRBORNE_FB))
-        flag |= FLAGS.AIRBORNE_FB;
-    if(!!(this.poseState_ & FLAGS.AIRBORNE))
-        flag |= FLAGS.AIRBORNE;
-    if(!!(this.poseState_ & FLAGS.ALLOW_BLOCK))
-        flag |= FLAGS.ALLOW_BLOCK;
-    if(!!(this.poseState_ & FLAGS.ALLOW_AIR_BLOCK))
-        flag |= FLAGS.ALLOW_AIR_BLOCK;
-    
-    this.poseState_ = flag;
-}
-*/
 Player.prototype.ResetCombo = function()
 {
     if(!!this.onDecComboRefCountFn_)    
@@ -420,13 +365,15 @@ Player.prototype.ForceHoldFrame = function(frame)
 
 Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
+    if(!!this.ai_.Managed)
+        this.ai_.FrameMove(frame);
     this.FrameMove(frame,stageX,stageY);
     if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
         this.HandleAttack(frame, this.currentFrame_);
     if(!!this.grappledPlayer_)
         this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
     if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.trail_)
-        this.FrameMoveTrail(frame,this.GetMatch().deltaX_,stageY);
+        this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
 }
 
 

@@ -86,7 +86,19 @@ Player.prototype.ExecuteAnimation = function(name)
 
         for(var i in this.moves_)
         {
+            if(!!animation)
+                break;
+
             var move = this.moves_[i];
+            if(this.moves_[i].baseAnimation_.name_ == name)
+            {
+                animation = this.moves_[i];
+            }
+            else
+            {
+                continue;
+            }
+
             if(!!move.energyToSubtract_ && currentEnergy < move.energyToSubtract_)
                 continue;
             var pstate = (move.requiredFlags_ | POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK) ^ (POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK);
@@ -103,11 +115,6 @@ Player.prototype.ExecuteAnimation = function(name)
                 if(!!this.IsProjectileInUse(move))
                     continue;
 
-                if(this.moves_[i].baseAnimation_.name_ == name)
-                {
-                    animation = this.moves_[i];
-                    break;
-                }
             }
         }
 
@@ -157,7 +164,7 @@ Player.prototype.FindAnimation = function(value)
                 cmpValue = this.CompareAlternateKeySequences(move,keys);
 
             if(!!move.grappleDistance_)
-                if(!this.GetMatch().IsAnyPlayerWithinDistance(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_))
+                if(!this.GetPhysics().IsAnyPlayerWithinDistance(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_))
                     continue;
 
             if(cmpValue == CONSTANTS.EXACT_MATCH)
