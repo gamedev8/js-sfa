@@ -69,6 +69,15 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.onDecComboRefCountFn_ = null;
     this.getCurrentComboCountFn_ = null;
 
+    this._showCurrentFrameImageHelperParams = 
+    {
+        ImageOffsetX:0
+        ,ImageOffsetY:0
+        ,HasOffsetX:false
+        ,HasOffsetY:false
+    }
+
+
     this.nbFrames_ = 0;
     this.projectiles_ = [];
     this.width_ = width;

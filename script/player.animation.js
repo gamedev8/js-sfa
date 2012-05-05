@@ -356,12 +356,13 @@ Player.prototype.GetHitFrameID = function(hitID)
 /*Sets the current image. This version is for browsers that load images instantly*/
 Player.prototype.ShowCurrentFrameImage = function()
 {
+    if(this.currentFrame_.ImageOffsetX != undefined)
+        this.OffsetImageX(this.currentFrame_.ImageOffsetX);
+    if(this.currentFrame_.ImageOffsetY != undefined)
+        this.OffsetImageY(this.currentFrame_.ImageOffsetY);
+
     if(this.currentAnimation_.Direction > 0)
     {
-        if(this.currentFrame_.ImageOffsetX != undefined)
-            this.OffsetImageX(this.currentFrame_.ImageOffsetX);
-        if(this.currentFrame_.ImageOffsetY != undefined)
-            this.OffsetImageY(this.currentFrame_.ImageOffsetY);
         if(!!this.currentFrame_.RightSrc && (this.image_.src != this.currentFrame_.RightSrc))
         {
             this.image_.src  = frameImages_.Get(this.currentFrame_.RightSrc).src;
@@ -370,10 +371,6 @@ Player.prototype.ShowCurrentFrameImage = function()
     }
     else
     {
-        if(this.currentFrame_.ImageOffsetX != undefined)
-            this.OffsetImageX(this.currentFrame_.ImageOffsetX);
-        if(this.currentFrame_.ImageOffsetY != undefined)
-            this.OffsetImageY(this.currentFrame_.ImageOffsetY);
         if(!!this.currentFrame_.LeftSrc && (this.image_.src != this.currentFrame_.LeftSrc))
         {
             this.image_.src  = frameImages_.Get(this.currentFrame_.LeftSrc).src;
@@ -382,24 +379,34 @@ Player.prototype.ShowCurrentFrameImage = function()
     }
 }
 
+
+Player.prototype._ShowCurrentFrameImageHelper = function()
+{
+    if(this._showCurrentFrameImageHelperParams.ImageOffsetX != undefined && this._showCurrentFrameImageHelperParams.ImageOffsetX != null)
+        this.OffsetImageX(this._showCurrentFrameImageHelperParams.ImageOffsetX);
+    if(this._showCurrentFrameImageHelperParams.ImageOffsetY != undefined && this._showCurrentFrameImageHelperParams.ImageOffsetY != null)
+        this.OffsetImageY(this._showCurrentFrameImageHelperParams.ImageOffsetY);
+}
+
 /*Sets the current image. This version is used for browsers (FIREFOX) that dont load images instantly*/
 Player.prototype._ShowCurrentFrameImage = function()
 {
-    this.image_.onload = (function(thisValue,offsetX,offsetY,hasOffsetX,hasOffsetY)
+    if(!this.image_.onload)
     {
-        if(hasOffsetX || hasOffsetY)
-            thisValue.image_.style.visibility = "hidden";
-        return function()
+        this.image_.onload = (function(thisValue)
         {
-            if(hasOffsetX || hasOffsetY || hasOffsetX === 0 || hasOffsetY === 0)
+            return function()
             {
-                thisValue.OffsetImageX(offsetX);
-                thisValue.OffsetImageY(offsetY);
-                this.style.visibility = "";
+                thisValue._ShowCurrentFrameImageHelper();
             }
-        }
-    })(this,this.currentFrame_.ImageOffsetX,this.currentFrame_.ImageOffsetY,this.currentFrame_.ImageOffsetX != undefined,this.currentFrame_.ImageOffsetY != undefined);
-    
+        })(this);
+    }
+
+    this._showCurrentFrameImageHelperParams = 
+    {
+        ImageOffsetX:this.currentFrame_.ImageOffsetX
+        ,ImageOffsetY:this.currentFrame_.ImageOffsetY
+    };
 
     if(this.currentAnimation_.Direction > 0)
     {
@@ -408,8 +415,6 @@ Player.prototype._ShowCurrentFrameImage = function()
             this.image_.src  = frameImages_.Get(this.currentFrame_.RightSrc).src;
             ++this.currentAnimation_.FrameIndex;
         }
-        else
-            this.image_.style.visibility = "";
     }
     else
     {
@@ -418,8 +423,6 @@ Player.prototype._ShowCurrentFrameImage = function()
             this.image_.src  = frameImages_.Get(this.currentFrame_.LeftSrc).src;
             ++this.currentAnimation_.FrameIndex;
         }
-        else
-            this.image_.style.visibility = "";
     }
 }
 
@@ -550,23 +553,6 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                     ^ COMBAT_FLAGS.CAN_BE_BLOCKED
                     ^ COMBAT_FLAGS.CAN_BE_AIR_BLOCKED);
         
-        /*
-        this.RemoveState(
-        (this.currentFrame_.FlagsToSet
-        | FLAGS.AIRBORNE
-        | FLAGS.AIRBORNE_FB
-        | FLAGS.MOBILE
-        | FLAGS.PROJECTILE_ACTIVE
-        | FLAGS.CAN_BE_BLOCKED
-        | FLAGS.CAN_BE_AIR_BLOCKED
-        )
-            ^ FLAGS.AIRBORNE
-            ^ FLAGS.AIRBORNE_FB
-            ^ FLAGS.MOBILE
-            ^ FLAGS.PROJECTILE_ACTIVE
-            ^ FLAGS.CAN_BE_AIR_BLOCKED
-            ^ FLAGS.CAN_BE_BLOCKED);
-        */
     }
 
     this.currentFrame_ = newFrame;
