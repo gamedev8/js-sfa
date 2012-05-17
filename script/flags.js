@@ -30,6 +30,14 @@ var PlayerFlags = function(owner)
     this.Spawn = new Flags();
 }
 
+var FrameFlags = function()
+{
+    this.Player = 0;
+    this.Pose = 0;
+    this.Combat = 0;
+    this.Spawn = 0;
+}
+
 
 var BUTTONS = 
 {
@@ -82,6 +90,9 @@ var PLAYER_FLAGS =
     ,DEAD:1 << 13
     ,IGNORE_PROJECTILES:1 << 14
     ,SUPER_INVULNERABLE:1 << 15
+    ,RESET_Y_FUNC: 1 << 16
+    ,USE_CURRENT_VX: 1 << 17
+    ,USE_CURRENT_VY: 1 << 18
 }
 
 
@@ -96,6 +107,8 @@ var POSE_FLAGS =
     ,STANDING:1 << 6
     ,ALLOW_BLOCK:1 << 7
     ,ALLOW_AIR_BLOCK:1 << 8
+    ,ALLOW_INTERUPT:1 << 9
+    ,HOLD_AIRBORNE:1 << 10
 }
 
 
@@ -295,6 +308,7 @@ var CONSTANTS =
     ,DOWN:8
     ,LEFT_AND_CHECK_RIGHT:16
     ,RIGHT_AND_CHECK_LEFT:32
+    ,INTERUPT_DELAY:3
 };
 
 var TEXT = 

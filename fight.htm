@@ -30,8 +30,13 @@
         <div id="pnlTeam2ComboText" class="Text"></div>
     </div>
     <div id="pnlStatus">
-        <br />frame rate: <span id="spnFPS">0</span> fps
-        <br />game speed: <span id="spnLag">0</span>%
+        <br />frame rate: <span id="spnFPS">0</span> FPS
+        <br />
+        <br />press (8) to increase the FPS
+        <br />press (9) to decrease the FPS
+        <br />
+        <br />press (o) to step frame
+        <br />press (p) to resume
         <br /><span id="spnMsg"></span>
     </div>
     <div class="loading">Loading: <span id="spnImagesLoading">0</span>%</div>
@@ -59,17 +64,21 @@
     <script type="text/javascript" src="script/player-ken.js"></script>
     <script type="text/javascript" src="script/player-ryu.js"></script>
     <!--<script type="text/javascript" src="script/player-mbison.js"></script>-->
+    <script type="text/javascript" src="script/ai.js"></script>
+    <script type="text/javascript" src="script/simple-ai.js"></script>
 
     <script type="text/javascript">
         var game_ = new Game();
         var p1_ = Player.prototype.CreateRyu(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M);
         var p2_ = Player.prototype.CreateKen(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C);
+
         game_.StartMatch([p1_],[p2_]);
+        game_.match_.stage_.Set0XOffset(129);
 
         //overriden OnStageImagesLoaded function, just incase the images load too slow
         function OnStageImagesLoaded()
         {
-            game_.match_.CenterStage();
+            game_.match_.stage_.Center();
         }
     </script>
 </body>

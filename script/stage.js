@@ -10,11 +10,17 @@
     this.deltaX_ = 0;
     this.y_ = 0;
     this.deltaY_ = 0;
+
+    this.bg0XOffset_ = bg0XOffset;
+    this.bgRate_ = 0.05;
+    this.maxLeftScroll_ = -62.5;
+    this.maxRightScroll_ = 322.5;
 }
 
 Stage.prototype.GetGame = function() { return game_; }
 Stage.prototype.GetMatch = function() { return this.GetGame().match_; }
 Stage.prototype.GetPhysics = function() { return this.GetMatch().physics_; }
+Stage.prototype.Set0XOffset = function(value) { this.bg0XOffset_ = value;; }
 
 Stage.prototype.FrameMove = function(frame)
 {
@@ -293,13 +299,14 @@ Stage.prototype.Center = function()
     var diff0 = (screenWidth - parseFloat(this.bgImg0_.element.width)) / 2;
     var diff1 = (screenWidth - parseFloat(this.bgImg1_.element.width)) / 2;
 
-    this.bgImg0_.element.style.left = (this.bgImg0_.xOffset + diff0 - diff) + "px";
+    this.bgImg0_.element.style.left = this.bg0XOffset_ + "px";
     this.bgImg1_.element.style.left = (diff1 - diff) + "px";
     this.x_ = Math.abs(diff1 - diff);
     var elementWidth = parseFloat(this.bg_.element.style.width);
 
     /*If the browser doesn't allow decimal places in pixel values, then we have to set the bgRate_ to 0.
     The far background will not scroll with the screen. You won't notice unless you know it's happening.*/
+    /*
     var leftTest = parseFloat(this.bgImg0_.element.style.left);
     leftTest += 0.01;
     this.bgImg0_.element.style.left = leftTest + "px";
@@ -308,9 +315,15 @@ Stage.prototype.Center = function()
         this.bgRate_ = 0;
     else
         this.bgRate_ = (this.bgImg0_.element.width - elementWidth) / (this.bgImg1_.element.width - elementWidth);
+    */
 
     this.x0 = parseFloat(this.bgImg0_.element.style.left);
     this.x1 = parseFloat(this.bgImg1_.element.style.left);
+
+    var bgImg0RightGap = parseInt(this.bgImg0_.element.width) + parseInt(this.bgImg0_.element.style.left) - w;
+    var bgImg1RightGap = parseInt(this.bgImg1_.element.width) + parseInt(this.bgImg1_.element.style.left) - w;
+
+    this.bgRate_ =  bgImg0RightGap / bgImg1RightGap;
 
     this._MoveX(0,true);
 }
@@ -367,11 +380,11 @@ Stage.prototype._MoveHoriz = function(amount,px)
         this.x1 = 0;
         this.x_ = STAGE.MAX_STAGEX;
     }
-    if(this.x0 < STAGE.MAX_BG0_SCROLL || this.x1 < STAGE.MAX_BG1_SCROLL)
+    if(this.x1 < STAGE.MAX_BG1_SCROLL)
     {
         //floating point error will cause them to be off a little, this will fix
         this.deltaX_ = 0;
-        this.x0 = STAGE.MAX_BG0_SCROLL;
+        this.x0 = this.maxRightScroll_;
         this.x1 = STAGE.MAX_BG1_SCROLL;
         this.x_ = 0;
     }
@@ -401,17 +414,17 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
     if(this.x1 > 0)
     {
         //floating point error will cause them to be off a little, this will fix
-        this.x0 = 0;
+        this.x0 = this.maxRightScroll_;
         this.x1 = 0;
         !dontAlignPlayers
             ? this.deltaX_ = 0
             : this.deltaX_ = this.x_ - STAGE.MAX_STAGEX;
         this.x_ = STAGE.MAX_STAGEX;
     }
-    if(this.x0 < STAGE.MAX_BG0_SCROLL || this.x1 < STAGE.MAX_BG1_SCROLL)
+    if(this.x1 < STAGE.MAX_BG1_SCROLL)
     {
         //floating point error will cause them to be off a little, this will fix
-        this.x0 = STAGE.MAX_BG0_SCROLL;
+        this.x0 = this.maxLeftScroll_;
         this.x1 = STAGE.MAX_BG1_SCROLL;
         !dontAlignPlayers
             ? this.deltaX_ = 0

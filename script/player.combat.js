@@ -140,7 +140,7 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
 /*Forced computation on the player who is being thrown by this player*/
 Player.prototype.HandleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
 {
-    if(!!this.grappledPlayer_.currentAnimation_.Animation)
+    if(!!this.grappledPlayer_.currentAnimation_.Animation && !!this.grappledPlayer_.isBeingThrown_)
     {
         var forcedFrame = this.grappledPlayer_.currentAnimation_.Animation.baseAnimation_.frames_[forcedFrameIndex];
         if(!!forcedFrame)
@@ -413,7 +413,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         return;
     }
 
-    if(!!(attackState & ATTACK_FLAGS.THROW_EJECT))
+    if(!!(attackState & ATTACK_FLAGS.THROW_EJECT) && !!this.isBeingThrown_)
     {
         this.isBeingThrown_ = false;
         attackDirection = -this.GetRelativeDirection(attackDirection);
@@ -468,6 +468,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         hitDelayFactor_ = 0;
 
     this.SetHoldFrame(this.baseTakeHitDelay_ * hitDelayFactor_);
+    
     return true;
 }
 /*Setting "this.winningFrame_" will cause this player to execute its win animation after its current animation is done.*/
@@ -489,6 +490,7 @@ Player.prototype.ForceLose = function(attackDirection)
     this.TakeDamage(this.GetHealth());
     var frame = this.GetMatch().GetCurrentFrame();
     var direction = attackDirection || -this.direction_;
+    this.AbortThrow();
 
     this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
     this.KnockDownDefeat(frame,attackDirection);
@@ -537,6 +539,31 @@ Player.prototype.TakeTrip = function(attackState,hitState,flags,frame,damage,isP
         this.PerformJump(direction * move.vx_ * fx,move.vy_ * fy);
     }
 }
+/*Player falls*/
+Player.prototype.Drop = function()
+{
+    var move = this.moves_[_c3("_",POSE_FLAGS.STANDING,"_eject")];
+    if(!!move)
+    {
+        this.isBeingThrown_ = false;
+        //attackDirection = this.GetRelativeDirection(attackDirection);
+        var direction = this.GetAttackDirection(-this.direction_);
+        this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().frame_,Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});
+        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
+        this.PerformJump(direction * move.vx_ * 0,move.vy_ * 0);
+    }
+}
+/*Player aborts throw*/
+Player.prototype.AbortThrow = function()
+{
+    if(!!this.grappledPlayer_)
+    {
+        this.grappledPlayer_.Drop();
+        this.grappledPlayer_ = null;
+        this.grappledPlayerId_ = "";
+        hitDelayFactor = 0;
+    }
+}
 /*Player gets knocked down*/
 Player.prototype.Eject = function(attackState,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
@@ -545,7 +572,7 @@ Player.prototype.Eject = function(attackState,hitState,flags,frame,damage,isProj
     {
         //attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(attackDirection);
-        this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_,AttackDirection:direction});
+        this.SetCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.direction_, AttackDirection:direction, Vx:move.vx_ * fx, Vy:move.vy_ * fy});
         this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
         this.PerformJump(direction * move.vx_ * fx,move.vy_ * fy);
     }
@@ -587,6 +614,7 @@ Player.prototype.SetGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,be
             thisValue.GiveHit(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
         }
     })(this,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
+    this.SetHoldFrame(this.baseGiveHitDelay_ * hitDelayFactor);
 }
 /*This player just hit the other player*/
 Player.prototype.GiveHit = function(frame,attackState,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
@@ -606,6 +634,7 @@ Player.prototype.GiveHit = function(frame,attackState,hitDelayFactor,energyToAdd
 
     this.ChangeEnergy(energyToAdd);
     this.SetHoldFrame(this.baseGiveHitDelay_ * hitDelayFactor);
+    //this.canInterrupt_ = true;
 }
 
 /*allows the animation to store some initial coordinates*/

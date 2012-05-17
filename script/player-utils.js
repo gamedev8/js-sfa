@@ -41,11 +41,17 @@ var Animation = function(requiredFlags,name,duration,frames,keySequence,flags,pr
     this.moveOverrideFlags_ = new MoveOverrideFlags();
     this.vx_ = 0;
     this.vy_ = 0;
+    this.chainVxFunc_ = function(x) { return x; };
+    this.chainVyFunc_ = function(y) { return y; };
 
     this.vyFn_ = function(a) {return function(b) {return b}};
+    this.vyAirFn_ = function(a) {return function(b) {return b}};
     this.vxFn_ = function(a) {return function(b) {return b}};
+    this.vxAirFn_ = function(a) {return function(b) {return b}};
 
+    this.vyAirFnArgs_ = {};
     this.vxFnArgs_ = {};
+    this.vxAirFnArgs_ = {};
     this.vyFnArgs_ = {};
 
     this.userData_ = null;
@@ -57,6 +63,7 @@ var Animation = function(requiredFlags,name,duration,frames,keySequence,flags,pr
     this.trail_ = null;
     this.allowJuggle_ = false;
     this.ignoresCollisions_ = false;
+    this.isThrow_ = false;
 }
 
 Animation.prototype.EndBlock = function()
@@ -72,8 +79,12 @@ Animation.prototype.AddAlternateKeySequence = function(sequence)
 
 Animation.prototype.GetXModifier = function() { return this.XModifier(this.vxFnArgs_); }
 Animation.prototype.GetYModifier = function() { return this.YModifier(this.vyFnArgs_); }
+Animation.prototype.GetAirYModifier = function() { return this.AirYModifier(this.vyAirFnArgs_); }
+Animation.prototype.GetAirXModifier = function() { return this.AirXModifier(this.vxAirFnArgs_); }
 Animation.prototype.XModifier = function(args) { return this.vxFn_(args); }
 Animation.prototype.YModifier = function(args) { return this.vyFn_(args); }
+Animation.prototype.AirYModifier = function(args) { return this.vyAirFn_(args); }
+Animation.prototype.AirXModifier = function(args) { return this.vxAirFn_(args); }
 
 Animation.prototype.Chain = function(move,frameOffset)
 {
@@ -113,6 +124,7 @@ Animation.prototype.SetGrappleDistance = function(x)
 {
     this.grappleDistance_ = x;
     this.behaviorFlags_ = BEHAVIOR_FLAGS.THROW;
+    this.isThrow_ = true;
 }
 Animation.prototype.AddUserDataToFrame = function(index,data)
 {
@@ -270,7 +282,10 @@ FrameImageLookup.prototype.Load = function(src)
                 }
                 else if(thisValue.nbImages_ > 100)
                 {
-                    thisValue.element_.parentElement.style.display = "none";
+                    if(!!thisValue.element_.parentElement)
+                        thisValue.element_.parentElement.style.display = "none";
+                    else if(!!thisValue.element_.parentNode)
+                        thisValue.element_.parentNode.style.display = "none";
                     window.document.getElementById("pnlStage").style.visibility = "visible";
                 }
             }
@@ -307,9 +322,21 @@ var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear
 
     this.Frames = nbFrames || 0;
     this.FrameOffset = frameOffset || 0;
-    this.FlagsToSet = flagsToSet || MISC_FLAGS.NONE;
-    this.FlagsToClear = flagsToClear || MISC_FLAGS.NONE;
+
+    this.FlagsToSet = new FrameFlags();
+    this.FlagsToSet.Player = !!flagsToSet ? (flagsToSet.Player || 0) : 0;
+    this.FlagsToSet.Pose = !!flagsToSet ? (flagsToSet.Pose || 0) : 0;
+    this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
+    this.FlagsToSet.Spawn = !!flagsToSet ? (flagsToSet.Spawn || 0) : 0;
+
+    this.FlagsToClear = new FrameFlags();
+    this.FlagsToClear.Player = !!flagsToClear ? (flagsToClear.Player || 0) : 0;
+    this.FlagsToClear.Pose = !!flagsToClear ? (flagsToClear.Pose || 0) : 0;
+    this.FlagsToClear.Combat = !!flagsToClear ? (flagsToClear.Combat || 0) : 0;
+    this.FlagsToClear.Spawn = !!flagsToClear ? (flagsToClear.Spawn || 0) : 0;
+
     this.FlagsToSend = flagsToSend || MISC_FLAGS.NONE;
+    
     this.Priority = priority || 0;
     this.BaseDamage = baseDamage || 0;
     this.X = x || 0;
@@ -363,6 +390,8 @@ var Projectile = function(player,animation,disintegrationAnimation, xOffset, yOf
     this.fy_ = 1;
     this.id_ = "" + Projectile.prototype.Count;
     this.canJuggle_ = false;
+    this.trimX_ = 20;
+    this.trimY_ = 70;
     ++Projectile.prototype.Count;
 }
 Projectile.prototype.Count = 0;
@@ -397,8 +426,6 @@ Projectile.prototype.Throw = function(frame,stageX,stageY)
     this.vxFn_ = this.animation_.GetXModifier();
     this.vyFn_ = this.animation_.GetYModifier();
     this.setAndMoveImageFn_ = game_.UseAlternateImageLoadingFunctions() ? this._SetAndMoveImage : this.SetAndMoveImage;
-    this.trimX_ = 15;
-    this.trimY_ = 15;
     this.nbHits_ = 0;
     this.lastHitFrame_ = 0;
 }
@@ -426,7 +453,7 @@ Projectile.prototype.GetFrontX = function()
     if(this.direction_  < 0)
         return (parseInt(this.element_.width) + parseInt(this.element_.style.left)) - this.trimX_;
     else
-        return (STAGE.MAX_STAGEX - (parseInt(this.element_.style.right) + parseInt(this.element_.width))) - this.trimX_;
+        return (STAGE.MAX_STAGEX - (parseInt(this.element_.style.right) + parseInt(this.element_.width) - this.trimX_));
 }
 Projectile.prototype.GetLeftX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_ + this.element_.width;}else{return this.x_;}}
 Projectile.prototype.GetRightX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_;}else{return this.x_ + this.element_.width;}}
@@ -602,6 +629,48 @@ Projectile.prototype.SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,
     this.element_.style.bottom = imgOffsetY + "px";
 }
 
+Projectile.prototype._SetRenderParams = function()
+{
+    var offsetX = this.renderParams_.OffsetX;
+    var offsetY = this.renderParams_.OffsetY;
+    var hasOffsetX = offsetX != undefined;
+    var hasOffsetY = offsetY != undefined;
+    
+    if(hasOffsetX || hasOffsetY)
+    {
+        if(!!this.isDisintegrating_)
+        {
+            if(this.direction_ > 0)
+            {
+                this.element_.style.left = (offsetX + FlipCoord(this.x_,this.element_.width)) + "px";
+                this.element_.style.right = "";
+            }
+            else
+            {
+                this.element_.style.right = (offsetX + FlipCoord(this.x_,this.element_.width)) + "px";
+                this.element_.style.left = "";
+            }
+        }
+        else
+        {
+            if(this.direction_ > 0)
+            {
+                this.element_.style.left = "";
+                this.element_.style.right = (offsetX + this.x_) + "px";
+            }
+            else
+            {
+                this.element_.style.right = "";
+                this.element_.style.left = (offsetX + this.x_) + "px";
+            }
+        }
+
+    }
+    /*this.element_.style.bottom = (offsetY + this.y_) + "px";*/
+    var imgOffsetY = this.y_ - (this.element_.height/2);
+    this.element_.style.bottom = imgOffsetY + "px";
+}
+
 
 /*sets and moves the image - for browsers that dont load preloaded images instantly when the src property is set (FIREFOX)*/
 Projectile.prototype._SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,stageY)
@@ -610,47 +679,23 @@ Projectile.prototype._SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX
     {
         offsetX = newFrame.X;
         offsetY = newFrame.Y;
-
-        this.element_.onload = (function(thisValue,offsetX,offsetY,hasOffsetX,hasOffsetY)
+        
+        if(!this.element_.onload)
         {
-            return function()
+            this.element_.onload = (function(thisValue)
             {
-                if(hasOffsetX || hasOffsetY)
+                return function()
                 {
-                    if(!!thisValue.isDisintegrating_)
-                    {
-                        if(thisValue.direction_ > 0)
-                        {
-                            this.style.left = (offsetX + FlipCoord(thisValue.x_,this.width)) + "px";
-                            this.style.right = "";
-                        }
-                        else
-                        {
-                            this.style.right = (offsetX + FlipCoord(thisValue.x_,this.width)) + "px";
-                            this.style.left = "";
-                        }
-                    }
-                    else
-                    {
-                        if(thisValue.direction_ > 0)
-                        {
-                            this.style.left = "";
-                            this.style.right = (offsetX + thisValue.x_) + "px";
-                        }
-                        else
-                        {
-                            this.style.right = "";
-                            this.style.left = (offsetX + thisValue.x_) + "px";
-                        }
-                    }
-
+                    thisValue._SetRenderParams();
                 }
-                /*this.style.bottom = (offsetY + thisValue.y_) + "px";*/
-                var imgOffsetY = thisValue.y_ - (this.height/2);
-                this.style.bottom = imgOffsetY + "px";
-
-            }
-        })(this,offsetX,offsetY,offsetX != undefined,offsetY != undefined);
+            })(this);
+        }
+        
+        this.renderParams_ =
+        {
+            OffsetX:offsetX
+            ,OffsetY:offsetY
+        };
 
 
         if(this.direction_ > 0)
@@ -665,6 +710,7 @@ Projectile.prototype._SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX
         }
         if(this.element_.style.display != "")
             this.element_.style.display="";
+        //this._SetRenderParams();
     }
 
 }

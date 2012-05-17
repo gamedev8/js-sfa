@@ -32,7 +32,7 @@ var Game = function ()
     this.extraSpeed_ = 0;
     this.fontSystem_ = new FontSystem();
     this.text_ = this.fontSystem_.AddText("pnlText");
-    this.useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
+    this.useAlternateImageLoadingFunctions_ = false; //window.navigator.userAgent.indexOf("Firefox") > -1;
     this.Init();
 }
 
@@ -221,7 +221,6 @@ Game.prototype.ShowFPS = function()
     {
         var now = this.GetCurrentTime();
         var elapsed = now - this.lastTime_;
-        spnLag_.innerHTML = 100 - this.speed_;
         this.lastTime_ = now;
 
         var fps = Math.floor(CONSTANTS.FPS_VALUE / elapsed);

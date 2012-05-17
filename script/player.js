@@ -125,6 +125,11 @@ Player.prototype.IncCombo = function()
 
 Player.prototype.Reset = function(ignoreDirection)
 {
+    this.lastShadowLeft_ = null;
+    this.lastShadowRight_ = null;
+    this.canHoldAirborne_ = true;
+
+    //this.canInterrupt_ = false;
     this.ignoreCollisionsWith_ = "";
     this.ignoreCollisionsWithOtherTeam_ = false;
     this.forceImmobile_ = false;
@@ -133,17 +138,18 @@ Player.prototype.Reset = function(ignoreDirection)
     this.mustClearAllowAirBlock_ = false;
     /*this is the combo against THIS player! Not against other players*/
     this.ResetCombo();
+    this.interuptAnimation_ = null;
     this.currentAnimation_ = null;
     this.currentFrame_ = null;
     this.onAnimationCompleteFn_ = null;
     this.isFacingRight_ = true;
-    if(!ignoreDirection)
+    if (!ignoreDirection)
         this.direction_ = 1;
     this.health_ = 100;
     this.flags_ = new PlayerFlags(this);
     this.keyState_ = 0;
     this.keyStates_ = [];
-    /*only used for optimization*/
+
     this.lastKeyStates_ = [];
     this.clearKeyStateCount_ = 0;
     this.adjustShadowPosition_ = true;
@@ -153,7 +159,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.blockedAirAttacks_ = [];
 
     this.giveHitFn_ = null;
-    this.isBeingThrown_  = false;
+    this.isBeingThrown_ = false;
     this.grappledPlayer_ = null;
     this.x_ = 0;
     this.y_ = 0;
@@ -367,8 +373,21 @@ Player.prototype.HoldFrame = function(frame)
 Player.prototype.ForceHoldFrame = function(frame)
 {
     if(!!this.currentFrame_)
-    {
         ++this.currentAnimation_.StartFrame;
+}
+
+/*Can the current move be interrupted by a speial move?*/
+Player.prototype.CheckForInterupt = function(frame)
+{
+    if(!!this.interuptAnimation_)
+    {
+        if((--this.interuptAnimation_.Delay <= 0))// && !!this.canInterrupt_)
+        {
+            var temp = this.interuptAnimation_;
+            temp.StartFrame = frame;
+            this.interuptAnimation_ = null;
+            this.SetCurrentAnimation(temp);
+        }
     }
 }
 
@@ -376,6 +395,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
     if(!!this.ai_.Managed)
         this.ai_.FrameMove(frame);
+    this.CheckForInterupt(frame);
     this.FrameMove(frame,stageX,stageY);
     if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
         this.HandleAttack(frame, this.currentFrame_);
@@ -383,6 +403,8 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
         this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
     if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.trail_)
         this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
+    if(!this.forceImmobile_ && this.IsDead())
+        this.ForceTeamLose(frame);
 }
 
 
@@ -416,7 +438,6 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
         var currentFrame = this.currentAnimation_.Animation.GetFrame(delta);
         if(!!currentFrame || (!!this.currentFrame_ && (!!(this.currentFrame_.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME))))
         {
-
             /*check to see if the move allows you to change direction mid-move*/
             if(!!this.mustChangeDirection_ && !!(this.currentAnimation_.Animation.flags_.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {
@@ -425,12 +446,21 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
             }
 
             /*check to see if the new frame needs to be airborne*/
-            if(!this.IsAirborne() && (!!currentFrame && (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE) || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB))))
+            if((!!currentFrame && (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE) || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB))))
             {
-                var direction = 1;
-                if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
-                    direction = this.currentAnimation_.AttackDirection;
-                this.PerformJump(direction * this.currentAnimation_.Animation.vx_,this.currentAnimation_.Animation.vy_,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
+                if(!this.IsAirborne())
+                {
+                    var direction = 1;
+                    if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
+                        direction = this.currentAnimation_.AttackDirection;
+                    //this.PerformJump(direction * this.currentAnimation_.Animation.vx_,this.currentAnimation_.Animation.vy_,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
+                    this.PerformJump(direction * this.currentAnimation_.Vx,this.currentAnimation_.Vy,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
+                }
+                else
+                {
+                    this.SetVxFn(this.currentAnimation_.Animation.GetAirXModifier());
+                    this.SetVyFn(this.currentAnimation_.Animation.GetAirYModifier());
+                }
             }
             if(!this.frameFreeze_)
             {
@@ -442,7 +472,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
                         this.flags_.Player.Remove(PLAYER_FLAGS.MOBILE);
                         this.ForceHoldFrame(frame);
                     }
-                    if(!this.AdvanceJump())
+                    if(!this.AdvanceJump() && !this.currentAnimation_.Animation.isThrow_)
                     {
                         this.TryChainAnimation(frame);
                         return;

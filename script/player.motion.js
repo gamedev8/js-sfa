@@ -55,10 +55,7 @@ Player.prototype.GetX = function() { return this.x_ || 0; }
 
 Player.prototype.SetRight = function(value) { this.element_.style.right = (value) + "px";}
 Player.prototype.SetLeft = function(value) { this.element_.style.left = (value) + "px";}
-/*
-Player.prototype.SetY = function(value) {value = Math.max(value,0);this.y_ = value; this.element_.style.bottom = value + "px"; this.MoveCircle();}
-Player.prototype.SetX = function(value) {value = Math.min(Math.max(value,0),STAGE.MAX_X);this.x_ = value; if(this.direction_ > 0){this.SetRight(value);} else {this.SetLeft(value);}; this.MoveCircle();}
-*/
+
 Player.prototype.SetY = function(value)
 {
     this.y_ = Math.max(value,STAGE.FLOORY);
@@ -83,16 +80,6 @@ Player.prototype.CanBeJuggled = function()
         && !!this.currentAnimation_.Animation.allowJuggle_
     ;
 }
-Player.prototype.RenderShadow = function()
-{
-    this.shadowContainer_.style.left = this.element_.style.left;
-    this.shadowContainer_.style.right = this.element_.style.right;
-    if(!!this.adjustShadowPosition_)
-    {
-        this.shadow_.style.left = this.image_.style.left;
-        this.shadow_.style.right = this.image_.style.right;
-    }
-}
 Player.prototype.SetDirection = function(value)
 {
     if(value != this.direction_)
@@ -102,6 +89,16 @@ Player.prototype.TurnAround = function()
 {
     this.mustChangeDirection_ = 1;
 }
+
+
+Player.prototype.CheckMustChangeDirection = function()
+{
+    if(!!this.mustChangeDirection_ && !this.IsDead())
+    {
+        this.ChangeDirection();
+    }
+}
+
 Player.prototype.ChangeDirection = function(quick)
 {
     this.mustChangeDirection_ = 0;
@@ -115,13 +112,20 @@ Player.prototype.ChangeDirection = function(quick)
     {
         var x = this.GetRight() + this.image_.width;
         var left = pnlStageWidth - x;
-        this.x_ = left;
+        this.SetX(left);
 
         this.image_.style.right = "";
         this.image_.style.left = "0px";
 
         this.element_.style.right = "";
         this.element_.style.left = left + "px";
+
+        this.shadowContainer_.style.right = "";
+        this.shadowContainer_.style.left = left + "px";
+
+        this.shadow_.style.left = this.image_.style.left;
+        this.shadow_.style.right = "";
+
         this.direction_ = -1;
         /*swap the left and right buttons*/
         this.buttons_[this.leftKey_].Bit = 2;
@@ -131,13 +135,20 @@ Player.prototype.ChangeDirection = function(quick)
     {
         var x = this.GetLeft() + this.image_.width;
         var right = pnlStageWidth - x;
-        this.x_ = right;
+        this.SetX(right);
 
         this.image_.style.left = "";
         this.image_.style.right = "0px";
         
         this.element_.style.left = "";
         this.element_.style.right = right + "px";
+
+        this.shadowContainer_.style.left = "";
+        this.shadowContainer_.style.right = right + "px";
+
+        this.shadow_.style.left = "";
+        this.shadow_.style.right = this.image_.style.right;
+
         this.direction_ = 1;
         /*swap the left and right buttons*/
         this.buttons_[this.leftKey_].Bit = 1;
@@ -369,6 +380,9 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
 {
     //this.x1 = this.x0_ + ((this.jumpVelocityX_ * this.jumpT_) * 0.1);
     var y = this.y0_ + ((this.jumpVelocityY_ * this.jumpT_) - ((CONSTANTS.HALF_G) * (this.jumpT_*this.jumpT_))) * CONSTANTS.Y_DAMPING;
+    if(!!(this.flags_.Pose.Has(POSE_FLAGS.HOLD_AIRBORNE)))
+        this.HoldJump();
+
     ++this.jumpT_;
 
     var dx = this.jumpVelocityX_ * CONSTANTS.X_DAMPING;
@@ -390,6 +404,7 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
         this.flags_.Pose.Remove(POSE_FLAGS.AIRBORNE_FB);
         this.vxFn_ = null;
         this.vyFn_ = null;
+        this.jumpT_ = 0;
         return false;
     }
     return true;
@@ -398,17 +413,17 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
 Player.prototype.PerformJump = function(vx,vy,vxFn,vyFn)
 {
     /*store the X and Y modifier functions*/
-    this.vxFn_ = vxFn;
-    this.vyFn_ = vyFn;
+    this.SetVxFn(vxFn);
+    this.SetVyFn(vyFn);
     /*store the initial position*/
     this.x0_ = this.x_;
     this.y0_ = this.y_;
     this.oldY_ = this.y_;
-    /*store the velocity*/
     this.jumpVelocityX_ = vx;
     this.jumpVelocityY_ = vy;
-    /*store a timer*/
     this.jumpT_ = 0;
+    /*store the velocity*/
+    /*store a timer*/
     if(!!vx)
     {
         this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE_FB);
@@ -419,4 +434,27 @@ Player.prototype.PerformJump = function(vx,vy,vxFn,vyFn)
     }
     this.AdvanceJump(true);
 }
+
+Player.prototype.StopJump = function()
+{
+    this.PerformJump(this.jumpVelocityX_,0);
+}
+
+
+Player.prototype.HoldJump = function()
+{
+    if(!!this.jumpT_ && !!this.canHoldAirborne_)
+    {
+        --this.jumpT_;
+    }
+}
+
+Player.prototype.SetVyFn = function(fn) { this.vyFn_ = this.vyFn_ || fn; }
+Player.prototype.SetVxFn = function(fn) { this.vxFn_ = this.vxFn_ || fn; }
+
+Player.prototype.ResetVyFn = function(fn) { this.vyFn_ = function(b) { return b;} }
+Player.prototype.ResetVxFn = function(fn) { this.vxFn_ = function(b) { return b;} }
+
+Player.prototype.ClearVyFn = function() { this.vyFn_ = null; }
+Player.prototype.ClearVxFn = function() { this.vxFn_ = null; }
 

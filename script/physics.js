@@ -14,9 +14,9 @@ Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsTo
     if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
         return;
     /*frame can not hit more than once*/
-    /*if the attack is a throw, it can not grab more than one player*/
     if(p2.lastHitFrame_[p1.id_] == p1.GetHitFrameID(hitID))
         return;
+    /*if the attack is a throw, it can not grab more than one player*/
     if(!!p1.grappledPlayerId_ && (p1.grappledPlayerId_ != p2.id_))
         return;
     if(p2.IsAirborne() && !!(attackFlags & ATTACK_FLAGS.CAN_AIR_JUGGLE))

@@ -46,10 +46,11 @@ Player.prototype.AddKeyStateChange = function(frame)
 /*Handles key state changes*/
 Player.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
 {
-    var oldState = this.keyState_;
 
     if(!!this.buttons_[keyCode])
     {
+        var oldState = this.keyState_;
+
         /*key state just changed to pressed*/
         if(!!isDown &&  !(this.keyState_ & this.buttons_[keyCode].Bit))
         {
@@ -60,13 +61,13 @@ Player.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
         {
             this.keyState_ = (this.keyState_ | this.buttons_[keyCode].Bit) ^ this.buttons_[keyCode].Bit;
         }
-    }
 
-    /*if the state has changed, then log it*/
-    if(oldState != this.keyState_)
-    {
-        this.keyStateChanged_ = true;
-        this.AddKeyStateChange(frame);
+        /*if the state has changed, then log it*/
+        if(oldState != this.keyState_)
+        {
+            this.keyStateChanged_ = true;
+            this.AddKeyStateChange(frame);
+        }
     }
 }
 
@@ -152,7 +153,7 @@ Player.prototype.CheckForAnimation = function(frame)
     this.checkedForAnimation_ = true;
 
 
-    if(this.flags_.Player.Has(PLAYER_FLAGS.MOBILE))
+    if(this.flags_.Player.Has(PLAYER_FLAGS.MOBILE) || (this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT) && !this.interuptAnimation_))
     {
         this.keyStateChanged_ = false;
         var keys = [];
@@ -176,7 +177,10 @@ Player.prototype.CheckForAnimation = function(frame)
                 /*is there no current move, or is the user executing a new move*/
                 if(!this.currentAnimation_ || (this.currentAnimation_.Animation.baseAnimation_.name_ != move.baseAnimation_.name_))
                 {
-                    this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_});
+                    if(this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT))
+                        this.interuptAnimation_ = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.direction_};
+                    else
+                        this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_});
                 }
                 return;
             }

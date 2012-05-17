@@ -128,6 +128,7 @@ ActionSystem.prototype.FrameMove = function(frame)
             }
             /*clear the action*/
             this.Actions[i] = null;
+            delete this.Actions[i];
         }
     }
 }
