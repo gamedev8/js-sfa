@@ -734,6 +734,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         spinkick.vxAirFn_ = function(args) { return function(dx, t) { return (!dx ? 1 : dx) * 1.5; } }
         spinkick.vyAirFn_ = function(args) { return function(dy, t) { return dy; } }
         
+        var nbFrames = 2;
         var baseDamage = 20;
         var rearFlags = ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2|ATTACK_FLAGS.HARD;
         spinkick.AddFrame(player,"","images/misc/ryu/x-hk-0.png",1,{Player:PLAYER_FLAGS.SMALLER_AABB,Pose:POSE_FLAGS.AIRBORNE},{Player:PLAYER_FLAGS.MOBILE});
@@ -754,10 +755,10 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         }
 
         spinkick.EndBlock();
-        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-7.png",3,MISC_FLAGS.NONE,{Pose: POSE_FLAGS.AIRBORNE, Combat:COMBAT_FLAGS.CAN_BE_AIR_BLOCKED},0,0);
-        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-8.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
-        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-9.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
-        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-10.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
+        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-7.png",4,MISC_FLAGS.NONE,{Pose: POSE_FLAGS.AIRBORNE, Combat:COMBAT_FLAGS.CAN_BE_AIR_BLOCKED},0,0);
+        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-8.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
+        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-9.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
+        spinkick.AddFrame(player,"","images/misc/ryu/x-hk-10.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
         spinkick.AddFrame(player,"","images/misc/ryu/x-jump-1.png",CONSTANTS.MAX_FRAME, MISC_FLAGS.NONE, MISC_FLAGS.NONE, 0, 0);
         spinkick.Chain(jump_land);
     }

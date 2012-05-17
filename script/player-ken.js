@@ -716,7 +716,7 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
         spinkick.adjustShadowPosition_ = false;
         spinkick.userData_ = { Type: USER_DATA_TYPES.OFFSET, topOffset: 0, bottomOffset: 125 };
         spinkick.vy_ = 100;
-        spinkick.vx_ = 20;
+        spinkick.vx_ = 15;
 
         /*the following object will be passed in to the function that will be used to compute the X coordinate*/
         spinkick.vxFnArgs_ = {};
