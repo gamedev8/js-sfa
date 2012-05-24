@@ -239,10 +239,14 @@ Game.prototype.RunGameLoop = function()
     {
         this.RemoveState(GAME_STATES.STEP_FRAME);
         ++this.frame_;
+        //this.match_.PreFrameMove(this.frame_);
         this.match_.FrameMove(this.frame_, this.keyboardState_);
         this.fontSystem_.FrameMove(this.frame_);
+
         this.match_.Render(this.frame_);
         this.fontSystem_.Render(this.frame_);
+
+        this.match_.RenderComplete(this.frame_);
         this.ShowFPS();
     }
 

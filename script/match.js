@@ -326,6 +326,21 @@ Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
     for(var i = 0; i < this.teamB_.Players.length; ++i)
         this.teamB_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
 }
+Match.prototype.PreFrameMove = function(frame)
+{
+    for(var i = 0; i < this.teamA_.Players.length; ++i)
+        this.teamA_.Players[i].OnPreFrameMove(frame);
+    for(var i = 0; i < this.teamB_.Players.length; ++i)
+        this.teamB_.Players[i].OnPreFrameMove(frame);
+}
+Match.prototype.RenderComplete = function(frame)
+{
+    for(var i = 0; i < this.teamA_.Players.length; ++i)
+        this.teamA_.Players[i].OnRenderComplete(frame);
+    for(var i = 0; i < this.teamB_.Players.length; ++i)
+        this.teamB_.Players[i].OnRenderComplete(frame);
+}
+
 /*pre-render calculations to be performed here*/
 Match.prototype.FrameMove = function(frame,keyboardState)
 {

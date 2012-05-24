@@ -254,8 +254,8 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
             }
         }
 
-        //if(!!canIncreaseDeltaX)
-        //    tmp *= 3;
+        if(!!canIncreaseDeltaX)
+            tmp *= 4;
 
         this._MoveX(-tmp,false,p2NewX);
         return retVal;
@@ -284,7 +284,7 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     var hasLargerRightGap = !hasLargerLeftGap;
     var isP1InAnyThreshold = isP1InThreshold ||  (isStageLeftCornered && isP1InLeftThreshold) || (isStageRightCornered && isP1InRightThreshold);
     var isMovingBackwards = !((p1.direction_ == -1 && amount > 0) || (p1.direction_ == 1 && amount < 0));
-    var canIncreaseDeltaX = p1.IsAirborne() && this.GetPhysics().IsWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
+    var canIncreaseDeltaX = p1.JumpedOverAPlayer() && this.GetPhysics().IsWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
     /*if both players are in the threshold, then the stage should not move*/
     if(areBothPlayersInThreshold)
     {

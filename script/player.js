@@ -163,6 +163,8 @@ Player.prototype.Reset = function(ignoreDirection)
     this.grappledPlayer_ = null;
     this.x_ = 0;
     this.y_ = 0;
+    this.lastFrameY_ = 0;
+    this.constY_ = 0;
     this.yBottomOffset_ = 0;
     this.yTopOffset_ = 0;
     this.fx_ = 0;
@@ -389,6 +391,16 @@ Player.prototype.CheckForInterupt = function(frame)
             this.SetCurrentAnimation(temp);
         }
     }
+}
+
+Player.prototype.OnPreFrameMove = function(frame)
+{
+}
+
+Player.prototype.OnRenderComplete = function(frame)
+{
+    this.lastFrameY_ = this.constY_;
+    this.constY_ = this.y_;
 }
 
 Player.prototype.OnFrameMove = function(frame,stageX,stageY)

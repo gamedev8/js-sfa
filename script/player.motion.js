@@ -73,6 +73,8 @@ Player.prototype.SetImageY = function(value) { this.image_.style.bottom = value+
 Player.prototype.IsCrouching = function() { return this.flags_.Pose.Has(POSE_FLAGS.CROUCHING); }
 Player.prototype.IsOnGround = function() { return this.y_ == STAGE.FLOORY; }
 Player.prototype.IsAirborne = function() { return this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE) || this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
+Player.prototype.IsDescending = function() { return this.lastFrameY_ > this.constY_; }
+Player.prototype.JumpedOverAPlayer = function() { return this.IsAirborne() && this.IsDescending() && !!this.mustChangeDirection_; }
 Player.prototype.CanBeJuggled = function()
 {
     return this.IsAirborne()
