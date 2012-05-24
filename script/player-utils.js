@@ -413,6 +413,8 @@ Fires the projectile
 */
 Projectile.prototype.Throw = function(frame,stageX,stageY)
 {
+    if(!!this.isDisintegrating_)
+        this.Cancel();
     this.startFrame_ = frame;
     this.t_ = 0;
     this.element_.style.display="none";
