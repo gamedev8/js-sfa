@@ -1,6 +1,6 @@
 ﻿var Stage = function(bg0XOffset)
 {
-    this.bgImg0_ =  {xOffset:bg0XOffset || 0,element:window.document.getElementById("bg0")};
+    this.bgImg0_ =  {xOffset:0,element:window.document.getElementById("bg0")};
     this.bgImg1_ = {element:window.document.getElementById("bg1")};
     this.bg_ = {element:window.document.getElementById("pnlStage")};
     this.lastX_ = 0;
@@ -12,15 +12,26 @@
     this.deltaY_ = 0;
 
     this.bg0XOffset_ = bg0XOffset;
-    this.bgRate_ = 0.05;
-    this.maxLeftScroll_ = -62.5;
-    this.maxRightScroll_ = 322.5;
+    this.bgRate_ = 0;
+    this.maxLeftScroll_ = 0;
+    this.maxRightScroll_ = 0
 }
 
 Stage.prototype.GetGame = function() { return game_; }
 Stage.prototype.GetMatch = function() { return this.GetGame().match_; }
 Stage.prototype.GetPhysics = function() { return this.GetMatch().physics_; }
-Stage.prototype.Set0XOffset = function(value) { this.bg0XOffset_ = value;; }
+
+Stage.prototype.Set = function(params)
+{
+    this.bgImg0_.xOffset = params.bg0XOffset_;
+    this.bgImg0_.element.src = params.bg0Img_;
+    this.bgImg1_.element.src = params.bg1Img_;
+    this.bgImg0_.element.className = params.name_ + "-bg0";
+    this.bgImg1_.element.className = params.name_ + "-bg1";
+    this.maxLeftScroll_  = params.maxLeftScroll_; 
+    this.maxRightScroll_ = params.maxRightScroll_;
+}
+
 
 Stage.prototype.FrameMove = function(frame)
 {
@@ -109,6 +120,7 @@ Stage.prototype.AlignPlayersX = function()
     for(var i = 0, length = match.teamB_.Players.length; i < length; ++i)
         match.teamB_.Players[i].AlignX(this.deltaX_);
 }
+
 
 /*Scrolls the stage along the X axis*/
 Stage.prototype.MoveX = function(amount)
@@ -213,6 +225,7 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     var p1x1 = p1x0 + retVal;
     var p2x0 = p2.GetX();
 
+
     var p1LeftX = p1.GetLeftX();
     var p1RightX = p1.GetRightX();
     var p1NewLeftX = p1LeftX + amount;
@@ -227,10 +240,25 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     var p2MidX = p2LeftX + (p2RightX - p2LeftX)/2;
     var p2NewMidX = p2MidX + amount;
 
-    var fn = function(p2NewX)
+
+    var fn = function(p2NewX, canCheck, isMovingBackwards, canIncreaseDeltaX)
     {
-        //match.ScrollX(-amount,false,p2NewX);
-        this._MoveX(-amount,false,p2NewX);
+        var tmp = amount;
+        var diffX = p2x0 - p1x1
+        
+        if(p1x1 < (p2x0 - tmp) && canCheck)
+        {
+            if(!!isMovingBackwards)
+            {
+                tmp = Math.min(diffX,amount * 2);
+            }
+        }
+
+        //if(!!canIncreaseDeltaX)
+        //    tmp *= 3;
+
+        this._MoveX(-tmp,false,p2NewX);
+        return retVal;
     }
 
     var isP1InLeftThreshold = p1NewMidX >= CONSTANTS.MOVEMENT_THRESHOLD_LEFT;
@@ -254,7 +282,9 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
 
     var hasLargerLeftGap = leftCornerGap > rightCornerGap;
     var hasLargerRightGap = !hasLargerLeftGap;
-
+    var isP1InAnyThreshold = isP1InThreshold ||  (isStageLeftCornered && isP1InLeftThreshold) || (isStageRightCornered && isP1InRightThreshold);
+    var isMovingBackwards = !((p1.direction_ == -1 && amount > 0) || (p1.direction_ == 1 && amount < 0));
+    var canIncreaseDeltaX = p1.IsAirborne() && this.GetPhysics().IsWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
     /*if both players are in the threshold, then the stage should not move*/
     if(areBothPlayersInThreshold)
     {
@@ -263,29 +293,26 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     /*if the stage is NOT cornered, and one of the players is outside of the threshold, then the stage can move*/
     else if(!isStageCornered && !areBothPlayersInThreshold)
     {
-        fn.call(this,p2NewX);
+        retVal = fn.call(this,p2NewX,!isP1InAnyThreshold,isMovingBackwards,canIncreaseDeltaX);
     }
     /*if the stage is left cornered, and the cornered player has moved far enough, and one of the players is beyond one of the right threshold, then the stage can move*/
     else if (isStageLeftCornered && hasLargerLeftGap && !areBothPlayersInRightThreshold)
     {
-        fn.call(this,p2NewX);
+        retVal = fn.call(this,p2NewX,!isP1InAnyThreshold,isMovingBackwards,canIncreaseDeltaX);
     }
     /*if the stage is right cornered, and the cornered player has moved far enough, and one of the players is beyond one of the left threshold, then the stage can move*/
     else if (isStageRightCornered && hasLargerRightGap && !areBothPlayersInLeftThreshold)
     {
-        fn.call(this,p2NewX);
+        retVal = fn.call(this,p2NewX,!isP1InAnyThreshold,isMovingBackwards,canIncreaseDeltaX);
     }
-    else
-    {
-        //retVal *= 2;
-    }
+
 
     return retVal * 2;
 }
 
 
-/*centers the background images*/
-Stage.prototype.Center = function()
+/*inits the background images*/
+Stage.prototype.Reset = function()
 {
     var screenWidth = GetWidth(window.document.body);
     var screenHeight = GetHeight(window.document.body);
@@ -299,7 +326,7 @@ Stage.prototype.Center = function()
     var diff0 = (screenWidth - parseFloat(this.bgImg0_.element.width)) / 2;
     var diff1 = (screenWidth - parseFloat(this.bgImg1_.element.width)) / 2;
 
-    this.bgImg0_.element.style.left = this.bg0XOffset_ + "px";
+    this.bgImg0_.element.style.left = this.bgImg0_.xOffset + "px";
     this.bgImg1_.element.style.left = (diff1 - diff) + "px";
     this.x_ = Math.abs(diff1 - diff);
     var elementWidth = parseFloat(this.bg_.element.style.width);

@@ -9,8 +9,8 @@
         <script type="text/javascript">
             function OnStageImagesLoaded() {}
         </script>
-        <img onload="OnStageImagesLoaded()" id="bg0" class="ken-bg0" src="images/misc/stage/ken1.25.bg.jpg" style="left:0px" />
-        <img onload="OnStageImagesLoaded()" id="bg1" class="ken-bg1" src="images/misc/stage/ken.bg.png" style="left:0px" />
+        <img onload="OnStageImagesLoaded()" id="bg0" style="left:0px" />
+        <img onload="OnStageImagesLoaded()" id="bg1" style="left:0px" />
         <!--<div class="time"></div>-->
         <!--<div class="overlay"></div>-->
         <div id="pnlTeam1" class="team team1">
@@ -66,19 +66,19 @@
     <!--<script type="text/javascript" src="script/player-mbison.js"></script>-->
     <script type="text/javascript" src="script/ai.js"></script>
     <script type="text/javascript" src="script/simple-ai.js"></script>
+    <script type="text/javascript" src="script/misc.js"></script>
 
     <script type="text/javascript">
         var game_ = new Game();
         var p1_ = Player.prototype.CreateRyu(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M);
         var p2_ = Player.prototype.CreateKen(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C);
 
-        game_.StartMatch([p1_],[p2_]);
-        game_.match_.stage_.Set0XOffset(129);
+        game_.StartMatch([p1_],[p2_], kensStage_);
 
         //overriden OnStageImagesLoaded function, just incase the images load too slow
         function OnStageImagesLoaded()
         {
-            game_.match_.stage_.Center();
+            game_.match_.stage_.Reset();
         }
     </script>
 </body>

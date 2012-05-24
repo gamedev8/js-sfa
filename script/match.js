@@ -198,7 +198,7 @@ Match.prototype.Reset = function()
         }
 
         this.isRoundOver_ = false;
-        this.stage_.Center();
+        this.stage_.Reset();
         this.ShowTeamInfo(0);
         this.GetGame().ReleaseText();
 
@@ -215,7 +215,7 @@ Match.prototype.Start = function(team1,team2)
 {
     var moveStageX          = function(thisValue,players) { return function(amount,dontOverrideSign) { for(var i = 0; i < players.length;++i) {amount = thisValue.stage_.ScrollX(amount,this,players[i],thisValue,dontOverrideSign);}; return amount; } };
     var fixX                = function(thisValue,players) { return function(amount) {thisValue.physics_.FixX(amount,this,false,true);  return 0; } };
-    var moveX               = function(thisValue,players) { return function(amount) {amount = thisValue.stage_.ScrollX(amount,this,null,thisValue); thisValue.physics_.MoveX(amount,this,false,true);  return 0; } };
+    var moveX               = function(thisValue,players) { return function(amount) {amount = thisValue.stage_.ScrollX(amount,this,null,thisValue); thisValue.physics_.MoveX(amount,this,false,true); return 0; } };
     var moveY               = function(thisValue,players) { return function(amount) {amount = thisValue.physics_.MoveY(amount,this); return 0; } };
     var moveToBack          = function(thisValue,players) { return function() { for(var i = 0; i < players.length;++i) {players[i].MoveToBack(true);} } }
     var moveToFront         = function(thisValue,players) { return function() { for(var i = 0; i < players.length;++i) {players[i].MoveToFront(true);} } }
@@ -309,7 +309,7 @@ Match.prototype.Start = function(team1,team2)
     for(var i = 1; i < this.teamB_.Players.length; ++i)
         this.teamB_.Players[i].SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
-    this.stage_.Center();
+    this.stage_.Reset();
     this.ShowTeamInfo(0);
 
     this.teamA_.Healthbar.Init();

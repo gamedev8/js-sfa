@@ -141,9 +141,10 @@ Game.prototype.PreloadTextImages = function()
     this.fontSystem_.Preload();
 }
 
-Game.prototype.StartMatch = function(goodGuys,badGuys)
+Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
 {
     this.frame_ = 0;
+    this.match_.stage_.Set(stage);
     this.match_.Start(goodGuys,badGuys);
     this.RunGameLoop();
 }

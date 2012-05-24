@@ -788,6 +788,15 @@ Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
     return false;
 }
 
+/*checks if players are within the given distance*/
+Physics.prototype.IsWithinDistanceX = function(p1,p2,distance)
+{
+    var x = p1.GetMidX();
+    return (
+           (Math.abs(x - p2.GetMidX()) < distance)
+        );
+}
+
 /*Returns true if any player from the other team is on the left*/
 Physics.prototype.IsAnyPlayerFromOtherTeamMoreLeft = function(x,team)
 {

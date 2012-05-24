@@ -626,8 +626,8 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-f-jump-5.png", 2, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, 0);
     f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-f-jump-6.png", 1, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, -12, 0, 0, 0);
     f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-f-jump-6.png", 5, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, 0);
-    f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-f-jump-2.png", 1, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, -12);
-    f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-f-jump-2.png", CONSTANTS.FRAME_MAX, MISC_FLAGS.NONE, MISC_FLAGS.NONE, 0, 0);
+    f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-jump-1.png", 1, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, -12);
+    f_jump.AddRepeatingFrame(player, "", "images/misc/ryu/x-jump-1.png", CONSTANTS.FRAME_MAX, MISC_FLAGS.NONE, MISC_FLAGS.NONE, 0, 0);
     f_jump.Chain(jump_land);
 
 

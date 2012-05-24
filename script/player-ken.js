@@ -492,7 +492,7 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
         uppercut.Chain(uppercut_land);
     }
 
-    var jumpX = 35;
+    var jumpX = 30;
     var jumpY = 200;
 
     var jump = player.AddAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD, "jump", 0, [BUTTONS.JUMP], 95, false);
@@ -619,8 +619,8 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
     f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-f-jump-5.png", 2, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, 0);
     f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-f-jump-6.png", 1, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, -12, 0, 0, 0);
     f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-f-jump-6.png", 5, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, 0);
-    f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-f-jump-2.png", 1, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, -12);
-    f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-f-jump-2.png", CONSTANTS.FRAME_MAX, MISC_FLAGS.NONE, MISC_FLAGS.NONE, 0, 0);
+    f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-jump-1.png", 1, {Player: PLAYER_FLAGS.SMALLER_AABB}, MISC_FLAGS.NONE, 0, -12);
+    f_jump.AddRepeatingFrame(player, "", "images/misc/ken/x-jump-1.png", CONSTANTS.FRAME_MAX, MISC_FLAGS.NONE, MISC_FLAGS.NONE, 0, 0);
     f_jump.Chain(jump_land);
 
 
