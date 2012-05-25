@@ -434,7 +434,7 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
 
 
     var uppercutVelocityY = 20;
-    var uppercutVelocityYRate = 100;
+    var uppercutVelocityYRate = 200;
 
     var uppercut_land = player.AddAnimation(MISC_FLAGS.NONE, "uppercut landing", 200, ["uppercut-landing"], 0, false, false);
     uppercut_land.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-6.png", 4, { Player: PLAYER_FLAGS.MOBILE }, MISC_FLAGS.NONE);
@@ -448,9 +448,6 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
         uppercut.energyToAdd_ = 5;
         uppercut.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE, OVERRIDE_FLAGS.ALL);
 
-        uppercut.vy_ = uppercutVelocityY + (x * uppercutVelocityYRate);
-        /*the following object will be passed in to the function that will be used to compute the X coordinate*/
-        uppercut.vxFnArgs_ = { xMax: 30 + (x * 17), xMin: 3, xInc: 1.1, valueMax: 10 };
         /*the following function will be executed each frame to compute the X coordinate of this move*/
         uppercut.vxFn_ = function(args)
         {
@@ -466,6 +463,10 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
         uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-0.png", 2, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES }, { Player: PLAYER_FLAGS.MOBILE });
         if(x == 2)
         {
+            uppercut.vy_ = 220;
+            /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+            uppercut.vxFnArgs_ = { xMax: 70, xMin: 3, xInc: 1.1, valueMax: 10 };
+
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-1.png", 1, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE, [{ state: HIT_FLAGS.FAR, x: 130, y: 107}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2, CONSTANTS.FIRST_HIT, CONSTANTS.SINGLE, 10);
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-2.png", 3, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE, [{ state: HIT_FLAGS.NEAR, x: 170, y: 177}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2, CONSTANTS.SECOND_HIT, CONSTANTS.SINGLE, 10);
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-3.png", 1, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK, Pose: POSE_FLAGS.AIRBORNE }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN, [{ state: HIT_FLAGS.FAR, x: 130, y: 127 }, { state: HIT_FLAGS.FAR, x: 110, y: 227 }, { state: HIT_FLAGS.FAR, x: 100, y: 322}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3, CONSTANTS.THRID_HIT, CONSTANTS.SINGLE, 10);
@@ -473,6 +474,11 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
         }
         else if(x == 1)
         {
+            uppercut.vy_ = 200;
+            /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+            uppercut.vxFnArgs_ = { xMax: 40, xMin: 3, xInc: 1.1, valueMax: 10 };
+
+
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-1.png", 1, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE, [{ state: HIT_FLAGS.FAR, x: 130, y: 107}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2, CONSTANTS.FIRST_HIT, CONSTANTS.SINGLE, 10);
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-2.png", 3, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE, [{ state: HIT_FLAGS.NEAR, x: 170, y: 177}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2, CONSTANTS.FIRST_HIT, CONSTANTS.SINGLE, 10);
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-3.png", 1, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK, Pose: POSE_FLAGS.AIRBORNE }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN, [{ state: HIT_FLAGS.FAR, x: 130, y: 127 }, { state: HIT_FLAGS.FAR, x: 110, y: 227 }, { state: HIT_FLAGS.FAR, x: 100, y: 322}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3, CONSTANTS.SECOND_HIT, CONSTANTS.SINGLE, 10);
@@ -480,6 +486,10 @@ Player.prototype.CreateKen = function(right, up, left, down, p1, p2, p3, k1, k2,
         }
         else
         {
+            uppercut.vy_ = 160;
+            /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+            uppercut.vxFnArgs_ = { xMax: 20, xMin: 3, xInc: 1.1, valueMax: 10 };
+
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-1.png", 1, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE | ATTACK_FLAGS.KNOCKDOWN, [{ state: HIT_FLAGS.FAR, x: 130, y: 107}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2, CONSTANTS.FIRST_HIT, CONSTANTS.SINGLE, 10);
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-2.png", 3, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE | ATTACK_FLAGS.KNOCKDOWN, [{ state: HIT_FLAGS.NEAR, x: 170, y: 177}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2, CONSTANTS.FIRST_HIT, CONSTANTS.SINGLE, 10);
             uppercut.AddFrame(player, "", "images/misc/ken/x-uppercut-p1-3.png", 1, { Player: PLAYER_FLAGS.IGNORE_PROJECTILES, Combat: COMBAT_FLAGS.ATTACK, Pose: POSE_FLAGS.AIRBORNE }, MISC_FLAGS.NONE, 0, 0, 0, 25, null, 0, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN, [{ state: HIT_FLAGS.FAR, x: 130, y: 127 }, { state: HIT_FLAGS.FAR, x: 110, y: 227 }, { state: HIT_FLAGS.FAR, x: 100, y: 322}], ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3, CONSTANTS.FIRST_HIT, CONSTANTS.SINGLE, 10);

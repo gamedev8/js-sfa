@@ -268,6 +268,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     p1.AddFrame(player, "", "images/misc/ryu/x-p1-0.png", 3, MISC_FLAGS.NONE, MISC_FLAGS.NONE);
 
     var p2 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_BACKWARD,"medium punch",0,[BUTTONS.MEDIUM_PUNCH]);
+    p2.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
     p2.AddFrame(player, "", "images/misc/ryu/x-p2-0.png", 2, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
     p2.AddFrame(player, "", "images/misc/ryu/x-p2-1.png", 2, { Combat: COMBAT_FLAGS.ATTACK, Pose: POSE_FLAGS.ALLOW_INTERUPT }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.MEDIUM, [{ state: HIT_FLAGS.NEAR, x: 130, y: 145 }, { state: HIT_FLAGS.FAR, x: 170, y: 185}], ATTACK_FLAGS.MEDIUM);
     p2.AddFrame(player, "", "images/misc/ryu/x-p2-2.png", 5, { Combat: COMBAT_FLAGS.ATTACK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.MEDIUM, [{ state: HIT_FLAGS.NEAR, x: 150, y: 220 }, { state: HIT_FLAGS.FAR, x: 135, y: 270}], ATTACK_FLAGS.MEDIUM);
@@ -460,9 +461,6 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
         uppercut.energyToAdd_ = 5;
         uppercut.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
 
-        uppercut.vy_ = uppercutVelocityY + (x * uppercutVelocityYRate);
-        /*the following object will be passed in to the function that will be used to compute the X coordinate*/
-        uppercut.vxFnArgs_ = {xMax:10 + (x*30),xMin:3,xInc:1.8,valueMax:10};
         /*the following function will be executed each frame to compute the X coordinate of this move*/
         uppercut.vxFn_ = function(args)
         {
@@ -475,6 +473,26 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
                 return dx;
             }
         }
+
+        if(x == 0)
+        {
+            uppercut.vy_ = 160;
+            /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+            uppercut.vxFnArgs_ = {xMax:30,xMin:3,xInc:1.8,valueMax:10};
+        }
+        else if(x == 1)
+        {
+            uppercut.vy_ = 190;
+            /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+            uppercut.vxFnArgs_ = {xMax:40,xMin:3,xInc:1.8,valueMax:10};
+        }
+        else if(x == 2)
+        {
+            uppercut.vy_ = 220;
+            /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+            uppercut.vxFnArgs_ = {xMax:70,xMin:3,xInc:1.8,valueMax:10};
+        }
+
         uppercut.AddFrame(player,"","images/misc/ryu/x-uppercut-p1-1.png",3,{Combat:COMBAT_FLAGS.CAN_BE_BLOCKED,Player:PLAYER_FLAGS.IGNORE_PROJECTILES},{Player:PLAYER_FLAGS.MOBILE});
         uppercut.AddFrame(player,"","images/misc/ryu/x-uppercut-p1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,Player:PLAYER_FLAGS.IGNORE_PROJECTILES},MISC_FLAGS.NONE,0,0,0,75,null,0,0,ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN,[{state:HIT_FLAGS.NEAR,x:170,y:177}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,CONSTANTS.SINGLE,25);
         uppercut.AddFrame(player,"","images/misc/ryu/x-uppercut-p1-3.png",1,{Combat:COMBAT_FLAGS.ATTACK,Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Pose:POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,75,null,0,0,ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN,[{state:HIT_FLAGS.FAR,x:130,y:127},{state:HIT_FLAGS.FAR,x:110,y:227},{state:HIT_FLAGS.FAR,x:100,y:322}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL3,CONSTANTS.FIRST_HIT,CONSTANTS.SINGLE,25);
