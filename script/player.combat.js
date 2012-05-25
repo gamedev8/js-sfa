@@ -289,7 +289,11 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
 {
     this.freezeUntilFrame_ = 0;
     if(!!otherPlayer)
-        otherPlayer.giveHitFn_(frame)
+    {
+        otherPlayer.giveHitFn_(frame);
+        if(otherPlayer.IsAirborne() && this.IsAirborne())
+            fx = 1;
+    }
     this.lastHitFrame_[who] = hitID;
     this.lastHit_ = {x:hitX,y:hitY};
     if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
