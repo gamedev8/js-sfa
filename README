@@ -3,11 +3,6 @@ Street Fighter Alpha
 
 * This is still a work in progress *
 
-********************************************************************************************************************
-** You must download the images folder from the js-sfa-images repo and put it in the root folder of this project. **
-** This is done so you don't have to download the images every time.                                              **
-********************************************************************************************************************
-
 Firefox support is a little buggy.
 
 If you are good at writing AI, please contact me.
