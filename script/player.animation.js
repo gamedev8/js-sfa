@@ -603,6 +603,8 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             /*this.onStartAttackFn_();*/
             this.projectiles_[newFrame.chainProjectile_].Throw(frame,stageX,stageY);
         }
+        if(!!this.isSliding_ && !!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.STOP_SLIDE_BACK))
+            this.StopSlide();
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.RESET_Y_FUNC))
             this.ResetVyFn();
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.RESET_X_FUNC))

@@ -128,6 +128,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.lastShadowLeft_ = null;
     this.lastShadowRight_ = null;
     this.canHoldAirborne_ = true;
+    this.showSlideDirt_ = true;
 
     //this.canInterrupt_ = false;
     this.ignoreCollisionsWith_ = "";

@@ -145,6 +145,17 @@ Player.prototype.CutKey = function (keys,frame)
     }
     return retVal;
 }
+/*returns true if the player is in a state where the current animation can be interupted with another animation*/
+Player.prototype.AllowInterupt = function()
+{
+    return this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_1)
+            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_2)
+            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_3)
+            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_4)
+            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_5)
+            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_6)
+        ;
+}
 /*Check the current key sequence for a move to execute*/
 Player.prototype.CheckForAnimation = function(frame)
 {
@@ -153,7 +164,7 @@ Player.prototype.CheckForAnimation = function(frame)
     this.checkedForAnimation_ = true;
 
 
-    if(this.flags_.Player.Has(PLAYER_FLAGS.MOBILE) || (this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT) && !this.interuptAnimation_))
+    if(this.flags_.Player.Has(PLAYER_FLAGS.MOBILE) || (this.AllowInterupt() && !this.interuptAnimation_))
     {
         this.keyStateChanged_ = false;
         var keys = [];
@@ -177,7 +188,7 @@ Player.prototype.CheckForAnimation = function(frame)
                 /*is there no current move, or is the user executing a new move*/
                 if(!this.currentAnimation_ || (this.currentAnimation_.Animation.baseAnimation_.name_ != move.baseAnimation_.name_))
                 {
-                    if(this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT))
+                    if(this.AllowInterupt())
                         this.interuptAnimation_ = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.direction_};
                     else
                         this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_});

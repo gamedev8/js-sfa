@@ -336,13 +336,19 @@ Player.prototype.ShowSmallDirt = function(frame)
     }
 }
 /*Puts a player in sliding motion*/
-Player.prototype.StartSlide = function(frame,amount,direction,fx)
+Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
 {
+    if(!!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+        return this.StopSlide();
+
     if(this.isSliding_)
     {
         this.t_ = 0;
         this.fx_ = Math.sin(this.t_) * amount;
     }
+
+    if(!!hideSlideDirt)
+        this.showSlideDirt_ = false;
 
     if((this.direction_ > 0 && direction < 0) || (this.direction_ < 0 && direction > 0))
         this.slideFactor_ = Math.abs(amount) * fx;
@@ -356,12 +362,9 @@ Player.prototype.Slide = function(frame)
 {
     if(!!this.frameFreeze_ && !this.IsBlocking())
         return;
-    if(this.t_ >= CONSTANTS.HALF_PI || !this.isSliding_ || this.y_ > STAGE.FLOORY || !!this.isBeingThrown_)
+    if(this.t_ >= CONSTANTS.HALF_PI || !this.isSliding_ || !!this.isBeingThrown_)
     {
-        this.t_ = 0;
-        this.fx_ = 0;
-        this.slideCount_ = 0;
-        this.isSliding_ = false;
+        this.StopSlide();
         return;
     }
     this.t_ = Math.min(this.t_ + CONSTANTS.SLIDE_INC, CONSTANTS.HALF_PI);
@@ -369,13 +372,33 @@ Player.prototype.Slide = function(frame)
     this.fx_ =  Math.sin(this.t_) * this.slideFactor_;
     ++this.slideCount_;
 
-    if(this.slideCount_ % CONSTANTS.DIRT_FREQUENCY == 0)
+    if(!!this.showSlideDirt_)
     {
-        this.SpawnSmallDirt(frame);
+        if(this.slideCount_ % CONSTANTS.DIRT_FREQUENCY == 0)
+        {
+            this.SpawnSmallDirt(frame);
+        }
     }
 
     var deltaX = (this.lastFx_ - this.fx_);
-    this.MoveX(deltaX);
+    
+    if(this.y_ == STAGE.FLOORY)
+        this.MoveX(deltaX);
+    else
+        this.slideFactor_ *= 0.5;
+    
+}
+
+Player.prototype.StopSlide = function()
+{
+    if(!!this.isSliding_)
+    {
+        this.t_ = 0;
+        this.fx_ = 0;
+        this.slideCount_ = 0;
+        this.isSliding_ = false;
+        this.showSlideDirt_ = true;
+    }
 }
 
 Player.prototype.AdvanceJump = function(ignoreYCheck)

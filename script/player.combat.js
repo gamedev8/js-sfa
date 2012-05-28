@@ -605,6 +605,29 @@ Player.prototype.TakeAirborneHit = function(attackState,hitState,flags,frame,dam
     }
     
 }
+Player.prototype.SlideBack =  function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
+{
+    var x = STAGE.MAX_STAGEX - this.x_;
+    if(x < CONSTANTS.SLIDE_BACK_RANGE_FAR)
+    {
+        var slideAmount = CONSTANTS.DEFAULT_SLIDE_BACK_AMOUNT;
+        if(x <= CONSTANTS.SLIDE_BACK_RANGE_NEAR)
+        {
+            slideAmount *= 1;
+        }
+        else
+        {
+            slideAmount *= (CONSTANTS.SLIDE_BACK_RANGE_FAR - x) / g_slideGap;
+        }
+
+        if(!!(attackFlags & ATTACK_FLAGS.LIGHT)) {slideAmount *= CONSTANTS.LIGHT_SLIDE_BACK_RATE;}
+        else if(!!(attackFlags & ATTACK_FLAGS.MEDIUM)){slideAmount *= CONSTANTS.MEDIUM_SLIDE_BACK_RATE;}
+        else if(!!(attackFlags & ATTACK_FLAGS.HARD))  {slideAmount *= CONSTANTS.HARD_SLIDE_BACK_RATE;}
+
+        this.StopSlide();
+        this.StartSlide(frame,slideAmount,-this.direction_,1,true);
+    }
+}
 /*Sets up the closure to be called later*/
 Player.prototype.SetGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2)
 {
@@ -621,7 +644,7 @@ Player.prototype.SetGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,be
     this.SetHoldFrame(this.baseGiveHitDelay_ * hitDelayFactor);
 }
 /*This player just hit the other player*/
-Player.prototype.GiveHit = function(frame,attackState,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
+Player.prototype.GiveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
 {
     if(!!(behaviorFlags & BEHAVIOR_FLAGS.THROW))
     {
@@ -635,10 +658,9 @@ Player.prototype.GiveHit = function(frame,attackState,hitDelayFactor,energyToAdd
             hitDelayFactor = 0;
         }
     }
-
+    this.SlideBack(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer);
     this.ChangeEnergy(energyToAdd);
     this.SetHoldFrame(this.baseGiveHitDelay_ * hitDelayFactor);
-    //this.canInterrupt_ = true;
 }
 
 /*allows the animation to store some initial coordinates*/
