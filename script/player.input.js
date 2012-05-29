@@ -175,14 +175,7 @@ Player.prototype.CheckForAnimation = function(frame)
         while(keys.length > 0)
         {
             var value = this.CutKey(keys,frame);
-            /*first attempt the O(1) lookup*/
-            var move = this.moves_[_c3("_",this.poseState_,value.Key)];
-            //var move = this.moves_[_c3("_",this.flags_.PoseFlags.Get(),value.Key)];
-            if(!move || !!move && !!this.IsProjectileInUse(move))
-            {
-                /*otherwise do the slow lookup*/
-                move = this.FindAnimation(value);
-            }
+            var move = this.FindAnimation(value);
             if(!!move && (!move.duration_ || (value.Duration <= move.duration_)))
             {
                 /*is there no current move, or is the user executing a new move*/

@@ -111,6 +111,11 @@ Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
 Player.prototype.GetName = function() { return this.name_; }
 Player.prototype.IsDead = function() { return !this.GetHealth(); }
 
+Player.prototype.SetPaused = function(paused)
+{
+    this.isPaused_ = paused;
+}
+
 Player.prototype.ResetCombo = function()
 {
     if(!!this.onDecComboRefCountFn_)    
@@ -129,6 +134,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.lastShadowRight_ = null;
     this.canHoldAirborne_ = true;
     this.showSlideDirt_ = true;
+    this.isPaused_ = false;
 
     //this.canInterrupt_ = false;
     this.ignoreCollisionsWith_ = "";
@@ -406,18 +412,25 @@ Player.prototype.OnRenderComplete = function(frame)
 
 Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
-    if(!!this.ai_.Managed)
-        this.ai_.FrameMove(frame);
-    this.CheckForInterupt(frame);
-    this.FrameMove(frame,stageX,stageY);
-    if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
-        this.HandleAttack(frame, this.currentFrame_);
-    if(!!this.grappledPlayer_)
-        this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
-    if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.trail_)
-        this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
-    if(!this.forceImmobile_ && this.IsDead())
-        this.ForceTeamLose(frame);
+    if(!this.isPaused_)
+    {
+        if(!!this.ai_.Managed)
+            this.ai_.FrameMove(frame);
+        this.CheckForInterupt(frame);
+        this.FrameMove(frame,stageX,stageY);
+        if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
+            this.HandleAttack(frame, this.currentFrame_);
+        if(!!this.grappledPlayer_)
+            this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
+        if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.trail_)
+            this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
+        if(!this.forceImmobile_ && this.IsDead())
+            this.ForceTeamLose(frame);
+    }
+    else
+    {
+        this.ForceHoldFrame(frame);
+    }
 }
 
 

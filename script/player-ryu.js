@@ -437,6 +437,7 @@ Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     crouch_k2.Chain(crouch, 2);
 
     var crouch_k3 = player.AddAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_2, "crouch k3", 0, [BUTTONS.CROUCH|BUTTONS.HARD_KICK], 110);
+    crouch_k3.flags_ = {Combat:COMBAT_FLAGS.NO_SLIDE_BACK};
     crouch_k3.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING, OVERRIDE_FLAGS.STANDING);
     crouch_k3.AddFrame(player, "", "images/misc/ryu/x-crouch-k3-1.png", 3, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
     crouch_k3.AddFrame(player, "", "images/misc/ryu/x-crouch-k3-2.png", 5, { Combat: COMBAT_FLAGS.ATTACK, Pose: POSE_FLAGS.ALLOW_INTERUPT_1 }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HARD | ATTACK_FLAGS.HITS_LOW | ATTACK_FLAGS.TRIP, [{ state: HIT_FLAGS.NEAR, x: 160, y: 35 }, { state: HIT_FLAGS.FAR, x: 250, y: 35}], ATTACK_FLAGS.HARD);
@@ -851,14 +852,14 @@ Player.prototype.CreateRyuSuperMoves = function(player)
         else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
 
         var s_fireball = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"super fireball p" + (x+1),50,[BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD,0,BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD, BUTTONS.FORWARD|button],CONSTANTS.MAX_PRIORITY,false);
-        s_fireball.isSpecialMove_ = true;
+        s_fireball.isSuperMove_ = true;
 
         s_fireball.energyToSubtract_ = CONSTANTS.ONE_LEVEL * (x + 1);
         s_fireball.energyToAdd_ = 5;
         s_fireball.flags_ = {Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE};
         s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-0.png",1,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
-        s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-1.png",36);
-        s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-2.png",1);
+        s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-1.png",36,MISC_FLAGS.NONE);
+        s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-2.png",1,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.SUPER_MOVE_PAUSE});
         s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-3.png",1,{Combat:COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE},0,0,0,0,0,player.projectiles_.length-1);
         s_fireball.AddFrame(player,"","images/misc/ryu/x-fb-3.png",31);
         s_fireball.AddFrame(player,"","images/misc/ryu/x-k1-4.png",6);

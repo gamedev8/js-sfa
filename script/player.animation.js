@@ -514,6 +514,9 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
     this.currentAnimation_ = newAnimation;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        if(!!newAnimation.Animation.isSuperMove_)
+            this.GetMatch().OnSuperMoveStarted(this);
+
         /*must start a move on the ground to hold airborne*/
         if(this.IsAirborne())
             this.canHoldAirborne_ = false;
@@ -583,6 +586,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                     ^ POSE_FLAGS.AIRBORNE
                     ^ POSE_FLAGS.AIRBORNE_FB);
 
+
         this.flags_.Combat.Remove((this.currentFrame_.FlagsToSet.Combat
                     | COMBAT_FLAGS.PROJECTILE_ACTIVE
                     | COMBAT_FLAGS.CAN_BE_BLOCKED
@@ -596,13 +600,11 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     this.currentFrame_ = newFrame;
     if(!!newFrame)
     {
+        if(!!(newFrame.FlagsToClear.Combat & COMBAT_FLAGS.SUPER_MOVE_PAUSE))
+            this.GetMatch().OnSuperMoveCompleted(this);
         /*if the new frame spawns a projectile, handle that here*/
         if(!this.flags_.Combat.Has(COMBAT_FLAGS.PROJECTILE_ACTIVE) && !!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.SPAWN_PROJECTILE))
-        {
-            /*this.onStartAirAttackFn_();*/
-            /*this.onStartAttackFn_();*/
             this.projectiles_[newFrame.chainProjectile_].Throw(frame,stageX,stageY);
-        }
         if(!!this.isSliding_ && !!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.STOP_SLIDE_BACK))
             this.StopSlide();
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.RESET_Y_FUNC))
@@ -610,14 +612,10 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.RESET_X_FUNC))
             this.ResetVxFn();
         if(!!(newFrame.FlagsToSet.Spawn & SPAWN_FLAGS.SPAWN_BIGDIRT))
-        {
             this.ShowBigDirt(frame);
-        }
+        /*StartSlide will show the dirt animations, but we set the amount to 0 so the player itself does not move.*/
         else if(!!(newFrame.FlagsToSet.Spawn & SPAWN_FLAGS.SPAWN_SMALLDIRT))
-        {
-            /*StartSlide will show the dirt animations, but we set the amount to 0 so the player itself does not move.*/
             this.ShowSmallDirt(frame);
-        }
 
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.MOVE_TO_BACK) || !!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.BLOCKING))
             this.MoveToBack();
@@ -671,14 +669,17 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 /*Sets the x and y on the element*/
 Player.prototype.Render = function(frame,stageDiffX)
 {
-    if(this.direction_ > 0)
-        this.SetRight(this.x_);
-    else
-        this.SetLeft(this.x_);
-    this.element_.style.bottom = Math.max(this.y_,STAGE.FLOORY) + "px";
-    this.RenderShadow();
-    this.RenderTrail(frame,stageDiffX);
-    this.RenderDebugInfo();
+    if(!this.isPaused_)
+    {
+        if(this.direction_ > 0)
+            this.SetRight(this.x_);
+        else
+            this.SetLeft(this.x_);
+        this.element_.style.bottom = Math.max(this.y_,STAGE.FLOORY) + "px";
+        this.RenderShadow();
+        this.RenderTrail(frame,stageDiffX);
+        this.RenderDebugInfo();
+    }
 }
 
 /*renders the trail, if there is one*/

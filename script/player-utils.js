@@ -64,6 +64,8 @@ var Animation = function(requiredFlags,name,duration,frames,keySequence,flags,pr
     this.allowJuggle_ = false;
     this.ignoresCollisions_ = false;
     this.isThrow_ = false;
+    this.isSuperMove_ = false;
+    this.isSpecialMove_ = false;
 }
 
 Animation.prototype.EndBlock = function()

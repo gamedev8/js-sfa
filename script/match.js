@@ -17,6 +17,7 @@ var Match = function()
     this.stage_ = new Stage();
     /*this.physics__ = new _Physics();*/
     this.actionSystem_ = new ActionSystem();
+    this.isSuperMoveActive_ = false;
 }
 Match.prototype.ResetKeys = function()
 {
@@ -171,6 +172,7 @@ Match.prototype.Reset = function()
         this.gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
         this.teamA_.Cursor = 0;
         this.teamB_.Cursor = 0;
+        this.isSuperMoveActive_ = false;
 
 
         this.GetGame().ResetFrame();
@@ -325,6 +327,32 @@ Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
         this.teamA_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
     for(var i = 0; i < this.teamB_.Players.length; ++i)
         this.teamB_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
+}
+Match.prototype.OnSuperMoveStarted = function(player)
+{
+    if(!this.isSuperMoveActive_)
+    {
+        this.isSuperMoveActive_ = true;
+        for(var i = 0; i < this.teamA_.Players.length; ++i)
+            if(this.teamA_.Players[i].id_ != player.id_)
+                this.teamA_.Players[i].OnSuperMoveStarted();
+        for(var i = 0; i < this.teamB_.Players.length; ++i)
+            if(this.teamB_.Players[i].id_ != player.id_)
+                this.teamB_.Players[i].OnSuperMoveStarted();
+    }
+}
+Match.prototype.OnSuperMoveCompleted = function(player)
+{
+    if(!!this.isSuperMoveActive_)
+    {
+        for(var i = 0; i < this.teamA_.Players.length; ++i)
+            if(this.teamA_.Players[i].id_ != player.id_)
+                this.teamA_.Players[i].OnSuperMoveCompleted();
+        for(var i = 0; i < this.teamB_.Players.length; ++i)
+            if(this.teamB_.Players[i].id_ != player.id_)
+                this.teamB_.Players[i].OnSuperMoveCompleted();
+        this.isSuperMoveActive_ = false;
+    }
 }
 Match.prototype.PreFrameMove = function(frame)
 {

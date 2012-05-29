@@ -658,7 +658,11 @@ Player.prototype.GiveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
             hitDelayFactor = 0;
         }
     }
-    this.SlideBack(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer);
+    else
+    {
+        this.SlideBack(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer);
+    }
+
     this.ChangeEnergy(energyToAdd);
     this.SetHoldFrame(this.baseGiveHitDelay_ * hitDelayFactor);
 }
@@ -699,4 +703,17 @@ Player.prototype.SetLastHit = function(animation,type,offsetX,offsetY)
     animation.initialPlayerY_ = this.y_;
     animation.initialStageX_ = this.GetStage().x_;
     animation.initialStageY_ = this.GetStage().y_;
+}
+
+
+Player.prototype.OnSuperMoveStarted = function(frame)
+{
+    this.SetPaused(true);
+    this.forceImmobile_ = true;
+}
+
+Player.prototype.OnSuperMoveCompleted = function(frame)
+{
+    this.SetPaused(false);
+    this.forceImmobile_ = false;
 }

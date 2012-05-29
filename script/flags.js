@@ -126,6 +126,7 @@ var COMBAT_FLAGS =
     ,SPAWN_PROJECTILE:1 << 4
     ,STOP_SLIDE_BACK:1 << 5
     ,NO_SLIDE_BACK:1 << 6
+    ,SUPER_MOVE_PAUSE:1 << 7
 }
 
 
