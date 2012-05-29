@@ -360,6 +360,8 @@ Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
 /*Handles the player sliding*/
 Player.prototype.Slide = function(frame)
 {
+    if(!!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+        return this.StopSlide();
     if(!!this.frameFreeze_ && !this.IsBlocking())
         return;
     if(this.t_ >= CONSTANTS.HALF_PI || !this.isSliding_ || !!this.isBeingThrown_)
