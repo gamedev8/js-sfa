@@ -669,6 +669,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 /*Sets the x and y on the element*/
 Player.prototype.Render = function(frame,stageDiffX)
 {
+    this.CheckZOrder();
     if(!this.isPaused_)
     {
         if(this.direction_ > 0)

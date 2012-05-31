@@ -18,6 +18,7 @@ var Match = function()
     /*this.physics__ = new _Physics();*/
     this.actionSystem_ = new ActionSystem();
     this.isSuperMoveActive_ = false;
+    this.dimBackground_ = window.document.getElementById("pnlDimBackground");
 }
 Match.prototype.ResetKeys = function()
 {
@@ -328,10 +329,23 @@ Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
     for(var i = 0; i < this.teamB_.Players.length; ++i)
         this.teamB_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
 }
+/*Dims the background when a player is starting a super move*/
+Match.prototype.SetBackgroundTransparent = function(player)
+{
+    if(!!player)
+    {
+        this.dimBackground_.style.display = "";
+    }
+    else
+    {
+        this.dimBackground_.style.display = "none";
+    }
+}
 Match.prototype.OnSuperMoveStarted = function(player)
 {
     if(!this.isSuperMoveActive_)
     {
+        this.SetBackgroundTransparent(player);
         this.isSuperMoveActive_ = true;
         for(var i = 0; i < this.teamA_.Players.length; ++i)
             if(this.teamA_.Players[i].id_ != player.id_)
@@ -345,6 +359,7 @@ Match.prototype.OnSuperMoveCompleted = function(player)
 {
     if(!!this.isSuperMoveActive_)
     {
+        this.SetBackgroundTransparent();
         for(var i = 0; i < this.teamA_.Players.length; ++i)
             if(this.teamA_.Players[i].id_ != player.id_)
                 this.teamA_.Players[i].OnSuperMoveCompleted();

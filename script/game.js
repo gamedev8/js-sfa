@@ -32,7 +32,7 @@ var Game = function ()
     this.extraSpeed_ = 0;
     this.fontSystem_ = new FontSystem();
     this.text_ = this.fontSystem_.AddText("pnlText");
-    this.useAlternateImageLoadingFunctions_ = false; //window.navigator.userAgent.indexOf("Firefox") > -1;
+    this.useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
     this.state_ = 0;
     this.Init();
 }

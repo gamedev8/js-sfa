@@ -1,5 +1,6 @@
 ﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:10px}
 div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
+div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:3;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.stage img.ken-bg0{position:absolute;top:-47px;left:0px;}
 div.stage img.ken-bg1{position:absolute;bottom:0px;left:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
@@ -17,7 +18,7 @@ b.hit{background-color:#ff0000;color:#fff;z-index:100;}
 
 b{position:absolute;display:inline-block;width:10px;line-height:15px;vertical-align:middle;color:#000;text-align:center;font-size:8px;text-transform:uppercase;}
 
-div.team{position:absolute;top:20px;}
+div.team{position:absolute;top:20px;z-index:5;}
 div.team div{position:absolute;}
 div.team img{position:absolute;}
 div.team div.health-bar{top:20px;}

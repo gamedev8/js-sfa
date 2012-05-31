@@ -181,6 +181,7 @@ Player.prototype.Reset = function(ignoreDirection)
     /*jump velocity*/
     this.jumpVelocityX_ = 0;
     this.jumpVelocityY_ = 0;
+    this.zOrder_ = null;
     /**/
     this.t_ = 0;
     this.frameFreeze_ = 0;
@@ -239,17 +240,28 @@ Player.prototype.CreateElement = function(x,y,parentElement)
 
     this.CreateDebugElements();
 }
-
-Player.prototype.MoveToBack = function(dontAnimationOtherPlayers)
+Player.prototype.SetZOrder = function(value)
 {
-    this.element_.style.zIndex = 1;
-    if(!dontAnimationOtherPlayers)
+    this.zOrder_ = value;
+}
+Player.prototype.CheckZOrder = function()
+{
+    if(this.zOrder_ != null)
+    {
+        this.element_.style.zIndex = this.zOrder_;
+        this.zOrder_ = null;
+    }
+}
+Player.prototype.MoveToBack = function(dontMoveOtherPlayers)
+{
+    this.SetZOrder(1);
+    if(!dontMoveOtherPlayers)
         this.moveOtherPlayersToFrontFn_();
 }
-Player.prototype.MoveToFront = function(dontAnimationOtherPlayers)
+Player.prototype.MoveToFront = function(dontMoveOtherPlayers)
 {
-    this.element_.style.zIndex = 2;
-    if(!dontAnimationOtherPlayers)
+    this.SetZOrder(3);
+    if(!dontMoveOtherPlayers)
         this.moveOtherPlayersToBackFn_();
 }
 /*Change the speed of the moves for this player*/
