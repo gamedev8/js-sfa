@@ -351,7 +351,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         if(!!damage)
             this.IncCombo();
 
-        if(!!energyToAdd)
+        if(!!energyToAdd && !(!!(attackState & ATTACK_FLAGS.THROW_END)))
             energyToAdd = Math.ceil(energyToAdd/2);
 
         if(this.flags_.Pose.Has(POSE_FLAGS.CROUCHING))

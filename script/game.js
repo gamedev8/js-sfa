@@ -97,6 +97,7 @@ Game.prototype.ReleaseText = function()
 
 Game.prototype.ResetKeys = function()
 {
+    return;
     this.keyboardState_ = {};
     this.match_.ResetKeys();
 }
