@@ -97,7 +97,6 @@ Game.prototype.ReleaseText = function()
 
 Game.prototype.ResetKeys = function()
 {
-    return;
     this.keyboardState_ = {};
     this.match_.ResetKeys();
 }
@@ -256,6 +255,7 @@ Game.prototype.RunGameLoop = function()
     if(!this.match_.IsMatchOver(this.frame_))
     {
         window.setTimeout(this.GetGameLoopClosure(this),this.speed_);
+        //window.requestAnimFrame(this.GetGameLoopClosure(this),this.speed_);
     }
     else
         this.match_.HandleMatchOver(this.frame_);
@@ -267,7 +267,17 @@ function Alert(text)
 {
     if(!!console && !!console.log)
         console.log(text);
-    //else
-    //    spnMsg.innerHTML += "<br />" + text;
 }
 
+/*
+window.requestAnimFrame = (function(){
+      return  window.requestAnimationFrame       || 
+              window.webkitRequestAnimationFrame || 
+              window.mozRequestAnimationFrame    || 
+              window.oRequestAnimationFrame      || 
+              window.msRequestAnimationFrame     || 
+              function(callback){
+                window.setTimeout(callback, 1000 / 30);
+              };
+    })();
+*/

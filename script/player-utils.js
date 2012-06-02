@@ -139,6 +139,15 @@ Animation.prototype.ClearAllFrameUserData = function()
         this.baseAnimation_.frames_[i].UserData = [];
 }
 
+Animation.prototype.SetMediumAttack = function()
+{
+    this.energyToAdd_ = 2;
+}
+
+Animation.prototype.SetHardAttack = function()
+{
+    this.energyToAdd_ = 3;
+}
 /************************************************************************/
 /************************************************************************/
 var GenericAnimation = function(name,frames,moveFlags,requiredState,state)
