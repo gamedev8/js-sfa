@@ -7,9 +7,7 @@
     this.allowAirBlock_ = allowAirBlock;
     this.lastFrameOffset = 0;
 }
-/*
-Adds a frame to the move
-*/
+/*Adds a frame to the move*/
 BaseAnimation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
 {
     if(!!this.frames_.length > 0)
@@ -98,5 +96,35 @@ BaseAnimation.prototype.GetNextFrameOffset = function(id)
     }
     return 0;
 }
-/*
-*/
+
+/************************************************************************/
+/************************************************************************/
+/************************************************************************/
+
+var BasicBaseAnimation = function(frames,name)
+{
+    this.frames_ = frames || [];
+    this.name_ = name;
+    this.lastFrameOffset_ = 0;
+}
+
+/*Returns the frame that should be run at a given time*/
+BasicBaseAnimation.prototype.GetFrame = function(frameDelta)
+{
+    var count = 0;
+    for(var i = 0; i < this.frames_.length; ++i)
+        if((count += this.frames_[i].Frames) > frameDelta)
+            return this.frames_[i];
+    return null;
+}
+/*Adds a frame to the move*/
+BasicBaseAnimation.prototype.AddFrame = function(owner,image,nbFrames)
+{
+    if(!!this.frames_.length > 0)
+        this.lastFrameOffset_ += this.frames_[this.frames_.length - 1].Frames;
+
+    var frameOffset = this.lastFrameOffset;
+
+    ++owner.nbFrames_;
+    this.frames_[this.frames_.length] = new Frame(this.frames_.length,owner.GetNextFrameID(),"",image,nbFrames,0,0,0,0,0,0,frameOffset);
+}

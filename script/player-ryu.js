@@ -1,7 +1,7 @@
 ﻿
-Player.prototype.CreateRyu = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+Player.prototype.CreateRyu = function(user)
 {
-    var player = new Player("Ryu",101,right,up,left,down,p1,p2,p3,k1,k2,k3);
+    var player = new Player("Ryu",101,user.Right,user.Up,user.Left,user.Down,user.P1,user.P2,user.P3,user.K1,user.K2,user.K3);
     player.defaultShadowImageSrc_ = "136"
     player.circle_.OffsetY = 50;
 

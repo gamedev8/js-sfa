@@ -259,8 +259,83 @@ GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,
     element.style.bottom = (offsetY + this.initialY_ + (this.initialStageY_ - stageY)) + "px";
     return true;
 }
+/************************************************************************/
+/************************************************************************/
+var BasicAnimation = function(name,frames,isLooping)
+{
+    this.baseAnimation_ = new BasicBaseAnimation(frames,name);
+    this.isLooping_ = isLooping || false;
+    this.internalFrame_ = 0;
+}
 
+BasicAnimation.prototype.GetFrame = function(frameDelta)
+{
+    return this.baseAnimation_.GetFrame.apply(this.baseAnimation_,arguments);
+}
 
+BasicAnimation.prototype.AddFrame = function(owner,image)
+{
+    this.baseAnimation_.AddFrame.apply(this.baseAnimation_,arguments);
+}
+
+BasicAnimation.prototype.TryRender = function(frame,object,direction)
+{
+    direction = direction || this.direction_;
+    var element = object.Element;
+    var startFrame = object.StartFrame;
+    var x = object.X;
+    var y = object.Y;
+
+    var offsetX = x;
+    var offsetY = y;
+    var delta = 0;
+    if(!!this.isLooping_)
+    {
+        if(this.internalFrame_ > this.baseAnimation_.lastFrameOffset_)
+            this.internalFrame_ = 0;
+        delta = this.internalFrame_++;
+    }
+    else
+        delta = frame - startFrame;
+
+    var newFrame = this.GetFrame(delta);
+    if(!newFrame)
+    {
+        /*free the element so it can be reused in other animations*/
+        element.style.display="none";
+        element.src = "";
+        return false;
+    }
+    else
+    {
+        if(direction > 0)
+        {
+            if(!!newFrame.RightSrc && (element.src != newFrame.RightSrc))
+                element.src  = frameImages_.Get(newFrame.RightSrc).src;
+
+            if(offsetX != undefined)
+            {
+                element.style.left = "";
+                element.style.right = offsetX + "px";
+            }
+        }
+        else
+        {
+            if(!!newFrame.LeftSrc && (element.src != newFrame.LeftSrc))
+                element.src  = frameImages_.Get(newFrame.LeftSrc).src;
+
+            if(offsetX != undefined)
+            {
+                element.style.right = "";
+                element.style.left = offsetX + "px";
+            }
+        }
+    }
+
+    if(offsetY != undefined)
+        element.style.bottom = offsetY + "px";
+    return true;
+}
 /************************************************************************/
 /************************************************************************/
 var FrameImageLookup = function()
@@ -291,13 +366,9 @@ FrameImageLookup.prototype.Load = function(src)
                 {
                     thisValue.element_.innerHTML = (100*(thisValue.nbImages_-thisValue.nbImagesLoading_)/thisValue.nbImages_).toFixed(1);
                 }
-                else if(thisValue.nbImages_ > 100)
+                else
                 {
-                    if(!!thisValue.element_.parentElement)
-                        thisValue.element_.parentElement.style.display = "none";
-                    else if(!!thisValue.element_.parentNode)
-                        thisValue.element_.parentNode.style.display = "none";
-                    window.document.getElementById("pnlStage").style.visibility = "visible";
+                    thisValue.element_.innerHTML = "100";
                 }
             }
         })(this);

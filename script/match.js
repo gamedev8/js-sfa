@@ -423,3 +423,9 @@ Match.prototype.Render = function(frame)
     this.teamB_.Healthbar.Render(frame);
     this.teamB_.Energybar.Render(frame);
 }
+
+/*Remove elements from the DOM and remove any custom CSS*/
+Match.prototype.Release = function()
+{
+    this.stage_.Release();
+}

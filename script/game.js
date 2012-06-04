@@ -16,12 +16,11 @@ var spnLag_ = window.document.getElementById("spnLag");
 var spnTargetFrames_ = window.document.getElementById("spnTargetFrames");
 var spnFrameTime_ = window.document.getElementById("spnFrameTime");
 
-/*
-    Encapulates a new game
-*/
+/*Encapulates a new game*/
 var Game = function ()
 {
-    this.match_ = new Match();
+    this.user1_ = null;
+    this.user2_ = null;
     this.frame_ = 0;
     this.keyboardState_ = {};
     this.keyState_ = 0;
@@ -34,7 +33,11 @@ var Game = function ()
     this.text_ = this.fontSystem_.AddText("pnlText");
     this.useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
     this.state_ = 0;
-    this.Init();
+}
+
+Game.prototype.IsGameOver = function()
+{
+    return this.frame_ >= CONSTANTS.MAX_FRAME;
 }
 
 Game.prototype.AddManagedText = function(elementId,x,y,fontPath)
@@ -89,6 +92,12 @@ Game.prototype.RemoveState = function(flag)
 }
 
 
+Game.prototype.OnStageImagesLoaded = function()
+{
+    if(!!this.match_)
+        this.match_.stage_.Reset();
+}
+
 Game.prototype.ReleaseText = function()
 {
     this.fontSystem_.Reset();
@@ -98,7 +107,8 @@ Game.prototype.ReleaseText = function()
 Game.prototype.ResetKeys = function()
 {
     this.keyboardState_ = {};
-    this.match_.ResetKeys();
+    if(!!this.keyStateChangedSubscriber_)
+        this.keyStateChangedSubscriber_.ResetKeys();
 }
 
 Game.prototype.Init = function()
@@ -134,7 +144,6 @@ Game.prototype.Init = function()
         window.onblur = resetKeys(this);
     }
 
-    this.PreloadTextImages();
 }
 
 Game.prototype.PreloadTextImages = function()
@@ -142,39 +151,83 @@ Game.prototype.PreloadTextImages = function()
     this.fontSystem_.Preload();
 }
 
+Game.prototype.InitDOM = function()
+{
+    window.document.getElementById("pnlTeam1").style.display = "";
+    window.document.getElementById("pnlTeam2").style.display = "";
+    window.document.getElementById("bg0").style.display = "";
+    window.document.getElementById("bg1").style.display = "";
+}
+
+Game.prototype.ResetDOM = function()
+{
+    window.document.getElementById("pnlTeam1").style.display = "none";
+    window.document.getElementById("pnlTeam2").style.display = "none";
+    window.document.getElementById("bg0").style.display = "none";
+    window.document.getElementById("bg1").style.display = "none";
+}
+
 Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
 {
+    var goodGuys = goodGuys;
+    var badGuys = badGuys;
+    var stage = stage;
+
+    if(!!this.charSelect_)
+    {
+        goodGuys = goodGuys || this.charSelect_.GetGoodGuys();
+        badGuys = badGuys || this.charSelect_.GetBadGuys();
+        stage = stage || this.charSelect_.GetStage();
+
+        this.charSelect_.Release();
+    }
+
+    this.match_ = new Match();
+    this.Init();
+    this.InitDOM();
+    this.PreloadTextImages();
     this.frame_ = 0;
+
+    this.keyStateChangedSubscriber_ = this.match_;
+
     this.match_.stage_.Set(stage);
     this.match_.Start(goodGuys,badGuys);
     this.RunGameLoop();
 }
-/*
-Increases the game loop speed
-*/
+
+Game.prototype.StartCharSelect = function()
+{
+    if(!!this.match_)
+        this.match_.Release();
+    this.ResetDOM();
+    this.Init();
+    this.PreloadTextImages();
+    this.charSelect_ = new CharSelect(this.user1_,this.user2_);
+    this.charSelect_.Init(window.document.getElementById("pnlStage"));
+    this.frame_ = 0;
+    this.keyStateChangedSubscriber_ = this.charSelect_;
+    /*center the screen*/
+    Stage.prototype.Center();
+    this.RunCharSelectLoop();
+}
+/*Increases the game loop speed*/
 Game.prototype.SpeedUp = function()
 {
     if(this.speed_ > CONSTANTS.MIN_DELAY)
         this.speed_ -= CONSTANTS.SPEED_INCREMENT;
 }
-/*
-Decreases the game loop speed
-*/
+/*Decreases the game loop speed*/
 Game.prototype.SlowDown = function()
 {
     if(this.speed_ < CONSTANTS.MAX_DELAY)
         this.speed_ += CONSTANTS.SPEED_INCREMENT;
 }
-/*
-Returns true if the key is being released
-*/
+/*Returns true if the key is being released*/
 Game.prototype.WasKeyPressed = function(key,keyCode,isDown)
 {
     return (keyCode == key && !!this.keyboardState_["_" + key] && !isDown)
 }
-/*
-Handle game wide key events, or pass the event on to the match
-*/
+/*Handle game wide key events, or pass the event on to the match*/
 Game.prototype.HandleKeyPress = function(e,isDown)
 {
     var keyCode = e.which || e.keyCode;
@@ -196,17 +249,26 @@ Game.prototype.HandleKeyPress = function(e,isDown)
         this.SlowDown();
 
     this.keyboardState_["_" + keyCode] = isDown;
-    this.match_.OnKeyStateChanged(isDown,keyCode,this.frame_);
-
+    if(!!this.keyStateChangedSubscriber_)
+        this.keyStateChangedSubscriber_.OnKeyStateChanged(isDown,keyCode,this.frame_);
 }
 
 Game.prototype.HandleInput = function()
 {
 }
 
-/*
-    Helper function
-*/
+Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+{
+    this.user1_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3);
+    return this.user1_;
+}
+Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+{
+    this.user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3);
+    return this.user2_;
+}
+
+/*Helper function*/
 Game.prototype.GetGameLoopClosure = function(thisValue)
 {
     return function()
@@ -214,9 +276,16 @@ Game.prototype.GetGameLoopClosure = function(thisValue)
         thisValue.RunGameLoop();
     }
 }
-/*
-    Shows the frame rate on screen
-*/
+
+/*Helper function*/
+Game.prototype.GetCharSelectLoopClosure = function(thisValue)
+{
+    return function()
+    {
+        thisValue.RunCharSelectLoop();
+    }
+}
+/*Shows the frame rate on screen*/
 Game.prototype.ShowFPS = function()
 {
     if(this.frame_ % this.targetFPS_ == 0)
@@ -229,9 +298,7 @@ Game.prototype.ShowFPS = function()
         spnFPS_.innerHTML = fps;
     }
 }
-/*
-    Basic game loop
-*/
+/*Basic game loop*/
 Game.prototype.RunGameLoop = function()
 {
     this.HandleInput();
@@ -261,8 +328,36 @@ Game.prototype.RunGameLoop = function()
         this.match_.HandleMatchOver(this.frame_);
 }
 
+Game.prototype.RunCharSelectLoop = function()
+{
+    if(!!this.charSelect_ && !this.charSelect_.isDone_)
+    {
+        this.HandleInput();
+        if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
+        {
+            this.RemoveState(GAME_STATES.STEP_FRAME);
+            ++this.frame_;
+            this.charSelect_.FrameMove(this.frame_);
+            if(!!this.charSelect_.isDone_)
+            {
+                this.keyStateChangedSubscriber_ = null;
+                this.StartMatch();
+            }
+            this.charSelect_.Render(this.frame_);
+            this.ShowFPS();
+        }
 
-var spnMsg = window.document.getElementById("spnMsg");
+        if(!this.IsGameOver())
+        {
+            window.setTimeout(this.GetCharSelectLoopClosure(this),this.speed_);
+        }
+        else
+        {
+            Alert("user aborted.");
+        }
+    }
+}
+
 function Alert(text)
 {
     if(!!console && !!console.log)

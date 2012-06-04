@@ -1,7 +1,7 @@
 ﻿
-Player.prototype.CreateMBison = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+Player.prototype.CreateMBison = function(user)
 {
-    var player = new Player("mbison",201,right,up,left,down,p1,p2,p3,k1,k2,k3);
+    var player = new Player("mbison",201,user.Right,user.Up,user.Left,user.Down,user.P1,user.P2,user.P3,user.K1,user.K2,user.K3);
     player.defaultShadowImageSrc_ = "200"
     player.circle_.OffsetY = 50;
 

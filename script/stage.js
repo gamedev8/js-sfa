@@ -311,6 +311,16 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
 }
 
 
+Stage.prototype.Center = function()
+{
+    var screenWidth = GetWidth(window.document.body);
+    var screenHeight = GetHeight(window.document.body);
+    var element = window.document.getElementById("pnlStage");
+    var w = parseInt(GetWidth(element));
+    var diff = (screenWidth - w) / 2;
+    element.style.left = diff + "px";
+}
+
 /*inits the background images*/
 Stage.prototype.Reset = function()
 {
@@ -461,4 +471,9 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
     if(!dontAlignPlayers)
         this.AlignPlayersX();
     return this.deltaX_;
+}
+
+/*Remove elements from the DOM and remove any custom CSS*/
+Stage.prototype.Release = function()
+{
 }
