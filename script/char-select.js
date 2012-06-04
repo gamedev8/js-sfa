@@ -10,18 +10,21 @@
     this.K1 = k1;
     this.K2 = k2;
     this.K3 = k3;
-    this.number_ = 0;
+    this.player_ = 0;
     this.Selected = null;
     this.changeCharacterFn_ = null;
     this.animations_ = {};
     this.nbFrames_ = 0;
     this.selectedState_ = { X:0,Y:0,Element:null,StartFrame:0 };
-    this.portriatElement_ = null;
-    this.stanceElement_ = null;
     this.isCharSelected_ = false;
     this.direction_ = 1;
     this.selectedCharStance_ = { X:undefined, Y:undefined, Element:null,StartFrame:0 }
 
+    this.element_ = {X:0,Y:0,Element:null};
+    this.portriatElement_ = {X:0,Y:0,Element:null};
+    this.stanceElement_ = {X:0,Y:0,Element:null};
+    this.shadowElement_ = {X:0,Y:0,Element:null};
+    this.nameElement_ = {X:0,Y:0,Element:null};
 }
 
 User.prototype.AddStanceAnimations = function()
@@ -48,7 +51,10 @@ User.prototype.Release = function()
     var parentElement = window.document.getElementById("pnlStage");
     parentElement.removeChild(this.selectedState_.Element);
     parentElement.removeChild(this.portriatElement_);
-    parentElement.removeChild(this.selectedCharStance_.Element);
+    this.element_.Element.removeChild(this.selectedCharStance_.Element);
+    this.element_.Element.removeChild(this.shadowElement_.Element);
+    this.element_.Element.removeChild(this.nameElement_.Element);
+    parentElement.removeChild(this.element_.Element);
 }
 
 User.prototype.Init = function(isUser1)
@@ -57,13 +63,21 @@ User.prototype.Init = function(isUser1)
     this.selectedState_.Element = window.document.createElement("img");
     this.selectedState_.Element.className = "select-icon";
     this.portriatElement_ = window.document.createElement("img");
+    this.shadowElement_.Element = window.document.createElement("img");
+    this.shadowElement_.Element.className = "stance-shadow";
+    this.nameElement_.Element = window.document.createElement("img");
+    this.nameElement_.Element.className = "stance-name";
+    this.selectedCharStance_.Element = window.document.createElement("img");
+    this.element_.Element = window.document.createElement("div");
 
     var parentElement = window.document.getElementById("pnlStage");
     parentElement.appendChild(this.selectedState_.Element);
     parentElement.appendChild(this.portriatElement_);
-    this.selectedCharStance_.Element = window.document.createElement("img");
+    this.element_.Element.appendChild(this.shadowElement_.Element);
+    this.element_.Element.appendChild(this.nameElement_.Element);
+    this.element_.Element.appendChild(this.selectedCharStance_.Element);
 
-    parentElement.appendChild(this.selectedCharStance_.Element);
+    parentElement.appendChild(this.element_.Element);
 
     if(!!isUser1)
     {
@@ -72,6 +86,7 @@ User.prototype.Init = function(isUser1)
         this.animations_["select_icon"].AddFrame(this,"images/misc/misc/p1-select-0.png",1);
         this.animations_["select_icon"].AddFrame(this,"images/misc/misc/p1-select-1.png",1);
 
+        this.element_.Element.className = "stance-container-p1";
         this.portriatElement_.className = "select-portriat-p1";
         this.selectedCharStance_.Element.className = "select-stance-p1"
     }
@@ -82,6 +97,7 @@ User.prototype.Init = function(isUser1)
         this.animations_["select_icon"].AddFrame(this,"images/misc/misc/p2-select-0.png",1);
         this.animations_["select_icon"].AddFrame(this,"images/misc/misc/p2-select-1.png",1);
 
+        this.element_.Element.className = "stance-container-p2";
         this.portriatElement_.className = "select-portriat-p2";
         this.selectedCharStance_.Element.className = "select-stance-p2"
     }
@@ -110,9 +126,38 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
             if(!!direction)
             {
                 this.changeCharacterFn_(direction);
+                this.ShowCharacter();
             }
         }
     }
+}
+
+User.prototype.ShowCharacter = function()
+{
+    switch(this.Selected)
+    {
+        case CHARACTERS.RYU: { this.currentStance_ = "ryu"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
+        case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; this.Hide(); break; }
+        case CHARACTERS.CHARLIE: { this.currentStance_ = "charlie"; this.Hide(); break; }
+        case CHARACTERS.KEN: { this.currentStance_ = "ken"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
+        case CHARACTERS.GUY: { this.currentStance_ = "guy"; this.Hide(); break; }
+        case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; this.Hide(); break; }
+        case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; this.Hide(); break; }
+        case CHARACTERS.ADON: { this.currentStance_ = "adon"; this.Hide(); break; }
+        case CHARACTERS.RANDOM1: { this.Hide(); break; }
+        case CHARACTERS.ROSE: { this.currentStance_ = "rose"; this.Hide(); break; }
+        case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; this.Hide(); break; }
+        case CHARACTERS.RANDOM2: { break; this.Hide(); }
+        /*
+        case CHARACTERS.AKUMA: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
+        case CHARACTERS.MBISON: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
+        case CHARACTERS.DAN: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
+        */
+    };
+
+    this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-" + this.currentStance_ + ".png" : "images/misc/misc/p2-select-" + this.currentStance_ + ".png");
+    this.shadowElement_.Element.src = "images/misc/misc/" + this.currentStance_ + "-shadow.png";
+    this.nameElement_.Element.src = "images/misc/font3/" + this.currentStance_ + ".png";
 }
 
 /*Simply returns the count of all of the frames*/
@@ -150,34 +195,61 @@ User.prototype.GetPlayer = function()
     return retVal;
 }
 
+User.prototype.SetPositions = function(shadowX,shadowY,nameX,nameY,stanceX,stanceY)
+{
+    this.Show();
+    if(this.player_ == 1)
+    {
+        this.shadowElement_.X = shadowX;
+        this.shadowElement_.Y = shadowY;
+        this.nameElement_.X = nameX;
+        this.nameElement_.Y = nameY;
+        this.selectedCharStance_.X = stanceX;
+        this.selectedCharStance_.Y = stanceY;
+    }
+    else
+    {
+        this.shadowElement_.X = shadowX;
+        this.shadowElement_.Y = shadowY;
+        this.nameElement_.X = nameX;
+        this.nameElement_.Y = nameY;
+        this.selectedCharStance_.X = stanceX;
+        this.selectedCharStance_.Y = stanceY;
+    }
+}
+
+/*this is just used to hide elements for players that arent implemented*/
+User.prototype.SetDisplay = function(show)
+{
+    this.element_.Element.style.display = !!show ? "" : "none";
+}
+
+User.prototype.Hide = function() {this.SetDisplay(false);} 
+User.prototype.Show = function() {this.SetDisplay(true);} 
+
 /*selecting a character*/
 User.prototype.FrameMove = function(frame)
 {
-    switch(this.Selected)
-    {
-        case CHARACTERS.RYU: { this.currentStance_ = "ryu"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-ryu.png" : "images/misc/misc/p2-select-ryu.png"); break; }
-        case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-chunli.png" : "images/misc/misc/p2-select-chunli.png"); break; }
-        case CHARACTERS.CHARLIE: { this.currentStance_ = "charlie"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-charlie.png" : "images/misc/misc/p2-select-charlie.png"); break; }
-        case CHARACTERS.KEN: { this.currentStance_ = "ken"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-ken.png" : "images/misc/misc/p2-select-ken.png"); break; }
-        case CHARACTERS.GUY: { this.currentStance_ = "guy"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-guy.png" : "images/misc/misc/p2-select-guy.png"); break; }
-        case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-birdie.png" : "images/misc/misc/p2-select-birdie.png"); break; }
-        case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-sodom.png" : "images/misc/misc/p2-select-sodom.png"); break; }
-        case CHARACTERS.ADON: { this.currentStance_ = "adon"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-adon.png" : "images/misc/misc/p2-select-adon.png"); break; }
-        case CHARACTERS.RANDOM1: { break; }
-        case CHARACTERS.ROSE: { this.currentStance_ = "rose"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-rose.png" : "images/misc/misc/p2-select-rose.png"); break; }
-        case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-sagat.png" : "images/misc/misc/p2-select-sagat.png"); break; }
-        case CHARACTERS.RANDOM2: { break; }
-        /*
-        case CHARACTERS.AKUMA: { this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
-        case CHARACTERS.MBISON: { this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
-        case CHARACTERS.DAN: { this.portriatElement_.src = (this.number_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
-        */
-    };
 }
 
 /*renders the users selected items*/
 User.prototype.Render = function(frame)
 {
+    if(this.player_ == 1)
+    {
+        this.shadowElement_.Element.style.left = this.shadowElement_.X;
+        this.shadowElement_.Element.style.bottom = this.shadowElement_.Y;
+        this.nameElement_.Element.style.left = this.nameElement_.X;
+        this.nameElement_.Element.style.bottom = this.nameElement_.Y;
+    }
+    else
+    {
+        this.shadowElement_.Element.style.right = this.shadowElement_.X;
+        this.shadowElement_.Element.style.bottom = this.shadowElement_.Y;
+        this.nameElement_.Element.style.right =  this.nameElement_.X;
+        this.nameElement_.Element.style.bottom = this.nameElement_.Y;
+    }
+
     if(!this.isCharSelected_)
         this.animations_["select_icon"].TryRender(frame, this.selectedState_);
 
@@ -233,8 +305,8 @@ CharSelect.prototype.TryChangeCharacter = function(who, direction)
 {
     var row = this.GetRow(who);
     var col = this.GetColumn(who);
-    var isUser1 = who.number_ == 1;
-    var isUser2 = who.number_ == 2;
+    var isUser1 = who.player_ == 1;
+    var isUser2 = who.player_ == 2;
 
     if(direction == CONSTANTS.DOWN)
     {
@@ -315,7 +387,7 @@ CharSelect.prototype.Init = function()
     /*Init user 1*/
     if(!!this.u1_)
     {
-        this.u1_.number_ = 1;
+        this.u1_.player_ = 1;
         this.u1_.direction_ = -1;
         this.u1_.Init(true);
         this.u1_.changeCharacterFn_ = (function(thisValue)
@@ -329,12 +401,13 @@ CharSelect.prototype.Init = function()
         if(this.u1_.Selected == null)
             this.u1_.Selected = CHARACTERS.RYU;
         this.u1_.changeCharacterFn_();
+        this.u1_.ShowCharacter();
     }
 
     /*Init user 2*/
     if(!!this.u2_)
     {
-        this.u2_.number_ = 2;
+        this.u2_.player_ = 2;
         this.u2_.direction_ = 1;
         this.u2_.Init(false);
         this.u2_.changeCharacterFn_ = (function(thisValue)
@@ -344,9 +417,11 @@ CharSelect.prototype.Init = function()
                 thisValue.TryChangeCharacter(this,direction);
             }
         })(this);
+
         if(this.u1_.Selected == null)
             this.u1_.Selected = CHARACTERS.KEN;
         this.u2_.changeCharacterFn_();
+        this.u2_.ShowCharacter();
     }
 }
 
