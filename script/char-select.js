@@ -44,6 +44,65 @@ User.prototype.AddStanceAnimations = function()
     this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-2.png",4);
     this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-3.png",4);
     this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-2.png",4);    
+
+    this.animations_["sagat"] = new BasicAnimation("sagat_stance",[],true);
+    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-0.png",4);
+    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-3.png",4);
+    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-2.png",4);
+    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-1.png",4);
+    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-2.png",4);    
+    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-3.png",4);    
+
+    this.animations_["guy"] = new BasicAnimation("guy_stance",[],true);
+    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-0.png",4);
+    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-1.png",4);
+    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-2.png",4);
+    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-3.png",4);
+    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-2.png",4);    
+    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-1.png",4);    
+
+    this.animations_["birdie"] = new BasicAnimation("birdie_stance",[],true);
+    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-0.png",4);
+    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-1.png",4);
+    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-2.png",4);
+    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-3.png",4);
+
+    this.animations_["chunli"] = new BasicAnimation("chunli_stance",[],true);
+    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-0.png",4);
+    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-1.png",4);
+    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-2.png",4);
+    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-3.png",4);
+
+    this.animations_["charlie"] = new BasicAnimation("charlie_stance",[],true);
+    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-0.png",4);
+    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-1.png",4);
+    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-2.png",4);
+    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-3.png",4);
+    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-2.png",4);
+    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-1.png",4);
+
+    this.animations_["sodom"] = new BasicAnimation("sodom_stance",[],true);
+    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-0.png",4);
+    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-1.png",4);
+    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-2.png",4);
+    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-3.png",4);
+
+
+    this.animations_["adon"] = new BasicAnimation("adon_stance",[],true);
+    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-0.png",4);
+    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-1.png",4);
+    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-2.png",4);
+    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-3.png",4);
+    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-4.png",4);
+
+
+    this.animations_["rose"] = new BasicAnimation("rose_stance",[],true);
+    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-0.png",4);
+    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-1.png",4);
+    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-2.png",4);
+    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-3.png",4);
+    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-4.png",4);
+    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-5.png",4);
 }
 
 User.prototype.Release = function()
@@ -137,16 +196,16 @@ User.prototype.ShowCharacter = function()
     switch(this.Selected)
     {
         case CHARACTERS.RYU: { this.currentStance_ = "ryu"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
-        case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; this.Hide(); break; }
-        case CHARACTERS.CHARLIE: { this.currentStance_ = "charlie"; this.Hide(); break; }
+        case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; this.SetPositions("7px","17px","27px","0px",12,28); break; }
+        case CHARACTERS.CHARLIE: { this.currentStance_ = "charlie"; this.SetPositions("7px","17px","10px","0px",10,41); break; }
         case CHARACTERS.KEN: { this.currentStance_ = "ken"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
-        case CHARACTERS.GUY: { this.currentStance_ = "guy"; this.Hide(); break; }
-        case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; this.Hide(); break; }
-        case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; this.Hide(); break; }
-        case CHARACTERS.ADON: { this.currentStance_ = "adon"; this.Hide(); break; }
+        case CHARACTERS.GUY: { this.currentStance_ = "guy"; this.SetPositions("7px","17px","27px","0px",0,32); break; }
+        case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; this.SetPositions("7px","17px","27px","0px",16,28); break; }
+        case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; this.SetPositions("7px","17px","10px","0px",10,24); break; }
+        case CHARACTERS.ADON: { this.currentStance_ = "adon"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
         case CHARACTERS.RANDOM1: { this.Hide(); break; }
-        case CHARACTERS.ROSE: { this.currentStance_ = "rose"; this.Hide(); break; }
-        case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; this.Hide(); break; }
+        case CHARACTERS.ROSE: { this.currentStance_ = "rose"; this.SetPositions("-3px","17px","2px","0px",-32,32); break; }
+        case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; this.SetPositions("7px","17px","10px","0px",16,28); break; }
         case CHARACTERS.RANDOM2: { break; this.Hide(); }
         /*
         case CHARACTERS.AKUMA: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
@@ -156,7 +215,7 @@ User.prototype.ShowCharacter = function()
     };
 
     this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-" + this.currentStance_ + ".png" : "images/misc/misc/p2-select-" + this.currentStance_ + ".png");
-    this.shadowElement_.Element.src = "images/misc/misc/" + this.currentStance_ + "-shadow.png";
+    this.shadowElement_.Element.src = "images/misc/" + this.currentStance_ + "/shadow.png";
     this.nameElement_.Element.src = "images/misc/font3/" + this.currentStance_ + ".png";
 }
 
