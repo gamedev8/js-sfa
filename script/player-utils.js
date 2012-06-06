@@ -291,7 +291,7 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
     var delta = 0;
     if(!!this.isLooping_)
     {
-        if(this.internalFrame_ > this.baseAnimation_.lastFrameOffset_)
+        if(this.internalFrame_ > this.baseAnimation_.nbFrames_)
             this.internalFrame_ = 0;
         delta = this.internalFrame_++;
     }

@@ -104,6 +104,7 @@ BaseAnimation.prototype.GetNextFrameOffset = function(id)
 var BasicBaseAnimation = function(frames,name)
 {
     this.frames_ = frames || [];
+    this.nbFrames_ = 0;
     this.name_ = name;
     this.lastFrameOffset_ = 0;
 }
@@ -113,7 +114,7 @@ BasicBaseAnimation.prototype.GetFrame = function(frameDelta)
 {
     var count = 0;
     for(var i = 0; i < this.frames_.length; ++i)
-        if((count += this.frames_[i].Frames) > frameDelta)
+        if((count += this.frames_[i].Frames) >= frameDelta)
             return this.frames_[i];
     return null;
 }
@@ -127,4 +128,5 @@ BasicBaseAnimation.prototype.AddFrame = function(owner,image,nbFrames)
 
     ++owner.nbFrames_;
     this.frames_[this.frames_.length] = new Frame(this.frames_.length,owner.GetNextFrameID(),"",image,nbFrames,0,0,0,0,0,0,frameOffset);
+    this.nbFrames_ += this.frames_[this.frames_.length - 1].Frames;
 }
