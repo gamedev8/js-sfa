@@ -34,12 +34,12 @@ Player.prototype.CleanUpKeyStateChanges = function(frame)
 }
 
 /*Adds a state change to the keyStateChange array*/
-Player.prototype.AddKeyStateChange = function(frame)
+Player.prototype.AddKeyStateChange = function(frame,keyCode)
 {
     var frameOffset = 0;
     if(this.keyStates_.length > 0)
         frameOffset = frame - this.keyStates_[this.keyStates_.length-1].Frame + this.keyStates_[this.keyStates_.length-1].FrameOffset;
-    this.keyStates_[this.keyStates_.length] = {Bit:this.keyState_,Frame:frame,FrameOffset:frameOffset};
+    this.keyStates_[this.keyStates_.length] = {Bit:this.keyState_,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode};
 }
 
 
@@ -66,7 +66,10 @@ Player.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
         if(oldState != this.keyState_)
         {
             this.keyStateChanged_ = true;
-            this.AddKeyStateChange(frame);
+            this.AddKeyStateChange(frame,keyCode);
+
+            if(!!isDown)
+                this.DebugShowKeys();
         }
     }
 }

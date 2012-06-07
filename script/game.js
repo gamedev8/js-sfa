@@ -238,9 +238,15 @@ Game.prototype.HandleKeyPress = function(e,isDown)
     {
         this.AddState(GAME_STATES.PAUSED);
         this.AddState(GAME_STATES.STEP_FRAME);
+        window.document.getElementById("spnState").innerHTML = "State: Frame Step"
+        window.document.getElementById("spnState").className = "state paused"
     }
     if(this.WasKeyPressed(KEYS.P,keyCode,isDown))
-        this.ToggleState(GAME_STATES.PAUSED);
+    {
+        this.RemoveState(GAME_STATES.PAUSED);
+        window.document.getElementById("spnState").innerHTML = "State: Running"
+        window.document.getElementById("spnState").className = "state running"
+    }
     if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
         this.frame_ = CONSTANTS.MAX_FRAME + 1;
     if(this.WasKeyPressed(KEYS.EIGHT,keyCode,isDown))

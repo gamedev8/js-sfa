@@ -569,6 +569,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
 
     this.checkedForAnimation_ = false;
     this.CleanUpKeyStateChanges(frame);
+    //this.DebugShowKeys();
 }
 
 
@@ -580,5 +581,6 @@ Player.prototype.SetupInfo = function(value,side)
 
     frameImages_.Load(this.nameImageSrc_);
     frameImages_.Load(this.portriatImageSrc_);
+    this.CreateKeysElement();
 }
 

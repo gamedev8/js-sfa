@@ -30,17 +30,22 @@
         <div id="pnlTeam1ComboText" class="Text"></div>
         <div id="pnlTeam2ComboText" class="Text"></div>
     </div>
+    <div class="loading">Loading: <span id="spnImagesLoading">0</span>%</div>
     <div id="pnlStatus">
-        <br />frame rate: <span id="spnFPS">0</span> FPS
+        <br /><span class="frame-rate">frame rate: <span id="spnFPS">0</span> FPS</span>
         <br />
         <br />press (8) to increase the FPS
         <br />press (9) to decrease the FPS
         <br />
-        <br />press (o) to step frame
-        <br />press (p) to resume
+        <br /><span id="spnStepFrame" class="step-frame">press (o) to step frame</span>
+        <br /><span id="spnResume" class="resume">press (p) to resume</span>
         <br /><span id="spnMsg"></span>
+        <br />
+        <br />
+        <br /><span id="spnState" class="state running">State: Running</span>
     </div>
-    <div class="loading">Loading: <span id="spnImagesLoading">0</span>%</div>
+    <div id="pnlTeam1Keys" class="team1Keys"></div>
+    <div id="pnlTeam2Keys" class="team2Keys"></div>
     <script type="text/javascript" src="script/flags.js"></script>
     <script type="text/javascript" src="script/fontsystem.js"></script>
     <script type="text/javascript" src="script/animation-trial.js"></script>

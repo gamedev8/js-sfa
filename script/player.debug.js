@@ -70,10 +70,89 @@ Player.prototype.CreateDebugElements = function(parentElement)
     (parentElement || window.document.getElementById("pnlStage")).appendChild(d);
     */
 
-
     this.debugHit_ = window.document.createElement("b");
     this.debugHit_.style.display = "none";
     this.debugHit_.className = "hit";
     this.debugHit_.innerHTML = "h";
     (parentElement || window.document.getElementById("pnlStage")).appendChild(this.debugHit_);
 }
+
+Player.prototype.CreateKeysElement =  function()
+{
+    this.debKeysElement_ = window.document.createElement("div");
+    this.debKeysElement_.className = "show-keys";
+    if(this.team_ == 1)
+    {
+        window.document.getElementById("pnlTeam1Keys").appendChild(this.debKeysElement_);
+    }
+    else
+    {
+        window.document.getElementById("pnlTeam2Keys").appendChild(this.debKeysElement_);
+    }
+    this.debKeysElement_.innerHTML = "&nbsp;"
+}
+
+
+Player.prototype.DebugShowKeysHelper = function(bit)
+{
+    var retVal = "";
+
+    if(!!(bit & 16)) retVal += "+<img src='images/misc/buttons/lp.png' />";
+    if(!!(bit & 32))  retVal += "+<img src='images/misc/buttons/mp.png' />";
+    if(!!(bit & 64))  retVal += "+<img src='images/misc/buttons/hp.png' />";
+    if(!!(bit & 128)) retVal += "+<img src='images/misc/buttons/lk.png' />";
+    if(!!(bit & 256)) retVal += "+<img src='images/misc/buttons/mk.png' />";
+    if(!!(bit & 512)) retVal += "+<img src='images/misc/buttons/hk.png' />";
+    
+    return retVal;
+}
+
+
+Player.prototype.DebugShowDirsHelper = function(bit)
+{
+    var retVal = "";
+    if(!!(bit & 1) && !!(bit & 4)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/nw.png' />" : "<img src='images/misc/buttons/ne.png' />";
+    if(!!(bit & 1) && !!(bit & 8)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/sw.png' />" : "<img src='images/misc/buttons/se.png' />";
+    if(!!(bit & 2) && !!(bit & 8)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/se.png' />" : "<img src='images/misc/buttons/sw.png' />";
+    if(!!(bit & 2) && !!(bit & 4)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/ne.png' />" : "<img src='images/misc/buttons/nw.png' />";
+
+    if(!(bit & 4) && !(bit & 8) && !!(bit & 1)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/w.png' />" : "<img src='images/misc/buttons/e.png' />";
+    if(!(bit & 4) && !(bit & 8) && !!(bit & 2)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/e.png' />" : "<img src='images/misc/buttons/w.png' />";
+
+    if(!(bit & 1) && !(bit & 2) && !!(bit & 4)) retVal += "<img src='images/misc/buttons/n.png' />";
+    if(!(bit & 1) && !(bit & 2) && !!(bit & 8)) retVal += "<img src='images/misc/buttons/s.png' />";
+
+    return retVal;
+}
+
+
+Player.prototype.DebugShowKeys = function()
+{
+    var output = "";
+    var tmp = "";
+    for(var i = 0, length = this.keyStates_.length; i < length; ++i)
+    {
+        tmp = "";
+        var bit = this.keyStates_[i].Bit;
+        var keys = ((((((((this.keyStates_[i].Bit | 1) ^ 1) | 2) ^ 2) | 4) ^ 4) | 8) ^ 8);
+        var dir = ((((((((((((this.keyStates_[i].Bit | 16) ^ 16) | 32) ^ 32) | 64) ^ 64) | 128) ^ 128) | 256) ^ 256) | 512) ^ 512);
+        
+        tmp += this.DebugShowDirsHelper(dir);
+        tmp += this.DebugShowKeysHelper(keys);
+
+        if(!!tmp)
+        {
+            if(tmp[0] == "+")
+                tmp = tmp.substring(1);
+            if(!!output)
+                output += ", ";
+            output += tmp;
+        }
+    }
+
+    if(!!output)
+    {
+        this.debKeysElement_.innerHTML = output;
+    }
+}
+
