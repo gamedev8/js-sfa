@@ -14,7 +14,8 @@
     this.bg0XOffset_ = bg0XOffset;
     this.bgRate_ = 0;
     this.maxLeftScroll_ = 0;
-    this.maxRightScroll_ = 0
+    this.maxRightScroll_ = 0;
+    this.music_ = null;
 }
 
 Stage.prototype.GetGame = function() { return game_; }
@@ -30,14 +31,57 @@ Stage.prototype.Set = function(params)
     this.bgImg1_.element.className = params.name_ + "-bg1";
     this.maxLeftScroll_  = params.maxLeftScroll_; 
     this.maxRightScroll_ = params.maxRightScroll_;
+
+    this.music_ = "audio/" + params.name_ + "/theme.ogg";
+    soundManager_.Load(this.music_);
+    this.fadeOutMusic_ = 0;
 }
 
+Stage.prototype.FadeOutMusic = function()
+{
+    this.fadeOutMusic_ = 1;
+}
+Stage.prototype.RestartMusic = function()
+{
+    soundManager_.Replay(this.music_);
+}
+
+Stage.prototype.PlayMusic = function()
+{
+    soundManager_.Play(this.music_,true);
+}
+
+Stage.prototype.PauseMusic = function()
+{
+    soundManager_.Pause(this.music_);
+}
+
+/**/
+Stage.prototype.Pause = function()
+{
+    this.PauseMusic();
+}
+
+/**/
+Stage.prototype.Resume = function()
+{
+    this.PlayMusic();
+}
+
+/**/
+Stage.prototype.Release = function()
+{
+    /*soundManager_.Unload(this.music_);*/
+}
 
 Stage.prototype.FrameMove = function(frame)
 {
     this.lastX_ = this.x_;
     this.deltaX_ = 0;
     this.deltaY_ = 0;
+
+    /*if(!!this.fadeOutMusic_ && soundManager_.GetVolume(this.music_) > 0.1)
+        soundManager_.SetVolume(this.music_, (this.fadeOutMusic_ -= 0.01));*/
 }
 
 Stage.prototype.Render = function(frame)

@@ -9,7 +9,7 @@ Physics.prototype.GetStage = function() { return this.GetMatch().stage_; }
 
 
 /*Test each player to see if the hit region intersects with them*/
-Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName)
+Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
     if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
         return;
@@ -50,7 +50,7 @@ Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsTo
             if(((points[i].x == -1) && !!p2.isBeingThrown_) || (x >= p2Left && x < p2Right && y >= p2Bottom && y < p2Top))
             {
                 p1.SetGiveHit(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
-                p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,false,STAGE.MAX_STAGEX - x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName);
+                p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,false,STAGE.MAX_STAGEX - x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
                 break;
             }
         }
@@ -67,7 +67,7 @@ Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsTo
             if(((points[i].x == -1) && !!p2.isBeingThrown_) || ((x <= p2Right && x > p2Left && y >= p2Bottom && y < p2Top)))
             {
                 p1.SetGiveHit(attackFlags,hitDelayFactor,energyToAdd, behaviorFlags,p2);
-                p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,false,x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName);
+                p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,false,x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
                 break;
             }
         }
@@ -114,7 +114,7 @@ Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
             if(p2.direction_ > 0)
                 hitX = STAGE.MAX_STAGEX - hitX;
             var hitY = ((y1 - y0) / 2) + y0;
-            if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_))
+            if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
             {
                 p1.ChangeEnergy(projectile.energyToAdd_);
                 projectile.HitPlayer(frame);
@@ -136,7 +136,7 @@ Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
             /*Calculate a general hit poisition.*/
             var hitX = ((x1 - x0) / 2) + x0;
             var hitY = ((y1 - y0) / 2) + y0;
-            if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_))
+            if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
             {
                 p1.ChangeEnergy(projectile.energyToAdd_);
                 projectile.HitPlayer(frame);

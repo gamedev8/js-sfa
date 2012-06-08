@@ -594,6 +594,11 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                     ^ COMBAT_FLAGS.PROJECTILE_ACTIVE
                     ^ COMBAT_FLAGS.CAN_BE_BLOCKED
                     ^ COMBAT_FLAGS.CAN_BE_AIR_BLOCKED);
+
+
+        this.flags_.SwingSound.Remove(this.currentFrame_.FlagsToSet.SwingSound);
+        this.flags_.HitSound.Remove(this.currentFrame_.FlagsToSet.HitSound);
+        this.flags_.BlockSound.Remove(this.currentFrame_.FlagsToSet.BlockSound);
         
     }
 
@@ -628,6 +633,11 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.flags_.Player.Add(newFrame.FlagsToSet.Player);
         this.flags_.Spawn.Add(newFrame.FlagsToSet.Spawn);
 
+        //this.flags_.MotionSound.Add(newFrame.FlagsToSet.MotionSound);
+        //this.flags_.SwingSound.Add(newFrame.FlagsToSet.SwingSound);
+        //this.flags_.HitSound.Add(newFrame.FlagsToSet.HitSound);
+        //this.flags_.BlockSound.Add(newFrame.FlagsToSet.BlockSound);
+
 
         if(!!this.canHoldAirborne_ && (!!(newFrame.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(newFrame.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB)))
             this.StopJump();
@@ -660,6 +670,16 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         {
             this.shadow_._relSrc  = this.currentFrame_.ShadowImageSrc;
             this.shadow_.src  = frameImages_.Get(this.currentFrame_.ShadowImageSrc).src;
+
+        }
+
+        if((!!newFrame.soundFilename_ || !!newFrame.FlagsToSet.SwingSound)
+        && (!!this.currentFrame_.RightSrc && (this.image_.src.indexOf(this.currentFrame_.RightSrc) == -1)
+            || (!!this.currentFrame_.LeftSrc && (this.image_.src.indexOf(this.currentFrame_.LeftSrc) == -1))))
+        {
+            this.QueueSwingSound(newFrame.FlagsToSet.SwingSound);
+            if(!!newFrame.soundFilename_)
+                this.QueueSound(newFrame.soundFilename_);
         }
     }
 }

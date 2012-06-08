@@ -7,6 +7,16 @@
     this.allowAirBlock_ = allowAirBlock;
     this.lastFrameOffset = 0;
 }
+
+/*Adds a frame to the move*/
+BaseAnimation.prototype.AddFrameWithSound = function(player,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
+{
+    this.AddFrame(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd);
+    var currentFrame = this.frames_[this.frames_.length-1];
+    currentFrame.soundFilename_ = soundFilename;
+    soundManager_.Load(currentFrame.soundFilename_,3);
+}
+
 /*Adds a frame to the move*/
 BaseAnimation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
 {

@@ -94,6 +94,12 @@ Animation.prototype.Chain = function(move,frameOffset)
     this.chainAnimationFrame_ = frameOffset || 0;
 }
 
+Animation.prototype.AddFrameWithSound = function(player,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
+{
+    this.ignoresCollisions_ = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+    return this.baseAnimation_.AddFrameWithSound.apply(this.baseAnimation_,arguments);
+}
+
 Animation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
 {
     this.ignoresCollisions_ = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
@@ -410,12 +416,19 @@ var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear
     this.FlagsToSet.Pose = !!flagsToSet ? (flagsToSet.Pose || 0) : 0;
     this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
     this.FlagsToSet.Spawn = !!flagsToSet ? (flagsToSet.Spawn || 0) : 0;
+    this.FlagsToSet.MotionSound = !!flagsToSet ? (flagsToSet.MotionSound || 0) : 0;
+    this.FlagsToSet.SwingSound = !!flagsToSet ? (flagsToSet.SwingSound || 0) : 0;
+    this.FlagsToSet.HitSound = !!flagsToSet ? (flagsToSet.HitSound || 0) : 0;
+    this.FlagsToSet.BlockSound = !!flagsToSet ? (flagsToSet.BlockSound || 0) : 0;
 
     this.FlagsToClear = new FrameFlags();
     this.FlagsToClear.Player = !!flagsToClear ? (flagsToClear.Player || 0) : 0;
     this.FlagsToClear.Pose = !!flagsToClear ? (flagsToClear.Pose || 0) : 0;
     this.FlagsToClear.Combat = !!flagsToClear ? (flagsToClear.Combat || 0) : 0;
     this.FlagsToClear.Spawn = !!flagsToClear ? (flagsToClear.Spawn || 0) : 0;
+    this.FlagsToClear.SwingSound = !!flagsToClear ? (flagsToClear.SwingSound || 0) : 0;
+    this.FlagsToClear.HitSound = !!flagsToClear ? (flagsToClear.HitSound || 0) : 0;
+    this.FlagsToClear.BlockSound = !!flagsToClear ? (flagsToClear.BlockSound || 0) : 0;
 
     this.FlagsToSend = flagsToSend || MISC_FLAGS.NONE;
     
@@ -426,6 +439,7 @@ var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear
     this.ImageOffsetX = imageOffsetX === 0 ? 0 : (imageOffsetX || null);
     this.ImageOffsetY = imageOffsetY === 0 ? 0 : (imageOffsetY || null);
     this.chainProjectile_ = chainProjectile;
+    this.soundFilename_ = "";
 
 }
 Frame.prototype.GetEndFrameOffset = function() { return this.Frames + this.FrameOffset; }

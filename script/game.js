@@ -107,8 +107,8 @@ Game.prototype.ReleaseText = function()
 Game.prototype.ResetKeys = function()
 {
     this.keyboardState_ = {};
-    if(!!this.keyStateChangedSubscriber_)
-        this.keyStateChangedSubscriber_.ResetKeys();
+    if(!!this.managed_)
+        this.managed_.ResetKeys();
 }
 
 Game.prototype.Init = function()
@@ -188,7 +188,7 @@ Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
     this.PreloadTextImages();
     this.frame_ = 0;
 
-    this.keyStateChangedSubscriber_ = this.match_;
+    this.managed_ = this.match_;
 
     this.match_.stage_.Set(stage);
     this.match_.Start(goodGuys,badGuys);
@@ -205,9 +205,10 @@ Game.prototype.StartCharSelect = function()
     this.charSelect_ = new CharSelect(this.user1_,this.user2_);
     this.charSelect_.Init(window.document.getElementById("pnlStage"));
     this.frame_ = 0;
-    this.keyStateChangedSubscriber_ = this.charSelect_;
+    this.managed_ = this.charSelect_;
     /*center the screen*/
     Stage.prototype.Center();
+    this.managed_.Resume();
     this.RunCharSelectLoop();
 }
 /*Increases the game loop speed*/
@@ -240,12 +241,14 @@ Game.prototype.HandleKeyPress = function(e,isDown)
         this.AddState(GAME_STATES.STEP_FRAME);
         window.document.getElementById("spnState").innerHTML = "State: Frame Step"
         window.document.getElementById("spnState").className = "state paused"
+        this.managed_.Pause();
     }
     if(this.WasKeyPressed(KEYS.P,keyCode,isDown))
     {
         this.RemoveState(GAME_STATES.PAUSED);
         window.document.getElementById("spnState").innerHTML = "State: Running"
         window.document.getElementById("spnState").className = "state running"
+        this.managed_.Resume();
     }
     if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
         this.frame_ = CONSTANTS.MAX_FRAME + 1;
@@ -255,8 +258,8 @@ Game.prototype.HandleKeyPress = function(e,isDown)
         this.SlowDown();
 
     this.keyboardState_["_" + keyCode] = isDown;
-    if(!!this.keyStateChangedSubscriber_)
-        this.keyStateChangedSubscriber_.OnKeyStateChanged(isDown,keyCode,this.frame_);
+    if(!!this.managed_)
+        this.managed_.OnKeyStateChanged(isDown,keyCode,this.frame_);
 }
 
 Game.prototype.HandleInput = function()
@@ -346,7 +349,7 @@ Game.prototype.RunCharSelectLoop = function()
             this.charSelect_.FrameMove(this.frame_);
             if(!!this.charSelect_.isDone_)
             {
-                this.keyStateChangedSubscriber_ = null;
+                this.managed_ = null;
                 this.StartMatch();
             }
             this.charSelect_.Render(this.frame_);

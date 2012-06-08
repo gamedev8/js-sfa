@@ -124,6 +124,7 @@ Match.prototype.GetCurrentFrame = function()
 /*A team has just been defeated*/
 Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
 {
+    this.stage_.FadeOutMusic();
     var frame = this.GetGame().frame_
     this.GetGame().SetSpeed(CONSTANTS.SLOW_SPEED);
     this.defeatedTeam_ = team;
@@ -206,11 +207,22 @@ Match.prototype.Reset = function()
         this.GetGame().ReleaseText();
 
         this.teamA_.Healthbar.Reset();
-        //this.teamA_.Energybar_.Reset();
-
         this.teamB_.Healthbar.Reset();
-        //this.teamB_.Energybar_.Reset();
+
+        this.stage_.RestartMusic();
     }
+}
+
+/**/
+Match.prototype.Pause = function()
+{
+    this.stage_.Pause();
+}
+
+/**/
+Match.prototype.Resume = function()
+{
+    this.stage_.Resume();
 }
 
 /*Initializes a new match*/
@@ -228,7 +240,7 @@ Match.prototype.Start = function(team1,team2)
     var endAttack           = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { this.flags_.Combat.Remove(COMBAT_FLAGS.CAN_BE_BLOCKED); players[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
     var startAirAttack      = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { players[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
     var endAirAttack        = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { this.flags_.Combat.Remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); players[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
-    var attack              = function(thisValue,players) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName) { for(var i = 0; i < players.length;++i) { thisValue.physics_.TryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,players[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName); } } }
+    var attack              = function(thisValue,players) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound) { for(var i = 0; i < players.length;++i) { thisValue.physics_.TryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,players[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound); } } }
     var projectileAttack    = function(thisValue,players) { return function(frame,projectile) { for(var i = 0; i < players.length;++i) { thisValue.physics_.TryProjectileAttack(frame,projectile,this,players[i]); } } }
     var changeHealth        = function(thisValue)         { return function(amount) { thisValue.ChangeHealth(this.team_,amount); } }
     var getHealth           = function(thisValue)         { return function() { return thisValue.GetHealth(this.team_); } }
@@ -320,6 +332,8 @@ Match.prototype.Start = function(team1,team2)
 
     this.teamB_.Healthbar.Init();
     this.teamB_.Energybar.Init();
+
+    this.stage_.Resume();
 }
 /*Handles key state changes*/
 Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)

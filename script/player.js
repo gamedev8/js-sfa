@@ -94,6 +94,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.team_ = 0;
     this.defaultShadowImageSrc_ = "images/misc/misc/shadow.png";
     this.winAnimationNames_ = [];
+    this.InitSounds();
     this.CreateElement();
     this.Reset();
     this.AddGenericAnimations();
@@ -182,6 +183,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.jumpVelocityX_ = 0;
     this.jumpVelocityY_ = 0;
     this.zOrder_ = null;
+    this.sounds_ = [];
     /**/
     this.t_ = 0;
     this.frameFreeze_ = 0;
@@ -422,6 +424,13 @@ Player.prototype.OnRenderComplete = function(frame)
     this.constY_ = this.y_;
 }
 
+
+Player.prototype.PlaySounds = function()
+{
+    while(this.sounds_.length > 0)
+        soundManager_.Play(this.sounds_.splice(0,1));
+}
+
 Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
     if(!this.isPaused_)
@@ -438,6 +447,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
             this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
         if(!this.forceImmobile_ && this.IsDead())
             this.ForceTeamLose(frame);
+        this.PlaySounds();
     }
     else
     {
@@ -569,7 +579,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
 
     this.checkedForAnimation_ = false;
     this.CleanUpKeyStateChanges(frame);
-    //this.DebugShowKeys();
+    /*this.DebugShowKeys();*/
 }
 
 

@@ -336,7 +336,35 @@ var CharSelect = function(user1,user2)
 
     this.element_ = null;
     this.playerSelectImg_ = null;
+    this.music_ = "audio/player-select.ogg";
 
+}
+
+CharSelect.prototype.RestartMusic = function()
+{
+    soundManager_.Replay(this.music_);
+}
+
+CharSelect.prototype.PlayMusic = function()
+{
+    soundManager_.Play(this.music_);
+}
+
+CharSelect.prototype.PauseMusic = function()
+{
+    soundManager_.Pause(this.music_);
+}
+
+/**/
+CharSelect.prototype.Pause = function()
+{
+    this.PauseMusic();
+}
+
+/**/
+CharSelect.prototype.Resume = function()
+{
+    this.PlayMusic();
 }
 
 CharSelect.prototype.GetRow = function(user)
@@ -415,6 +443,7 @@ CharSelect.prototype.TryChangeCharacter = function(who, direction)
 /**/
 CharSelect.prototype.Release = function()
 {
+    soundManager_.Unload(this.music_);
     var parentElement = window.document.getElementById("pnlStage");
     parentElement.style.backgroundImage = "";
     parentElement.style.backgroundRepeat = "";
@@ -437,13 +466,15 @@ CharSelect.prototype.Init = function()
     this.playerSelectImg_.className = "player-select";
     this.playerSelectImg_.src = "images/misc/misc/player-select.png";
 
-    //this.element_.appendChild(img);
 
     var parentElement = window.document.getElementById("pnlStage");
     parentElement.appendChild(this.playerSelectImg_);
     parentElement.appendChild(this.element_);
     parentElement.style.backgroundImage = "url(images/misc/misc/player-select-back-bg.png)";
     parentElement.style.backgroundRepeat = "no-repeat";
+
+    /*init music*/
+    soundManager_.Load(this.music_);
 
     /*Init user 1*/
     if(!!this.u1_)

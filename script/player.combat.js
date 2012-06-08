@@ -212,11 +212,11 @@ Player.prototype.HandleAttack = function(frame, moveFrame)
         this.onEndAirAttackFn_(this.currentAnimation_.ID);
     }
 
-    this.attackFn_(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackState,moveFrame.BaseDamage,this.currentAnimation_.Animation.moveOverrideFlags_,moveFrame.EnergyToAdd,this.currentAnimation_.Animation.behaviorFlags_,this.currentAnimation_.Animation.invokedAnimationName_);
+    this.attackFn_(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackState,moveFrame.BaseDamage,this.currentAnimation_.Animation.moveOverrideFlags_,moveFrame.EnergyToAdd,this.currentAnimation_.Animation.behaviorFlags_,this.currentAnimation_.Animation.invokedAnimationName_,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound);
 }
 
 /*If the player gets hit - this function must be called to set all of the details of the hit*/
-Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName)
+Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
     this.lastHitFrame_[who] = hitID;
     this.registeredHit_.AttackState = attackState;
@@ -236,6 +236,8 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     this.registeredHit_.AttackForceY = fy || 1;
     this.registeredHit_.BehaviorFlags = behaviorFlags;
     this.registeredHit_.InvokedAnimationName = invokedAnimationName;
+    this.registeredHit_.HitSound = hitSound || 0;
+    this.registeredHit_.BlockSound = blockSound || 0;
     this.registeredHit_.OtherPlayer = otherPlayer;
 
     this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,frame,otherPlayer));
@@ -264,7 +266,10 @@ Player.prototype.RegisterHit = function(frame)
                 ,this.registeredHit_.AttackForceY
                 ,this.registeredHit_.OtherPlayer
                 ,this.registeredHit_.BehaviorFlags
-                ,this.registeredHit_.InvokedAnimationName);
+                ,this.registeredHit_.InvokedAnimationName
+                ,this.registeredHit_.HitSound
+                ,this.registeredHit_.BlockSound
+                );
 
 }
 /**/
@@ -285,7 +290,7 @@ Player.prototype.IsBlocking = function()
     return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING);
 }
 /*The player was just hit and must react*/
-Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
+Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
     this.freezeUntilFrame_ = 0;
     if(!!otherPlayer)
@@ -324,6 +329,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
                 move.controllerAnimation_ = otherPlayer.currentAnimation_;
             }
         }
+        this.QueueGrappleSound();
     }
     else if(!!(attackState & ATTACK_FLAGS.HITS_LOW) && this.IsBlockingLow()
         || !!(attackState & ATTACK_FLAGS.HITS_HIGH) && this.IsBlockingHigh()
@@ -414,6 +420,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
             this.KnockDownDefeat(frame,attackDirection);
         }
 
+        this.QueueHitSound(hitSound);
         return;
     }
 
@@ -429,6 +436,10 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         if(!!flags)
             this.SpawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
         this.StartSlide(frame, slideAmount,attackDirection,fx);
+        if(!!isProjectile)
+            this.QueueBlockProjectileSound();
+        else
+            this.QueueBlockSound();
     }
     else if(!!(attackState & ATTACK_FLAGS.TRIP))
     {
@@ -472,7 +483,8 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         hitDelayFactor_ = 0;
 
     this.SetHoldFrame(this.baseTakeHitDelay_ * hitDelayFactor_);
-    
+    if(!this.IsBlocking())
+        this.QueueHitSound(hitSound);
     return true;
 }
 /*Setting "this.winningFrame_" will cause this player to execute its win animation after its current animation is done.*/
@@ -498,6 +510,7 @@ Player.prototype.ForceLose = function(attackDirection)
 
     this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
     this.KnockDownDefeat(frame,attackDirection);
+    this.QueueSound("audio/" + this.name_ + "/dead.ogg");
 }
 /*Player gets is defeated*/
 Player.prototype.ForceTeamLose = function(frame,attackDirection)

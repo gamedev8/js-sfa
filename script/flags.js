@@ -28,6 +28,10 @@ var PlayerFlags = function(owner)
     this.Pose = new Flags();
     this.Combat = new Flags();
     this.Spawn = new Flags();
+    this.SwingSound = new Flags();
+    this.HitSound = new Flags();
+    this.BlockSound = new Flags();
+    this.MotionSound = new Flags();
 }
 
 var FrameFlags = function()
@@ -70,6 +74,36 @@ var SPAWN_FLAGS =
 {
     SPAWN_SMALLDIRT:1 << 0
     ,SPAWN_BIGDIRT:1 << 1
+}
+
+var SWINGSOUND = 
+{
+    LP:1 << 1
+    ,MP:1 << 2
+    ,HP:1 << 3
+    ,LK:1 << 4
+    ,MK:1 << 5
+    ,HK:1 << 6
+}
+
+var HITSOUND = 
+{
+    LP:1 << 1
+    ,MP:1 << 2
+    ,HP:1 << 3
+    ,LK:1 << 4
+    ,MK:1 << 5
+    ,HK:1 << 6
+}
+
+var BLOCKSOUND = 
+{
+    LP:1 << 1
+    ,MP:1 << 2
+    ,HP:1 << 3
+    ,LK:1 << 4
+    ,MK:1 << 5
+    ,HK:1 << 6
 }
 
 var PLAYER_FLAGS = 
