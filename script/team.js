@@ -63,3 +63,15 @@ Team.prototype.WriteText = function(text)
     this.ComboText.ShowNow(10);
 }
 
+
+/*remove any DOM element that was added by this instance*/
+Team.prototype.Release = function()
+{
+    this.PortriatImg.src = "#";
+    this.NameImg.src = "#";
+    this.ComboText.HideNow();
+    this.Healthbar.Release();
+    this.Energybar.Release();
+    for(var i = 0; i < this.Players.length; ++i)
+        this.Players[i].Release();
+}

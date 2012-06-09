@@ -36,6 +36,7 @@ var EnergyBar = function(pnlID,team)
     this.FrameCount = 0;
     this.CurrentSrc = "";
     this.LastSrc = "";
+    this.isInitialized_ = false;
 }
 EnergyBar.prototype.GetNextFrameID = function()
 {
@@ -48,40 +49,50 @@ EnergyBar.prototype.AddAnimation = function(key)
     return this.Animations[key];
 }
 
+/**/
+EnergyBar.prototype.Release = function()
+{
+    RemoveChildrenFromDOM(this.ParentElement);
+}
+
 /*initialized the energy bar*/
 EnergyBar.prototype.Init = function()
 {
     /***************************/
     /*initialize the animations*/
     /***************************/
-    var nbFrames = 8;
+    if(!this.isInitialized_)
+    {
+        var nbFrames = 8;
 
-    var level0 = this.AddAnimation(ENERGYBAR.LEVEL0_KEY);
-    level0.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-team-" + this.Team + ".png",nbFrames)
+        var level0 = this.AddAnimation(ENERGYBAR.LEVEL0_KEY);
+        level0.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-team-" + this.Team + ".png",nbFrames)
 
-    var level0Maxed = this.AddAnimation(ENERGYBAR.LEVEL0MAXED_KEY);
-    level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-1.png",nbFrames)
-    level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-2.png",nbFrames)
-    level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-3.png",nbFrames)
-    level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-4.png",nbFrames)
-    level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-3.png",nbFrames)
-    level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-2.png",nbFrames)
+        var level0Maxed = this.AddAnimation(ENERGYBAR.LEVEL0MAXED_KEY);
+        level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-1.png",nbFrames)
+        level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-2.png",nbFrames)
+        level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-3.png",nbFrames)
+        level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-4.png",nbFrames)
+        level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-3.png",nbFrames)
+        level0Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl0-full-team-" + this.Team + "-2.png",nbFrames)
 
-    var level1Maxed = this.AddAnimation(ENERGYBAR.LEVEL1MAXED_KEY);
-    level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-1.png",nbFrames)
-    level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-2.png",nbFrames)
-    level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-3.png",nbFrames)
-    level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-4.png",nbFrames)
-    level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-3.png",nbFrames)
-    level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-2.png",nbFrames)
+        var level1Maxed = this.AddAnimation(ENERGYBAR.LEVEL1MAXED_KEY);
+        level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-1.png",nbFrames)
+        level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-2.png",nbFrames)
+        level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-3.png",nbFrames)
+        level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-4.png",nbFrames)
+        level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-3.png",nbFrames)
+        level1Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl1-full-team-" + this.Team + "-2.png",nbFrames)
 
-    var level2Maxed = this.AddAnimation(ENERGYBAR.LEVEL2MAXED_KEY);
-    level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-1.png",nbFrames)
-    level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-2.png",nbFrames)
-    level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-3.png",nbFrames)
-    level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-4.png",nbFrames)
-    level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-3.png",nbFrames)
-    level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-2.png",nbFrames)
+        var level2Maxed = this.AddAnimation(ENERGYBAR.LEVEL2MAXED_KEY);
+        level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-1.png",nbFrames)
+        level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-2.png",nbFrames)
+        level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-3.png",nbFrames)
+        level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-4.png",nbFrames)
+        level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-3.png",nbFrames)
+        level2Maxed.AddFrame(this,null,"images/misc/misc/energy-bar-lvl2-full-team-" + this.Team + "-2.png",nbFrames)
+        this.isInitalized_ = true;
+    }
     /******************************/
     /*initialize the html elements*/
     /******************************/

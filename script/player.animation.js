@@ -700,6 +700,7 @@ Player.prototype.Render = function(frame,stageDiffX)
         this.RenderShadow();
         this.RenderTrail(frame,stageDiffX);
         this.RenderDebugInfo();
+        this.PlaySounds();
     }
 }
 

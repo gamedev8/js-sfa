@@ -48,6 +48,7 @@ Stage.prototype.RestartMusic = function()
 
 Stage.prototype.PlayMusic = function()
 {
+    soundManager_.Restart(this.music_);
     soundManager_.Play(this.music_,true);
 }
 
@@ -65,13 +66,17 @@ Stage.prototype.Pause = function()
 /**/
 Stage.prototype.Resume = function()
 {
-    this.PlayMusic();
+    soundManager_.Play(this.music_,true);
 }
 
 /**/
 Stage.prototype.Release = function()
 {
-    /*soundManager_.Unload(this.music_);*/
+    this.PauseMusic();
+    this.bgImg0_.element.src = "";
+    this.bgImg1_.element.src = "";
+    this.bgImg0_.element.className = "";
+    this.bgImg1_.element.className = "";
 }
 
 Stage.prototype.FrameMove = function(frame)
@@ -515,9 +520,4 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
     if(!dontAlignPlayers)
         this.AlignPlayersX();
     return this.deltaX_;
-}
-
-/*Remove elements from the DOM and remove any custom CSS*/
-Stage.prototype.Release = function()
-{
 }

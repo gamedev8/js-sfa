@@ -44,7 +44,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
 
     this.element_ = null;
     this.image_ = null;
-    this.shadowContainer_;
+    this.shadowContainer_ = null;
     this.shadow_ = null;
 
     this.moveStageXFn_ = null;
@@ -447,7 +447,6 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
             this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
         if(!this.forceImmobile_ && this.IsDead())
             this.ForceTeamLose(frame);
-        this.PlaySounds();
     }
     else
     {
@@ -594,3 +593,20 @@ Player.prototype.SetupInfo = function(value,side)
     this.CreateKeysElement();
 }
 
+/*remove any DOM element that was added by this instance*/
+Player.prototype.Release = function()
+{
+    this.ReleaseDebugElements();
+    var parentElement = (parentElement || window.document.getElementById("pnlStage"));
+
+    for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
+        parentElement.removeChild(this.frontHitReportImages_[i]);
+    for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
+        parentElement.removeChild(this.rearHitReportImages_[i]);
+
+    parentElement.removeChild(this.shadowContainer_);
+    parentElement.removeChild(this.element_);
+
+    RemoveFromDOM(this.shadowContainer_);
+    RemoveFromDOM(this.element_);
+}

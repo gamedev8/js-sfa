@@ -33,6 +33,7 @@ var Game = function ()
     this.text_ = this.fontSystem_.AddText("pnlText");
     this.useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
     this.state_ = 0;
+    this.isInitialized_ = false;
 }
 
 Game.prototype.IsGameOver = function()
@@ -113,41 +114,47 @@ Game.prototype.ResetKeys = function()
 
 Game.prototype.Init = function()
 {
-    var getKeyPressHandler = function(thisValue,isDown)
+    if(!this.isInitialized_)
     {
-        return function(e)
+        var getKeyPressHandler = function(thisValue,isDown)
         {
-            thisValue.HandleKeyPress(e,isDown);
+            return function(e)
+            {
+                thisValue.HandleKeyPress(e,isDown);
+            }
+        }
+
+        var resetKeys = function(thisValue)
+        {
+            return function(e)
+            {
+                thisValue.ResetKeys();
+            }
+        }
+
+        if(!!window.document.attachEvent)
+        {
+            window.document.attachEvent("onkeydown",getKeyPressHandler(this,true),true);
+            window.document.attachEvent("onkeyup",getKeyPressHandler(this,false),true);
+            /*window.attachEvent("onblur", resetKeys(this), true);*/
+            window.onblur = resetKeys(this);
+        }
+        else
+        {
+            window.document.addEventListener("keydown",getKeyPressHandler(this,true),true);
+            window.document.addEventListener("keyup",getKeyPressHandler(this,false),true);
+            /*window.addEventListener("onblur", resetKeys(this), true);*/
+            window.onblur = resetKeys(this);
         }
     }
-
-    var resetKeys = function(thisValue)
-    {
-        return function(e)
-        {
-            thisValue.ResetKeys();
-        }
-    }
-
-    if(!!window.document.attachEvent)
-    {
-        window.document.attachEvent("onkeydown",getKeyPressHandler(this,true),true);
-        window.document.attachEvent("onkeyup",getKeyPressHandler(this,false),true);
-        /*window.attachEvent("onblur", resetKeys(this), true);*/
-        window.onblur = resetKeys(this);
-    }
-    else
-    {
-        window.document.addEventListener("keydown",getKeyPressHandler(this,true),true);
-        window.document.addEventListener("keyup",getKeyPressHandler(this,false),true);
-        /*window.addEventListener("onblur", resetKeys(this), true);*/
-        window.onblur = resetKeys(this);
-    }
+    this.isInitialized_ = true;
 
 }
 
 Game.prototype.PreloadTextImages = function()
 {
+    if(!!this.isInitialized_)
+        return;
     this.fontSystem_.Preload();
 }
 
@@ -169,6 +176,8 @@ Game.prototype.ResetDOM = function()
 
 Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
 {
+    this.Break();
+    this.speed_ = CONSTANTS.NORMAL_SPEED;
     var goodGuys = goodGuys;
     var badGuys = badGuys;
     var stage = stage;
@@ -186,17 +195,20 @@ Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
     this.Init();
     this.InitDOM();
     this.PreloadTextImages();
-    this.frame_ = 0;
 
     this.managed_ = this.match_;
 
     this.match_.stage_.Set(stage);
     this.match_.Start(goodGuys,badGuys);
+    this.isInitialized_ = true;
+    this.frame_ = 0;
     this.RunGameLoop();
 }
 
 Game.prototype.StartCharSelect = function()
 {
+    this.Break();
+    this.speed_ = CONSTANTS.NORMAL_SPEED;
     if(!!this.match_)
         this.match_.Release();
     this.ResetDOM();
@@ -204,11 +216,12 @@ Game.prototype.StartCharSelect = function()
     this.PreloadTextImages();
     this.charSelect_ = new CharSelect(this.user1_,this.user2_);
     this.charSelect_.Init(window.document.getElementById("pnlStage"));
-    this.frame_ = 0;
     this.managed_ = this.charSelect_;
     /*center the screen*/
     Stage.prototype.Center();
     this.managed_.Resume();
+    this.isInitialized_ = true;
+    this.frame_ = 0;
     this.RunCharSelectLoop();
 }
 /*Increases the game loop speed*/
@@ -251,7 +264,10 @@ Game.prototype.HandleKeyPress = function(e,isDown)
         this.managed_.Resume();
     }
     if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
+    {
         this.frame_ = CONSTANTS.MAX_FRAME + 1;
+        this.End();
+    }
     if(this.WasKeyPressed(KEYS.EIGHT,keyCode,isDown))
         this.SpeedUp();
     if(this.WasKeyPressed(KEYS.NINE,keyCode,isDown))
@@ -260,6 +276,14 @@ Game.prototype.HandleKeyPress = function(e,isDown)
     this.keyboardState_["_" + keyCode] = isDown;
     if(!!this.managed_)
         this.managed_.OnKeyStateChanged(isDown,keyCode,this.frame_);
+}
+
+Game.prototype.End = function()
+{
+    this.ReleaseText();
+    this.ResetKeys();
+    this.managed_.Kill()
+    this.managed_ = null;
 }
 
 Game.prototype.HandleInput = function()
@@ -307,6 +331,12 @@ Game.prototype.ShowFPS = function()
         spnFPS_.innerHTML = fps;
     }
 }
+
+Game.prototype.Break = function()
+{
+    window.clearTimeout(this.nextTimeout_);
+}
+
 /*Basic game loop*/
 Game.prototype.RunGameLoop = function()
 {
@@ -330,11 +360,13 @@ Game.prototype.RunGameLoop = function()
 
     if(!this.match_.IsMatchOver(this.frame_))
     {
-        window.setTimeout(this.GetGameLoopClosure(this),this.speed_);
+        this.nextTimeout_ = window.setTimeout(this.GetGameLoopClosure(this),this.speed_);
         //window.requestAnimFrame(this.GetGameLoopClosure(this),this.speed_);
     }
     else
+    {
         this.match_.HandleMatchOver(this.frame_);
+    }
 }
 
 Game.prototype.RunCharSelectLoop = function()
@@ -358,7 +390,7 @@ Game.prototype.RunCharSelectLoop = function()
 
         if(!this.IsGameOver())
         {
-            window.setTimeout(this.GetCharSelectLoopClosure(this),this.speed_);
+            this.nextTimeout_ = window.setTimeout(this.GetCharSelectLoopClosure(this),this.speed_);
         }
         else
         {

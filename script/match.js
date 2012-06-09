@@ -438,8 +438,15 @@ Match.prototype.Render = function(frame)
     this.teamB_.Energybar.Render(frame);
 }
 
+Match.prototype.Kill = function()
+{
+    this.Release();
+}
+
 /*Remove elements from the DOM and remove any custom CSS*/
 Match.prototype.Release = function()
 {
     this.stage_.Release();
+    this.teamA_.Release();
+    this.teamB_.Release();
 }

@@ -16,7 +16,16 @@ var HealthBar = function(pnlHealthbarID,team)
     this.DamageElement = null;
     this.LifeElement = null;
     this.Team = team;
+    this.isInitialized_ = false;
 }
+
+
+/**/
+HealthBar.prototype.Release = function()
+{
+    RemoveChildrenFromDOM(this.HealthbarElement);
+}
+
 
 HealthBar.prototype.Init = function()
 {
@@ -35,6 +44,8 @@ HealthBar.prototype.Init = function()
     this.HealthbarElement.appendChild(img);
     this.HealthbarElement.appendChild(this.LifeElement);
     this.HealthbarElement.appendChild(this.DamageElement);
+
+    this.isInitialized_ = true;
 }
 
 HealthBar.prototype.Reset = function()

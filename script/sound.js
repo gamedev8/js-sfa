@@ -31,6 +31,8 @@ SoundManager.prototype.Unload = function(path)
 {
     if(!!this.Items[path])
     {
+        for(var i = 0; i < this.Items[path].Channels; ++i)
+            this.Items[path].Elements[i].pause();
         this.Items[path] = null;
         //window.document.removeChild(this.Items[path]);
     }
@@ -56,6 +58,17 @@ SoundManager.prototype.GetVolume = function(path)
     return 0;
 }
 
+
+/**/
+SoundManager.prototype.Restart = function(path,loops)
+{
+    if(!!this.Items[path])
+    {
+        if(!!this.Items[path].Elements[this.Items[path].CurrentChannel].duration)
+            this.Items[path].Elements[this.Items[path].CurrentChannel].currentTime = 0;
+        this.Items[path].Elements[this.Items[path].CurrentChannel].volume = 1;
+    }
+}
 
 /**/
 SoundManager.prototype.Play = function(path,loops)
@@ -113,6 +126,12 @@ SoundManager.prototype.Preload = function()
     this.Load("audio/misc/hit-lk.ogg",3);
     this.Load("audio/misc/hit-mk.ogg",3);
     this.Load("audio/misc/hit-hk.ogg",3);
+
+
+    this.Load("audio/misc/p-select-move-0.ogg",3);
+    this.Load("audio/misc/p-select-move-1.ogg",3);
+    this.Load("audio/misc/p-select-choose-0.ogg",3);
+    this.Load("audio/misc/p-select-choose-1.ogg",3);
 }
 
 var soundManager_ = new SoundManager();

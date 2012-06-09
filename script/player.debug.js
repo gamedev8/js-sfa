@@ -49,6 +49,26 @@ Player.prototype.RenderDebugInfo = function()
     }
 
 }
+
+
+/**/
+Player.prototype.ReleaseDebugElements = function()
+{
+    var parentElement = window.document.getElementById("pnlStage");
+    parentElement.removeChild(this.debugHit_);
+
+    if(this.team_ == 1)
+    {
+        window.document.getElementById("pnlTeam1Keys").removeChild(this.debKeysElement_);
+    }
+    else
+    {
+        window.document.getElementById("pnlTeam2Keys").removeChild(this.debKeysElement_);
+    }
+}
+
+
+/**/
 Player.prototype.CreateDebugElements = function(parentElement)
 {
     /*

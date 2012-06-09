@@ -25,97 +25,102 @@
     this.stanceElement_ = {X:0,Y:0,Element:null};
     this.shadowElement_ = {X:0,Y:0,Element:null};
     this.nameElement_ = {X:0,Y:0,Element:null};
+    this.isInitialized_ = false;
+    this.chooseCharacterFn_ = null;
 }
 
 User.prototype.AddStanceAnimations = function()
 {
-    this.animations_["ryu"] = new BasicAnimation("ryu_stance",[],true);
-    this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-0.png",5);
-    this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-1.png",5);
-    this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-2.png",5);
-    this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-3.png",5);
-    this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-2.png",5);    
-    this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-1.png",5);
+    if(!this.isInitialized_)
+    {
+        this.animations_["ryu"] = new BasicAnimation("ryu_stance",[],true);
+        this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-0.png",5);
+        this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-1.png",5);
+        this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-2.png",5);
+        this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-3.png",5);
+        this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-2.png",5);    
+        this.animations_["ryu"].AddFrame(this,"images/misc/ryu/x-stance-1.png",5);
 
-    this.animations_["ken"] = new BasicAnimation("ken_stance",[],true);
-    this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-0.png",5);
-    this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-1.png",5);
-    this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-2.png",5);
-    this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-3.png",5);
-    this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-2.png",5);    
-    this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-1.png",5);
+        this.animations_["ken"] = new BasicAnimation("ken_stance",[],true);
+        this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-0.png",5);
+        this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-1.png",5);
+        this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-2.png",5);
+        this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-3.png",5);
+        this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-2.png",5);    
+        this.animations_["ken"].AddFrame(this,"images/misc/ken/x-stance-1.png",5);
 
-    this.animations_["sagat"] = new BasicAnimation("sagat_stance",[],true);
-    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-0.png",5);
-    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-3.png",5);
-    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-2.png",5);
-    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-1.png",5);
-    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-2.png",5);    
-    this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-3.png",5);    
+        this.animations_["sagat"] = new BasicAnimation("sagat_stance",[],true);
+        this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-0.png",5);
+        this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-3.png",5);
+        this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-2.png",5);
+        this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-1.png",5);
+        this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-2.png",5);    
+        this.animations_["sagat"].AddFrame(this,"images/misc/sagat/x-stance-3.png",5);    
 
-    this.animations_["guy"] = new BasicAnimation("guy_stance",[],true);
-    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-0.png",26);
-    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-3.png",15);
-    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-2.png",15);
-    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-1.png",26);
-    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-2.png",15);
-    this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-3.png",15);
+        this.animations_["guy"] = new BasicAnimation("guy_stance",[],true);
+        this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-0.png",26);
+        this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-3.png",15);
+        this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-2.png",15);
+        this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-1.png",26);
+        this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-2.png",15);
+        this.animations_["guy"].AddFrame(this,"images/misc/guy/x-stance-3.png",15);
 
-    this.animations_["birdie"] = new BasicAnimation("birdie_stance",[],true);
-    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-0.png",15);
-    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-1.png",15);
-    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-2.png",15);
-    this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-3.png",15);
+        this.animations_["birdie"] = new BasicAnimation("birdie_stance",[],true);
+        this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-0.png",15);
+        this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-1.png",15);
+        this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-2.png",15);
+        this.animations_["birdie"].AddFrame(this,"images/misc/birdie/x-stance-3.png",15);
 
-    this.animations_["chunli"] = new BasicAnimation("chunli_stance",[],true);
-    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-0.png",10);
-    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-1.png",10);
-    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-2.png",10);
-    this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-3.png",10);
+        this.animations_["chunli"] = new BasicAnimation("chunli_stance",[],true);
+        this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-0.png",10);
+        this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-1.png",10);
+        this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-2.png",10);
+        this.animations_["chunli"].AddFrame(this,"images/misc/chunli/x-stance-3.png",10);
 
-    this.animations_["charlie"] = new BasicAnimation("charlie_stance",[],true);
-    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-0.png",5);
-    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-1.png",5);
-    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-2.png",5);
-    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-3.png",5);
-    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-2.png",5);
-    this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-1.png",5);
+        this.animations_["charlie"] = new BasicAnimation("charlie_stance",[],true);
+        this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-0.png",5);
+        this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-1.png",5);
+        this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-2.png",5);
+        this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-3.png",5);
+        this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-2.png",5);
+        this.animations_["charlie"].AddFrame(this,"images/misc/charlie/x-stance-1.png",5);
 
-    this.animations_["sodom"] = new BasicAnimation("sodom_stance",[],true);
-    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-0.png",5);
-    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-1.png",5);
-    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-2.png",5);
-    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-3.png",5);
-    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-4.png",5);
-    this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-5.png",5);
-
-
-    this.animations_["adon"] = new BasicAnimation("adon_stance",[],true);
-    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-0.png",5);
-    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-1.png",5);
-    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-2.png",5);
-    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-3.png",5);
-    this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-4.png",5);
+        this.animations_["sodom"] = new BasicAnimation("sodom_stance",[],true);
+        this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-0.png",5);
+        this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-1.png",5);
+        this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-2.png",5);
+        this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-3.png",5);
+        this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-4.png",5);
+        this.animations_["sodom"].AddFrame(this,"images/misc/sodom/x-stance-5.png",5);
 
 
-    this.animations_["rose"] = new BasicAnimation("rose_stance",[],true);
-    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-0.png",5);
-    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-1.png",5);
-    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-2.png",5);
-    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-3.png",5);
-    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-4.png",5);
-    this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-5.png",5);
+        this.animations_["adon"] = new BasicAnimation("adon_stance",[],true);
+        this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-0.png",5);
+        this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-1.png",5);
+        this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-2.png",5);
+        this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-3.png",5);
+        this.animations_["adon"].AddFrame(this,"images/misc/adon/x-stance-4.png",5);
+
+
+        this.animations_["rose"] = new BasicAnimation("rose_stance",[],true);
+        this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-0.png",5);
+        this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-1.png",5);
+        this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-2.png",5);
+        this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-3.png",5);
+        this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-4.png",5);
+        this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-5.png",5);
+    }
+
+    this.isInitialized_ = true;
 }
 
 User.prototype.Release = function()
 {
     var parentElement = window.document.getElementById("pnlStage");
-    parentElement.removeChild(this.selectedState_.Element);
-    parentElement.removeChild(this.portriatElement_);
-    this.element_.Element.removeChild(this.selectedCharStance_.Element);
-    this.element_.Element.removeChild(this.shadowElement_.Element);
-    this.element_.Element.removeChild(this.nameElement_.Element);
-    parentElement.removeChild(this.element_.Element);
+    RemoveFromDOM(this.selectedState_.Element);
+    RemoveFromDOM(this.portriatElement_);
+    RemoveFromDOM(this.element_.Element);
+    this.isCharSelected_ = false;
 }
 
 User.prototype.Init = function(isUser1)
@@ -182,6 +187,7 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
                     || this.Selected == CHARACTERS.KEN
                     || this.Selected == CHARACTERS.MBISON)
                 this.isCharSelected_ = true;
+                this.chooseCharacterFn_(this)
             }
 
             if(!!direction)
@@ -337,7 +343,7 @@ var CharSelect = function(user1,user2)
     this.element_ = null;
     this.playerSelectImg_ = null;
     this.music_ = "audio/player-select.ogg";
-
+    this.sounds_ = [];
 }
 
 CharSelect.prototype.RestartMusic = function()
@@ -434,10 +440,30 @@ CharSelect.prototype.TryChangeCharacter = function(who, direction)
         }
     }
 
-    row = this.GetRow(who);
-    col = this.GetColumn(who);
+    var tmpRow = this.GetRow(who);
+    var tmpCol = this.GetColumn(who);
+
+    if(tmpRow != row || tmpCol != col)
+    {
+        if(isUser1)
+            this.QueueUser1MoveSound();
+        else
+            this.QueueUser2MoveSound();
+            
+    }
+
+    row = tmpRow;
+    col = tmpCol;
+
     who.selectedState_.Y = CONSTANTS.CHARSELECT_Y - (row * CONSTANTS.CHARSELECT_HEIGHT);
     who.selectedState_.X = CONSTANTS.CHARSELECT_X + (col * CONSTANTS.CHARSELECT_WIDTH);
+}
+
+
+/**/
+CharSelect.prototype.Kill = function()
+{
+    this.Release();
 }
 
 /**/
@@ -447,8 +473,13 @@ CharSelect.prototype.Release = function()
     var parentElement = window.document.getElementById("pnlStage");
     parentElement.style.backgroundImage = "";
     parentElement.style.backgroundRepeat = "";
-    parentElement.removeChild(this.element_);
-    parentElement.removeChild(this.playerSelectImg_);
+
+    //parentElement.removeChild(this.element_);
+    //parentElement.removeChild(this.playerSelectImg_);
+
+    RemoveChildrenFromDOM(this.element_);
+    RemoveChildrenFromDOM(this.playerSelectImg_);
+
 
     if(!!this.u1_)
         this.u1_.Release();
@@ -482,13 +513,8 @@ CharSelect.prototype.Init = function()
         this.u1_.player_ = 1;
         this.u1_.direction_ = -1;
         this.u1_.Init(true);
-        this.u1_.changeCharacterFn_ = (function(thisValue)
-        {
-            return function(direction)
-            {
-                thisValue.TryChangeCharacter(this,direction);
-            }
-        })(this);
+        this.u1_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
+        this.u1_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser1ChooseSound(); } })(this);
 
         if(this.u1_.Selected == null)
             this.u1_.Selected = CHARACTERS.RYU;
@@ -502,13 +528,8 @@ CharSelect.prototype.Init = function()
         this.u2_.player_ = 2;
         this.u2_.direction_ = 1;
         this.u2_.Init(false);
-        this.u2_.changeCharacterFn_ = (function(thisValue)
-        {
-            return function(direction)
-            {
-                thisValue.TryChangeCharacter(this,direction);
-            }
-        })(this);
+        this.u2_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
+        this.u2_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser2ChooseSound(); } })(this);
 
         if(this.u1_.Selected == null)
             this.u1_.Selected = CHARACTERS.KEN;
@@ -551,6 +572,13 @@ CharSelect.prototype.Render = function(frame)
 {
     this.u1_.Render(frame);
     this.u2_.Render(frame);
+    this.PlaySounds();
+}
+
+CharSelect.prototype.PlaySounds = function()
+{
+    while(this.sounds_.length > 0)
+        soundManager_.Play(this.sounds_.splice(0,1));
 }
 
 /**/
@@ -570,6 +598,12 @@ CharSelect.prototype.GetStage = function()
 {
     return kensStage_;
 }
+
+/**/
+CharSelect.prototype.QueueUser1MoveSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-move-0.ogg"; }
+CharSelect.prototype.QueueUser1ChooseSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-choose-0.ogg"; }
+CharSelect.prototype.QueueUser2MoveSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-move-1.ogg"; }
+CharSelect.prototype.QueueUser2ChooseSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-choose-0.ogg"; }
 
 
 Array.prototype.IndexOf = function(value)
