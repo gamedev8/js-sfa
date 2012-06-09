@@ -593,7 +593,7 @@ CharSelect.prototype.GetBadGuys = function()
     return [this.u2_.GetPlayer()];
 }
 
-/**/
+/*For now - only Ken's stage is implemented*/
 CharSelect.prototype.GetStage = function()
 {
     return kensStage_;

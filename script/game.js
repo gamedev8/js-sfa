@@ -347,12 +347,14 @@ Game.prototype.RunGameLoop = function()
         ++this.frame_;
         //this.match_.PreFrameMove(this.frame_);
         this.match_.FrameMove(this.frame_, this.keyboardState_);
+        soundManager_.FrameMove(this.frame_);
         if(!this.match_.isSuperMoveActive_)
             this.fontSystem_.FrameMove(this.frame_);
 
         this.match_.Render(this.frame_);
         if(!this.match_.isSuperMoveActive_)
             this.fontSystem_.Render(this.frame_);
+        soundManager_.Render(this.frame_);
 
         this.match_.RenderComplete(this.frame_);
         this.ShowFPS();
@@ -379,12 +381,14 @@ Game.prototype.RunCharSelectLoop = function()
             this.RemoveState(GAME_STATES.STEP_FRAME);
             ++this.frame_;
             this.charSelect_.FrameMove(this.frame_);
+            soundManager_.FrameMove();
             if(!!this.charSelect_.isDone_)
             {
                 this.managed_ = null;
                 this.StartMatch();
             }
             this.charSelect_.Render(this.frame_);
+            soundManager_.Render();
             this.ShowFPS();
         }
 

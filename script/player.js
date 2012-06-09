@@ -428,7 +428,7 @@ Player.prototype.OnRenderComplete = function(frame)
 Player.prototype.PlaySounds = function()
 {
     while(this.sounds_.length > 0)
-        soundManager_.Play(this.sounds_.splice(0,1));
+        soundManager_.PlayWithVolume(this.sounds_.splice(0,1)[0]);
 }
 
 Player.prototype.OnFrameMove = function(frame,stageX,stageY)

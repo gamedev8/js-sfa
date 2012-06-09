@@ -48,8 +48,11 @@ Stage.prototype.RestartMusic = function()
 
 Stage.prototype.PlayMusic = function()
 {
-    soundManager_.Restart(this.music_);
-    soundManager_.Play(this.music_,true);
+    if(!soundManager_.IsPlaying(this.music_))
+    {
+        soundManager_.Restart(this.music_);
+        soundManager_.Play(this.music_,true);
+    }
 }
 
 Stage.prototype.PauseMusic = function()
@@ -85,8 +88,11 @@ Stage.prototype.FrameMove = function(frame)
     this.deltaX_ = 0;
     this.deltaY_ = 0;
 
-    /*if(!!this.fadeOutMusic_ && soundManager_.GetVolume(this.music_) > 0.1)
-        soundManager_.SetVolume(this.music_, (this.fadeOutMusic_ -= 0.01));*/
+    if(!!this.fadeOutMusic_)
+    {
+        this.fadeOutMusic_ = false;
+        soundManager_.FadeOut(this.music_);
+    }
 }
 
 Stage.prototype.Render = function(frame)

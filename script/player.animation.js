@@ -515,7 +515,10 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
     if(!!newAnimation && !!newAnimation.Animation)
     {
         if(!!newAnimation.Animation.isSuperMove_)
+        {
             this.GetMatch().OnSuperMoveStarted(this);
+            this.QueueSuperMoveChargeSound();
+        }
 
         /*must start a move on the ground to hold airborne*/
         if(this.IsAirborne())
@@ -679,7 +682,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         {
             this.QueueSwingSound(newFrame.FlagsToSet.SwingSound);
             if(!!newFrame.soundFilename_)
-                this.QueueSound(newFrame.soundFilename_);
+                this.QueueSound(newFrame.soundFilename_,newFrame.soundVolume_);
         }
     }
 }

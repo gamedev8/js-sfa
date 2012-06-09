@@ -124,7 +124,6 @@ Match.prototype.GetCurrentFrame = function()
 /*A team has just been defeated*/
 Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
 {
-    this.stage_.FadeOutMusic();
     var frame = this.GetGame().frame_
     this.GetGame().SetSpeed(CONSTANTS.SLOW_SPEED);
     this.defeatedTeam_ = team;
@@ -208,8 +207,6 @@ Match.prototype.Reset = function()
 
         this.teamA_.Healthbar.Reset();
         this.teamB_.Healthbar.Reset();
-
-        this.stage_.RestartMusic();
     }
 }
 
@@ -333,7 +330,7 @@ Match.prototype.Start = function(team1,team2)
     this.teamB_.Healthbar.Init();
     this.teamB_.Energybar.Init();
 
-    this.stage_.Resume();
+    this.stage_.PlayMusic();
 }
 /*Handles key state changes*/
 Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)

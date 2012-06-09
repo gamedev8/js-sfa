@@ -94,7 +94,7 @@ Animation.prototype.Chain = function(move,frameOffset)
     this.chainAnimationFrame_ = frameOffset || 0;
 }
 
-Animation.prototype.AddFrameWithSound = function(player,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
+Animation.prototype.AddFrameWithSound = function(player,volume,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
 {
     this.ignoresCollisions_ = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
     return this.baseAnimation_.AddFrameWithSound.apply(this.baseAnimation_,arguments);
@@ -440,6 +440,7 @@ var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear
     this.ImageOffsetY = imageOffsetY === 0 ? 0 : (imageOffsetY || null);
     this.chainProjectile_ = chainProjectile;
     this.soundFilename_ = "";
+    this.soundVolume_ = 1;
 
 }
 Frame.prototype.GetEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
