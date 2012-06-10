@@ -105,6 +105,11 @@ Animation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsT
     this.ignoresCollisions_ = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
     return this.baseAnimation_.AddFrame.apply(this.baseAnimation_,arguments);
 }
+Animation.prototype.AddRepeatingFrameWithSound = function(player,volume,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
+{
+    this.ignoresCollisions_ = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+    return this.baseAnimation_.AddRepeatingFrameWithSound.apply(this.baseAnimation_,arguments);
+}
 Animation.prototype.AddRepeatingFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
 {
     this.ignoresCollisions_ = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);

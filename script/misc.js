@@ -49,6 +49,9 @@ var kensStage_ = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ke
 
 var game_ = new Game();
 
+var runGameLoop_ = (function(thisValue) { return function() { thisValue.RunGameLoop(); } })(game_);
+var runCharSelectLoop_ = (function(thisValue) { return function() { thisValue.RunCharSelectLoop(); } })(game_);
+
 /*overriden OnStageImagesLoaded function, just incase the images load too slow*/
 function OnStageImagesLoaded()
 {
@@ -84,5 +87,5 @@ function MaxOutEnergy()
 /*******************************************************************************************************************************/
 
 /*play*/
-//StartQuickMatch();
-StartCharacterSelection();
+StartQuickMatch();
+//StartCharacterSelection();

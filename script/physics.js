@@ -768,7 +768,8 @@ Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
                 if((Math.abs(x - match.teamB_.Players[i].GetMidX()) < distance)
                     && (Math.abs(y - match.teamB_.Players[i].y_) < distance)
                     && (!(match.teamB_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
-                    && (!match.teamB_.Players[i].grappledPlayer_)
+                    && (!match.teamB_.Players[i].grappledPlayer_
+                    && (!match.teamB_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE)))
                     )
                     return true;
             break;
@@ -780,6 +781,7 @@ Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
                     && (Math.abs(y - match.teamA_.Players[i].y_) < distance)
                     && (!(match.teamA_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
                     && (!match.teamA_.Players[i].grappledPlayer_)
+                    && (!match.teamA_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE))
                     )
                     return true;
             break;

@@ -318,6 +318,7 @@ Game.prototype.GetCharSelectLoopClosure = function(thisValue)
         thisValue.RunCharSelectLoop();
     }
 }
+
 /*Shows the frame rate on screen*/
 Game.prototype.ShowFPS = function()
 {
@@ -362,8 +363,8 @@ Game.prototype.RunGameLoop = function()
 
     if(!this.match_.IsMatchOver(this.frame_))
     {
-        this.nextTimeout_ = window.setTimeout(this.GetGameLoopClosure(this),this.speed_);
-        //window.requestAnimFrame(this.GetGameLoopClosure(this),this.speed_);
+        this.nextTimeout_ = window.setTimeout(runGameLoop_,this.speed_);
+        //this.nextTimeout_ = window.setTimeout(this.GetGameLoopClosure(this),this.speed_);
     }
     else
     {
@@ -394,7 +395,8 @@ Game.prototype.RunCharSelectLoop = function()
 
         if(!this.IsGameOver())
         {
-            this.nextTimeout_ = window.setTimeout(this.GetCharSelectLoopClosure(this),this.speed_);
+            //this.nextTimeout_ = window.setTimeout(this.GetCharSelectLoopClosure(this),this.speed_);
+            this.nextTimeout_ = window.setTimeout(runCharSelectLoop_,this.speed_);
         }
         else
         {

@@ -94,6 +94,7 @@ var HITSOUND =
     ,LK:1 << 4
     ,MK:1 << 5
     ,HK:1 << 6
+    ,HP3:1 << 7
 }
 
 var BLOCKSOUND = 

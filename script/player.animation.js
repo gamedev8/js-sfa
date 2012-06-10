@@ -114,7 +114,6 @@ Player.prototype.ExecuteAnimation = function(name)
 
                 if(!!this.IsProjectileInUse(move))
                     continue;
-
             }
         }
 

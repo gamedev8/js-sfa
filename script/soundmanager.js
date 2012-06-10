@@ -86,12 +86,21 @@ SoundManager.prototype.Play = function(path,loops)
 {
     if(!!this.Items[path])
     {
+        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
         if(!!loops)
-            this.Items[path].Elements[this.Items[path].CurrentChannel].loop = true;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].volume = this.Items[path].DefaultVolume;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].play();
+            el.loop = true;
+        el.volume = this.Items[path].DefaultVolume;
+        el.play();
         if(++this.Items[path].CurrentChannel >= this.Items[path].Channels)
             this.Items[path].CurrentChannel = 0;
+
+        if(!!el.error)
+        {
+            Alert(path);
+            Alert(el.error);
+            this.Items[path] = null;
+            return;
+        }
     }
 }
 
@@ -101,12 +110,22 @@ SoundManager.prototype.PlayWithVolume = function(obj,loops)
     var path = obj.Value;
     if(!!this.Items[path])
     {
-        if(!!loops)
-            this.Items[path].Elements[this.Items[path].CurrentChannel].loop = true;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].volume = obj.Volume;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].play();
+        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        el.currentTime = 0;
+        if(!!loops) el.loop = true;
+        el.volume = obj.Volume;
+        el.play();
+
         if(++this.Items[path].CurrentChannel >= this.Items[path].Channels)
             this.Items[path].CurrentChannel = 0;
+
+        if(!!el.error)
+        {
+            Alert(path);
+            Alert(el.error.code);
+            this.Items[path] = null;
+            return;
+        }
     }
 }
 
@@ -153,6 +172,7 @@ SoundManager.prototype.Preload = function()
     this.Load("audio/misc/hit-lk.ogg",3);
     this.Load("audio/misc/hit-mk.ogg",3);
     this.Load("audio/misc/hit-hk.ogg",3);
+    this.Load("audio/misc/hit-hp-3.ogg",3);
 
 
     this.Load("audio/misc/p-select-move-0.ogg",3);

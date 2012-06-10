@@ -23,6 +23,7 @@ Player.prototype.QueueHitSound = function(value)
     if(!!(value & HITSOUND.HP)) this.QueueSound("audio/misc/hit-hp.ogg");
     else if(!!(value & HITSOUND.MP)) this.QueueSound("audio/misc/hit-mp.ogg");
     else if(!!(value & HITSOUND.LP)) this.QueueSound("audio/misc/hit-lp.ogg");
+    else if(!!(value & HITSOUND.HP3)) this.QueueSound("audio/misc/hit-hp-3.ogg");
     else if(!!(value & HITSOUND.HK)) this.QueueSound("audio/misc/hit-hk.ogg");
     else if(!!(value & HITSOUND.MK)) this.QueueSound("audio/misc/hit-mk.ogg");
     else if(!!(value & HITSOUND.LK)) this.QueueSound("audio/misc/hit-lk.ogg");

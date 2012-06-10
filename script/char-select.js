@@ -342,7 +342,7 @@ var CharSelect = function(user1,user2)
 
     this.element_ = null;
     this.playerSelectImg_ = null;
-    this.music_ = "audio/player-select.ogg";
+    this.music_ = "audio/misc/player-select.ogg";
     this.sounds_ = [];
 }
 
@@ -353,7 +353,7 @@ CharSelect.prototype.RestartMusic = function()
 
 CharSelect.prototype.PlayMusic = function()
 {
-    soundManager_.Play(this.music_);
+    soundManager_.Play(this.music_,true);
 }
 
 CharSelect.prototype.PauseMusic = function()
