@@ -353,7 +353,7 @@ CharSelect.prototype.RestartMusic = function()
 
 CharSelect.prototype.PlayMusic = function()
 {
-    soundManager_.Play(this.music_,true);
+    soundManager_.PlayOrResume(this.music_,true);
 }
 
 CharSelect.prototype.PauseMusic = function()

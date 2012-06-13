@@ -87,5 +87,5 @@ function MaxOutEnergy()
 /*******************************************************************************************************************************/
 
 /*play*/
-StartQuickMatch();
-//StartCharacterSelection();
+//StartQuickMatch();
+StartCharacterSelection();

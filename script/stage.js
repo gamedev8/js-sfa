@@ -69,7 +69,7 @@ Stage.prototype.Pause = function()
 /**/
 Stage.prototype.Resume = function()
 {
-    soundManager_.Play(this.music_,true);
+    soundManager_.Resume(this.music_);
 }
 
 /**/

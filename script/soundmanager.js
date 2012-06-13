@@ -86,13 +86,17 @@ SoundManager.prototype.Play = function(path,loops)
 {
     if(!!this.Items[path])
     {
-        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
-        if(!!loops)
-            el.loop = true;
-        el.volume = this.Items[path].DefaultVolume;
-        el.play();
+        /*go to the next channel*/
         if(++this.Items[path].CurrentChannel >= this.Items[path].Channels)
             this.Items[path].CurrentChannel = 0;
+
+        /*start playing from the time = 0*/
+        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        if(!!el.duration) el.currentTime = 0;
+        if(!!loops) el.loop = true;
+
+        el.volume = this.Items[path].DefaultVolume;
+        el.play();
 
         if(!!el.error)
         {
@@ -110,14 +114,16 @@ SoundManager.prototype.PlayWithVolume = function(obj,loops)
     var path = obj.Value;
     if(!!this.Items[path])
     {
-        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
-        el.currentTime = 0;
-        if(!!loops) el.loop = true;
-        el.volume = obj.Volume;
-        el.play();
-
+        /*go to the next channel*/
         if(++this.Items[path].CurrentChannel >= this.Items[path].Channels)
             this.Items[path].CurrentChannel = 0;
+        /*start playing from time 0*/
+        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        if(!!el.duration) el.currentTime = 0;
+        if(!!loops) el.loop = true;
+
+        el.volume = obj.Volume;
+        el.play();
 
         if(!!el.error)
         {
@@ -149,6 +155,29 @@ SoundManager.prototype.Pause = function(path)
     if(!!this.Items[path])
     {
         this.Items[path].Elements[this.Items[path].CurrentChannel].pause();
+    }
+}
+
+/**/
+SoundManager.prototype.Resume = function(path)
+{
+    if(!!this.Items[path])
+    {
+        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        if(!!el.paused)
+            el.play();
+    }
+}
+/**/
+SoundManager.prototype.PlayOrResume = function(path,loops)
+{
+    if(!!this.Items[path])
+    {
+        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        if(!!el.paused)
+            el.play();
+        else
+            this.Play(path,loops);
     }
 }
 
