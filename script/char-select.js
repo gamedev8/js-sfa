@@ -1,4 +1,6 @@
-﻿var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+﻿var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat"];
+
+var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
 {
     this.Right = right;
     this.Up = up;
@@ -27,6 +29,7 @@
     this.nameElement_ = {X:0,Y:0,Element:null};
     this.isInitialized_ = false;
     this.chooseCharacterFn_ = null;
+    this.randomSelect_ = 0;
 }
 
 User.prototype.AddStanceAnimations = function()
@@ -109,6 +112,19 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-3.png",5);
         this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-4.png",5);
         this.animations_["rose"].AddFrame(this,"images/misc/rose/x-c-stance-5.png",5);
+
+
+        this.animations_["random"] = new BasicAnimation("random",[],true);
+        this.animations_["random"].AddFrame(this,"images/misc/rose/x-c-stance-0.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/adon/x-stance-1.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/sodom/x-stance-2.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/charlie/x-stance-3.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/chunli/x-stance-4.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/birdie/x-stance-5.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/guy/x-stance-5.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/sagat/x-stance-5.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/ken/x-stance-5.png",5);
+        this.animations_["random"].AddFrame(this,"images/misc/ryu/x-stance-5.png",5);
     }
 
     this.isInitialized_ = true;
@@ -211,10 +227,10 @@ User.prototype.ShowCharacter = function()
         case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; this.SetPositions("7px","17px","27px","0px",16,28); break; }
         case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; this.SetPositions("7px","17px","10px","0px",10,24); break; }
         case CHARACTERS.ADON: { this.currentStance_ = "adon"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
-        case CHARACTERS.RANDOM1: { this.Hide(); break; }
+        case CHARACTERS.RANDOM1: { this.randomSelect_ = this.randomSelect_ || 1; break; }
         case CHARACTERS.ROSE: { this.currentStance_ = "rose"; this.SetPositions("-3px","17px","2px","0px",-32,32); break; }
         case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; this.SetPositions("7px","17px","10px","0px",16,28); break; }
-        case CHARACTERS.RANDOM2: { break; this.Hide(); }
+        case CHARACTERS.RANDOM2: { this.randomSelect_ = this.randomSelect_ || 1; break; }
         /*
         case CHARACTERS.AKUMA: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
         case CHARACTERS.MBISON: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
@@ -297,6 +313,13 @@ User.prototype.Show = function() {this.SetDisplay(true);}
 /*selecting a character*/
 User.prototype.FrameMove = function(frame)
 {
+    if(!!this.randomSelect_ && (frame % 5 == 0))
+    {
+        this.currentStance_ = CHAR_NAMES[this.randomSelect_-1]
+        this.ShowCharacter();
+        if(++this.randomSelect_ > CHAR_NAMES.length)
+            this.randomSelect_ = 1;
+    }
 }
 
 /*renders the users selected items*/

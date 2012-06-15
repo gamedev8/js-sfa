@@ -64,7 +64,8 @@ HealthBar.prototype.Reset = function()
 /*changes healthbar*/
 HealthBar.prototype.Change = function(delta)
 {
-    return this.Amount;
+    /*return this.Amount;*/
+
     var newAmount = Math.min(Math.max(this.Amount - delta,0), this.Max);
     var damage = this.Amount - newAmount;
     this.LifeElement.style.width = newAmount + "px";

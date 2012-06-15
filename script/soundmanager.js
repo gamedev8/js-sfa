@@ -120,7 +120,7 @@ SoundManager.prototype.PlayWithVolume = function(obj,loops)
         /*start playing from time 0*/
         var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
         if(!!el.duration) el.currentTime = 0;
-        if(!!loops) el.loop = true;
+        el.loop = !!loops;
 
         el.volume = obj.Volume;
         el.play();
@@ -175,7 +175,10 @@ SoundManager.prototype.PlayOrResume = function(path,loops)
     {
         var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
         if(!!el.paused)
+        {
+            el.loop = !!loops;
             el.play();
+        }
         else
             this.Play(path,loops);
     }
