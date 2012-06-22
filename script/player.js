@@ -44,6 +44,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
 
     this.element_ = null;
     this.image_ = null;
+    this.spriteElement_ = null;
     this.shadowContainer_ = null;
     this.shadow_ = null;
 
@@ -206,9 +207,9 @@ Player.prototype.CreateElement = function(x,y,parentElement)
     this.element_ = window.document.createElement("div");
     this.element_.className = "player";
 
-    var createImage = function(className,attrib,value,parent)
+    var createElement = function(tagName,className,attrib,value,parent)
     {
-        var i = window.document.createElement("img");
+        var i = window.document.createElement(tagName);
         i.className = className;
         if(!!attrib)
             i.style[attrib] = value;
@@ -216,25 +217,23 @@ Player.prototype.CreateElement = function(x,y,parentElement)
         return i;
     }
 
-    this.image_ = createImage.call(this,"player");
+    //this.image_ = createImage.call(this,"player");
+
+
+    this.spriteElement_ = window.document.createElement("div");
+    this.spriteElement_.className = "player-sprite";
+    this.spriteElement_.style.backgroundImage = "url('images/misc/" + this.name_ + "/sprites.png')";
+    this.element_.appendChild(this.spriteElement_);
 
     for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
-        this.frontHitReportImages_[this.frontHitReportImages_.length] = createImage.call(this,"front-hit-report","display","none",parentElement);
+        this.frontHitReportImages_[this.frontHitReportImages_.length] = createElement.call(this,"div","front-hit-report","display","none",parentElement);
     for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
-        this.rearHitReportImages_[this.rearHitReportImages_.length] = createImage.call(this,"rear-hit-report","display","none",parentElement);
-
-
-    /*firefox gets the slow function, since it does not seem to load preloaded images instantly*/
-    if(this.GetGame().UseAlternateImageLoadingFunctions())
-        this.invokeShowCurrentFrameImageFn_ = this._ShowCurrentFrameImage;
-    else
-        this.invokeShowCurrentFrameImageFn_ = this.ShowCurrentFrameImage;
-
+        this.rearHitReportImages_[this.rearHitReportImages_.length] = createElement.call(this,"div","rear-hit-report","display","none",parentElement);
 
 
     this.shadowContainer_ = window.document.createElement("div");
     this.shadowContainer_.className = "shadow";
-    this.shadow_ = createImage.call(this,"shadow","","",this.shadowContainer_);
+    this.shadow_ = createElement.call(this,"img","shadow","","",this.shadowContainer_);
     this.shadow_.src = "images/misc/misc/shadow.png";
 
     parentElement.appendChild(this.shadowContainer_);
@@ -351,8 +350,7 @@ Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
     while(++fhrIndex < this.frontHitReport_.length)
     {
         var item = this.frontHitReport_[fhrIndex];
-        var element = item.Element;
-        if(!item.Animation.TryRender(frame,item.StartFrame,element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
             this.frontHitReport_.splice(fhrIndex,1);
     }
     /*rear hit report images*/
@@ -360,8 +358,7 @@ Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
     while(++rhrIndex < this.rearHitReport_.length)
     {
         var item = this.rearHitReport_[rhrIndex];
-        var element = item.Element;
-        if(!item.Animation.TryRender(frame,item.StartFrame,element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
             this.rearHitReport_.splice(rhrIndex,1);
     }
     /*dirt images*/
@@ -369,8 +366,7 @@ Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
     while(++dirtIndex < this.dirtIndices_.length)
     {
         var item = this.otherAnimations_.Dirt[this.dirtIndices_[dirtIndex]];
-        var element = item.Element;
-        if(!item.Animation.TryRender(frame,item.StartFrame,element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
             this.dirtIndices_.splice(dirtIndex,1);
     }
     /*big dirt images*/
@@ -378,8 +374,7 @@ Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
     while(++bigDirtIndex < this.bigDirtIndices_.length)
     {
         var item = this.otherAnimations_.BigDirt[this.bigDirtIndices_[bigDirtIndex]];
-        var element = item.Element;
-        if(!item.Animation.TryRender(frame,item.StartFrame,element,stageX,STAGE.FLOORY,this.x_,STAGE.FLOORY))
+        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,STAGE.FLOORY,this.x_,STAGE.FLOORY))
             this.bigDirtIndices_.splice(bigDirtIndex,1);
     }
 }

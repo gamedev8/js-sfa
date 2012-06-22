@@ -159,14 +159,14 @@ Physics.prototype.TryProjectileHitProjectile = function(frame,x0,x1,y0,y1,projec
     if(!otherProjectile.isActive_)
         return;
     var otherProjectileBottom = parseInt(otherProjectile.element_.style.bottom);
-    var otherProjectileTop = parseInt(otherProjectile.element_.style.bottom) + parseInt(otherProjectile.element_.height);
+    var otherProjectileTop = parseInt(otherProjectile.element_.style.bottom) + parseInt(otherProjectile.element_.style.height);
     var otherProjectileLeft = 0;
     var otherProjectileRight = 0;
 
     if(projectile.direction_ < 0)
     {
         otherProjectileRight = STAGE.MAX_STAGEX - parseInt(otherProjectile.element_.style.right);
-        otherProjectileLeft = STAGE.MAX_STAGEX - parseInt(otherProjectile.element_.style.right) - parseInt(otherProjectile.element_.width);
+        otherProjectileLeft = STAGE.MAX_STAGEX - parseInt(otherProjectile.element_.style.right) - parseInt(otherProjectile.element_.style.width);
 
         if(((x0 >= otherProjectileLeft && x0 < otherProjectileRight) || (x1 >= otherProjectileLeft && x1 < otherProjectileRight)) && ((y0 >= otherProjectileBottom && y0 < otherProjectileTop) || (y1 >= otherProjectileBottom && y1 < otherProjectileTop)))
         {
@@ -177,7 +177,7 @@ Physics.prototype.TryProjectileHitProjectile = function(frame,x0,x1,y0,y1,projec
     else
     {
         otherProjectileLeft = parseInt(otherProjectile.element_.style.left);
-        otherProjectileRight = parseInt(otherProjectile.element_.width) + parseInt(otherProjectile.element_.style.left);
+        otherProjectileRight = parseInt(otherProjectile.element_.style.width) + parseInt(otherProjectile.element_.style.left);
 
         if(((x1 >= otherProjectileLeft && x1 < otherProjectileRight) || (x0 >= otherProjectileLeft && x0 < otherProjectileRight)) && ((y0 >= otherProjectileBottom && y0 < otherProjectileTop) || (y1 >= otherProjectileBottom && y1 < otherProjectileTop)))
         {

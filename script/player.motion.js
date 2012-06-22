@@ -36,8 +36,8 @@ Player.prototype.GetOffsetBoxBottom = function() { return this.y_ + this.yBottom
 Player.prototype.GetConstWidth = function() { return this.width_; }
 Player.prototype.GetConstFrontX = function() { return this.GetX() + this.width_; }
 Player.prototype.GetFrontX = function() { return this.GetX() + this.GetBoxWidth(); }
-Player.prototype.GetBoxWidth = function() { return this.image_.width; }
-Player.prototype.GetBoxHeight = function() { return this.image_.height; }
+Player.prototype.GetBoxWidth = function() { return parseInt(this.spriteElement_.style.width); }
+Player.prototype.GetBoxHeight = function() { return parseInt(this.spriteElement_.style.height); }
 Player.prototype.GetRect = function()
 {
     return {Left:this.GetLeftX(),Right:this.GetRightX(),Top:this.GetOffsetBoxTop(),Bottom:this.GetOffsetBoxBottom()};
@@ -68,8 +68,9 @@ Player.prototype.SetX = function(value)
     this.MoveCircle();
 }
 Player.prototype.AlignX = function(deltaX) { this.x_ += (deltaX * -this.direction_); }
-Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.image_.style.right = value+"px"; } else {this.image_.style.left = value+"px";}}
-Player.prototype.SetImageY = function(value) { this.image_.style.bottom = value+"px"; }
+
+Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.spriteElement_.style.right = value+"px"; } else {this.spriteElement_.style.left = value+"px";}}
+Player.prototype.SetImageY = function(value) { this.spriteElement_.style.bottom = value+"px"; }
 Player.prototype.IsCrouching = function() { return this.flags_.Pose.Has(POSE_FLAGS.CROUCHING); }
 Player.prototype.IsOnGround = function() { return this.y_ == STAGE.FLOORY; }
 Player.prototype.IsAirborne = function() { return this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE) || this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
@@ -112,12 +113,12 @@ Player.prototype.ChangeDirection = function(quick)
     /*facing left*/
     if(this.IsFacingLeft())
     {
-        var x = this.GetRight() + this.image_.width;
+        var x = this.GetRight() + parseInt(this.spriteElement_.style.width);
         var left = pnlStageWidth - x;
         this.SetX(left);
 
-        this.image_.style.right = "";
-        this.image_.style.left = "0px";
+        this.spriteElement_.style.right = "";
+        this.spriteElement_.style.left = "0px";
 
         this.element_.style.right = "";
         this.element_.style.left = left + "px";
@@ -125,7 +126,7 @@ Player.prototype.ChangeDirection = function(quick)
         this.shadowContainer_.style.right = "";
         this.shadowContainer_.style.left = left + "px";
 
-        this.shadow_.style.left = this.image_.style.left;
+        this.shadow_.style.left = this.spriteElement_.style.left;
         this.shadow_.style.right = "";
 
         this.direction_ = -1;
@@ -135,12 +136,12 @@ Player.prototype.ChangeDirection = function(quick)
     }
     else
     {
-        var x = this.GetLeft() + this.image_.width;
+        var x = this.GetLeft() + parseInt(this.spriteElement_.style.width);
         var right = pnlStageWidth - x;
         this.SetX(right);
 
-        this.image_.style.left = "";
-        this.image_.style.right = "0px";
+        this.spriteElement_.style.left = "";
+        this.spriteElement_.style.right = "0px";
         
         this.element_.style.left = "";
         this.element_.style.right = right + "px";
@@ -149,7 +150,7 @@ Player.prototype.ChangeDirection = function(quick)
         this.shadowContainer_.style.right = right + "px";
 
         this.shadow_.style.left = "";
-        this.shadow_.style.right = this.image_.style.right;
+        this.shadow_.style.right = this.spriteElement_.style.right;
 
         this.direction_ = 1;
         /*swap the left and right buttons*/
@@ -222,16 +223,19 @@ Player.prototype.OffsetImageY = function(amount)
 }
 Player.prototype.CheckDirection = function()
 {
-    if(this.GetPhysics().IsRightMostPlayer(this.id_) && this.direction_ == -1)
-        this.TurnAround();
-    else if(this.GetPhysics().IsLeftMostPlayer(this.id_) && this.direction_ == 1)
-        this.TurnAround();
-    else
+    if(!this.mustChangeDirection_)
     {
-        if((this.direction_ == 1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_))
+        if(this.GetPhysics().IsRightMostPlayer(this.id_) && this.direction_ == -1)
             this.TurnAround();
-        else if((this.direction_ == -1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_))
+        else if(this.GetPhysics().IsLeftMostPlayer(this.id_) && this.direction_ == 1)
             this.TurnAround();
+        else
+        {
+            if((this.direction_ == 1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_))
+                this.TurnAround();
+            else if((this.direction_ == -1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_))
+                this.TurnAround();
+        }
     }
 }
 /*moves the player in the stage*/

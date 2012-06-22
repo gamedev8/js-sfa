@@ -11,8 +11,8 @@
 
 AnimationTrail.prototype.Add = function(animation)
 {
-    var img = window.document.createElement("img");
-    img.className = "player";
+    var img = window.document.createElement("div");
+    img.className = "player-sprite";
 
     var div = window.document.createElement("div");
     div.className = "player";
@@ -34,7 +34,8 @@ AnimationTrail.prototype.Disable = function()
         for(var i = 0, length = this.Trail.length; i < length; ++i)
         {
             this.FollowElement.parentNode.removeChild(this.Trail[i].Element);
-            this.Trail[i].Element.children[0].src = "";
+            this.Trail[i].Element.children[0].style.backgroundImage = "";
+            this.Trail[i].Element.children[0].style.backgroundPosition = "";
             this.Trail[i].FrameIndex = 0;
         }
     }
@@ -74,6 +75,7 @@ AnimationTrail.prototype.FrameMove = function(frame,index,direction,stageX,stage
 {
     if(this.Enabled)
     {
+        this.direction_ = direction;
         for(var i = 0, length = this.Trail.length; i < length; ++i)
         {
             this.Trail[i].Animation.AddUserDataToFrame(index, 
@@ -86,29 +88,6 @@ AnimationTrail.prototype.FrameMove = function(frame,index,direction,stageX,stage
                     ,DeltaX:0
                     ,DeltaY:0
                 });
-            if(frame > this.Trail[i].StartFrame)
-            {
-                var currentItem = this.Trail[i];
-
-                /*get the current frame*/
-                /*var delta = frame - currentItem.StartFrame;
-                var frameToRender = currentItem.Animation.GetFrame(delta);*/
-
-                if(!currentItem.Animation.HasUserData(currentItem.FrameIndex))
-                    ++currentItem.FrameIndex;
-                var frameToRender = this.GetCurrentFrame(i);
-
-
-                if(!!frameToRender)
-                {
-                    var src = frameToRender.GetImageSrc(direction);
-                    if(!!src && (currentItem.LastImageSrc != src))
-                    {
-                        currentItem.LastImageSrc = src;
-                        currentItem.Element.children[0].src = frameImages_.Get(src).src;
-                    }
-                }
-            }
         }
     }
 }
@@ -172,6 +151,30 @@ AnimationTrail.prototype.Render = function(frame,stageDiffX,stageDiffY)
                     this.Trail[i].Element.style.right = (!!coords.Right) ? coords.DeltaX + parseInt(coords.Right) + "px" : "";
                     this.Trail[i].Element.style.bottom = (!!coords.Bottom) ? coords.DeltaY + parseInt(coords.Bottom) + "px" : "";
                     this.Trail[i].Element.style.top = (!!coords.Top) ? coords.DeltaY + parseInt(coords.Top) + "px" : "";
+                }
+            }
+            if(frame > this.Trail[i].StartFrame)
+            {
+                var currentItem = this.Trail[i];
+
+                if(!currentItem.Animation.HasUserData(currentItem.FrameIndex))
+                    ++currentItem.FrameIndex;
+
+                var frameToRender = this.GetCurrentFrame(i);
+                if(!!frameToRender)
+                {
+                    var data = spriteLookup_.Get(frameToRender.GetImageSrc(this.direction_));
+                    if(!!data)
+                    {
+                        if(currentItem.Element.children[0].style.backgroundPositionX != spriteLookup_.GetLeft(frameToRender.RightSrc)
+                            || currentItem.Element.children[0].style.backgroundPositionX != spriteLookup_.GetLeft(frameToRender.LeftSrc))
+                        {
+                            currentItem.Element.children[0].style.backgroundImage = "url(" + data.Sprite + ")";
+                            currentItem.Element.children[0].style.backgroundPosition = data.Left + " " + data.Bottom;
+                            currentItem.Element.children[0].style.width = data.Width;
+                            currentItem.Element.children[0].style.height = data.Height;
+                        }
+                    }
                 }
             }
         }

@@ -41,7 +41,7 @@ Player.prototype.AddGenericAnimation = function(state,team,name,moveFlags)
 /* Helper function - adds a dirt animation for the player */
 Player.prototype.AddDirtAnimation = function()
 {
-    var img = window.document.createElement("img");
+    var img = window.document.createElement("div");
     img.className = "dirt";
     img.style.display = "none";
     window.document.getElementById("pnlStage").appendChild(img);
@@ -60,7 +60,7 @@ Player.prototype.AddDirtAnimation = function()
 /* Helper function - adds a big dirt for the player */
 Player.prototype.AddBigDirtAnimation = function()
 {
-    var img = window.document.createElement("img");
+    var img = window.document.createElement("div");
     img.className = "big-dirt";
     img.style.display = "none";
     window.document.getElementById("pnlStage").appendChild(img);
@@ -352,81 +352,6 @@ Player.prototype.GetHitFrameID = function(hitID)
     return this.id_ + "-" + this.currentAnimation_.Animation.baseAnimation_.name_ + "-" + (hitID || this.currentFrame_.HitID) + "-" + this.moveCount_;
 }
 
-/*Sets the current image. This version is for browsers that load images instantly*/
-Player.prototype.ShowCurrentFrameImage = function()
-{
-    if(this.currentFrame_.ImageOffsetX != undefined)
-        this.OffsetImageX(this.currentFrame_.ImageOffsetX);
-    if(this.currentFrame_.ImageOffsetY != undefined)
-        this.OffsetImageY(this.currentFrame_.ImageOffsetY);
-
-    if(this.currentAnimation_.Direction > 0)
-    {
-        if(!!this.currentFrame_.RightSrc && (this.image_.src != this.currentFrame_.RightSrc))
-        {
-            this.image_.src  = frameImages_.Get(this.currentFrame_.RightSrc).src;
-            ++this.currentAnimation_.FrameIndex;
-        }
-    }
-    else
-    {
-        if(!!this.currentFrame_.LeftSrc && (this.image_.src != this.currentFrame_.LeftSrc))
-        {
-            this.image_.src  = frameImages_.Get(this.currentFrame_.LeftSrc).src;
-            ++this.currentAnimation_.FrameIndex;
-        }
-    }
-}
-
-
-Player.prototype._ShowCurrentFrameImageHelper = function()
-{
-    if(this._showCurrentFrameImageHelperParams.ImageOffsetX != undefined && this._showCurrentFrameImageHelperParams.ImageOffsetX != null)
-        this.OffsetImageX(this._showCurrentFrameImageHelperParams.ImageOffsetX);
-    if(this._showCurrentFrameImageHelperParams.ImageOffsetY != undefined && this._showCurrentFrameImageHelperParams.ImageOffsetY != null)
-        this.OffsetImageY(this._showCurrentFrameImageHelperParams.ImageOffsetY);
-}
-
-/*Sets the current image. This version is used for browsers (FIREFOX) that dont load preloaded images instantly*/
-Player.prototype._ShowCurrentFrameImage = function()
-{
-
-    if(!this.image_.onload)
-    {
-        this.image_.onload = (function(thisValue)
-        {
-            return function()
-            {
-                thisValue._ShowCurrentFrameImageHelper();
-            }
-        })(this);
-    }
-
-    
-    this._showCurrentFrameImageHelperParams = 
-    {
-        ImageOffsetX:this.currentFrame_.ImageOffsetX
-        ,ImageOffsetY:this.currentFrame_.ImageOffsetY
-    };
-
-    if(this.currentAnimation_.Direction > 0)
-    {
-        if(!!this.currentFrame_.RightSrc && (this.image_.src.indexOf(this.currentFrame_.RightSrc) == -1))
-        {
-            this.image_.src  = frameImages_.Get(this.currentFrame_.RightSrc).src;
-            ++this.currentAnimation_.FrameIndex;
-        }
-    }
-    else
-    {
-        if(!!this.currentFrame_.LeftSrc && (this.image_.src.indexOf(this.currentFrame_.LeftSrc) == -1))
-        {
-            this.image_.src  = frameImages_.Get(this.currentFrame_.LeftSrc).src;
-            ++this.currentAnimation_.FrameIndex;
-        }
-    }
-    //this._ShowCurrentFrameImageHelper();
-}
 
 /*If there is a chaining move, then it will be set to the current move*/
 Player.prototype.TryChainAnimation = function(frame,stageX,stageY)
@@ -541,8 +466,10 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
         this.adjustShadowPosition_ = newAnimation.Animation.adjustShadowPosition_;
         if(!(newAnimation.Animation.flags_.Player & PLAYER_FLAGS.HOLD_ZINDEX))
             this.MoveToFront();
+
         this.OffsetImageX(0);
         this.OffsetImageY(0);
+
 
         if(!!newAnimation.Animation.energyToSubtract_)
             this.ChangeEnergy(-newAnimation.Animation.energyToSubtract_);
@@ -604,9 +531,22 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         
     }
 
+    var isNewFrame = false;
+    if(!!newFrame && !!this.currentFrame_ && newFrame.ID != this.currentFrame_.ID)
+    {
+        if(!!newFrame.LeftSrc && !!this.currentFrame_.LeftSrc && spriteLookup_.GetLeft(newFrame.LeftSrc) != spriteLookup_.GetLeft(this.currentFrame_.LeftSrc))
+        {
+            isNewFrame = true;
+        }
+    }
+
     this.currentFrame_ = newFrame;
     if(!!newFrame)
     {
+        /*used to force the other player to change frames during a throw*/
+        if(!!isNewFrame)
+            ++this.currentAnimation_.FrameIndex;
+
         if(!!(newFrame.FlagsToClear.Combat & COMBAT_FLAGS.SUPER_MOVE_PAUSE))
             this.GetMatch().OnSuperMoveCompleted(this);
         /*if the new frame spawns a projectile, handle that here*/
@@ -666,18 +606,9 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             if(!!newFrame.Y)
                 this.MoveY(newFrame.Y);
         }
-        this.invokeShowCurrentFrameImageFn_();
 
-        if(!!this.currentFrame_.ShadowImageSrc && (this.shadow_._relSrc != this.currentFrame_.ShadowImageSrc))
-        {
-            this.shadow_._relSrc  = this.currentFrame_.ShadowImageSrc;
-            this.shadow_.src  = frameImages_.Get(this.currentFrame_.ShadowImageSrc).src;
-
-        }
-
-        if((!!newFrame.soundFilename_ || !!newFrame.FlagsToSet.SwingSound)
-        && (!!this.currentFrame_.RightSrc && (this.image_.src.indexOf(this.currentFrame_.RightSrc) == -1)
-            || (!!this.currentFrame_.LeftSrc && (this.image_.src.indexOf(this.currentFrame_.LeftSrc) == -1))))
+        /*this must run before SetSprite*/
+        if((!!newFrame.soundFilename_ || !!newFrame.FlagsToSet.SwingSound) && !!isNewFrame)
         {
             this.QueueSwingSound(newFrame.FlagsToSet.SwingSound);
             if(!!newFrame.soundFilename_)
@@ -686,7 +617,35 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     }
 }
 
-
+Player.prototype.SetSprite = function()
+{
+    if(this.currentAnimation_.Direction > 0)
+    {
+        data = spriteLookup_.Get(this.currentFrame_.RightSrc);
+        if(!!data)
+        {
+            this.spriteElement_.style.backgroundPosition = data.Left + " " + data.Bottom;
+            this.spriteElement_.style.width = data.Width;
+            this.element_.style.width = data.Width;
+            this.spriteElement_.style.height = data.Height;
+        }
+    }
+    else
+    {
+        data = spriteLookup_.Get(this.currentFrame_.LeftSrc);
+        if(!!data)
+        {
+            this.spriteElement_.style.backgroundPosition = data.Left + " " + data.Bottom;
+            this.spriteElement_.style.width = data.Width;
+            this.element_.style.width = data.Width;
+            this.spriteElement_.style.height = data.Height;
+        }
+    }
+    if(this.currentFrame_.ImageOffsetX != undefined)
+        this.OffsetImageX(this.currentFrame_.ImageOffsetX);
+    if(this.currentFrame_.ImageOffsetY != undefined)
+        this.OffsetImageY(this.currentFrame_.ImageOffsetY);
+}
 
 /*Sets the x and y on the element*/
 Player.prototype.Render = function(frame,stageDiffX)
@@ -694,6 +653,17 @@ Player.prototype.Render = function(frame,stageDiffX)
     this.CheckZOrder();
     if(!this.isPaused_)
     {
+        if(!!this.currentFrame_)
+        {
+            this.SetSprite();
+            if(!!this.currentFrame_.ShadowImageSrc && (this.shadow_._relSrc != this.currentFrame_.ShadowImageSrc))
+            {
+                this.shadow_._relSrc  = this.currentFrame_.ShadowImageSrc;
+                this.shadow_.src  = frameImages_.Get(this.currentFrame_.ShadowImageSrc).src;
+            }
+        }
+
+
         if(this.direction_ > 0)
             this.SetRight(this.x_);
         else
@@ -726,7 +696,7 @@ Player.prototype.RenderShadow = function()
         }
         if(!!this.adjustShadowPosition_)
         {
-            this.shadow_.style.right = this.image_.style.right;
+            this.shadow_.style.right = this.spriteElement_.style.right;
         }
     }
     else
@@ -739,7 +709,7 @@ Player.prototype.RenderShadow = function()
         }
         if(!!this.adjustShadowPosition_)
         {
-            this.shadow_.style.left = this.image_.style.left;
+            this.shadow_.style.left = this.spriteElement_.style.left;
         }
     }
 

@@ -215,7 +215,6 @@ GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,
     {
         /*free the element so it can be reused in other animations*/
         element.style.display="none";
-        element.src = "";
         element.isInUse = false;
         this.isActive_ = false;
         return false;
@@ -228,19 +227,30 @@ GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,
         offsetY = newFrame.Y;
         if(this.direction_ > 0)
         {
-            if(!!newFrame.RightSrc && (element.src != newFrame.RightSrc))
-                element.src  = frameImages_.Get(newFrame.RightSrc).src;
+            var data = spriteLookup_.Get(newFrame.RightSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
             /*move the image to the middle of the point*/
-            offsetX -= (element.width/2);
-            offsetY -= (element.height/2);
+            offsetX -= (parseInt(element.style.width)/2);
+            offsetY -= (parseInt(element.style.height)/2);
         }
         else
         {
-            if(!!newFrame.LeftSrc && (element.src != newFrame.LeftSrc))
-                element.src  = frameImages_.Get(newFrame.LeftSrc).src;
+            var data = spriteLookup_.Get(newFrame.LeftSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
+
             /*move the image to the middle of the point*/
-            offsetX -= (element.width/2);
-            offsetY -= (element.height/2);
+            offsetX -= (parseInt(element.style.width)/2);
+            offsetY -= (parseInt(element.style.height)/2);
         }
 
         if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
@@ -321,8 +331,20 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
     {
         if(direction > 0)
         {
+            /*
             if(!!newFrame.RightSrc && (element.src != newFrame.RightSrc))
                 element.src  = frameImages_.Get(newFrame.RightSrc).src;
+            */
+
+            var data = spriteLookup_.Get(newFrame.RightSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                /*element.style.backgroundImage = "url(" + data.Sprite + ")";*/
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
+
 
             if(offsetX != undefined)
             {
@@ -332,8 +354,18 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
         }
         else
         {
+            /*
             if(!!newFrame.LeftSrc && (element.src != newFrame.LeftSrc))
                 element.src  = frameImages_.Get(newFrame.LeftSrc).src;
+            */
+            var data = spriteLookup_.Get(newFrame.LeftSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                /*element.style.backgroundImage = "url(" + data.Sprite + ")";*/
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
 
             if(offsetX != undefined)
             {
@@ -356,9 +388,7 @@ var FrameImageLookup = function()
     this.nbImagesLoading_ = 0;
     this.element_ = window.document.getElementById("spnImagesLoading");
 }
-/*
-Image only loaded once
-*/
+/*Image only loaded once*/
 FrameImageLookup.prototype.Load = function(src)
 {
     if(!this.images_.hasOwnProperty(src))
@@ -394,6 +424,34 @@ FrameImageLookup.prototype.Get = function(src)
 var frameImages_ = new FrameImageLookup();
 /************************************************************************/
 /************************************************************************/
+var SpriteLookup = function()
+{
+    this.data_ = {};
+    this.nbImages_ = 0;
+    this.nbImagesLoading_ = 0;
+    this.element_ = window.document.getElementById("spnImagesLoading");
+}
+/*Image only loaded once*/
+SpriteLookup.prototype.Load = function(key,spriteFilename,left,bottom,width,height)
+{
+    if(!this.Get(key))
+    {
+        frameImages_.Load(spriteFilename);
+        this.data_[key] = {Key:key, Sprite:spriteFilename, Left:left, Bottom:bottom, Width:width, Height:height};
+    }
+    return this.data_[key];
+}
+SpriteLookup.prototype.Get = function(key)
+{
+    return this.data_[key];
+}
+SpriteLookup.prototype.GetLeft = function(key)
+{
+    return (this.data_[key] || {}).Left || "";
+}
+var spriteLookup_ = new SpriteLookup();
+/************************************************************************/
+/************************************************************************/
 var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
 {
     this.EnergyToAdd = energyToAdd || 0;
@@ -408,10 +466,13 @@ var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear
     this.LeftSrc =  !!image ? image.replace("#-","r-").replace("x-","l-") : "";
     this.AttackState = attackState || 0;
     this.HitPoints = hitPoints || [];
-    if(!!this.RightSrc)
+    if(!!this.RightSrc && (this.RightSrc[0] != "|"))
         frameImages_.Load(this.RightSrc);
-    if((this.RightSrc != this.LeftSrc) && !!this.LeftSrc)
+    if((this.RightSrc != this.LeftSrc) && (!!this.LeftSrc && this.LeftSrc[0] != "|"))
         frameImages_.Load(this.LeftSrc);
+
+    this.RightSrc = this.RightSrc.replace("|","");
+    this.LeftSrc  = this.LeftSrc.replace("|","");
 
     this.Frames = nbFrames || 0;
     this.FrameOffset = frameOffset || 0;
@@ -471,9 +532,10 @@ var Projectile = function(player,animation,disintegrationAnimation, xOffset, yOf
     this.yFunc_ = yFunc || function(x){return this.ySpeed_ * 1;}
     this.direction_ = player.direction_;
     this.startFrame_ = 0;
-    this.element_ = window.document.createElement("img");
+    this.element_ = window.document.createElement("div");
     this.element_.className="projectile";
     this.element_.style.display="none";
+    this.element_.style.backgroundImage = "url(images/misc/" + player.name_ + "/projectiles.png)";
     window.document.getElementById("pnlStage").appendChild(this.element_);
     this.isActive_ = false;
     this.attackState_ = attackState || 0;
@@ -529,14 +591,13 @@ Projectile.prototype.Throw = function(frame,stageX,stageY)
     this.isDisintegrating_ = false;
     this.vxFn_ = this.animation_.GetXModifier();
     this.vyFn_ = this.animation_.GetYModifier();
-    this.setAndMoveImageFn_ = game_.UseAlternateImageLoadingFunctions() ? this._SetAndMoveImage : this.SetAndMoveImage;
     this.nbHits_ = 0;
     this.lastHitFrame_ = 0;
 }
 
 Projectile.prototype.GetTop = function()
 {
-    return parseInt(this.element_.style.bottom) + parseInt(this.element_.height) - this.trimY_;
+    return parseInt(this.element_.style.bottom) + parseInt(this.element_.style.height) - this.trimY_;
 }
 
 Projectile.prototype.GetBottom = function()
@@ -555,12 +616,12 @@ Projectile.prototype.GetBackX = function()
 Projectile.prototype.GetFrontX = function()
 {
     if(this.direction_  < 0)
-        return (parseInt(this.element_.width) + parseInt(this.element_.style.left)) - this.trimX_;
+        return (parseInt(this.element_.style.width) + parseInt(this.element_.style.left)) - this.trimX_;
     else
-        return (STAGE.MAX_STAGEX - (parseInt(this.element_.style.right) + parseInt(this.element_.width) - this.trimX_));
+        return (STAGE.MAX_STAGEX - (parseInt(this.element_.style.right) + parseInt(this.element_.style.width) - this.trimX_));
 }
-Projectile.prototype.GetLeftX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_ + this.element_.width;}else{return this.x_;}}
-Projectile.prototype.GetRightX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_;}else{return this.x_ + this.element_.width;}}
+Projectile.prototype.GetLeftX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_ + parseInt(this.element_.style.width);}else{return this.x_;}}
+Projectile.prototype.GetRightX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_;}else{return this.x_ + parseInt(this.element_.style.width);}}
 Projectile.prototype.GetMidX = function()
 {
     var left = this.GetBackX();
@@ -671,7 +732,7 @@ Projectile.prototype.Advance = function(frame,stageX,stageY)
         }
     }
 
-    this.setAndMoveImageFn_(newFrame,offsetX,offsetY,stageX,stageY);
+    this.SetSprite(newFrame,offsetX,offsetY,stageX,stageY);
     this.stageX_ = stageX;
     this.stageY_ = stageY;
 
@@ -683,7 +744,7 @@ Projectile.prototype.Advance = function(frame,stageX,stageY)
 
 
 /*sets and moves the image - for browsers that load preloaded images instantly when the src property is set*/
-Projectile.prototype.SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,stageY)
+Projectile.prototype.SetSprite = function(newFrame,offsetX,offsetY,stageX,stageY)
 {
     if(!!newFrame)
     {
@@ -692,13 +753,26 @@ Projectile.prototype.SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,
 
         if(this.direction_ > 0)
         {
-            if(!!newFrame.RightSrc && (this.element_.src != newFrame.RightSrc))
-                this.element_.src  = frameImages_.Get(newFrame.RightSrc).src;
+            var data = spriteLookup_.Get(newFrame.RightSrc)
+            if(!!data && (this.element_.style.backgroundPositionX != data.Left))
+            {
+                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
+                this.element_.style.width = data.Width;
+                this.element_.style.height = data.Height;
+            }
+
         }
         else
         {
-            if(!!newFrame.LeftSrc && (this.element_.src != newFrame.LeftSrc))
-                this.element_.src  = frameImages_.Get(newFrame.LeftSrc).src;
+
+            var data = spriteLookup_.Get(newFrame.LeftSrc)
+            if(!!data && (this.element_.style.backgroundPositionX != data.Left))
+            {
+                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
+                this.element_.style.width = data.Width;
+                this.element_.style.height = data.Height;
+            }
+
         }
         if(this.element_.style.display != "")
             this.element_.style.display="";
@@ -707,12 +781,12 @@ Projectile.prototype.SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,
     {
         if(this.direction_ > 0)
         {
-            this.element_.style.left = (offsetX + FlipCoord(this.x_,this.element_.width)) + "px";
+            this.element_.style.left = (offsetX + FlipCoord(this.x_,parseInt(this.element_.style.width))) + "px";
             this.element_.style.right = "";
         }
         else
         {
-            this.element_.style.right = (offsetX + FlipCoord(this.x_,this.element_.width)) + "px";
+            this.element_.style.right = (offsetX + FlipCoord(this.x_,parseInt(this.element_.style.width))) + "px";
             this.element_.style.left = "";
         }
     }
@@ -729,95 +803,10 @@ Projectile.prototype.SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,
             this.element_.style.left = (offsetX + this.x_) + "px";
         }
     }
-    var imgOffsetY = this.y_ - (this.element_.height/2);
+    var imgOffsetY = this.y_ - (parseInt(this.element_.style.height)/2);
     this.element_.style.bottom = imgOffsetY + "px";
 }
 
-Projectile.prototype._SetRenderParams = function()
-{
-    var offsetX = this.renderParams_.OffsetX;
-    var offsetY = this.renderParams_.OffsetY;
-    var hasOffsetX = offsetX != undefined;
-    var hasOffsetY = offsetY != undefined;
-    
-    if(hasOffsetX || hasOffsetY)
-    {
-        if(!!this.isDisintegrating_)
-        {
-            if(this.direction_ > 0)
-            {
-                this.element_.style.left = (offsetX + FlipCoord(this.x_,this.element_.width)) + "px";
-                this.element_.style.right = "";
-            }
-            else
-            {
-                this.element_.style.right = (offsetX + FlipCoord(this.x_,this.element_.width)) + "px";
-                this.element_.style.left = "";
-            }
-        }
-        else
-        {
-            if(this.direction_ > 0)
-            {
-                this.element_.style.left = "";
-                this.element_.style.right = (offsetX + this.x_) + "px";
-            }
-            else
-            {
-                this.element_.style.right = "";
-                this.element_.style.left = (offsetX + this.x_) + "px";
-            }
-        }
-
-    }
-    /*this.element_.style.bottom = (offsetY + this.y_) + "px";*/
-    var imgOffsetY = this.y_ - (this.element_.height/2);
-    this.element_.style.bottom = imgOffsetY + "px";
-}
-
-
-/*sets and moves the image - for browsers that dont load preloaded images instantly when the src property is set (FIREFOX)*/
-Projectile.prototype._SetAndMoveImage = function(newFrame,offsetX,offsetY,stageX,stageY)
-{
-    if(!!newFrame)
-    {
-        offsetX = newFrame.X;
-        offsetY = newFrame.Y;
-        
-        if(!this.element_.onload)
-        {
-            this.element_.onload = (function(thisValue)
-            {
-                return function()
-                {
-                    thisValue._SetRenderParams();
-                }
-            })(this);
-        }
-        
-        this.renderParams_ =
-        {
-            OffsetX:offsetX
-            ,OffsetY:offsetY
-        };
-
-
-        if(this.direction_ > 0)
-        {
-            if(!!newFrame.RightSrc && (this.element_.src != newFrame.RightSrc))
-                this.element_.src  = frameImages_.Get(newFrame.RightSrc).src;
-        }
-        else
-        {
-            if(!!newFrame.LeftSrc && (this.element_.src != newFrame.LeftSrc))
-                this.element_.src  = frameImages_.Get(newFrame.LeftSrc).src;
-        }
-        if(this.element_.style.display != "")
-            this.element_.style.display="";
-        //this._SetRenderParams();
-    }
-
-}
 
 Projectile.prototype.Disintegrate = function(frame)
 {

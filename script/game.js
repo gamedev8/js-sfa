@@ -407,8 +407,10 @@ Game.prototype.RunCharSelectLoop = function()
 
 function Alert(text)
 {
+    /*
     if(!!console && !!console.log)
         console.log(text);
+    */
 }
 
 /*

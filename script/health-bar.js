@@ -31,7 +31,7 @@ HealthBar.prototype.Init = function()
 {
     var img = window.document.createElement("img");
     img.className = "health-bar";
-    img.src = "images/misc/health-bar.png"
+    img.src = "images/misc/misc/health-bar.png"
 
     this.DamageElement = window.document.createElement("div");
     this.DamageElement.className = "damage";

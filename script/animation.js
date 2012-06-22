@@ -77,7 +77,7 @@ BaseAnimation.prototype.AddRepeatingFrameWithSound = function(player,volume,soun
             soundManager_.Load(currentFrame.soundFilename_,3,volume);
         }
         else
-            this.AddFrame(player,shadowImage,"",1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,0);
+            this.AddFrame(player,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,0);
     }
 
 }
@@ -91,7 +91,7 @@ BaseAnimation.prototype.AddRepeatingFrame = function(player,shadowImage,image,nb
         if(i == 0)
             this.AddFrame(player,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd);
         else
-            this.AddFrame(player,shadowImage,"",1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,0);
+            this.AddFrame(player,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,0);
     }
 }
 /*Returns the frame that should be run at a given time*/
