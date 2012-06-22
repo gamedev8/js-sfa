@@ -1,8 +1,4 @@
 Street Fighter Alpha
 --------------------
 
-* This is still a work in progress *
-
-Firefox support is a little buggy.
-
-If you are good at writing AI, please contact me.
+Jun-21-2012: Expect a huge update within the next few days. All animation use css sprites, instead of individual images. This will allow for much faster load times and other performance enchancements.
