@@ -498,6 +498,7 @@ Player.prototype.ForceWin = function(frame)
     var name = this.winAnimationNames_[Math.ceil(Math.random() * this.winAnimationNames_.length) - 1];
     if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
     this.ExecuteAnimation(name);
+    this.ClearKeys();
 }
 /*Player is defeated*/
 Player.prototype.ForceLose = function(attackDirection)
@@ -511,6 +512,7 @@ Player.prototype.ForceLose = function(attackDirection)
     this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
     this.KnockDownDefeat(frame,attackDirection);
     this.QueueSound("audio/" + this.name_ + "/dead.ogg");
+    this.ClearKeys();
 }
 /*Player gets is defeated*/
 Player.prototype.ForceTeamLose = function(frame,attackDirection)

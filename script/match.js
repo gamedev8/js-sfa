@@ -68,16 +68,22 @@ Match.prototype.ShowTeamInfo = function()
     /*team 1*/
     if(!!this.teamA_.Players[this.teamA_.Cursor])
     {
+        this.teamA_.Init();
+        /*
         this.teamA_.NameImg.src = this.teamA_.Players[this.teamA_.Cursor].nameImageSrc_;
         this.teamA_.PortriatImg.src = this.teamA_.Players[this.teamA_.Cursor].portriatImageSrc_;
         this.teamA_.Cursor = (this.teamA_.Cursor + 1 < this.teamA_.Players.length) ? this.teamA_.Cursor+1 : 0;
+        */
     }
     /*team 2*/
     if(!!this.teamB_.Players[this.teamA_.Cursor])
     {
+        this.teamB_.Init();
+        /*
         this.teamB_.NameImg.src = this.teamB_.Players[this.teamB_.Cursor].nameImageSrc_;
         this.teamB_.PortriatImg.src = this.teamB_.Players[this.teamB_.Cursor].portriatImageSrc_;
         this.teamB_.Cursor = (this.teamB_.Cursor+1 < this.teamA_.Players.length) ? this.teamB_.Cursor+1 : 0;
+        */
     }
 }
 /*Changes the health value for a team*/

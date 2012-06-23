@@ -128,6 +128,7 @@ var PLAYER_FLAGS =
     ,RESET_Y_FUNC: 1 << 16
     ,USE_CURRENT_VX: 1 << 17
     ,USE_CURRENT_VY: 1 << 18
+    ,IGNORE_ATTACKS:1 << 19
 }
 
 

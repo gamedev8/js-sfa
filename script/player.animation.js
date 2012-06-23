@@ -163,7 +163,7 @@ Player.prototype.FindAnimation = function(value)
                 cmpValue = this.CompareAlternateKeySequences(move,keys);
 
             if(!!move.grappleDistance_)
-                if(!this.GetPhysics().IsAnyPlayerWithinDistance(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_))
+                if(!this.GetPhysics().CanGrapple(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_,move.matchAirborne_ === null ? null : (this.IsAirborne() && move.matchAirborne_)))
                     continue;
 
             if(cmpValue == CONSTANTS.EXACT_MATCH)
@@ -352,6 +352,12 @@ Player.prototype.GetHitFrameID = function(hitID)
     return this.id_ + "-" + this.currentAnimation_.Animation.baseAnimation_.name_ + "-" + (hitID || this.currentFrame_.HitID) + "-" + this.moveCount_;
 }
 
+/*Gets the hit ID of the current frame*/
+Player.prototype.GetFrameImageID = function(hitID)
+{
+    return this.currentFrame_.ImageID;
+}
+
 
 /*If there is a chaining move, then it will be set to the current move*/
 Player.prototype.TryChainAnimation = function(frame,stageX,stageY)
@@ -532,6 +538,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     }
 
     var isNewFrame = false;
+    
     if(!!newFrame && !!this.currentFrame_ && newFrame.ID != this.currentFrame_.ID)
     {
         if(!!newFrame.LeftSrc && !!this.currentFrame_.LeftSrc && spriteLookup_.GetLeft(newFrame.LeftSrc) != spriteLookup_.GetLeft(this.currentFrame_.LeftSrc))
@@ -659,7 +666,7 @@ Player.prototype.Render = function(frame,stageDiffX)
             if(!!this.currentFrame_.ShadowImageSrc && (this.shadow_._relSrc != this.currentFrame_.ShadowImageSrc))
             {
                 this.shadow_._relSrc  = this.currentFrame_.ShadowImageSrc;
-                this.shadow_.src  = frameImages_.Get(this.currentFrame_.ShadowImageSrc).src;
+                spriteLookup_.Set(this.shadow_, this.currentFrame_.ShadowImageSrc);
             }
         }
 

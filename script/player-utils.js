@@ -66,6 +66,8 @@ var Animation = function(requiredFlags,name,duration,frames,keySequence,flags,pr
     this.isThrow_ = false;
     this.isSuperMove_ = false;
     this.isSpecialMove_ = false;
+    /*when set to true, for this animation to be performed while airborne, the other player must also be airborne*/
+    this.matchAirborne_ = null;
 }
 
 Animation.prototype.EndBlock = function()
@@ -434,9 +436,14 @@ var SpriteLookup = function()
 /*Image only loaded once*/
 SpriteLookup.prototype.Load = function(key,spriteFilename,left,bottom,width,height)
 {
+
+    if(!!spriteFilename && (spriteFilename[0] != "|"))
+        frameImages_.Load(spriteFilename);
+
+    spriteFilename = spriteFilename.replace("|","");
+
     if(!this.Get(key))
     {
-        frameImages_.Load(spriteFilename);
         this.data_[key] = {Key:key, Sprite:spriteFilename, Left:left, Bottom:bottom, Width:width, Height:height};
     }
     return this.data_[key];
@@ -449,6 +456,16 @@ SpriteLookup.prototype.GetLeft = function(key)
 {
     return (this.data_[key] || {}).Left || "";
 }
+SpriteLookup.prototype.Set = function(element, key)
+{
+    var data = this.Get(key);
+    if(!!data)
+    {
+        element.style.backgroundPosition = data.Left + " " + data.Bottom;
+        element.style.width = data.Width;
+        element.style.height = data.Height;
+    }
+}
 var spriteLookup_ = new SpriteLookup();
 /************************************************************************/
 /************************************************************************/
@@ -457,11 +474,10 @@ var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear
     this.EnergyToAdd = energyToAdd || 0;
     this.Index = index;
     this.ID = +id; /* the "+" is a fast conversion to numeric*/
+    this.ImageID = this.ID;
     this.HitID = hitID || 0;
     this.HitDelayFactor = hitDelayFactor || 1;
     this.ShadowImageSrc = !!shadowImage ? "images/misc/misc/shadow-" + shadowImage + ".png" : null;
-    if(!!this.ShadowImageSrc)
-        frameImages_.Load(this.ShadowImageSrc);
     this.RightSrc = !!image ? image.replace("#-","l-").replace("x-","r-") : "";
     this.LeftSrc =  !!image ? image.replace("#-","r-").replace("x-","l-") : "";
     this.AttackState = attackState || 0;

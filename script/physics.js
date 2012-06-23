@@ -11,6 +11,8 @@ Physics.prototype.GetStage = function() { return this.GetMatch().stage_; }
 /*Test each player to see if the hit region intersects with them*/
 Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
+    if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
+        return;
     if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
         return;
     /*frame can not hit more than once*/
@@ -77,6 +79,8 @@ Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsTo
 /*Handles projectiles hitting a player*/
 Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
 {
+    if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
+        return;
     if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE))
         return;
     //if(p2.flags_.Player.Has(PLAYER_FLAGS.DEAD))
@@ -757,7 +761,7 @@ Physics.prototype.IsRightMostPlayer = function(id)
 }
 
 /*checks if any player from ther other team is within the given distance*/
-Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
+Physics.prototype.CanGrapple = function(team,x,y,distance,mustBeAirborne)
 {
     var match = this.GetMatch();
     switch(team)
@@ -768,6 +772,8 @@ Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
                 if((Math.abs(x - match.teamB_.Players[i].GetMidX()) < distance)
                     && (Math.abs(y - match.teamB_.Players[i].y_) < distance)
                     && (!(match.teamB_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
+                    && ((mustBeAirborne === null)
+                        || (mustBeAirborne == (match.teamB_.Players[i].IsAirborne())))
                     && (!match.teamB_.Players[i].grappledPlayer_
                     && (!match.teamB_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE)))
                     )
@@ -780,6 +786,8 @@ Physics.prototype.IsAnyPlayerWithinDistance = function(team,x,y,distance)
                 if((Math.abs(x - match.teamA_.Players[i].GetMidX()) < distance)
                     && (Math.abs(y - match.teamA_.Players[i].y_) < distance)
                     && (!(match.teamA_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
+                    && ((mustBeAirborne === null)
+                        || (mustBeAirborne == (match.teamA_.Players[i].IsAirborne())))
                     && (!match.teamA_.Players[i].grappledPlayer_)
                     && (!match.teamA_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE))
                     )

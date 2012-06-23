@@ -152,7 +152,7 @@ Player.prototype.CreateKen = function(user)
     hitReact_bounce.chainVxFunc_ = function(v){ return v * 0.75; };
     hitReact_bounce.vy_ = 80;
     hitReact_bounce.AddFrameWithSound(player,1,"audio/misc/floored-2.ogg", "200", "|images/misc/ken/x-hit-air-2.png", 4, { Player: PLAYER_FLAGS.INVULNERABLE, Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT }, { Player: PLAYER_FLAGS.MOBILE }, 0, 1);
-    hitReact_bounce.AddFrame(player, "200", "|images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX, { Pose: POSE_FLAGS.AIRBORNE, Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE }, { Player: PLAYER_FLAGS.MOBILE });
+    hitReact_bounce.AddFrame(player, "200", "|images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX, { Pose: POSE_FLAGS.AIRBORNE, Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS }, { Player: PLAYER_FLAGS.MOBILE });
     hitReact_bounce.Chain(getup);
 
     var hitReact_trip = player.AddAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING, "tripped", 0, ["hr_trip"], 0, false);
@@ -196,7 +196,7 @@ Player.prototype.CreateKen = function(user)
     hitReact_deadBounce.chainVxFunc_ = function(v){ return v * 0.75; };
     hitReact_deadBounce.vy_ = 80;
     hitReact_deadBounce.AddFrameWithSound(player,1,"audio/misc/floored-2.ogg", "200", "|images/misc/ken/x-hit-air-2.png", 4, { Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_COLLISIONS, Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT }, { Player: PLAYER_FLAGS.MOBILE }, 0, 1);
-    hitReact_deadBounce.AddFrame(player, "200", "|images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX, { Pose: POSE_FLAGS.AIRBORNE, Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_COLLISIONS });
+    hitReact_deadBounce.AddFrame(player, "200", "|images/misc/ken/x-hit-air-3.png", CONSTANTS.FRAME_MAX, { Pose: POSE_FLAGS.AIRBORNE, Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS | PLAYER_FLAGS.IGNORE_COLLISIONS });
     hitReact_deadBounce.Chain(down);
 
     var hitReact_dead = player.AddAnimation(POSE_FLAGS.STANDING, "clocked", 0, ["hr_dead"], 0, false);
@@ -274,6 +274,7 @@ Player.prototype.CreateKen = function(user)
     var throw1 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.AIRBORNE_FB, "throw 1", 0, [BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH], CONSTANTS.MAX_PRIORITY, false, false, 0, "_1_roll_throw");
     throw1.vy_ = 90;
     throw1.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE, OVERRIDE_FLAGS.ALL);
+    throw1.matchAirborne_ = true;
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK]);

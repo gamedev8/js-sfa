@@ -29,9 +29,9 @@ HealthBar.prototype.Release = function()
 
 HealthBar.prototype.Init = function()
 {
-    var img = window.document.createElement("img");
-    img.className = "health-bar";
-    img.src = "images/misc/misc/health-bar.png"
+    var img = window.document.createElement("div");
+    img.className = "health-bar-item";
+    spriteLookup_.Set(img,"images/misc/misc/health-bar.png");
 
     this.DamageElement = window.document.createElement("div");
     this.DamageElement.className = "damage";

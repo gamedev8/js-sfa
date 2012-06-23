@@ -214,6 +214,7 @@ EnergyBar.prototype.Render = function(frame)
         {
             this.BarElement.style.backgroundPosition = data.Left + " " + data.Bottom;
             this.BarElement.style.height = data.Height;
+            this.BarElement.style.width = data.Width;
         }
     }
 }

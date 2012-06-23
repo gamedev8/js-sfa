@@ -4,8 +4,8 @@
 var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameImageSrc,portriatImageSrc,slideFactor)
 {
     this.name_ = name;
-    this.nameImageSrc_ = nameImageSrc || "images/misc/" + name +"/name-1.png";
-    this.portriatImageSrc_ = portriatImageSrc || "images/misc/" + name + "/x-portriat-1.png";
+    this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + name.toLowerCase() +"-name-1.png";
+    this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + name.toLowerCase() + "-x-portriat-1.png";
 
     /*these 2 are used so we can easily swap left and right when the player changes directions*/
     this.leftKey_ = left;
@@ -233,8 +233,7 @@ Player.prototype.CreateElement = function(x,y,parentElement)
 
     this.shadowContainer_ = window.document.createElement("div");
     this.shadowContainer_.className = "shadow";
-    this.shadow_ = createElement.call(this,"img","shadow","","",this.shadowContainer_);
-    this.shadow_.src = "images/misc/misc/shadow.png";
+    this.shadow_ = createElement.call(this,"div","shadow","","",this.shadowContainer_);
 
     parentElement.appendChild(this.shadowContainer_);
     parentElement.appendChild(this.element_);
@@ -583,8 +582,6 @@ Player.prototype.SetupInfo = function(value,side)
     this.team_ = value;
     this.portriatImageSrc_ = this.portriatImageSrc_.replace("x-",side + "-")
 
-    frameImages_.Load(this.nameImageSrc_);
-    frameImages_.Load(this.portriatImageSrc_);
     this.CreateKeysElement();
 }
 

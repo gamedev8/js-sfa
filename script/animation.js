@@ -66,6 +66,7 @@ BaseAnimation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,fl
 /*Adds a frame multiple times, and adds the sound effect on the first frame only.*/
 BaseAnimation.prototype.AddRepeatingFrameWithSound = function(player,volume,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
 {
+    var imageID = 0;
     for(var i = 0; i < nbFrames; ++i)
     {
         if(i == 0)
@@ -74,10 +75,14 @@ BaseAnimation.prototype.AddRepeatingFrameWithSound = function(player,volume,soun
             var currentFrame = this.frames_[this.frames_.length-1];
             currentFrame.soundFilename_ = soundFilename;
             currentFrame.soundVolume_ = volume;
+            imageID = currentFrame.ImageID;
             soundManager_.Load(currentFrame.soundFilename_,3,volume);
         }
         else
+        {
             this.AddFrame(player,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,0);
+            this.frames_[this.frames_.length-1].ImageID = imageID;
+        }
     }
 
 }

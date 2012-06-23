@@ -4,13 +4,22 @@
 
     this.Cursor = 0;
     this.TeamNum = num;
-    this.PortriatImg = window.document.getElementById("imgPortriatTeam" + num);
-    this.NameImg = window.document.getElementById("imgNameTeam" + num);
+    this.PortriatImg = window.document.getElementById("portriatTeam" + num);
+    this.NameImg = window.document.getElementById("nameTeam" + num);
     this.Healthbar = new HealthBar("pnlHealthbarTeam" + num,num);
     this.Energybar = new EnergyBar("pnlEnergyBarTeam" + num,num);
     this.ComboText = null;
     this.CurrentCombo = 0;
     this.CurrentComboRefCount = 0;
+}
+
+Team.prototype.Init = function()
+{
+    spriteLookup_.Set(this.NameImg, this.Players[this.Cursor].nameImageSrc_);
+    //this.NameImg.src = this.Players[this.Cursor].nameImageSrc_;
+    spriteLookup_.Set(this.PortriatImg, this.Players[this.Cursor].portriatImageSrc_);
+    //this.PortriatImg.src = this.Players[this.Cursor].portriatImageSrc_;
+    this.Cursor = (this.Cursor + 1 < this.Players.length) ? this.Cursor+1 : 0;
 }
 
 Team.prototype.GetGame = function()

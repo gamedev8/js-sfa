@@ -33,6 +33,30 @@ Player.prototype.CleanUpKeyStateChanges = function(frame)
 
 }
 
+/*Simuates pressing keys*/
+Player.prototype.SendInput = function(input)
+{
+    if(!input)
+        return;
+
+    var frame = this.GetMatch().GetCurrentFrame();
+    var key;
+    for(var i = 0; i < input.length; ++i)
+    {
+        key = null;
+        for(var a in this.buttons_)
+        {
+            if(this.buttons_[a].Bit == input[i].Button)
+            {
+                key = a;
+                break;
+            }
+        }
+
+        if(!!key) this.OnKeyStateChanged(input[i].IsDown,key,frame);
+    }
+}
+
 /*Adds a state change to the keyStateChange array*/
 Player.prototype.AddKeyStateChange = function(frame,keyCode)
 {

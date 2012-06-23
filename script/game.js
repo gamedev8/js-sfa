@@ -413,7 +413,6 @@ function Alert(text)
     */
 }
 
-/*
 window.requestAnimFrame = (function(){
       return  window.requestAnimationFrame       || 
               window.webkitRequestAnimationFrame || 
@@ -424,4 +423,3 @@ window.requestAnimFrame = (function(){
                 window.setTimeout(callback, 1000 / 30);
               };
     })();
-*/
