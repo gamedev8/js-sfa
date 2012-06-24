@@ -78,10 +78,11 @@ ActionSystem.prototype.CanOverride = function(key,index)
     var retVal  = false;
     if(!!first.OtherPlayer && !!first.Player.currentAnimation_.Animation)
     {
-        retVal = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
-            || first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
-            || first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags)
-            ;
+        var a = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
+        var b = first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
+        var c = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags);
+
+        retVal = a || b || (c && first.Player.isInAttackFrame_);
     }
     return retVal;
 }

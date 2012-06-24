@@ -573,7 +573,7 @@ Player.prototype.CreateKen = function(user)
     var jump_k1 = player.AddAnimation(POSE_FLAGS.AIRBORNE, "jump k1", 0, [BUTTONS.LIGHT_KICK], 0, true, true);
     jump_k1.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE, OVERRIDE_FLAGS.NULL);
     jump_k1.AddFrame(player, "", "|images/misc/ken/x-jump-k1-1.png", 3, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
-    jump_k1.AddFrame(player, "", "|images/misc/ken/x-jump-k1-2.png", 24, { SwingSound:SWINGSOUND.LP, Combat: COMBAT_FLAGS.ATTACK, HitSound:SWINGSOUND.LP }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.LIGHT, [{ state: HIT_FLAGS.NEAR, x: 140, y: 235, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 90, y: 155, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.LIGHT, 1, 1, 10);
+    jump_k1.AddFrame(player, "", "|images/misc/ken/x-jump-k1-2.png", 24, { SwingSound:SWINGSOUND.LP, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.LK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.LIGHT, [{ state: HIT_FLAGS.NEAR, x: 140, y: 235, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 90, y: 155, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.LIGHT, 1, 1, 10);
     jump_k1.EndBlock();
     jump_k1.AddFrame(player, "", "|images/misc/ken/x-jump-k1-3.png", 3);
     jump_k1.AddFrame(player, "", "|images/misc/ken/x-jump-k1-1.png", CONSTANTS.FRAME_MAX);
@@ -583,7 +583,7 @@ Player.prototype.CreateKen = function(user)
     jump_k2.SetMediumAttack();
     jump_k2.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE, OVERRIDE_FLAGS.NULL);
     jump_k2.AddFrame(player, "", "|images/misc/ken/x-jump-k1-1.png", 3, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
-    jump_k2.AddFrame(player, "", "|images/misc/ken/x-jump-k1-2.png", 4, { SwingSound:SWINGSOUND.MP, Combat: COMBAT_FLAGS.ATTACK, HitSound:SWINGSOUND.MP }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.MEDIUM, [{ state: HIT_FLAGS.NEAR, x: 140, y: 235, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 90, y: 155, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.MEDIUM, 1, 1, 15);
+    jump_k2.AddFrame(player, "", "|images/misc/ken/x-jump-k1-2.png", 4, { SwingSound:SWINGSOUND.MP, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.MK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.MEDIUM, [{ state: HIT_FLAGS.NEAR, x: 140, y: 235, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 90, y: 155, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.MEDIUM, 1, 1, 15);
     jump_k2.EndBlock();
     jump_k2.AddFrame(player, "", "|images/misc/ken/x-jump-k1-3.png", 5);
     jump_k2.AddFrame(player, "", "|images/misc/ken/x-jump-k1-1.png", 1);
@@ -597,7 +597,7 @@ Player.prototype.CreateKen = function(user)
     jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-1.png", 2, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
     jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-2.png", 3);
     jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-3.png", 4);
-    jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-4.png", 6, { SwingSound:SWINGSOUND.HP, Combat: COMBAT_FLAGS.ATTACK, HitSound:SWINGSOUND.HP }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 180, y: 135, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 80, y: 135, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.HARD, 1, 1, 20);
+    jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-4.png", 6, { SwingSound:SWINGSOUND.HP, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 180, y: 135, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 80, y: 135, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.HARD, 1, 1, 20);
     jump_k3.EndBlock();
     jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-5.png", 4);
     jump_k3.AddFrame(player, "", "|images/misc/ken/x-jump-k3-6.png", 3);
@@ -608,7 +608,7 @@ Player.prototype.CreateKen = function(user)
     f_jump_k1.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE, OVERRIDE_FLAGS.NULL);
     f_jump_k1.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-1.png", 3, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
     f_jump_k1.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-2.png", 3);
-    f_jump_k1.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-3.png", 24, { SwingSound:SWINGSOUND.LP, Combat: COMBAT_FLAGS.ATTACK, HitSound:SWINGSOUND.LP }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.LIGHT, [{ state: HIT_FLAGS.NEAR, x: 140, y: 15, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 100, y: 0, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.LIGHT, 1, 1, 10);
+    f_jump_k1.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-3.png", 24, { SwingSound:SWINGSOUND.LP, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.LK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.LIGHT, [{ state: HIT_FLAGS.NEAR, x: 140, y: 15, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 100, y: 0, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.LIGHT, 1, 1, 10);
     f_jump_k1.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-2.png", CONSTANTS.FRAME_MAX);
     f_jump_k1.EndBlock();
     f_jump_k1.Chain(jump_land);
@@ -619,7 +619,7 @@ Player.prototype.CreateKen = function(user)
     f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-1.png", 3, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
     f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-2.png", 2);
     f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-3.png", 1);
-    f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-4.png", 11, { SwingSound:SWINGSOUND.MP, Combat: COMBAT_FLAGS.ATTACK, HitSound:SWINGSOUND.MP }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.MEDIUM, [{ state: HIT_FLAGS.NEAR, x: 230, y: 35, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 130, y: 15, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 30, y: 5, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.MEDIUM, 1, 1, 15);
+    f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-4.png", 11, { SwingSound:SWINGSOUND.MP, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.MK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.MEDIUM, [{ state: HIT_FLAGS.NEAR, x: 230, y: 35, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 130, y: 15, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 30, y: 5, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.MEDIUM, 1, 1, 15);
     f_jump_k2.EndBlock();
     f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-3.png", 3);
     f_jump_k2.AddFrame(player, "", "|images/misc/ken/x-f-jump-k2-2.png", 1);
@@ -631,7 +631,7 @@ Player.prototype.CreateKen = function(user)
     f_jump_k3.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE, OVERRIDE_FLAGS.NULL);
     f_jump_k3.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-1.png", 2, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE });
     f_jump_k3.AddFrame(player, "", "|images/misc/ken/x-f-jump-k3-1.png", 2);
-    f_jump_k3.AddFrame(player, "", "|images/misc/ken/x-f-jump-k3-2.png", 6, { SwingSound:SWINGSOUND.HP, Combat: COMBAT_FLAGS.ATTACK, HitSound:SWINGSOUND.HP }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 230, y: 0, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 130, y: 20, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.HARD, 1, 1, 20);
+    f_jump_k3.AddFrame(player, "", "|images/misc/ken/x-f-jump-k3-2.png", 6, { SwingSound:SWINGSOUND.HP, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, 10, null, 0, 0, ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 230, y: 0, Fx : airKnockBackX, Fy : 0 }, { state: HIT_FLAGS.NEAR, x: 130, y: 20, Fx : airKnockBackX, Fy : 0}], ATTACK_FLAGS.HARD, 1, 1, 20);
     f_jump_k3.EndBlock();
     f_jump_k3.AddFrame(player, "", "|images/misc/ken/x-f-jump-k3-1.png", 6);
     f_jump_k3.AddFrame(player, "", "|images/misc/ken/x-f-jump-k1-1.png", CONSTANTS.FRAME_MAX);

@@ -191,6 +191,7 @@ Player.prototype.HandleProjectiles = function(frame,stageX,stageY)
 /*Handles attacking players on the opposing team*/
 Player.prototype.HandleAttack = function(frame, moveFrame)
 {
+    this.isInAttackFrame_ = true;
     if(!!(moveFrame.FlagsToSet.Combat & COMBAT_FLAGS.CAN_BE_BLOCKED))
     {
         this.mustClearAllowBlock_ = true;

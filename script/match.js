@@ -272,7 +272,6 @@ Match.prototype.Start = function(team1,team2)
         this.teamA_.Players[i].changeEnergyFn_ = changeEnergy(this);
         this.teamA_.Players[i].attackFn_ = attack(this,this.teamB_.Players);
         this.teamA_.Players[i].projectileAttackFn_ = projectileAttack(this,this.teamB_.Players);
-        this.teamA_.Players[i].ChangeDirection(true);
         this.teamA_.Players[i].SetupInfo(1,"l");
         this.teamA_.Players[i].getHealthFn_ = getHealth(this);
         this.teamA_.Players[i].getEnergyFn_ = getEnergy(this);
@@ -286,6 +285,8 @@ Match.prototype.Start = function(team1,team2)
         this.teamA_.Players[i].onIncComboRefCountFn_ = incComboRefCount(this,this.teamA_);
         this.teamA_.Players[i].onDecComboRefCountFn_ = decComboRefCount(this,this.teamA_);
         this.teamA_.Players[i].getCurrentComboCountFn_ = getCurrentComboCount(this,this.teamA_);
+        this.teamA_.Players[i].InitSprite();
+        this.teamA_.Players[i].ChangeDirection(true);
     }
     if(!!this.teamA_.Players[0])
         this.teamA_.Players[0].SetX(STAGE.START_X);
@@ -317,6 +318,7 @@ Match.prototype.Start = function(team1,team2)
         this.teamB_.Players[i].onIncComboRefCountFn_ = incComboRefCount(this,this.teamB_);
         this.teamB_.Players[i].onDecComboRefCountFn_ = decComboRefCount(this,this.teamB_);
         this.teamB_.Players[i].getCurrentComboCountFn_ = getCurrentComboCount(this,this.teamB_);
+        this.teamB_.Players[i].InitSprite();
     }
     if(!!this.teamB_.Players[0])
         this.teamB_.Players[0].SetX(STAGE.START_X);

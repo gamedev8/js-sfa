@@ -106,6 +106,7 @@ Player.prototype.ChangeDirection = function(quick)
 {
     this.mustChangeDirection_ = 0;
     var pnlStageWidth = STAGE.CSSWIDTH;//parseInt(window.document.getElementById("pnlStage").style.width);
+    var imgWidth = parseInt(this.spriteElement_.style.width) || 0;
     //this.ExecuteAnimation("turn");
     //var move = this.moves_["_0_turn"];
     //this.SetCurrentAnimation({Animation:move,StartFrame:this.GetMatch().GetCurrentFrame(),Direction:-this.direction_});
@@ -113,7 +114,7 @@ Player.prototype.ChangeDirection = function(quick)
     /*facing left*/
     if(this.IsFacingLeft())
     {
-        var x = this.GetRight() + parseInt(this.spriteElement_.style.width);
+        var x = this.GetRight() + imgWidth;
         var left = pnlStageWidth - x;
         this.SetX(left);
 
@@ -136,7 +137,7 @@ Player.prototype.ChangeDirection = function(quick)
     }
     else
     {
-        var x = this.GetLeft() + parseInt(this.spriteElement_.style.width);
+        var x = this.GetLeft() + imgWidth;
         var right = pnlStageWidth - x;
         this.SetX(right);
 

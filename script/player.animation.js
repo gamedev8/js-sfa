@@ -201,7 +201,6 @@ Player.prototype.GoToStance = function(frame)
         var move = this.moves_["_0_stance"];
         this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_},true);
     }
-    this.SetCurrentFrame(null);
 }
 /*returns the first free front hit report image*/
 Player.prototype.GetNextFrontHitReportImage = function()
@@ -377,7 +376,7 @@ Player.prototype.TryChainAnimation = function(frame,stageX,stageY)
             return;
         }
     }
-    if(!!this.mustChangeDirection_ && !this.IsDead() && (!this.currentAnimation_.Animation || (!!this.currentAnimation_.Animation && !this.currentAnimation_.Animation.chainAnimation_)))
+    if(!!this.currentAnimation_ && !!this.mustChangeDirection_ && !this.IsDead() && (!this.currentAnimation_.Animation || (!!this.currentAnimation_.Animation && !this.currentAnimation_.Animation.chainAnimation_)))
     {
         this.ChangeDirection();
     }
@@ -622,6 +621,11 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                 this.QueueSound(newFrame.soundFilename_,newFrame.soundVolume_);
         }
     }
+}
+
+Player.prototype.InitSprite = function()
+{
+    this.spriteElement_.style.backgroundImage = "url('images/misc/" + this.name_ + "/sprites.png')";
 }
 
 Player.prototype.SetSprite = function()

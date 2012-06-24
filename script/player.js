@@ -158,6 +158,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.flags_ = new PlayerFlags(this);
     this.keyState_ = 0;
     this.keyStates_ = [];
+    this.isInAttackFrame_ = false;
 
     this.lastKeyStates_ = [];
     this.clearKeyStateCount_ = 0;
@@ -222,7 +223,6 @@ Player.prototype.CreateElement = function(x,y,parentElement)
 
     this.spriteElement_ = window.document.createElement("div");
     this.spriteElement_.className = "player-sprite";
-    this.spriteElement_.style.backgroundImage = "url('images/misc/" + this.name_ + "/sprites.png')";
     this.element_.appendChild(this.spriteElement_);
 
     for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
@@ -433,6 +433,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
             this.ai_.FrameMove(frame);
         this.CheckForInterupt(frame);
         this.FrameMove(frame,stageX,stageY);
+        this.isInAttackFrame_ = false;
         if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
             this.HandleAttack(frame, this.currentFrame_);
         if(!!this.grappledPlayer_)
