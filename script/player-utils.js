@@ -693,7 +693,7 @@ Projectile.prototype.Advance = function(frame,stageX,stageY)
         this.Cancel();
         return null;
     }
-
+    this.element_.style.display = "none";
     ++this.t_;
     this.isActive_ = true;
 
@@ -772,9 +772,9 @@ Projectile.prototype.SetSprite = function(newFrame,offsetX,offsetY,stageX,stageY
             var data = spriteLookup_.Get(newFrame.RightSrc)
             if(!!data && (this.element_.style.backgroundPositionX != data.Left))
             {
-                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
                 this.element_.style.width = data.Width;
                 this.element_.style.height = data.Height;
+                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
             }
 
         }
@@ -784,15 +784,14 @@ Projectile.prototype.SetSprite = function(newFrame,offsetX,offsetY,stageX,stageY
             var data = spriteLookup_.Get(newFrame.LeftSrc)
             if(!!data && (this.element_.style.backgroundPositionX != data.Left))
             {
-                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
                 this.element_.style.width = data.Width;
                 this.element_.style.height = data.Height;
+                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
             }
 
         }
-        if(this.element_.style.display != "")
-            this.element_.style.display="";
     }
+
     if(this.isDisintegrating_)
     {
         if(this.direction_ > 0)
@@ -821,6 +820,8 @@ Projectile.prototype.SetSprite = function(newFrame,offsetX,offsetY,stageX,stageY
     }
     var imgOffsetY = this.y_ - (parseInt(this.element_.style.height)/2);
     this.element_.style.bottom = imgOffsetY + "px";
+    if(this.element_.style.display != "")
+        this.element_.style.display="";
 }
 
 

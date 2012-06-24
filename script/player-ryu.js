@@ -749,10 +749,10 @@ Player.prototype.CreateRyu = function(user)
         fireball.energyToAdd_ = 5;
         fireball.flags_ = {Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE};
         fireball.AddFrame(player,"","|images/misc/ryu/x-fb-0.png",1,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-        fireball.AddFrame(player,"","|images/misc/ryu/x-fb-1.png",6);
-        fireball.AddFrame(player,"","|images/misc/ryu/x-fb-2.png",2);
-        fireball.AddFrameWithSound(player,1,"audio/ryu/haduken.ogg","","|images/misc/ryu/x-fb-3.png",1,{Combat:COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},0,0,0,0,0,x);
-        fireball.AddFrameWithSound(player,1,"audio/misc/projectile-0.ogg","","|images/misc/ryu/x-fb-3.png",29);
+        fireball.AddFrame(player,"168","|images/misc/ryu/x-fb-1.png",6);
+        fireball.AddFrame(player,"200","|images/misc/ryu/x-fb-2.png",2);
+        fireball.AddFrameWithSound(player,1,"audio/ryu/haduken.ogg","200","|images/misc/ryu/x-fb-3.png",1,{Combat:COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},0,0,0,0,0,x);
+        fireball.AddFrameWithSound(player,1,"audio/misc/projectile-0.ogg","200","|images/misc/ryu/x-fb-3.png",29);
         fireball.AddFrame(player,"","|images/misc/ryu/x-k1-4.png",5);
     }
 
