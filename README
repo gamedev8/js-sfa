@@ -1,6 +1,8 @@
 Street Fighter Alpha
 --------------------
 
-*Currently only Ken and Ryu are playable*
+* Does not seem to work well in Safari on Windows (not tested on a Mac) *
+
+* Currently only Ken and Ryu are playable *
 
 Jun-21-2012: Expect a huge update within the next few days. All animation use css sprites, instead of individual images. This will allow for much faster load times and other performance enchancements.
