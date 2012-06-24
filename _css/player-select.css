@@ -1,5 +1,0 @@
-﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:10px;}
-body div.stage {left:296px;height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;background:#000 url(../images/misc/misc/player-select-back-bg.png) no-repeat;}
-body div.select {height:100%;width:100%;background:url(../images/misc/misc/player-select-bg.png) no-repeat;}
-body div.select img.player-select {position:absolute;left:245px;top:20px;}
-div.loading{position:absolute;left:40%;top:40%;text-align:center;font-family:arial;font-size:300%;}
