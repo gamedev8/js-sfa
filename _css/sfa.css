@@ -19,7 +19,7 @@ div.stage .ken-bg1{position:absolute;bottom:0px;left:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
 div.shadow .shadow{position:absolute;bottom:0px;background-image:url(../images/misc/misc/shadow-sprites.png);}
 div.player{position:absolute;bottom:35px;z-index:1;/*border:solid 1px #000;*/}
-div.player .player-sprite{position:relative;bottom:0px;overflow:hidden;background-repeat:no-repeat;}
+div.player .player-sprite{position:relative;bottom:0px;}
 
 /*div.loading{position:absolute;left:40%;top:40%;text-align:center;font-family:arial;font-size:300%;}*/
 div.show-keys {z-index:3000;padding:3px 0;background:#222;}
