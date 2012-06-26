@@ -19,6 +19,8 @@ var Match = function()
     this.actionSystem_ = new ActionSystem();
     this.isSuperMoveActive_ = false;
     this.dimBackground_ = window.document.getElementById("pnlDimBackground");
+    this.round_ = 1;
+    this.allowInput_ = true;
 }
 Match.prototype.ResetKeys = function()
 {
@@ -175,6 +177,7 @@ Match.prototype.Reset = function()
 {
     if(this.gotoNewRoundFrame_ != CONSTANTS.NO_FRAME)
     {
+        ++this.round_;
         this.GetGame().speed_ = CONSTANTS.NORMAL_SPEED;
         this.gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
         this.teamA_.Cursor = 0;
@@ -343,10 +346,13 @@ Match.prototype.Start = function(team1,team2)
 /*Handles key state changes*/
 Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
 {
-    for(var i = 0; i < this.teamA_.Players.length; ++i)
-        this.teamA_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
-    for(var i = 0; i < this.teamB_.Players.length; ++i)
-        this.teamB_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
+    if(!!this.allowInput_)
+    {
+        for(var i = 0; i < this.teamA_.Players.length; ++i)
+            this.teamA_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
+        for(var i = 0; i < this.teamB_.Players.length; ++i)
+            this.teamB_.Players[i].OnKeyStateChanged(isDown,keyCode,frame);
+    }
 }
 /*Dims the background when a player is starting a super move*/
 Match.prototype.SetBackgroundTransparent = function(player)

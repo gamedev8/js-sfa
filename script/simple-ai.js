@@ -37,14 +37,14 @@
     }
 
     /*private member*/
-    var GetCloseAirborneEnemy_ = function()
+    var GetAirborneEnemy_ = function(distance)
     {
         var otherPlayers = GetOtherTeam_();
         for(var i = 0; i < otherPlayers.length; ++i)
         {
             if(otherPlayers[i].IsAirborne())
             {
-                if(player_.GetPhysics().IsWithinDistanceX(player_,otherPlayers[i],300))
+                if(player_.GetPhysics().IsWithinDistanceX(player_,otherPlayers[i],distance))
                 {
                     return otherPlayers[i];
                 }
@@ -74,18 +74,21 @@
             /*are all players on the other team on the ground?*/
             if(IsOtherTeamOnGround_())
             {
-                player_.SendInput(lightFireballInput_);
+                player_.SendInput(hardFireballInput_);
             }
             else
             {
-                var enemy = GetCloseAirborneEnemy_();
-                if(!!enemy)
+                if(!!GetAirborneEnemy_(100))
+                {
+                    player_.SendInput(lightUppercutInput_);
+                }
+                else if(!!GetAirborneEnemy_(300))
                 {
                     player_.SendInput(hardUppercutInput_);
                 }
                 else
                 {
-                    player_.SendInput(lightFireballInput_);
+                    player_.SendInput(hardFireballInput_);
                 }
             }
         }

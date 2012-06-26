@@ -13,7 +13,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     this.K2 = k2;
     this.K3 = k3;
     this.player_ = 0;
-    this.Selected = null;
+    this.selected_ = null;
     this.changeCharacterFn_ = null;
     this.animations_ = {};
     this.nbFrames_ = 0;
@@ -171,7 +171,7 @@ User.prototype.Init = function(isUser1)
 
     if(!!isUser1)
     {
-        this.Selected = CHARACTERS.RYU;
+        this.selected_ = CHARACTERS.RYU;
         this.animations_["select_icon"] = new BasicAnimation("select_icon",[],true);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p1-select-0.png",1);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p1-select-1.png",1);
@@ -182,7 +182,7 @@ User.prototype.Init = function(isUser1)
     }
     else
     {
-        this.Selected = CHARACTERS.KEN;
+        this.selected_ = CHARACTERS.KEN;
         this.animations_["select_icon"] = new BasicAnimation("select_icon",[],true);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p2-select-0.png",1);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p2-select-1.png",1);
@@ -196,7 +196,7 @@ User.prototype.Init = function(isUser1)
 /*input handler*/
 User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
 {
-    if(!isDown)
+    if(!!isDown)
     {
         if(!this.isCharSelected_)
         {
@@ -207,12 +207,19 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
             else if(keyCode == this.Right) direction = CONSTANTS.RIGHT;
             else if(keyCode == this.P1 || keyCode == this.P2 || keyCode == this.P3 || keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3)
             {
-                if(this.Selected == CHARACTERS.RYU
-                    || this.Selected == CHARACTERS.KEN
-                    || this.Selected == CHARACTERS.MBISON)
-                this.isCharSelected_ = true;
-                this.chooseCharacterFn_(this);
-                this.currentStance_ += "_selected";
+                /*
+                if(this.selected_ == CHARACTERS.RYU
+                    || this.selected_ == CHARACTERS.KEN
+                    || this.selected_ == CHARACTERS.MBISON)
+                */
+                if(this.currentStance_ == "ken"
+                    || this.currentStance_ == "ryu")
+                {
+                    this.isCharSelected_ = true;
+                    this.chooseCharacterFn_(this);
+                    this.currentStance_ += "_selected";
+
+                }
             }
 
             if(!!direction)
@@ -220,13 +227,21 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
                 this.changeCharacterFn_(direction);
                 this.ShowCharacter();
             }
-        }
+            if(!!this.isCharSelected_)
+            {
+                switch(this.currentStance_)
+                {
+                    case "ken_selected": this.selected_ = CHARACTERS.KEN; break;
+                    case "ryu_selected": this.selected_ = CHARACTERS.RYU; break;
+                };
+            }
+       }
     }
 }
 
 User.prototype.ShowCharacter = function()
 {
-    switch(this.Selected)
+    switch(this.selected_)
     {
         case CHARACTERS.RYU: { this.currentStance_ = "ryu"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
         case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; this.SetPositions("7px","17px","27px","0px",12,28); break; }
@@ -269,7 +284,7 @@ User.prototype.GetNextFrameID = function()
 User.prototype.GetPlayer = function()
 {
     var retVal = null;
-    switch(this.Selected)
+    switch(this.selected_)
     {
         case CHARACTERS.RYU: { retVal = Player.prototype.CreateRyu(this); break; }
         case CHARACTERS.KEN: { retVal = Player.prototype.CreateKen(this); break; }
@@ -328,7 +343,7 @@ User.prototype.Show = function() {this.SetDisplay(true);}
 /*selecting a character*/
 User.prototype.FrameMove = function(frame)
 {
-    if(!!this.randomSelect_ && (frame % 5 == 0))
+    if(!this.isCharSelected_ && !!this.randomSelect_ && (frame % 5 == 0))
     {
         this.currentStance_ = CHAR_NAMES[this.randomSelect_-1]
         this.ShowCharacter();
@@ -414,23 +429,23 @@ CharSelect.prototype.Resume = function()
 
 CharSelect.prototype.GetRow = function(user)
 {
-    if((user.Selected <= this.charsRow1_.Max) && (user.Selected >= this.charsRow1_.Min))
+    if((user.selected_ <= this.charsRow1_.Max) && (user.selected_ >= this.charsRow1_.Min))
         return CONSTANTS.ROW1;
-    else if((user.Selected <= this.charsRow2_.Max) && (user.Selected >= this.charsRow2_.Min))
+    else if((user.selected_ <= this.charsRow2_.Max) && (user.selected_ >= this.charsRow2_.Min))
         return CONSTANTS.ROW2;
-    else if((user.Selected <= this.charsRow3_.Max) && (user.Selected >= this.charsRow3_.Min))
+    else if((user.selected_ <= this.charsRow3_.Max) && (user.selected_ >= this.charsRow3_.Min))
         return CONSTANTS.ROW3;
 }
 
 CharSelect.prototype.GetColumn = function(user)
 {
-    if(-1 < this.charsCol1_.IndexOf(user.Selected))
+    if(-1 < this.charsCol1_.IndexOf(user.selected_))
         return CONSTANTS.COL1;
-    else if(-1 < this.charsCol2_.IndexOf(user.Selected))
+    else if(-1 < this.charsCol2_.IndexOf(user.selected_))
         return CONSTANTS.COL2;
-    else if(-1 < this.charsCol3_.IndexOf(user.Selected))
+    else if(-1 < this.charsCol3_.IndexOf(user.selected_))
         return CONSTANTS.COL3;
-    else if(-1 < this.charsCol4_.IndexOf(user.Selected))
+    else if(-1 < this.charsCol4_.IndexOf(user.selected_))
         return CONSTANTS.COL4;
 }
 
@@ -445,13 +460,13 @@ CharSelect.prototype.TryChangeCharacter = function(who, direction)
     if(direction == CONSTANTS.DOWN)
     {
         /*ensure that the player can only go to its own random select*/
-        if(row != CONSTANTS.ROW3 && !(isUser1 && who.Selected == 7) && !(isUser2 && who.Selected == 4))
-            who.Selected = Math.min(who.Selected + 4, this.charsMax_);
+        if(row != CONSTANTS.ROW3 && !(isUser1 && who.selected_ == 7) && !(isUser2 && who.selected_ == 4))
+            who.selected_ = Math.min(who.selected_ + 4, this.charsMax_);
     }
     else if(direction == CONSTANTS.UP)
     {
         if(row != CONSTANTS.ROW1)
-            who.Selected = Math.max(who.Selected - 4, 0);
+            who.selected_ = Math.max(who.selected_ - 4, 0);
     }
     else
     {
@@ -459,21 +474,21 @@ CharSelect.prototype.TryChangeCharacter = function(who, direction)
         {
             case CONSTANTS.ROW1:
             {
-                if(direction == CONSTANTS.RIGHT)  who.Selected = Math.min(who.Selected + 1, this.charsRow1_.Max);
-                else if(direction == CONSTANTS.LEFT) who.Selected = Math.max(who.Selected - 1, this.charsRow1_.Min);
+                if(direction == CONSTANTS.RIGHT)  who.selected_ = Math.min(who.selected_ + 1, this.charsRow1_.Max);
+                else if(direction == CONSTANTS.LEFT) who.selected_ = Math.max(who.selected_ - 1, this.charsRow1_.Min);
                 break;
             }
             case CONSTANTS.ROW2:
             {
-                if(direction == CONSTANTS.RIGHT) who.Selected = Math.min(who.Selected + 1, this.charsRow2_.Max);
-                else if(direction == CONSTANTS.LEFT) who.Selected = Math.max(who.Selected - 1, this.charsRow2_.Min);
+                if(direction == CONSTANTS.RIGHT) who.selected_ = Math.min(who.selected_ + 1, this.charsRow2_.Max);
+                else if(direction == CONSTANTS.LEFT) who.selected_ = Math.max(who.selected_ - 1, this.charsRow2_.Min);
                 break;
             }
             case CONSTANTS.ROW3:
             {
                 /*ensure that the player can only go to its own random select*/
-                if(direction == CONSTANTS.RIGHT && !(isUser1 && who.Selected == 10)) who.Selected = Math.min(who.Selected + 1, this.charsRow3_.Max);
-                else if(direction == CONSTANTS.LEFT && !(isUser2 && who.Selected == 9)) who.Selected = Math.max(who.Selected - 1, this.charsRow3_.Min);
+                if(direction == CONSTANTS.RIGHT && !(isUser1 && who.selected_ == 10)) who.selected_ = Math.min(who.selected_ + 1, this.charsRow3_.Max);
+                else if(direction == CONSTANTS.LEFT && !(isUser2 && who.selected_ == 9)) who.selected_ = Math.max(who.selected_ - 1, this.charsRow3_.Min);
                 break;
             }
         }
@@ -557,8 +572,8 @@ CharSelect.prototype.Init = function()
         this.u1_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
         this.u1_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser1ChooseSound(); } })(this);
 
-        if(this.u1_.Selected == null)
-            this.u1_.Selected = CHARACTERS.RYU;
+        if(this.u1_.selected_ == null)
+            this.u1_.selected_ = CHARACTERS.RYU;
         this.u1_.changeCharacterFn_();
         this.u1_.ShowCharacter();
     }
@@ -572,8 +587,8 @@ CharSelect.prototype.Init = function()
         this.u2_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
         this.u2_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser2ChooseSound(); } })(this);
 
-        if(this.u1_.Selected == null)
-            this.u1_.Selected = CHARACTERS.KEN;
+        if(this.u1_.selected_ == null)
+            this.u1_.selected_ = CHARACTERS.KEN;
         this.u2_.changeCharacterFn_();
         this.u2_.ShowCharacter();
     }
