@@ -374,7 +374,7 @@ Game.prototype.RunGameLoop = function()
 
 Game.prototype.RunCharSelectLoop = function()
 {
-    if(!!this.charSelect_ && !this.charSelect_.isDone_)
+    if(!!this.charSelect_ && this.charSelect_.delayAfterSelect_ < CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
     {
         this.HandleInput();
         if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
@@ -383,7 +383,8 @@ Game.prototype.RunCharSelectLoop = function()
             ++this.frame_;
             this.charSelect_.FrameMove(this.frame_);
             soundManager_.FrameMove();
-            if(!!this.charSelect_.isDone_)
+
+            if(!!this.charSelect_.isDone_ && this.charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
             {
                 this.managed_ = null;
                 this.StartMatch();

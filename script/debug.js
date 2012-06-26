@@ -32,7 +32,7 @@
     Debug.prototype.P1ClearInput = function()
     {
         if(!!game_.match_)
-            return game_.match_.teamA_.Players[0].ClearKeys();
+            return game_.match_.teamA_.Players[0].ClearInput();
         return null;
     }
 
@@ -46,7 +46,7 @@
     Debug.prototype.P2ClearInput = function()
     {
         if(!!game_.match_)
-            return game_.match_.teamB_.Players[0].ClearKeys();
+            return game_.match_.teamB_.Players[0].ClearInput();
         return null;
     }
 
@@ -54,12 +54,7 @@
     {
         if(!!game_.match_)
         {
-            this.P1SendInput([
-            {IsDown:true,Button:8}
-            ,{IsDown:true,Button:1}
-            ,{IsDown:false,Button:8}
-            ,{IsDown:true,Button:64}
-            ]);
+            this.P1().SetAI(CreateSimpleRyuAI);
         }
         return null;
     }
@@ -68,12 +63,7 @@
     {
         if(!!game_.match_)
         {
-            this.P2SendInput([
-            {IsDown:true,Button:8}
-            ,{IsDown:true,Button:1}
-            ,{IsDown:false,Button:8}
-            ,{IsDown:true,Button:64}
-            ]);
+            this.P2().SetAI(CreateSimpleRyuAI);
         }
         return null;
     }

@@ -86,7 +86,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
     this.headOffsetX_ = 40;
     this.headOffsetY_ = 10;
-    this.ai_ = new AIProxy(this);
+    this.ai_ = new CreateAIProxy(this);
     /**/
     this.slideFactor_ = slideFactor || 30;
     this.baseTakeHitDelay_ = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
@@ -100,7 +100,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.Reset();
     this.AddGenericAnimations();
 }
-Player.prototype.SetAI = function(ai) { this.ai_.Managed = ai; }
+Player.prototype.SetAI = function(createAiFn) { this.ai_.SetAI(createAiFn); }
 Player.prototype.PlayerCount = 0;
 Player.prototype.TakeDamage = function(amount) { this.takeDamageFn_(amount); }
 Player.prototype.ChangeEnergy = function(amount) { if(!!amount) this.changeEnergyFn_(amount); }
@@ -429,7 +429,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
     if(!this.isPaused_)
     {
-        if(!!this.ai_.Managed)
+        if(this.ai_.IsRunning())
             this.ai_.FrameMove(frame);
         this.CheckForInterupt(frame);
         this.FrameMove(frame,stageX,stageY);

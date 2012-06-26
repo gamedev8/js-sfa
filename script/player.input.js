@@ -11,7 +11,7 @@ Player.prototype.HandleInput = function(keyboardState,frame)
         this.CheckForAnimation(frame);
 }
 
-Player.prototype.ClearKeys = function()
+Player.prototype.ClearInput = function()
 {
     this.keyStates_ = [];
     this.keyState_ = 0;

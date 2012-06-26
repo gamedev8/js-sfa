@@ -43,6 +43,10 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-3.png",5);
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-2.png",5);    
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-1.png",5);
+        this.animations_["ryu_selected"] = new BasicAnimation("ryu_selected",[],true);
+        this.animations_["ryu_selected"].AddFrame(this,"|ryu-x-win-2-0.png",5);
+        this.animations_["ryu_selected"].AddFrame(this,"|ryu-x-win-2-1.png",5);
+        this.animations_["ryu_selected"].AddFrame(this,"|ryu-x-win-2-2.png",CONSTANTS.MAX_FRAME);
 
         this.animations_["ken"] = new BasicAnimation("ken_stance",[],true);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-0.png",5);
@@ -51,6 +55,10 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-3.png",5);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-2.png",5);    
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-1.png",5);
+        this.animations_["ken_selected"] = new BasicAnimation("ken_selected",[],true);
+        this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-0.png",5);
+        this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-1.png",5);
+        this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-2.png",CONSTANTS.MAX_FRAME);
 
         this.animations_["sagat"] = new BasicAnimation("sagat_stance",[],true);
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-0.png",5);
@@ -203,7 +211,8 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
                     || this.Selected == CHARACTERS.KEN
                     || this.Selected == CHARACTERS.MBISON)
                 this.isCharSelected_ = true;
-                this.chooseCharacterFn_(this)
+                this.chooseCharacterFn_(this);
+                this.currentStance_ += "_selected";
             }
 
             if(!!direction)
@@ -369,6 +378,7 @@ var CharSelect = function(user1,user2)
     this.charsCol3_ = [2,6,10];
     this.charsCol4_ = [3,7,11];
 
+    this.delayAfterSelect_ = 0;
     this.element_ = null;
     this.playerSelectImg_ = null;
     this.music_ = "audio/misc/player-select.ogg";
@@ -520,6 +530,7 @@ CharSelect.prototype.Release = function()
 CharSelect.prototype.Init = function()
 {
     LoadCharSelectSpriteData();
+    this.delayAfterSelect_ = 0;
     this.element_ = window.document.createElement("div");
     this.element_.className = "select";
 
@@ -586,6 +597,7 @@ CharSelect.prototype.Check = function()
         && ((!!this.u2_ && this.u2_.isCharSelected_) || !this.u2_))
     {
         this.isDone_ = true;
+        ++this.delayAfterSelect_;
     }
 }
 
@@ -651,96 +663,116 @@ Array.prototype.IndexOf = function(value)
 
 var LoadCharSelectSpriteData = function()
 {
-	spriteLookup_.Load("adon-l-stance-0.png","|images/misc/misc/stance-sprites.png", "0px", "-13px", "148px", "270px");
-	spriteLookup_.Load("adon-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-148px", "-10px", "150px", "273px");
-	spriteLookup_.Load("adon-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-298px", "-8px", "154px", "275px");
-	spriteLookup_.Load("adon-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-452px", "-10px", "154px", "273px");
-	spriteLookup_.Load("adon-l-stance-4.png","|images/misc/misc/stance-sprites.png", "-606px", "-8px", "152px", "275px");
-	spriteLookup_.Load("adon-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-758px", "-13px", "148px", "270px");
-	spriteLookup_.Load("adon-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-906px", "-10px", "150px", "273px");
-	spriteLookup_.Load("adon-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-1056px", "-8px", "154px", "275px");
-	spriteLookup_.Load("adon-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-1210px", "-10px", "154px", "273px");
-	spriteLookup_.Load("adon-r-stance-4.png","|images/misc/misc/stance-sprites.png", "-1364px", "-8px", "152px", "275px");
-	spriteLookup_.Load("birdie-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-1516px", "0px", "196px", "283px");
-	spriteLookup_.Load("birdie-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-1712px", "-5px", "200px", "278px");
-	spriteLookup_.Load("birdie-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-1912px", "-5px", "200px", "278px");
-	spriteLookup_.Load("birdie-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-2112px", "-3px", "196px", "280px");
-	spriteLookup_.Load("birdie-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-2308px", "0px", "196px", "283px");
-	spriteLookup_.Load("birdie-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-2504px", "-5px", "200px", "278px");
-	spriteLookup_.Load("birdie-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-2704px", "-5px", "200px", "278px");
-	spriteLookup_.Load("birdie-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-2904px", "-3px", "196px", "280px");
-	spriteLookup_.Load("charlie-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-3100px", "-36px", "176px", "247px");
-	spriteLookup_.Load("charlie-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-3276px", "-33px", "176px", "250px");
-	spriteLookup_.Load("charlie-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-3452px", "-31px", "178px", "252px");
-	spriteLookup_.Load("charlie-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-3630px", "-31px", "178px", "252px");
-	spriteLookup_.Load("charlie-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-3808px", "-36px", "176px", "247px");
-	spriteLookup_.Load("charlie-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-3984px", "-33px", "176px", "250px");
-	spriteLookup_.Load("charlie-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-4160px", "-31px", "178px", "252px");
-	spriteLookup_.Load("charlie-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-4338px", "-31px", "178px", "252px");
-	spriteLookup_.Load("chunli-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-4516px", "-62px", "180px", "221px");
-	spriteLookup_.Load("chunli-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-4696px", "-59px", "180px", "224px");
-	spriteLookup_.Load("chunli-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-4876px", "-57px", "180px", "226px");
-	spriteLookup_.Load("chunli-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-5056px", "-59px", "180px", "224px");
-	spriteLookup_.Load("chunli-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-5236px", "-62px", "180px", "221px");
-	spriteLookup_.Load("chunli-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-5416px", "-59px", "180px", "224px");
-	spriteLookup_.Load("chunli-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-5596px", "-57px", "180px", "226px");
-	spriteLookup_.Load("chunli-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-5776px", "-59px", "180px", "224px");
-	spriteLookup_.Load("guy-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-5956px", "-36px", "148px", "247px");
-	spriteLookup_.Load("guy-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-6104px", "-36px", "146px", "247px");
-	spriteLookup_.Load("guy-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-6250px", "-36px", "148px", "247px");
-	spriteLookup_.Load("guy-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-6398px", "-36px", "148px", "247px");
-	spriteLookup_.Load("guy-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-6546px", "-36px", "148px", "247px");
-	spriteLookup_.Load("guy-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-6694px", "-36px", "146px", "247px");
-	spriteLookup_.Load("guy-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-6840px", "-36px", "148px", "247px");
-	spriteLookup_.Load("guy-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-6988px", "-36px", "148px", "247px");
-	spriteLookup_.Load("ken-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-7136px", "-43px", "132px", "240px");
-	spriteLookup_.Load("ken-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-7268px", "-41px", "132px", "242px");
-	spriteLookup_.Load("ken-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-7400px", "-36px", "132px", "247px");
-	spriteLookup_.Load("ken-l-stance-3.png","|images/misc/misc/stance-sprites.png", "0px", "-344px", "129px", "253px");
-	spriteLookup_.Load("ken-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-129px", "-357px", "132px", "240px");
-	spriteLookup_.Load("ken-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-261px", "-355px", "132px", "242px");
-	spriteLookup_.Load("ken-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-393px", "-350px", "132px", "247px");
-	spriteLookup_.Load("ken-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-525px", "-344px", "129px", "253px");
-	spriteLookup_.Load("rose-l-c-stance-0.png","|images/misc/misc/stance-sprites.png", "-654px", "-317px", "190px", "280px");
-	spriteLookup_.Load("rose-l-c-stance-1.png","|images/misc/misc/stance-sprites.png", "-844px", "-319px", "188px", "278px");
-	spriteLookup_.Load("rose-l-c-stance-2.png","|images/misc/misc/stance-sprites.png", "-1032px", "-322px", "186px", "275px");
-	spriteLookup_.Load("rose-l-c-stance-3.png","|images/misc/misc/stance-sprites.png", "-1218px", "-327px", "188px", "270px");
-	spriteLookup_.Load("rose-l-c-stance-4.png","|images/misc/misc/stance-sprites.png", "-1406px", "-324px", "190px", "273px");
-	spriteLookup_.Load("rose-l-c-stance-5.png","|images/misc/misc/stance-sprites.png", "-1596px", "-322px", "190px", "275px");
-	spriteLookup_.Load("rose-r-c-stance-0.png","|images/misc/misc/stance-sprites.png", "-1786px", "-317px", "190px", "280px");
-	spriteLookup_.Load("rose-r-c-stance-1.png","|images/misc/misc/stance-sprites.png", "-1976px", "-319px", "188px", "278px");
-	spriteLookup_.Load("rose-r-c-stance-2.png","|images/misc/misc/stance-sprites.png", "-2164px", "-322px", "186px", "275px");
-	spriteLookup_.Load("rose-r-c-stance-3.png","|images/misc/misc/stance-sprites.png", "-2350px", "-327px", "188px", "270px");
-	spriteLookup_.Load("rose-r-c-stance-4.png","|images/misc/misc/stance-sprites.png", "-2538px", "-324px", "190px", "273px");
-	spriteLookup_.Load("rose-r-c-stance-5.png","|images/misc/misc/stance-sprites.png", "-2728px", "-322px", "190px", "275px");
-	spriteLookup_.Load("ryu-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-2918px", "-358px", "132px", "239px");
-	spriteLookup_.Load("ryu-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-3050px", "-355px", "132px", "242px");
-	spriteLookup_.Load("ryu-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-3182px", "-350px", "132px", "247px");
-	spriteLookup_.Load("ryu-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-3314px", "-345px", "129px", "252px");
-	spriteLookup_.Load("ryu-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-3443px", "-358px", "132px", "239px");
-	spriteLookup_.Load("ryu-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-3575px", "-355px", "132px", "242px");
-	spriteLookup_.Load("ryu-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-3707px", "-350px", "132px", "247px");
-	spriteLookup_.Load("ryu-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-3839px", "-345px", "129px", "252px");
-	spriteLookup_.Load("sagat-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-3968px", "-283px", "164px", "314px");
-	spriteLookup_.Load("sagat-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-4132px", "-296px", "162px", "301px");
-	spriteLookup_.Load("sagat-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-4294px", "-293px", "162px", "304px");
-	spriteLookup_.Load("sagat-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-4456px", "-288px", "164px", "309px");
-	spriteLookup_.Load("sagat-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-4620px", "-283px", "164px", "314px");
-	spriteLookup_.Load("sagat-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-4784px", "-296px", "162px", "301px");
-	spriteLookup_.Load("sagat-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-4946px", "-293px", "162px", "304px");
-	spriteLookup_.Load("sagat-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-5108px", "-288px", "164px", "309px");
-	spriteLookup_.Load("sodom-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-5272px", "-296px", "176px", "301px");
-	spriteLookup_.Load("sodom-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-5448px", "-294px", "178px", "303px");
-	spriteLookup_.Load("sodom-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-5626px", "-289px", "174px", "308px");
-	spriteLookup_.Load("sodom-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-5800px", "-286px", "172px", "311px");
-	spriteLookup_.Load("sodom-l-stance-4.png","|images/misc/misc/stance-sprites.png", "-5972px", "-289px", "174px", "308px");
-	spriteLookup_.Load("sodom-l-stance-5.png","|images/misc/misc/stance-sprites.png", "-6146px", "-294px", "178px", "303px");
-	spriteLookup_.Load("sodom-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-6324px", "-296px", "176px", "301px");
-	spriteLookup_.Load("sodom-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-6500px", "-294px", "178px", "303px");
-	spriteLookup_.Load("sodom-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-6678px", "-289px", "174px", "308px");
-	spriteLookup_.Load("sodom-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-6852px", "-286px", "172px", "311px");
-	spriteLookup_.Load("sodom-r-stance-4.png","|images/misc/misc/stance-sprites.png", "-7024px", "-289px", "174px", "308px");
-	spriteLookup_.Load("sodom-r-stance-5.png","|images/misc/misc/stance-sprites.png", "-7198px", "-294px", "178px", "303px");
+	spriteLookup_.Load("adon-l-stance-0.png","|images/misc/misc/stance-sprites.png", "0px", "-33px", "148px", "270px");
+	spriteLookup_.Load("adon-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-148px", "-30px", "150px", "273px");
+	spriteLookup_.Load("adon-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-298px", "-28px", "154px", "275px");
+	spriteLookup_.Load("adon-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-452px", "-30px", "154px", "273px");
+	spriteLookup_.Load("adon-l-stance-4.png","|images/misc/misc/stance-sprites.png", "-606px", "-28px", "152px", "275px");
+	spriteLookup_.Load("adon-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-758px", "-33px", "148px", "270px");
+	spriteLookup_.Load("adon-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-906px", "-30px", "150px", "273px");
+	spriteLookup_.Load("adon-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-1056px", "-28px", "154px", "275px");
+	spriteLookup_.Load("adon-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-1210px", "-30px", "154px", "273px");
+	spriteLookup_.Load("adon-r-stance-4.png","|images/misc/misc/stance-sprites.png", "-1364px", "-28px", "152px", "275px");
+	spriteLookup_.Load("birdie-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-1516px", "-20px", "196px", "283px");
+	spriteLookup_.Load("birdie-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-1712px", "-25px", "200px", "278px");
+	spriteLookup_.Load("birdie-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-1912px", "-25px", "200px", "278px");
+	spriteLookup_.Load("birdie-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-2112px", "-23px", "196px", "280px");
+	spriteLookup_.Load("birdie-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-2308px", "-20px", "196px", "283px");
+	spriteLookup_.Load("birdie-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-2504px", "-25px", "200px", "278px");
+	spriteLookup_.Load("birdie-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-2704px", "-25px", "200px", "278px");
+	spriteLookup_.Load("birdie-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-2904px", "-23px", "196px", "280px");
+	spriteLookup_.Load("charlie-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-3100px", "-56px", "176px", "247px");
+	spriteLookup_.Load("charlie-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-3276px", "-53px", "176px", "250px");
+	spriteLookup_.Load("charlie-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-3452px", "-51px", "178px", "252px");
+	spriteLookup_.Load("charlie-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-3630px", "-51px", "178px", "252px");
+	spriteLookup_.Load("charlie-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-3808px", "-56px", "176px", "247px");
+	spriteLookup_.Load("charlie-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-3984px", "-53px", "176px", "250px");
+	spriteLookup_.Load("charlie-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-4160px", "-51px", "178px", "252px");
+	spriteLookup_.Load("charlie-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-4338px", "-51px", "178px", "252px");
+	spriteLookup_.Load("chunli-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-4516px", "-82px", "180px", "221px");
+	spriteLookup_.Load("chunli-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-4696px", "-79px", "180px", "224px");
+	spriteLookup_.Load("chunli-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-4876px", "-77px", "180px", "226px");
+	spriteLookup_.Load("chunli-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-5056px", "-79px", "180px", "224px");
+	spriteLookup_.Load("chunli-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-5236px", "-82px", "180px", "221px");
+	spriteLookup_.Load("chunli-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-5416px", "-79px", "180px", "224px");
+	spriteLookup_.Load("chunli-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-5596px", "-77px", "180px", "226px");
+	spriteLookup_.Load("chunli-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-5776px", "-79px", "180px", "224px");
+	spriteLookup_.Load("guy-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-5956px", "-56px", "148px", "247px");
+	spriteLookup_.Load("guy-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-6104px", "-56px", "146px", "247px");
+	spriteLookup_.Load("guy-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-6250px", "-56px", "148px", "247px");
+	spriteLookup_.Load("guy-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-6398px", "-56px", "148px", "247px");
+	spriteLookup_.Load("guy-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-6546px", "-56px", "148px", "247px");
+	spriteLookup_.Load("guy-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-6694px", "-56px", "146px", "247px");
+	spriteLookup_.Load("guy-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-6840px", "-56px", "148px", "247px");
+	spriteLookup_.Load("guy-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-6988px", "-56px", "148px", "247px");
+	spriteLookup_.Load("ken-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-7136px", "-63px", "132px", "240px");
+	spriteLookup_.Load("ken-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-7268px", "-61px", "132px", "242px");
+	spriteLookup_.Load("ken-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-7400px", "-56px", "132px", "247px");
+	spriteLookup_.Load("ken-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-7532px", "-50px", "129px", "253px");
+	spriteLookup_.Load("ken-l-win-2-0.png","|images/misc/misc/stance-sprites.png", "-7661px", "-66px", "120px", "237px");
+	spriteLookup_.Load("ken-l-win-2-1.png","|images/misc/misc/stance-sprites.png", "-7781px", "-48px", "124px", "255px");
+	spriteLookup_.Load("ken-l-win-2-2.png","|images/misc/misc/stance-sprites.png", "-7905px", "0px", "124px", "303px");
+	spriteLookup_.Load("ken-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-8029px", "-63px", "132px", "240px");
+	spriteLookup_.Load("ken-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-8161px", "-61px", "132px", "242px");
+	spriteLookup_.Load("ken-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-8293px", "-56px", "132px", "247px");
+	spriteLookup_.Load("ken-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-8425px", "-50px", "129px", "253px");
+	spriteLookup_.Load("ken-r-win-2-0.png","|images/misc/misc/stance-sprites.png", "-8554px", "-66px", "120px", "237px");
+	spriteLookup_.Load("ken-r-win-2-1.png","|images/misc/misc/stance-sprites.png", "-8674px", "-48px", "124px", "255px");
+	spriteLookup_.Load("ken-r-win-2-2.png","|images/misc/misc/stance-sprites.png", "0px", "-314px", "124px", "303px");
+	spriteLookup_.Load("mbison-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-124px", "-376px", "234px", "241px");
+	spriteLookup_.Load("mbison-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-358px", "-371px", "242px", "246px");
+	spriteLookup_.Load("mbison-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-600px", "-367px", "242px", "250px");
+	spriteLookup_.Load("mbison-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-842px", "-365px", "242px", "252px");
+	spriteLookup_.Load("mbison-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-1084px", "-376px", "234px", "241px");
+	spriteLookup_.Load("mbison-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-1318px", "-371px", "242px", "246px");
+	spriteLookup_.Load("mbison-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-1560px", "-367px", "242px", "250px");
+	spriteLookup_.Load("mbison-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-1802px", "-365px", "242px", "252px");
+	spriteLookup_.Load("rose-l-c-stance-0.png","|images/misc/misc/stance-sprites.png", "-2044px", "-337px", "190px", "280px");
+	spriteLookup_.Load("rose-l-c-stance-1.png","|images/misc/misc/stance-sprites.png", "-2234px", "-339px", "188px", "278px");
+	spriteLookup_.Load("rose-l-c-stance-2.png","|images/misc/misc/stance-sprites.png", "-2422px", "-342px", "186px", "275px");
+	spriteLookup_.Load("rose-l-c-stance-3.png","|images/misc/misc/stance-sprites.png", "-2608px", "-347px", "188px", "270px");
+	spriteLookup_.Load("rose-l-c-stance-4.png","|images/misc/misc/stance-sprites.png", "-2796px", "-344px", "190px", "273px");
+	spriteLookup_.Load("rose-l-c-stance-5.png","|images/misc/misc/stance-sprites.png", "-2986px", "-342px", "190px", "275px");
+	spriteLookup_.Load("rose-r-c-stance-0.png","|images/misc/misc/stance-sprites.png", "-3176px", "-337px", "190px", "280px");
+	spriteLookup_.Load("rose-r-c-stance-1.png","|images/misc/misc/stance-sprites.png", "-3366px", "-339px", "188px", "278px");
+	spriteLookup_.Load("rose-r-c-stance-2.png","|images/misc/misc/stance-sprites.png", "-3554px", "-342px", "186px", "275px");
+	spriteLookup_.Load("rose-r-c-stance-3.png","|images/misc/misc/stance-sprites.png", "-3740px", "-347px", "188px", "270px");
+	spriteLookup_.Load("rose-r-c-stance-4.png","|images/misc/misc/stance-sprites.png", "-3928px", "-344px", "190px", "273px");
+	spriteLookup_.Load("rose-r-c-stance-5.png","|images/misc/misc/stance-sprites.png", "-4118px", "-342px", "190px", "275px");
+	spriteLookup_.Load("ryu-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-4308px", "-378px", "132px", "239px");
+	spriteLookup_.Load("ryu-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-4440px", "-375px", "132px", "242px");
+	spriteLookup_.Load("ryu-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-4572px", "-370px", "132px", "247px");
+	spriteLookup_.Load("ryu-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-4704px", "-365px", "129px", "252px");
+	spriteLookup_.Load("ryu-l-win-2-0.png","|images/misc/misc/stance-sprites.png", "-4833px", "-380px", "120px", "237px");
+	spriteLookup_.Load("ryu-l-win-2-1.png","|images/misc/misc/stance-sprites.png", "-4953px", "-362px", "124px", "255px");
+	spriteLookup_.Load("ryu-l-win-2-2.png","|images/misc/misc/stance-sprites.png", "-5077px", "-314px", "124px", "303px");
+	spriteLookup_.Load("ryu-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-5201px", "-378px", "132px", "239px");
+	spriteLookup_.Load("ryu-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-5333px", "-375px", "132px", "242px");
+	spriteLookup_.Load("ryu-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-5465px", "-370px", "132px", "247px");
+	spriteLookup_.Load("ryu-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-5597px", "-365px", "129px", "252px");
+	spriteLookup_.Load("ryu-r-win-2-0.png","|images/misc/misc/stance-sprites.png", "-5726px", "-380px", "120px", "237px");
+	spriteLookup_.Load("ryu-r-win-2-1.png","|images/misc/misc/stance-sprites.png", "-5846px", "-362px", "124px", "255px");
+	spriteLookup_.Load("ryu-r-win-2-2.png","|images/misc/misc/stance-sprites.png", "-5970px", "-314px", "124px", "303px");
+	spriteLookup_.Load("sagat-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-6094px", "-303px", "164px", "314px");
+	spriteLookup_.Load("sagat-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-6258px", "-316px", "162px", "301px");
+	spriteLookup_.Load("sagat-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-6420px", "-313px", "162px", "304px");
+	spriteLookup_.Load("sagat-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-6582px", "-308px", "164px", "309px");
+	spriteLookup_.Load("sagat-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-6746px", "-303px", "164px", "314px");
+	spriteLookup_.Load("sagat-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-6910px", "-316px", "162px", "301px");
+	spriteLookup_.Load("sagat-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-7072px", "-313px", "162px", "304px");
+	spriteLookup_.Load("sagat-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-7234px", "-308px", "164px", "309px");
+	spriteLookup_.Load("sodom-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-7398px", "-316px", "176px", "301px");
+	spriteLookup_.Load("sodom-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-7574px", "-314px", "178px", "303px");
+	spriteLookup_.Load("sodom-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-7752px", "-309px", "174px", "308px");
+	spriteLookup_.Load("sodom-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-7926px", "-306px", "172px", "311px");
+	spriteLookup_.Load("sodom-l-stance-4.png","|images/misc/misc/stance-sprites.png", "-8098px", "-309px", "174px", "308px");
+	spriteLookup_.Load("sodom-l-stance-5.png","|images/misc/misc/stance-sprites.png", "-8272px", "-314px", "178px", "303px");
+	spriteLookup_.Load("sodom-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-8450px", "-316px", "176px", "301px");
+	spriteLookup_.Load("sodom-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-8626px", "-314px", "178px", "303px");
+	spriteLookup_.Load("sodom-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-8804px", "-309px", "174px", "308px");
+	spriteLookup_.Load("sodom-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-8978px", "-306px", "172px", "311px");
+	spriteLookup_.Load("sodom-r-stance-4.png","|images/misc/misc/stance-sprites.png", "-9150px", "-309px", "174px", "308px");
+	spriteLookup_.Load("sodom-r-stance-5.png","|images/misc/misc/stance-sprites.png", "-9324px", "-314px", "178px", "303px");
 
 	spriteLookup_.Load("images/misc/misc/p1-select-0.png","|images/misc/misc/char-misc-sprites.png", "0px", "0px", "64px", "82px");
 	spriteLookup_.Load("images/misc/misc/p1-select-1.png","|images/misc/misc/char-misc-sprites.png", "-64px", "0px", "64px", "82px");

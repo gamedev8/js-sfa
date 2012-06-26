@@ -516,8 +516,8 @@ Player.prototype.CreateKen = function(user)
         }
         
         uppercut.EndBlock();
-        uppercut.AddFrame(player, "", "|images/misc/ken/x-uppercut-p1-4.png", 1, MISC_FLAGS.NONE, { Combat: COMBAT_FLAGS.CAN_BE_AIR_BLOCKED });
-        uppercut.AddFrame(player, "", "|images/misc/ken/x-uppercut-p1-5.png", CONSTANTS.MAX_FRAME, MISC_FLAGS.NONE, MISC_FLAGS.NONE);
+        uppercut.AddFrame(player, "", "|images/misc/ken/x-uppercut-p1-4.png", 1, { Player: PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE }, { Combat: COMBAT_FLAGS.CAN_BE_AIR_BLOCKED });
+        uppercut.AddFrame(player, "", "|images/misc/ken/x-uppercut-p1-5.png", CONSTANTS.MAX_FRAME, {Player: PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE}, MISC_FLAGS.NONE);
         uppercut.Chain(uppercut_land);
     }
 
