@@ -263,6 +263,27 @@ var USER_DATA_TYPES =
     OFFSET:0
 }
 
+
+var ENERGYBAR = 
+{
+    ANIMATION_RATE:5
+    ,MAX_LEVEL0:96
+    ,MAX_LEVEL1:192
+    ,MAX_LEVEL2:288
+    ,LEVEL0:0
+    ,LEVEL1:1
+    ,LEVEL2:2
+    ,LEVELMAXED:3
+    ,LEVEL0_KEY:"lvl0"
+    ,LEVEL1_KEY:"lvl1"
+    ,LEVEL2_KEY:"lvl2"
+    ,LEVEL0MAXED_KEY:"lvl0Maxed"
+    ,LEVEL1MAXED_KEY:"lvl1Maxed"
+    ,LEVEL2MAXED_KEY:"lvl2Maxed"
+
+};
+
+
 var CONSTANTS =
 {
     MAX_SPEED:0
@@ -334,7 +355,11 @@ var CONSTANTS =
     /*how many frames after the winning hit will a player start its win animation*/
     ,WIN_ANIMATION_DELAY:100
     /*how many frames after the losing player hits the ground will the round end*/
-    ,GOTO_NEW_ROUND_DELAY:200
+    ,GOTO_NEW_ROUND_DELAY:250
+    /*how many frames to wait before the round starts to accept input*/
+    ,START_NEW_ROUND_DELAY:130
+    ,ANNOUNCE_NEW_ROUND_DELAY:10
+    ,MAX_ROUND:10
     ,DEFAULT_CROUCH_LIGHT_HRSLIDE:40
     ,DEFAULT_CROUCH_MEDIUM_HRSLIDE:60
     ,DEFAULT_CROUCH_HARD_HRSLIDE:80

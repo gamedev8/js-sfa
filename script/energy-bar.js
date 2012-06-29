@@ -1,24 +1,5 @@
 ﻿/*logic for the energy bar*/
 
-var ENERGYBAR = 
-{
-    ANIMATION_RATE:5
-    ,MAX_LEVEL0:96
-    ,MAX_LEVEL1:192
-    ,MAX_LEVEL2:288
-    ,LEVEL0:0
-    ,LEVEL1:1
-    ,LEVEL2:2
-    ,LEVELMAXED:3
-    ,LEVEL0_KEY:"lvl0"
-    ,LEVEL1_KEY:"lvl1"
-    ,LEVEL2_KEY:"lvl2"
-    ,LEVEL0MAXED_KEY:"lvl0Maxed"
-    ,LEVEL1MAXED_KEY:"lvl1Maxed"
-    ,LEVEL2MAXED_KEY:"lvl2Maxed"
-
-};
-
 
 var EnergyBar = function(pnlID,team)
 {
@@ -52,7 +33,7 @@ EnergyBar.prototype.AddAnimation = function(key)
 /**/
 EnergyBar.prototype.Release = function()
 {
-    RemoveChildrenFromDOM(this.ParentElement);
+    RemoveChildrenFromDOM(this.ParentElement, true);
 }
 
 /*initialized the energy bar*/

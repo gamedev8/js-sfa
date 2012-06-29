@@ -11,6 +11,7 @@ var Match = function()
     this.defeatedTeam_ = -1;
     this.isRoundOver_ = false;
     this.gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
+    this.startNewRoundFrame_ = CONSTANTS.NO_FRAME;
     this.maxWidth_ = parseInt(window.document.getElementById("pnlStage"));
     this.playerCount_ = -1;
     this.physics_ = new Physics();
@@ -20,7 +21,7 @@ var Match = function()
     this.isSuperMoveActive_ = false;
     this.dimBackground_ = window.document.getElementById("pnlDimBackground");
     this.round_ = 1;
-    this.allowInput_ = true;
+    this.allowInput_ = false;
 }
 Match.prototype.ResetKeys = function()
 {
@@ -54,7 +55,7 @@ Match.prototype.HandleMatchOver = function(frame)
 {
     if(frame > CONSTANTS.MAX_FRAME)
     {
-        Alert("Time over");
+        announcer_.TimeOver();
     }
 }
 /* Is the match over yet? */
@@ -132,7 +133,11 @@ Match.prototype.GetCurrentFrame = function()
 /*A team has just been defeated*/
 Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
 {
-    var frame = this.GetGame().frame_
+    announcer_.KO();
+    this.ReleaseAllInput();
+
+    this.allowInput_ = false;
+    var frame = this.GetGame().frame_;
     this.GetGame().SetSpeed(CONSTANTS.SLOW_SPEED);
     this.defeatedTeam_ = team;
     switch(this.defeatedTeam_)
@@ -165,6 +170,8 @@ Match.prototype.DeadAnimationComplete = function(player,frame)
         this.isRoundOver_ = true;
         this.GetGame().speed_ = CONSTANTS.NORMAL_SPEED;
         this.gotoNewRoundFrame_ = frame;
+
+        announcer_.EndRound();
     }
 }
 /*Registers an action*/
@@ -172,11 +179,17 @@ Match.prototype.RegisterAction = function(details)
 {
     this.actionSystem_.Register(details);
 }
+/**/
+Match.prototype.ReleaseAllInput = function()
+{
+    this.GetGame().ResetKeys();
+}
 /*Restarts the match*/
 Match.prototype.Reset = function()
 {
     if(this.gotoNewRoundFrame_ != CONSTANTS.NO_FRAME)
     {
+        this.allowInput_ = false;
         ++this.round_;
         this.GetGame().speed_ = CONSTANTS.NORMAL_SPEED;
         this.gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
@@ -409,6 +422,18 @@ Match.prototype.RenderComplete = function(frame)
         this.teamB_.Players[i].OnRenderComplete(frame);
 }
 
+/**/
+Match.prototype.StartNewRound = function(frame)
+{
+    announcer_.StartRound();
+}
+
+/**/
+Match.prototype.EndNewRound = function(frame)
+{
+    this.allowInput_ = true;
+}
+
 /*pre-render calculations to be performed here*/
 Match.prototype.FrameMove = function(frame,keyboardState)
 {
@@ -432,6 +457,10 @@ Match.prototype.FrameMove = function(frame,keyboardState)
 
     if((this.gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (this.gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
         this.Reset();
+    if(frame == CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY)
+        this.StartNewRound(frame);
+    if(frame == CONSTANTS.START_NEW_ROUND_DELAY)
+        this.EndNewRound(frame);
 }
 
 /*All rendering and CSS manipulation to be done here*/

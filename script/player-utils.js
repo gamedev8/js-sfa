@@ -284,11 +284,12 @@ GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,
 }
 /************************************************************************/
 /************************************************************************/
-var BasicAnimation = function(name,frames,isLooping)
+var BasicAnimation = function(name,frames,isLooping,direction)
 {
     this.baseAnimation_ = new BasicBaseAnimation(frames,name);
     this.isLooping_ = isLooping || false;
     this.internalFrame_ = 0;
+    this.direction_  = direction || 0;
 }
 
 BasicAnimation.prototype.GetFrame = function(frameDelta)
@@ -296,7 +297,7 @@ BasicAnimation.prototype.GetFrame = function(frameDelta)
     return this.baseAnimation_.GetFrame.apply(this.baseAnimation_,arguments);
 }
 
-BasicAnimation.prototype.AddFrame = function(owner,image)
+BasicAnimation.prototype.AddFrame = function(owner,image,nbFrames)
 {
     this.baseAnimation_.AddFrame.apply(this.baseAnimation_,arguments);
 }
@@ -306,11 +307,9 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
     direction = direction || this.direction_;
     var element = object.Element;
     var startFrame = object.StartFrame;
-    var x = object.X;
-    var y = object.Y;
 
-    var offsetX = x;
-    var offsetY = y;
+    var offsetX = object.X || 0;
+    var offsetY = object.Y || 0;
     var delta = 0;
     if(!!this.isLooping_)
     {
@@ -326,11 +325,12 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
     {
         /*free the element so it can be reused in other animations*/
         element.style.display="none";
-        element.src = "";
         return false;
     }
     else
     {
+        offsetX += newFrame.X;
+        offsetY += newFrame.Y;
         if(direction > 0)
         {
             /*
@@ -379,6 +379,8 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
 
     if(offsetY != undefined)
         element.style.bottom = offsetY + "px";
+    if(element.style.display != "")
+        element.style.display = "";
     return true;
 }
 /************************************************************************/
@@ -464,6 +466,8 @@ SpriteLookup.prototype.Set = function(element, key)
         element.style.backgroundPosition = data.Left + " " + data.Bottom;
         element.style.width = data.Width;
         element.style.height = data.Height;
+        if(element.style.display != "")
+            element.style.display = "";
     }
 }
 var spriteLookup_ = new SpriteLookup();
@@ -588,9 +592,12 @@ Projectile.prototype.Cancel = function(ignoreOnGoneEvent)
         this.owner_.onProjectileGoneFn_(this.id_);
 }
 
-/*
-Fires the projectile
-*/
+Projectile.prototype.Release = function()
+{
+    RemoveFromDOM(this.element_);
+}
+
+/*Fires the projectile*/
 Projectile.prototype.Throw = function(frame,stageX,stageY)
 {
     if(!!this.isDisintegrating_)

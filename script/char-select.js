@@ -629,14 +629,8 @@ CharSelect.prototype.Render = function(frame)
 {
     this.u1_.Render(frame);
     this.u2_.Render(frame);
-    this.PlaySounds();
 }
 
-CharSelect.prototype.PlaySounds = function()
-{
-    while(this.sounds_.length > 0)
-        soundManager_.Play(this.sounds_.splice(0,1));
-}
 
 /**/
 CharSelect.prototype.GetGoodGuys = function()
@@ -657,10 +651,10 @@ CharSelect.prototype.GetStage = function()
 }
 
 /**/
-CharSelect.prototype.QueueUser1MoveSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-move-0.ogg"; }
-CharSelect.prototype.QueueUser1ChooseSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-choose-0.ogg"; }
-CharSelect.prototype.QueueUser2MoveSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-move-1.ogg"; }
-CharSelect.prototype.QueueUser2ChooseSound = function(value) { this.sounds_[this.sounds_.length] = "audio/misc/p-select-choose-0.ogg"; }
+CharSelect.prototype.QueueUser1MoveSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-move-0.ogg"); }
+CharSelect.prototype.QueueUser1ChooseSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-choose-0.ogg"); }
+CharSelect.prototype.QueueUser2MoveSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-move-1.ogg"); }
+CharSelect.prototype.QueueUser2ChooseSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-choose-0.ogg"); }
 
 
 Array.prototype.IndexOf = function(value)

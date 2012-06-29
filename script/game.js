@@ -177,6 +177,9 @@ Game.prototype.ResetDOM = function()
 Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
 {
     this.Break();
+    announcer_.Release();
+    if(!!this.match_)
+        this.match_.Release();
     this.speed_ = CONSTANTS.NORMAL_SPEED;
     var goodGuys = goodGuys;
     var badGuys = badGuys;
@@ -192,6 +195,7 @@ Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
     }
 
     this.match_ = new Match();
+    announcer_.SetMatch(this.match_);
     this.Init();
     this.InitDOM();
     this.PreloadTextImages();
@@ -208,7 +212,10 @@ Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
 Game.prototype.StartCharSelect = function()
 {
     this.Break();
+    announcer_.Release();
     this.speed_ = CONSTANTS.NORMAL_SPEED;
+    if(!!this.managed_)
+        this.managed_.Release();
     if(!!this.match_)
         this.match_.Release();
     this.ResetDOM();
@@ -236,6 +243,25 @@ Game.prototype.SlowDown = function()
     if(this.speed_ < CONSTANTS.MAX_DELAY)
         this.speed_ += CONSTANTS.SPEED_INCREMENT;
 }
+/*pauses the game*/
+Game.prototype.Pause = function()
+{
+    this.AddState(GAME_STATES.PAUSED);
+    this.AddState(GAME_STATES.STEP_FRAME);
+    window.document.getElementById("spnState").innerHTML = "State: Frame Step"
+    window.document.getElementById("spnState").className = "state paused"
+    if(!!this.managed_)
+        this.managed_.Pause();
+}
+/*resumes the game*/
+Game.prototype.Resume = function()
+{
+    this.RemoveState(GAME_STATES.PAUSED);
+    window.document.getElementById("spnState").innerHTML = "State: Running";
+    window.document.getElementById("spnState").className = "state running";
+    if(!!this.managed_)
+        this.managed_.Resume();
+}
 /*Returns true if the key is being released*/
 Game.prototype.WasKeyPressed = function(key,keyCode,isDown)
 {
@@ -250,18 +276,11 @@ Game.prototype.HandleKeyPress = function(e,isDown)
 
     if(this.WasKeyPressed(KEYS.O,keyCode,isDown))
     {
-        this.AddState(GAME_STATES.PAUSED);
-        this.AddState(GAME_STATES.STEP_FRAME);
-        window.document.getElementById("spnState").innerHTML = "State: Frame Step"
-        window.document.getElementById("spnState").className = "state paused"
-        this.managed_.Pause();
+        this.Pause();
     }
     if(this.WasKeyPressed(KEYS.P,keyCode,isDown))
     {
-        this.RemoveState(GAME_STATES.PAUSED);
-        window.document.getElementById("spnState").innerHTML = "State: Running"
-        window.document.getElementById("spnState").className = "state running"
-        this.managed_.Resume();
+        this.Resume();
     }
     if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
     {
@@ -284,6 +303,7 @@ Game.prototype.End = function()
     this.ResetKeys();
     this.managed_.Kill()
     this.managed_ = null;
+    announcer_.Release();
 }
 
 Game.prototype.HandleInput = function()
@@ -348,6 +368,7 @@ Game.prototype.RunGameLoop = function()
         ++this.frame_;
         //this.match_.PreFrameMove(this.frame_);
         this.match_.FrameMove(this.frame_, this.keyboardState_);
+        announcer_.FrameMove(this.frame_);
         soundManager_.FrameMove(this.frame_);
         if(!this.match_.isSuperMoveActive_)
             this.fontSystem_.FrameMove(this.frame_);
@@ -355,6 +376,7 @@ Game.prototype.RunGameLoop = function()
         this.match_.Render(this.frame_);
         if(!this.match_.isSuperMoveActive_)
             this.fontSystem_.Render(this.frame_);
+        announcer_.Render(this.frame_);
         soundManager_.Render(this.frame_);
 
         this.match_.RenderComplete(this.frame_);
@@ -382,7 +404,7 @@ Game.prototype.RunCharSelectLoop = function()
             this.RemoveState(GAME_STATES.STEP_FRAME);
             ++this.frame_;
             this.charSelect_.FrameMove(this.frame_);
-            soundManager_.FrameMove();
+            soundManager_.FrameMove(this.frame_);
 
             if(!!this.charSelect_.isDone_ && this.charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
             {
@@ -390,7 +412,7 @@ Game.prototype.RunCharSelectLoop = function()
                 this.StartMatch();
             }
             this.charSelect_.Render(this.frame_);
-            soundManager_.Render();
+            soundManager_.Render(this.frame_);
             this.ShowFPS();
         }
 
@@ -408,10 +430,8 @@ Game.prototype.RunCharSelectLoop = function()
 
 function Alert(text)
 {
-    /*
-    if(!!console && !!console.log)
-        console.log(text);
-    */
+    /*if(!!console && !!console.log)
+        console.log(text);*/
 }
 
 window.requestAnimFrame = (function(){

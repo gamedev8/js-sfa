@@ -1,11 +1,12 @@
 ﻿
 
-var RegisteredHit = function(behavior,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
+var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
 {
     this.BehaviorFlags = behaviorFlags;
     this.HitState = hitState;
     this.Flags = flags;
     this.Frame = frame;
+    this.StartFrame = 0;
     this.Damage = damage;
     this.EnergyToAdd = energyToAdd;
     this.IsProjectile = isProjectile;
@@ -37,10 +38,11 @@ MoveOverrideFlags.prototype.HasAllowOverrideFlag = function(flag) { return !!fla
 MoveOverrideFlags.prototype.HasOverrideFlag = function(flag) { return !!flag && !!(this.OverrideFlags & flag); }
 
 
-var ActionDetails = function(overrideFlags,player,otherID,isProjectile,frame,otherPlayer)
+var ActionDetails = function(overrideFlags,player,otherID,isProjectile,startFrame,frame,otherPlayer)
 {
     this.MoveOverrideFlags = overrideFlags;
     this.Frame = frame || 0;
+    this.OtherAttackStartFrame = startFrame;
 
     this.Key = this.GetKey(player.id_,otherID);
     this.IsProjectile = isProjectile;
@@ -114,9 +116,24 @@ ActionSystem.prototype.FrameMove = function(frame)
             }
 
             /*if both hits can hit, or if nobody can hit, then allow double hit*/
-            var canDoubleHit = ((canP1Hit && !canP1HitBeOverriden) && (canP2Hit && !canP2HitBeOverriden))
-                                || (!canP1Hit && !canP1HitBeOverriden && !canP2Hit && !canP2HitBeOverriden);
+            var canDoubleHit =     ((canP1Hit && !canP1HitBeOverriden) && (canP2Hit && !canP2HitBeOverriden))
+                                || ((canP1Hit && canP1HitBeOverriden) && (canP2Hit && canP2HitBeOverriden))
+                                || ((!canP1Hit && !canP1HitBeOverriden) && (!canP2Hit && !canP2HitBeOverriden))
+                                || ((!canP1Hit && canP1HitBeOverriden) && (!canP2Hit && canP2HitBeOverriden));
 
+            /*if nobody can hit, then allow the move executed last to register the hit*/
+            if((!canDoubleHit) && (!canP1Hit && !canP2Hit) && !canP1HitBeOverriden)
+            {
+                if(!!item[0] && !item[1])
+                {
+                    if(item[0].Player.currentAnimation_.StartFrame < item[0].OtherPlayer.currentAnimation_.StartFrame)
+                    {
+                        canP1Hit = true;
+                        canP2Hit = false;
+                        canDoubleHit = false;
+                    }
+                }
+            }
 
             if(!!item[0] && (canP1Hit || canDoubleHit))
             {

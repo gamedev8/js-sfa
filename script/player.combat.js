@@ -1,4 +1,13 @@
-﻿Player.prototype.CanHit = function(otherFlags)
+﻿Player.prototype.IsVulnerable = function()
+{
+    var retVal = this.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)
+                || this.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE)
+                || this.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS)
+        ;
+    return !retVal;
+}
+
+Player.prototype.CanHit = function(otherFlags)
 {
     if(!!(otherFlags.Player & PLAYER_FLAGS.IGNORE_COLLISIONS))
         return false;
@@ -224,6 +233,7 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     this.registeredHit_.HitState = hitState;
     this.registeredHit_.Flags = flags;
     this.registeredHit_.Frame = frame;
+    this.registeredHit_.StartFrame = this.currentAnimation_.StartFrame;
     this.registeredHit_.Damage = damage;
     this.registeredHit_.EnergyToAdd = energyToAdd;
     this.registeredHit_.IsProjectile = isProjectile;
@@ -241,7 +251,7 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     this.registeredHit_.BlockSound = blockSound || 0;
     this.registeredHit_.OtherPlayer = otherPlayer;
 
-    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,frame,otherPlayer));
+    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,this.currentAnimation_.StartFrame,frame,otherPlayer));
 
     if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
@@ -253,6 +263,7 @@ Player.prototype.RegisterHit = function(frame)
     this.TakeHit(this.registeredHit_.AttackState
                 ,this.registeredHit_.HitState
                 ,this.registeredHit_.Flags
+                ,this.registeredHit_.StartFrame
                 ,this.registeredHit_.Frame
                 ,this.registeredHit_.Damage
                 ,this.registeredHit_.EnergyToAdd
@@ -291,7 +302,7 @@ Player.prototype.IsBlocking = function()
     return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING);
 }
 /*The player was just hit and must react*/
-Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound)
+Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
     this.freezeUntilFrame_ = 0;
     if(!!otherPlayer)
@@ -307,6 +318,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
     var move = null;
     var slideAmount = 0;
     var hitDelayFactor_ = 1;
+    var isSpecial = attackState && ATTACK_FLAGS.SPECIAL || !!isProjectile;
 
     if(!!(attackState & ATTACK_FLAGS.THROW_START))
     {
@@ -337,8 +349,15 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
         || !(attackState & ATTACK_FLAGS.HITS_LOW) && !(attackState & ATTACK_FLAGS.HITS_HIGH) && this.IsBlocking())
     {
         /*allow special moves to do some damage*/
-        damage = 0;
-        energyToAdd = 0;
+        if(!!isSpecial)
+        {
+            damage = Math.floor(Math.max(damage * 0.05, 1));
+        }
+        else
+        {
+            damage = 0;
+            energyToAdd = 0;
+        }
 
         if(!!(attackState & ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE / 2;}
         if(!!(attackState & ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE / 2;}
@@ -404,7 +423,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,frame,damage,ener
 
     this.TakeDamage(damage);
     this.ChangeEnergy(energyToAdd);
-    if(this.IsDead())
+    if(this.IsDead() && !this.isLosing_)
     {
         if(!!flags)
             this.SpawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
@@ -504,6 +523,7 @@ Player.prototype.ForceWin = function(frame)
 /*Player is defeated*/
 Player.prototype.ForceLose = function(attackDirection)
 {
+    this.isLosing_ = true;
     this.forceImmobile_ = true;
     this.TakeDamage(this.GetHealth());
     var frame = this.GetMatch().GetCurrentFrame();
@@ -518,13 +538,17 @@ Player.prototype.ForceLose = function(attackDirection)
 /*Player gets is defeated*/
 Player.prototype.ForceTeamLose = function(frame,attackDirection)
 {
-    this.forceImmobile_ = true;
-    this.TakeDamage(this.GetHealth());
-    var frame = this.GetMatch().GetCurrentFrame();
-    var direction = attackDirection || -this.direction_;
+    if(!this.isLosing_)
+    {
+        this.isLosing_ = true;
+        this.forceImmobile_ = true;
+        this.TakeDamage(this.GetHealth());
+        var frame = this.GetMatch().GetCurrentFrame();
+        var direction = attackDirection || -this.direction_;
 
-    this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
-    this.GetMatch().DefeatTeam(this.team_,attackDirection,frame,this.id_);
+        this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
+        this.GetMatch().DefeatTeam(this.team_,attackDirection,frame,this.id_);
+    }
 }
 Player.prototype.KnockDownDefeat = function(frame,attackDirection)
 {

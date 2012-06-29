@@ -110,6 +110,20 @@ Player.prototype.GetStage = function() { return this.GetMatch().stage_; }
 Player.prototype.GetGame = function() { return game_; }
 Player.prototype.GetHealth = function() { return this.getHealthFn_(); }
 Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
+Player.prototype.GetEnergyLevel = function()
+{
+    var value = this.GetEnergy();
+    if(value >= ENERGYBAR.MAX_LEVEL2)
+        return ENERGYBAR.LEVELMAXED;
+    else if(value >= ENERGYBAR.MAX_LEVEL1)
+        return ENERGYBAR.LEVEL2;
+    else if(value >= ENERGYBAR.MAX_LEVEL0)
+        return ENERGYBAR.LEVEL1;
+    else
+        return ENERGYBAR.LEVEL0;
+
+}
+
 Player.prototype.GetName = function() { return this.name_; }
 Player.prototype.IsDead = function() { return !this.GetHealth(); }
 
@@ -132,6 +146,7 @@ Player.prototype.IncCombo = function()
 
 Player.prototype.Reset = function(ignoreDirection)
 {
+    this.isLosing_ = false;
     this.lastShadowLeft_ = null;
     this.lastShadowRight_ = null;
     this.canHoldAirborne_ = true;
@@ -589,16 +604,21 @@ Player.prototype.SetupInfo = function(value,side)
 /*remove any DOM element that was added by this instance*/
 Player.prototype.Release = function()
 {
-    this.ReleaseDebugElements();
     var parentElement = (parentElement || window.document.getElementById("pnlStage"));
 
-    for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
-        parentElement.removeChild(this.frontHitReportImages_[i]);
-    for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
-        parentElement.removeChild(this.rearHitReportImages_[i]);
+    for(var i = 0; i < this.frontHitReportImages_.length; ++i)
+        RemoveFromDOM(this.frontHitReportImages_[i]);
+    for(var i = 0; i < this.rearHitReportImages_.length; ++i)
+        RemoveFromDOM(this.rearHitReportImages_[i]);
+    for(var i = 0; i < this.otherAnimations_.Dirt.length; ++i)
+        RemoveFromDOM(this.otherAnimations_.Dirt[i].Element);
+    for(var i = 0; i < this.otherAnimations_.BigDirt.length; ++i)
+        RemoveFromDOM(this.otherAnimations_.BigDirt[i].Element);
+    this.ClearProjectiles();
+    for(var i = 0; i < this.projectiles_.length; ++i)
+        this.projectiles_[i].Release();
 
-    parentElement.removeChild(this.shadowContainer_);
-    parentElement.removeChild(this.element_);
+    this.ReleaseDebugElements();
 
     RemoveFromDOM(this.shadowContainer_);
     RemoveFromDOM(this.element_);

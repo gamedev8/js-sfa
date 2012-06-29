@@ -1,28 +1,28 @@
 ﻿var SoundManager = function()
 {
-    this.Items = {};
-    this.soundsToFadeOut_ = [];
+    this.items_ = {};
+    this.sounds_ = [];
 }
 
 /**/
 SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
 {
-    if(!this.Items[path])
+    if(!this.items_[path])
     {
         nbChannels = nbChannels || 1;
         try
         {
-            this.Items[path] = {Channels:nbChannels,CurrentChannel:0,Elements:[],DefaultVolume:defaultVolume || 1};
+            this.items_[path] = {Channels:nbChannels,CurrentChannel:0,Elements:[],DefaultVolume:defaultVolume || 1};
             for(var i = 0; i < nbChannels; ++i)
             {
-                this.Items[path].Elements[i] = window.document.createElement("audio");
-                this.Items[path].Elements[i].src = path;
-                this.Items[path].Elements[i].load();
+                this.items_[path].Elements[i] = window.document.createElement("audio");
+                this.items_[path].Elements[i].src = path;
+                this.items_[path].Elements[i].load();
             }
         }
         catch(err)
         {
-            this.Items[path] = null;
+            this.items_[path] = null;
         }
     }
 }
@@ -30,31 +30,31 @@ SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
 /**/
 SoundManager.prototype.Unload = function(path)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        for(var i = 0; i < this.Items[path].Channels; ++i)
-            this.Items[path].Elements[i].pause();
-        this.Items[path] = null;
-        //window.document.removeChild(this.Items[path]);
+        for(var i = 0; i < this.items_[path].Channels; ++i)
+            this.items_[path].Elements[i].pause();
+        this.items_[path] = null;
+        //window.document.removeChild(this.items_[path]);
     }
 }
 
 /**/
 SoundManager.prototype.SetVolume = function(path, value)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        for(var i = 0; i < this.Items[path].Channels; ++i)
-            this.Items[path].Elements[i].volume = value;
+        for(var i = 0; i < this.items_[path].Channels; ++i)
+            this.items_[path].Elements[i].volume = value;
     }
 }
 
 /**/
 SoundManager.prototype.GetVolume = function(path)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        return this.Items[path].Elements[this.Items[path].CurrentChannel].volume;
+        return this.items_[path].Elements[this.items_[path].CurrentChannel].volume;
     }
     return 0;
 }
@@ -62,9 +62,9 @@ SoundManager.prototype.GetVolume = function(path)
 /**/
 SoundManager.prototype.IsPlaying = function(path)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        return !this.Items[path].Elements[this.Items[path].CurrentChannel].paused;
+        return !this.items_[path].Elements[this.items_[path].CurrentChannel].paused;
     }
     return 0;
 }
@@ -73,36 +73,36 @@ SoundManager.prototype.IsPlaying = function(path)
 /**/
 SoundManager.prototype.Restart = function(path,loops)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        if(!!this.Items[path].Elements[this.Items[path].CurrentChannel].duration)
-            this.Items[path].Elements[this.Items[path].CurrentChannel].currentTime = 0;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].volume = this.Items[path].DefaultVolume;
+        if(!!this.items_[path].Elements[this.items_[path].CurrentChannel].duration)
+            this.items_[path].Elements[this.items_[path].CurrentChannel].currentTime = 0;
+        this.items_[path].Elements[this.items_[path].CurrentChannel].volume = this.items_[path].DefaultVolume;
     }
 }
 
 /**/
 SoundManager.prototype.Play = function(path,loops)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
         /*go to the next channel*/
-        if(++this.Items[path].CurrentChannel >= this.Items[path].Channels)
-            this.Items[path].CurrentChannel = 0;
+        if(++this.items_[path].CurrentChannel >= this.items_[path].Channels)
+            this.items_[path].CurrentChannel = 0;
 
         /*start playing from the time = 0*/
-        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        var el = this.items_[path].Elements[this.items_[path].CurrentChannel];
         if(!!el.duration) el.currentTime = 0;
         if(!!loops) el.loop = true;
 
-        el.volume = this.Items[path].DefaultVolume;
+        el.volume = this.items_[path].DefaultVolume;
         el.play();
 
         if(!!el.error)
         {
             Alert(path);
             Alert(el.error);
-            this.Items[path] = null;
+            this.items_[path] = null;
             return;
         }
     }
@@ -112,13 +112,13 @@ SoundManager.prototype.Play = function(path,loops)
 SoundManager.prototype.PlayWithVolume = function(obj,loops)
 {
     var path = obj.Value;
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
         /*go to the next channel*/
-        if(++this.Items[path].CurrentChannel >= this.Items[path].Channels)
-            this.Items[path].CurrentChannel = 0;
+        if(++this.items_[path].CurrentChannel >= this.items_[path].Channels)
+            this.items_[path].CurrentChannel = 0;
         /*start playing from time 0*/
-        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        var el = this.items_[path].Elements[this.items_[path].CurrentChannel];
         if(!!el.duration) el.currentTime = 0;
         el.loop = !!loops;
 
@@ -129,7 +129,7 @@ SoundManager.prototype.PlayWithVolume = function(obj,loops)
         {
             Alert(path);
             Alert(el.error.code);
-            this.Items[path] = null;
+            this.items_[path] = null;
             return;
         }
     }
@@ -139,12 +139,12 @@ SoundManager.prototype.PlayWithVolume = function(obj,loops)
 /**/
 SoundManager.prototype.Replay = function(path)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        this.Items[path].Elements[this.Items[path].CurrentChannel].pause();
-        this.Items[path].Elements[this.Items[path].CurrentChannel].currentTime = 0;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].volume = this.Items[path].DefaultVolume;
-        this.Items[path].Elements[this.Items[path].CurrentChannel].play();
+        this.items_[path].Elements[this.items_[path].CurrentChannel].pause();
+        this.items_[path].Elements[this.items_[path].CurrentChannel].currentTime = 0;
+        this.items_[path].Elements[this.items_[path].CurrentChannel].volume = this.items_[path].DefaultVolume;
+        this.items_[path].Elements[this.items_[path].CurrentChannel].play();
     }
 }
 
@@ -152,18 +152,18 @@ SoundManager.prototype.Replay = function(path)
 /**/
 SoundManager.prototype.Pause = function(path)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        this.Items[path].Elements[this.Items[path].CurrentChannel].pause();
+        this.items_[path].Elements[this.items_[path].CurrentChannel].pause();
     }
 }
 
 /**/
 SoundManager.prototype.Resume = function(path)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        var el = this.items_[path].Elements[this.items_[path].CurrentChannel];
         if(!!el.paused)
             el.play();
     }
@@ -171,9 +171,9 @@ SoundManager.prototype.Resume = function(path)
 /**/
 SoundManager.prototype.PlayOrResume = function(path,loops)
 {
-    if(!!this.Items[path])
+    if(!!this.items_[path])
     {
-        var el = this.Items[path].Elements[this.Items[path].CurrentChannel];
+        var el = this.items_[path].Elements[this.items_[path].CurrentChannel];
         if(!!el.paused)
         {
             el.loop = !!loops;
@@ -213,15 +213,33 @@ SoundManager.prototype.Preload = function()
     this.Load("audio/misc/p-select-choose-1.ogg",3);
 
     this.Load("audio/misc/super-charge.ogg",3);
+
+    this.Load("audio/misc/round.ogg",1);
+    this.Load("audio/misc/1.ogg",1);
+    this.Load("audio/misc/2.ogg",1);
+    this.Load("audio/misc/3.ogg",1);
+    this.Load("audio/misc/4.ogg",1);
+    this.Load("audio/misc/5.ogg",1);
+    this.Load("audio/misc/6.ogg",1);
+    this.Load("audio/misc/7.ogg",1);
+    this.Load("audio/misc/8.ogg",1);
+    this.Load("audio/misc/9.ogg",1);
+    this.Load("audio/misc/ko.ogg",1);
+    this.Load("audio/misc/draw.ogg",1);
+    this.Load("audio/misc/fight.ogg",1);
+    this.Load("audio/misc/final.ogg",1);
+    this.Load("audio/misc/you.ogg",1);
+    this.Load("audio/misc/win.ogg",1);
+    this.Load("audio/misc/lose.ogg",1);
+    this.Load("audio/misc/perfect.ogg",1);
 }
 
-SoundManager.prototype.FadeOut = function(value)
+
+SoundManager.prototype.QueueSound = function(value,volume,delay)
 {
-    if(!!this.Items[value])
-    {
-        this.soundsToFadeOut_[this.soundsToFadeOut_.length] = value;
-    }
+    this.sounds_[this.sounds_.length] = {Value:value, Volume:volume||1, Frame:game_.GetCurrentFrame() + (delay||0)};
 }
+
 
 SoundManager.prototype.FrameMove = function(frame)
 {
@@ -229,14 +247,10 @@ SoundManager.prototype.FrameMove = function(frame)
 
 SoundManager.prototype.Render = function(frame)
 {
-    for(var i = 0; i < this.soundsToFadeOut_.length; ++i)
+    for(var i in this.sounds_)
     {
-        var el = this.Items[this.soundsToFadeOut_].Elements[this.Items[this.soundsToFadeOut_].CurrentChannel];
-        var volume = el.volume;
-        if(volume > 0)
-            el.volume = Math.max(volume - 0.02, 0);
-        else
-            this.soundsToFadeOut_.splice(i,1);
+        if(frame >= this.sounds_[i].Frame)
+            this.PlayWithVolume(this.sounds_.splice(i,1)[0]);
     }
 }
 

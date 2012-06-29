@@ -76,8 +76,8 @@ Team.prototype.WriteText = function(text)
 /*remove any DOM element that was added by this instance*/
 Team.prototype.Release = function()
 {
-    this.PortriatImg.src = "#";
-    this.NameImg.src = "#";
+    this.PortriatImg.style.display = "none";
+    this.NameImg.style.display = "none";
     this.ComboText.HideNow();
     this.Healthbar.Release();
     this.Energybar.Release();

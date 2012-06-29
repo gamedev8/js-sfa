@@ -22,6 +22,20 @@
         return null;
     }
 
+    Debug.prototype.T1 = function(index)
+    {
+        if(!!game_.match_)
+            return game_.match_.teamA_.Players[index || 0];
+        return null;
+    }
+
+    Debug.prototype.T2 = function(index)
+    {
+        if(!!game_.match_)
+            return game_.match_.teamB_.Players[index || 0];
+        return null;
+    }
+
     Debug.prototype.P1SendInput = function(input)
     {
         if(!!game_.match_)
@@ -68,7 +82,26 @@
         return null;
     }
 
-    /*implemented as a singleton*/
+ 
+    Debug.prototype.T1TestAI = function(index)
+    {
+        if(!!game_.match_)
+        {
+            this.T1(index || 0).SetAI(CreateSimpleRyuAI);
+        }
+        return null;
+    }
+ 
+    Debug.prototype.T2TestAI = function(index)
+    {
+        if(!!game_.match_)
+        {
+            this.T2(index || 0).SetAI(CreateSimpleRyuAI);
+        }
+        return null;
+    }
+
+   /*implemented as a singleton*/
     var instance_ = instance_ || new Debug();
     return instance_;
 }

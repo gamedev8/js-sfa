@@ -23,7 +23,7 @@ var HealthBar = function(pnlHealthbarID,team)
 /**/
 HealthBar.prototype.Release = function()
 {
-    RemoveChildrenFromDOM(this.HealthbarElement);
+    RemoveChildrenFromDOM(this.HealthbarElement, true);
 }
 
 
