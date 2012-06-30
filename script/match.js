@@ -22,6 +22,7 @@ var Match = function()
     this.dimBackground_ = window.document.getElementById("pnlDimBackground");
     this.round_ = 1;
     this.allowInput_ = false;
+    this.PreloadSounds();
 }
 Match.prototype.ResetKeys = function()
 {
@@ -65,29 +66,8 @@ Match.prototype.IsMatchOver = function(frame)
     ;
 }
 
-/* Shows details about the players on the team */
 Match.prototype.ShowTeamInfo = function()
 {
-    /*team 1*/
-    if(!!this.teamA_.Players[this.teamA_.Cursor])
-    {
-        this.teamA_.Init();
-        /*
-        this.teamA_.NameImg.src = this.teamA_.Players[this.teamA_.Cursor].nameImageSrc_;
-        this.teamA_.PortriatImg.src = this.teamA_.Players[this.teamA_.Cursor].portriatImageSrc_;
-        this.teamA_.Cursor = (this.teamA_.Cursor + 1 < this.teamA_.Players.length) ? this.teamA_.Cursor+1 : 0;
-        */
-    }
-    /*team 2*/
-    if(!!this.teamB_.Players[this.teamA_.Cursor])
-    {
-        this.teamB_.Init();
-        /*
-        this.teamB_.NameImg.src = this.teamB_.Players[this.teamB_.Cursor].nameImageSrc_;
-        this.teamB_.PortriatImg.src = this.teamB_.Players[this.teamB_.Cursor].portriatImageSrc_;
-        this.teamB_.Cursor = (this.teamB_.Cursor+1 < this.teamA_.Players.length) ? this.teamB_.Cursor+1 : 0;
-        */
-    }
 }
 /*Changes the health value for a team*/
 Match.prototype.ChangeHealth = function(team, changeAmount)
@@ -224,7 +204,6 @@ Match.prototype.Reset = function()
 
         this.isRoundOver_ = false;
         this.stage_.Reset();
-        this.ShowTeamInfo(0);
         this.GetGame().ReleaseText();
 
         this.teamA_.Healthbar.Reset();
@@ -346,7 +325,6 @@ Match.prototype.Start = function(team1,team2)
         this.teamB_.Players[i].SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
     this.stage_.Reset();
-    this.ShowTeamInfo(0);
 
     this.teamA_.Healthbar.Init();
     this.teamA_.Energybar.Init();
@@ -437,23 +415,12 @@ Match.prototype.EndNewRound = function(frame)
 /*pre-render calculations to be performed here*/
 Match.prototype.FrameMove = function(frame,keyboardState)
 {
+
     this.stage_.FrameMove(frame);
     this.actionSystem_.FrameMove(frame);
 
-    for(var i = 0; i < this.teamA_.Players.length; ++i)
-        this.teamA_.Players[i].HandleInput(keyboardState,frame);
-    for(var i = 0; i < this.teamA_.Players.length; ++i)
-        this.teamA_.Players[i].OnFrameMove(frame,this.stage_.x_,this.stage_.y_);
-
-    for(var i = 0; i < this.teamB_.Players.length; ++i)
-        this.teamB_.Players[i].HandleInput(keyboardState,frame);
-    for(var i = 0; i < this.teamB_.Players.length; ++i)
-        this.teamB_.Players[i].OnFrameMove(frame,this.stage_.x_,this.stage_.y_);
-
-    this.teamA_.Healthbar.FrameMove(frame);
-    this.teamA_.Energybar.FrameMove(frame);
-    this.teamB_.Healthbar.FrameMove(frame);
-    this.teamB_.Energybar.FrameMove(frame);
+    this.teamA_.FrameMove(frame,keyboardState,this.stage_.x_, this.stage_.y_);
+    this.teamB_.FrameMove(frame,keyboardState,this.stage_.x_, this.stage_.y_);
 
     if((this.gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (this.gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
         this.Reset();
@@ -466,10 +433,10 @@ Match.prototype.FrameMove = function(frame,keyboardState)
 /*All rendering and CSS manipulation to be done here*/
 Match.prototype.Render = function(frame)
 {
-    for(var i = 0; i < this.teamA_.Players.length; ++i)
-        this.teamA_.Players[i].Render(frame,this.stage_.x_ - this.stage_.lastX_);
-    for(var i = 0; i < this.teamB_.Players.length; ++i)
-        this.teamB_.Players[i].Render(frame,this.stage_.x_ - this.stage_.lastX_);
+
+    this.teamA_.Render(frame,this.stage_.x_ - this.stage_.lastX_);
+    this.teamB_.Render(frame,this.stage_.x_ - this.stage_.lastX_);
+
     this.stage_.Render();
 
     this.teamA_.Healthbar.Render(frame);
@@ -489,4 +456,50 @@ Match.prototype.Release = function()
     this.stage_.Release();
     this.teamA_.Release();
     this.teamB_.Release();
+}
+
+
+Match.prototype.PreloadSounds = function()
+{
+    soundManager_.Load("audio/misc/lp.zzz",3);
+    soundManager_.Load("audio/misc/mp.zzz",3);
+    soundManager_.Load("audio/misc/hp.zzz",3);
+    soundManager_.Load("audio/misc/lk.zzz",3);
+    soundManager_.Load("audio/misc/mk.zzz",3);
+    soundManager_.Load("audio/misc/hk.zzz",3);
+
+    soundManager_.Load("audio/misc/block.zzz",3);
+    soundManager_.Load("audio/misc/block-projectile.zzz",3);
+
+    soundManager_.Load("audio/misc/grapple.zzz",3);
+
+    soundManager_.Load("audio/misc/hit-lp.zzz",3);
+    soundManager_.Load("audio/misc/hit-mp.zzz",3);
+    soundManager_.Load("audio/misc/hit-hp.zzz",3);
+    soundManager_.Load("audio/misc/hit-lk.zzz",3);
+    soundManager_.Load("audio/misc/hit-mk.zzz",3);
+    soundManager_.Load("audio/misc/hit-hk.zzz",3);
+    soundManager_.Load("audio/misc/hit-hp-3.zzz",3);
+
+
+    soundManager_.Load("audio/misc/super-charge.zzz",3);
+
+    soundManager_.Load("audio/misc/round.zzz",1);
+    soundManager_.Load("audio/misc/1.zzz",1);
+    soundManager_.Load("audio/misc/2.zzz",1);
+    soundManager_.Load("audio/misc/3.zzz",1);
+    soundManager_.Load("audio/misc/4.zzz",1);
+    soundManager_.Load("audio/misc/5.zzz",1);
+    soundManager_.Load("audio/misc/6.zzz",1);
+    soundManager_.Load("audio/misc/7.zzz",1);
+    soundManager_.Load("audio/misc/8.zzz",1);
+    soundManager_.Load("audio/misc/9.zzz",1);
+    soundManager_.Load("audio/misc/ko.zzz",1);
+    soundManager_.Load("audio/misc/draw.zzz",1);
+    soundManager_.Load("audio/misc/fight.zzz",1);
+    soundManager_.Load("audio/misc/final.zzz",1);
+    soundManager_.Load("audio/misc/you.zzz",1);
+    soundManager_.Load("audio/misc/win.zzz",1);
+    soundManager_.Load("audio/misc/lose.zzz",1);
+    soundManager_.Load("audio/misc/perfect.zzz",1);
 }

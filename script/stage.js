@@ -32,7 +32,7 @@ Stage.prototype.Set = function(params)
     this.maxLeftScroll_  = params.maxLeftScroll_; 
     this.maxRightScroll_ = params.maxRightScroll_;
 
-    this.music_ = "audio/" + params.name_ + "/theme.ogg";
+    this.music_ = "audio/" + params.name_ + "/theme.zzz";
     soundManager_.Load(this.music_);
     this.fadeOutMusic_ = 0;
 }

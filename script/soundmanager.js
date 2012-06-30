@@ -1,7 +1,14 @@
 ﻿var SoundManager = function()
 {
     this.items_ = {};
+    this.fragment_ = {};
     this.sounds_ = [];
+    this.extension_ = ".ogg";
+}
+
+SoundManager.prototype.GetPath = function(path)
+{
+    return path.replace(".zzz",this.extension_);
 }
 
 /**/
@@ -10,13 +17,15 @@ SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
     if(!this.items_[path])
     {
         nbChannels = nbChannels || 1;
+        //nbChannels  = 1;
         try
         {
             this.items_[path] = {Channels:nbChannels,CurrentChannel:0,Elements:[],DefaultVolume:defaultVolume || 1};
             for(var i = 0; i < nbChannels; ++i)
             {
-                this.items_[path].Elements[i] = window.document.createElement("audio");
-                this.items_[path].Elements[i].src = path;
+                this.items_[path].Elements[i] = new Audio();
+                this.items_[path].Elements[i].type = "audio/mpeg";
+                this.items_[path].Elements[i].src = this.GetPath(path);
                 this.items_[path].Elements[i].load();
             }
         }
@@ -184,54 +193,9 @@ SoundManager.prototype.PlayOrResume = function(path,loops)
     }
 }
 
+
 SoundManager.prototype.Preload = function()
 {
-    this.Load("audio/misc/lp.ogg",3);
-    this.Load("audio/misc/mp.ogg",3);
-    this.Load("audio/misc/hp.ogg",3);
-    this.Load("audio/misc/lk.ogg",3);
-    this.Load("audio/misc/mk.ogg",3);
-    this.Load("audio/misc/hk.ogg",3);
-
-    this.Load("audio/misc/block.ogg",3);
-    this.Load("audio/misc/block-projectile.ogg",3);
-
-    this.Load("audio/misc/grapple.ogg",3);
-
-    this.Load("audio/misc/hit-lp.ogg",3);
-    this.Load("audio/misc/hit-mp.ogg",3);
-    this.Load("audio/misc/hit-hp.ogg",3);
-    this.Load("audio/misc/hit-lk.ogg",3);
-    this.Load("audio/misc/hit-mk.ogg",3);
-    this.Load("audio/misc/hit-hk.ogg",3);
-    this.Load("audio/misc/hit-hp-3.ogg",3);
-
-
-    this.Load("audio/misc/p-select-move-0.ogg",3);
-    this.Load("audio/misc/p-select-move-1.ogg",3);
-    this.Load("audio/misc/p-select-choose-0.ogg",3);
-    this.Load("audio/misc/p-select-choose-1.ogg",3);
-
-    this.Load("audio/misc/super-charge.ogg",3);
-
-    this.Load("audio/misc/round.ogg",1);
-    this.Load("audio/misc/1.ogg",1);
-    this.Load("audio/misc/2.ogg",1);
-    this.Load("audio/misc/3.ogg",1);
-    this.Load("audio/misc/4.ogg",1);
-    this.Load("audio/misc/5.ogg",1);
-    this.Load("audio/misc/6.ogg",1);
-    this.Load("audio/misc/7.ogg",1);
-    this.Load("audio/misc/8.ogg",1);
-    this.Load("audio/misc/9.ogg",1);
-    this.Load("audio/misc/ko.ogg",1);
-    this.Load("audio/misc/draw.ogg",1);
-    this.Load("audio/misc/fight.ogg",1);
-    this.Load("audio/misc/final.ogg",1);
-    this.Load("audio/misc/you.ogg",1);
-    this.Load("audio/misc/win.ogg",1);
-    this.Load("audio/misc/lose.ogg",1);
-    this.Load("audio/misc/perfect.ogg",1);
 }
 
 

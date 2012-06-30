@@ -2,57 +2,57 @@
 /**/
 Player.prototype.InitSounds = function()
 {
-    soundManager_.Load("audio/" + this.name_ + "/dead.ogg");
+    soundManager_.Load("audio/" + this.name_ + "/dead.zzz");
 }
 
 /**/
 Player.prototype.QueueSwingSound = function(value)
 {
-    if(!!(value & SWINGSOUND.HP)) this.QueueSound("audio/misc/hp.ogg");
-    else if(!!(value & SWINGSOUND.MP)) this.QueueSound("audio/misc/mp.ogg");
-    else if(!!(value & SWINGSOUND.LP)) this.QueueSound("audio/misc/lp.ogg");
-    else if(!!(value & SWINGSOUND.HK)) this.QueueSound("audio/misc/hk.ogg");
-    else if(!!(value & SWINGSOUND.MK)) this.QueueSound("audio/misc/mk.ogg");
-    else if(!!(value & SWINGSOUND.LK)) this.QueueSound("audio/misc/lk.ogg");
+    if(!!(value & SWINGSOUND.HP)) this.QueueSound("audio/misc/hp.zzz");
+    else if(!!(value & SWINGSOUND.MP)) this.QueueSound("audio/misc/mp.zzz");
+    else if(!!(value & SWINGSOUND.LP)) this.QueueSound("audio/misc/lp.zzz");
+    else if(!!(value & SWINGSOUND.HK)) this.QueueSound("audio/misc/hk.zzz");
+    else if(!!(value & SWINGSOUND.MK)) this.QueueSound("audio/misc/mk.zzz");
+    else if(!!(value & SWINGSOUND.LK)) this.QueueSound("audio/misc/lk.zzz");
 }
 
 
 /**/
 Player.prototype.QueueHitSound = function(value)
 {
-    if(!!(value & HITSOUND.HP)) this.QueueSound("audio/misc/hit-hp.ogg");
-    else if(!!(value & HITSOUND.MP)) this.QueueSound("audio/misc/hit-mp.ogg");
-    else if(!!(value & HITSOUND.LP)) this.QueueSound("audio/misc/hit-lp.ogg");
-    else if(!!(value & HITSOUND.HP3)) this.QueueSound("audio/misc/hit-hp-3.ogg");
-    else if(!!(value & HITSOUND.HK)) this.QueueSound("audio/misc/hit-hk.ogg");
-    else if(!!(value & HITSOUND.MK)) this.QueueSound("audio/misc/hit-mk.ogg");
-    else if(!!(value & HITSOUND.LK)) this.QueueSound("audio/misc/hit-lk.ogg");
+    if(!!(value & HITSOUND.HP)) this.QueueSound("audio/misc/hit-hp.zzz");
+    else if(!!(value & HITSOUND.MP)) this.QueueSound("audio/misc/hit-mp.zzz");
+    else if(!!(value & HITSOUND.LP)) this.QueueSound("audio/misc/hit-lp.zzz");
+    else if(!!(value & HITSOUND.HP3)) this.QueueSound("audio/misc/hit-hp-3.zzz");
+    else if(!!(value & HITSOUND.HK)) this.QueueSound("audio/misc/hit-hk.zzz");
+    else if(!!(value & HITSOUND.MK)) this.QueueSound("audio/misc/hit-mk.zzz");
+    else if(!!(value & HITSOUND.LK)) this.QueueSound("audio/misc/hit-lk.zzz");
 }
 
 
 /**/
 Player.prototype.QueueBlockSound = function()
 {
-    this.QueueSound("audio/misc/block.ogg");
+    this.QueueSound("audio/misc/block.zzz");
 }
 
 
 /**/
 Player.prototype.QueueBlockProjectileSound = function()
 {
-    this.QueueSound("audio/misc/block-projectile.ogg");
+    this.QueueSound("audio/misc/block-projectile.zzz");
 }
 
 /**/
 Player.prototype.QueueGrappleSound = function()
 {
-    this.QueueSound("audio/misc/grapple.ogg");
+    this.QueueSound("audio/misc/grapple.zzz");
 }
 
 
 Player.prototype.QueueSuperMoveChargeSound = function()
 {
-    this.QueueSound("audio/misc/super-charge.ogg");
+    this.QueueSound("audio/misc/super-charge.zzz");
 }
 
 /**/

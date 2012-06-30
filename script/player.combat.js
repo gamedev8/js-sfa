@@ -532,7 +532,7 @@ Player.prototype.ForceLose = function(attackDirection)
 
     this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
     this.KnockDownDefeat(frame,attackDirection);
-    this.QueueSound("audio/" + this.name_ + "/dead.ogg");
+    this.QueueSound("audio/" + this.name_ + "/dead.zzz");
     this.ClearInput();
 }
 /*Player gets is defeated*/

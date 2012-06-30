@@ -3,6 +3,7 @@
     this.Players = [];
 
     this.Cursor = 0;
+    this.LastCursor = -1;
     this.TeamNum = num;
     this.PortriatImg = window.document.getElementById("portriatTeam" + num);
     this.NameImg = window.document.getElementById("nameTeam" + num);
@@ -15,11 +16,6 @@
 
 Team.prototype.Init = function()
 {
-    spriteLookup_.Set(this.NameImg, this.Players[this.Cursor].nameImageSrc_);
-    //this.NameImg.src = this.Players[this.Cursor].nameImageSrc_;
-    spriteLookup_.Set(this.PortriatImg, this.Players[this.Cursor].portriatImageSrc_);
-    //this.PortriatImg.src = this.Players[this.Cursor].portriatImageSrc_;
-    this.Cursor = (this.Cursor + 1 < this.Players.length) ? this.Cursor+1 : 0;
 }
 
 Team.prototype.GetGame = function()
@@ -83,4 +79,36 @@ Team.prototype.Release = function()
     this.Energybar.Release();
     for(var i = 0; i < this.Players.length; ++i)
         this.Players[i].Release();
+}
+
+
+/**/
+Team.prototype.FrameMove = function(frame, keyboardState, x, y)
+{
+    if(frame % 100 == 0)
+        this.Cursor = (this.Cursor + 1 < this.Players.length) ? this.Cursor+1 : 0;
+
+    for(var i = 0; i < this.Players.length; ++i)
+        this.Players[i].HandleInput(keyboardState,frame);
+    for(var i = 0; i < this.Players.length; ++i)
+        this.Players[i].OnFrameMove(frame,x,y);
+
+    this.Healthbar.FrameMove(frame);
+    this.Energybar.FrameMove(frame);
+}
+
+
+/* Shows details about the players on the team */
+Team.prototype.Render = function(frame,deltaX)
+{
+    if(this.Cursor != this.LastCursor)
+    {
+        this.LastCursor = this.Cursor;
+        spriteLookup_.Set(this.NameImg, this.Players[this.Cursor].nameImageSrc_);
+        //this.NameImg.src = this.Players[this.Cursor].nameImageSrc_;
+        spriteLookup_.Set(this.PortriatImg, this.Players[this.Cursor].portriatImageSrc_);
+        //this.PortriatImg.src = this.Players[this.Cursor].portriatImageSrc_;
+    }
+    for(var i = 0; i < this.Players.length; ++i)
+        this.Players[i].Render(frame,deltaX);
 }

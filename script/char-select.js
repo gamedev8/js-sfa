@@ -396,8 +396,10 @@ var CharSelect = function(user1,user2)
     this.delayAfterSelect_ = 0;
     this.element_ = null;
     this.playerSelectImg_ = null;
-    this.music_ = "audio/misc/player-select.ogg";
+    this.music_ = "audio/misc/player-select.zzz";
     this.sounds_ = [];
+
+    this.PreloadSounds();
 }
 
 CharSelect.prototype.RestartMusic = function()
@@ -651,10 +653,10 @@ CharSelect.prototype.GetStage = function()
 }
 
 /**/
-CharSelect.prototype.QueueUser1MoveSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-move-0.ogg"); }
-CharSelect.prototype.QueueUser1ChooseSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-choose-0.ogg"); }
-CharSelect.prototype.QueueUser2MoveSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-move-1.ogg"); }
-CharSelect.prototype.QueueUser2ChooseSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-choose-0.ogg"); }
+CharSelect.prototype.QueueUser1MoveSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-move-0.zzz"); }
+CharSelect.prototype.QueueUser1ChooseSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-choose-0.zzz"); }
+CharSelect.prototype.QueueUser2MoveSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-move-1.zzz"); }
+CharSelect.prototype.QueueUser2ChooseSound = function(value) { soundManager_.QueueSound("audio/misc/p-select-choose-0.zzz"); }
 
 
 Array.prototype.IndexOf = function(value)
@@ -819,4 +821,12 @@ var LoadCharSelectSpriteData = function()
 	spriteLookup_.Load("images/misc/misc/p2-select-ryu.png","|images/misc/misc/head-sprites.png", "-1792px", "-288px", "256px", "288px");
 	spriteLookup_.Load("images/misc/misc/p2-select-sagat.png","|images/misc/misc/head-sprites.png", "-2048px", "-288px", "256px", "288px");
 	spriteLookup_.Load("images/misc/misc/p2-select-sodom.png","|images/misc/misc/head-sprites.png", "-2304px", "-288px", "256px", "288px");
+}
+
+CharSelect.prototype.PreloadSounds = function()
+{
+    soundManager_.Load("audio/misc/p-select-move-0.zzz",3);
+    soundManager_.Load("audio/misc/p-select-move-1.zzz",3);
+    soundManager_.Load("audio/misc/p-select-choose-0.zzz",3);
+    soundManager_.Load("audio/misc/p-select-choose-1.zzz",3);
 }

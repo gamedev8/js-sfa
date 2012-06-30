@@ -150,15 +150,15 @@
 
         if(match_.round_ < 10)
         {
-            soundManager_.QueueSound("audio/misc/round.ogg");
-            soundManager_.QueueSound("audio/misc/" + match_.round_ +".ogg",1,45);
+            soundManager_.QueueSound("audio/misc/round.zzz");
+            soundManager_.QueueSound("audio/misc/" + match_.round_ +".zzz",1,45);
         }
         else
         {
-            soundManager_.QueueSound("audio/misc/final.ogg");
-            soundManager_.QueueSound("audio/misc/round.ogg",1, 35);
+            soundManager_.QueueSound("audio/misc/final.zzz");
+            soundManager_.QueueSound("audio/misc/round.zzz",1, 35);
         }
-        soundManager_.QueueSound("audio/misc/fight.ogg",1,90);
+        soundManager_.QueueSound("audio/misc/fight.zzz",1,90);
    }
 
 
@@ -174,29 +174,29 @@
 
         if(match_.teamA_.Healthbar.Amount == 0 && match_.teamB_.Healthbar.Amount == 0)
         {
-            soundManager_.QueueSound("audio/misc/draw.ogg",1,delay);
+            soundManager_.QueueSound("audio/misc/draw.zzz",1,delay);
         }
         else if(match_.teamA_.Healthbar.Amount == 0)
         {
-            soundManager_.QueueSound("audio/misc/you.ogg",1,delay);
+            soundManager_.QueueSound("audio/misc/you.zzz",1,delay);
             if(match_.teamB_.Players[0].ai_.IsRunning())
-                soundManager_.QueueSound("audio/misc/lose.ogg",1,delay+35);
+                soundManager_.QueueSound("audio/misc/lose.zzz",1,delay+35);
             else
-                soundManager_.QueueSound("audio/misc/win.ogg",1,delay+35);
+                soundManager_.QueueSound("audio/misc/win.zzz",1,delay+35);
 
             if(showPerfect = (match_.teamB_.Healthbar.Amount == match_.teamB_.Healthbar.Max))
-                soundManager_.QueueSound("audio/misc/perfect.ogg",1,delay+95);
+                soundManager_.QueueSound("audio/misc/perfect.zzz",1,delay+95);
         }
         else
         {
-            soundManager_.QueueSound("audio/misc/you.ogg",1,delay);
+            soundManager_.QueueSound("audio/misc/you.zzz",1,delay);
             if(match_.teamA_.Players[0].ai_.IsRunning())
-                soundManager_.QueueSound("audio/misc/lose.ogg",1,delay+35);
+                soundManager_.QueueSound("audio/misc/lose.zzz",1,delay+35);
             else
-                soundManager_.QueueSound("audio/misc/win.ogg",1,delay+35);
+                soundManager_.QueueSound("audio/misc/win.zzz",1,delay+35);
 
             if(showPerfect = (match_.teamA_.Healthbar.Amount == match_.teamB_.Healthbar.Max))
-                soundManager_.QueueSound("audio/misc/perfect.ogg",1,delay+95);
+                soundManager_.QueueSound("audio/misc/perfect.zzz",1,delay+95);
         }
         
 
@@ -213,7 +213,7 @@
     {
         ko_.IsAnimating = true;
         ko_.StartFrame = match_.GetCurrentFrame() + 5;
-        soundManager_.QueueSound("audio/misc/ko.ogg",1,5);
+        soundManager_.QueueSound("audio/misc/ko.zzz",1,5);
     }
 
 
