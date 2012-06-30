@@ -23,24 +23,24 @@ Player.prototype.GetMidY = function()
     return top - ((top-bottom)/2);
 }
 
-Player.prototype.GetLeftX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - (this.GetX() + this.GetConstWidth());}else{return this.GetX();}}
-Player.prototype.GetRightX = function()  { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.GetX();}else{return this.GetX() + (this.GetConstWidth());}}
-Player.prototype.GetAbsFrontX = function() { if(this.direction_ > 0){ return this.GetLeftX(); } else { return this.GetRightX(); } }
-Player.prototype.GetAbsBackX = function()  { if(this.direction_ > 0){ return this.GetRightX(); } else { return this.GetLeftX(); } }
+Player.prototype.GetLeftX = function(useImageWidth) { if(this.direction_ > 0){return STAGE.MAX_STAGEX - (this.GetX() + (!!useImageWidth ? this.GetBoxWidth() : this.GetConstWidth()));}else{return this.GetX();}}
+Player.prototype.GetRightX = function(useImageWidth)  { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.GetX();}else{return this.GetX() + (!!useImageWidth ? this.GetBoxWidth() : this.GetConstWidth());}}
+Player.prototype.GetAbsFrontX = function(useImageWidth) { if(this.direction_ > 0){ return this.GetLeftX(useImageWidth); } else { return this.GetRightX(useImageWidth); } }
+Player.prototype.GetAbsBackX = function(useImageWidth)  { if(this.direction_ > 0){ return this.GetRightX(useImageWidth); } else { return this.GetLeftX(useImageWidth); } }
 
 Player.prototype.GetBoxTop = function() { return this.y_ + (this.GetBoxHeight()); }
 Player.prototype.GetOffsetBoxTop = function() { return this.y_ + (this.GetBoxHeight()) + this.yTopOffset_; }
 Player.prototype.GetBoxBottom = function() { return this.y_; }
 Player.prototype.GetOffsetBoxBottom = function() { return this.y_ + this.yBottomOffset_; }
-/*Player.prototype.GetConstWidth = function() { return this.image_.width - 20; }*/
+/*Player.prototype.GetConstWidth = function() { return (!!this.currentAnimation_ && !!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.IsAttack()) ? this.GetBoxWidth() : this.width_; }*/
 Player.prototype.GetConstWidth = function() { return this.width_; }
-Player.prototype.GetConstFrontX = function() { return this.GetX() + this.width_; }
+Player.prototype.GetConstFrontX = function() { return this.GetX() + this.GetConstWidth(); }
 Player.prototype.GetFrontX = function() { return this.GetX() + this.GetBoxWidth(); }
 Player.prototype.GetBoxWidth = function() { return parseInt(this.spriteElement_.style.width); }
 Player.prototype.GetBoxHeight = function() { return parseInt(this.spriteElement_.style.height); }
-Player.prototype.GetRect = function()
+Player.prototype.GetRect = function(useImageWidth)
 {
-    return {Left:this.GetLeftX(),Right:this.GetRightX(),Top:this.GetOffsetBoxTop(),Bottom:this.GetOffsetBoxBottom()};
+    return {Left:this.GetLeftX(useImageWidth),Right:this.GetRightX(useImageWidth),Top:this.GetOffsetBoxTop(),Bottom:this.GetOffsetBoxBottom()};
 }
 /*
 Player.prototype.GetRight = function() { return parseInt(this.element_.style.right || 0); }
@@ -239,6 +239,46 @@ Player.prototype.CheckDirection = function()
         }
     }
 }
+/*player faces his target*/
+Player.prototype.FaceTarget = function()
+{
+    var otherFront = 0;
+    var otherBack = 0;
+
+    var myFront = 0;
+    var myBack = 0;
+
+
+    if(this.team_ == 1)
+    {
+        otherFront = this.GetMatch().teamB_.Players[this.target_].GetAbsFrontX();
+        otherBack = this.GetMatch().teamB_.Players[this.target_].GetAbsBackX();
+
+        myFront = this.GetAbsFrontX();
+        myBack = this.GetAbsBackX();
+    }
+    else
+    {
+        otherFront = this.GetMatch().teamB_.Players[this.target_].GetAbsFrontX();
+        otherBack = this.GetMatch().teamB_.Players[this.target_].GetAbsBackX();
+
+        myFront = this.GetAbsFrontX();
+        myBack = this.GetAbsBackX();
+    }
+
+    if((myFront < otherFront) && (this.direction_ != -1) && (!this.mustChangeDirection_))
+        this.TurnAround();
+    else if((myBack > otherBack) && (this.direction_ != 1) && (!this.mustChangeDirection_))
+        this.TurnAround();
+}
+Player.prototype.TargetLastAttacker = function()
+{
+    if(!!this.registeredHit_.OtherPlayer)
+    {
+        this.target_ = this.registeredHit_.OtherPlayer.GetIndex();
+        this.FaceTarget();
+    }
+}
 /*moves the player in the stage*/
 Player.prototype.MoveX = function(amount)
 {
@@ -365,7 +405,7 @@ Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
 /*Handles the player sliding*/
 Player.prototype.Slide = function(frame)
 {
-    if(!!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+    if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
         return this.StopSlide();
     if(!!this.frameFreeze_ && !this.IsBlocking())
         return;

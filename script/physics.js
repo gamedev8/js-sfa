@@ -27,13 +27,13 @@ Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsTo
     }
     else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE))
         return;
-    var p1Left = p1.GetLeftX();
-    var p1Right = p1.GetRightX();
+    var p1Left = p1.GetLeftX(true);
+    var p1Right = p1.GetRightX(true);
     var p1Top = p1.GetBoxTop();
     var p1Bottom = p1.GetBoxBottom();
 
-    var p2Left = p2.GetLeftX();
-    var p2Right = p2.GetRightX();
+    var p2Left = p2.GetLeftX(true);
+    var p2Right = p2.GetRightX(true);
     var p2Top = p2.GetOffsetBoxTop();
     var p2Bottom = p2.GetOffsetBoxBottom();
 
@@ -96,8 +96,8 @@ Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
         return;
     if(!projectile.CanHit(frame))
         return;
-    var p2Left = p2.GetLeftX();
-    var p2Right = p2.GetRightX();
+    var p2Left = p2.GetLeftX(true);
+    var p2Right = p2.GetRightX(true);
     var p2Top = p2.GetOffsetBoxTop();
     var p2Bottom = p2.GetOffsetBoxBottom();
 
@@ -775,7 +775,8 @@ Physics.prototype.CanGrapple = function(team,x,y,distance,mustBeAirborne)
                     && ((mustBeAirborne === null)
                         || (mustBeAirborne == (match.teamB_.Players[i].IsAirborne())))
                     && (!match.teamB_.Players[i].grappledPlayer_
-                    && (!match.teamB_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE)))
+                    && (!match.teamB_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.THROW)))
+                    && (!match.teamB_.Players[i].HasRegisteredHit())
                     )
                     return true;
             break;
@@ -789,7 +790,8 @@ Physics.prototype.CanGrapple = function(team,x,y,distance,mustBeAirborne)
                     && ((mustBeAirborne === null)
                         || (mustBeAirborne == (match.teamA_.Players[i].IsAirborne())))
                     && (!match.teamA_.Players[i].grappledPlayer_)
-                    && (!match.teamA_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE))
+                    && (!match.teamA_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.THROW))
+                    && (!match.teamA_.Players[i].HasRegisteredHit())
                     )
                     return true;
             break;

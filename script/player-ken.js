@@ -1,7 +1,7 @@
 ﻿
 Player.prototype.CreateKen = function(user)
 {
-    var player = new Player("ken", 101,user.Right,user.Up,user.Left,user.Down,user.P1,user.P2,user.P3,user.K1,user.K2,user.K3);
+    var player = new Player("ken",101,user);
     player.defaultShadowImageSrc_ = "136"
     player.circle_.OffsetY = 50;
 
@@ -464,7 +464,7 @@ Player.prototype.CreateKen = function(user)
         var uppercut = player.AddAnimation(POSE_FLAGS.CROUCHING | POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.ALLOW_INTERUPT_1, "uppercut p1", 200, [BUTTONS.FORWARD, 0, BUTTONS.CROUCH, BUTTONS.CROUCH | BUTTONS.FORWARD, BUTTONS.FORWARD | button], 999, true, true);
         uppercut.flags_ = {Combat:COMBAT_FLAGS.NO_SLIDE_BACK};
         uppercut.energyToAdd_ = 5;
-        uppercut.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE, OVERRIDE_FLAGS.ALL);
+        uppercut.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE, OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
         uppercut.isSpecialMove_ = true;
 
         /*the following function will be executed each frame to compute the X coordinate of this move*/
@@ -732,6 +732,7 @@ Player.prototype.CreateKen = function(user)
         else if (x == 2) { button = BUTTONS.HARD_PUNCH; }
 
         var fireball = player.AddAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1, "fireball p" + x, 50, [BUTTONS.CROUCH, BUTTONS.CROUCH | BUTTONS.FORWARD, BUTTONS.FORWARD, BUTTONS.FORWARD | button], 0, false);
+        fireball.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.NONE);
         fireball.energyToAdd_ = 5;
         fireball.isSpecialMove_ = true;
         fireball.flags_ = { Combat: COMBAT_FLAGS.PROJECTILE_ACTIVE };
@@ -865,7 +866,7 @@ Player.prototype.CreateKenSuperMoves = function(player)
 
         var maxIter = x < 2 ? 1 : x;
         var dx = (x+4);
-        s_uppercut.AddFrameWithSound(player,1,"audio/ken/super-start.zzz","","|images/misc/ken/x-uppercut-p1-0.png",100,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},dx,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
+        s_uppercut.AddFrameWithSound(player,1,"audio/ken/super-start.zzz","","|images/misc/ken/x-uppercut-p1-0.png",38,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},dx,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
         s_uppercut.AddFrameWithSound(player,1,"audio/ken/shoryuepa.zzz","","|images/misc/ken/x-uppercut-p1-0.png",1,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},dx,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
         for(var i = 0; i < maxIter; ++i)
         {

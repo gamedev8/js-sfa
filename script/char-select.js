@@ -1,6 +1,6 @@
 ﻿var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat"];
 
-var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
 {
     this.Right = right;
     this.Up = up;
@@ -12,6 +12,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
     this.K1 = k1;
     this.K2 = k2;
     this.K3 = k3;
+    this.Turn = turn;
     this.player_ = 0;
     this.selected_ = null;
     this.changeCharacterFn_ = null;

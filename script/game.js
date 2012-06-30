@@ -310,14 +310,14 @@ Game.prototype.HandleInput = function()
 {
 }
 
-Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
 {
-    this.user1_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3);
+    this.user1_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
     return this.user1_;
 }
-Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3)
+Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
 {
-    this.user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3);
+    this.user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
     return this.user2_;
 }
 

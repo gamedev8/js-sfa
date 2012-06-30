@@ -27,7 +27,7 @@ var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,ene
 
 
 
-
+/*controls if a move can override another. To allow a double hit, set both the allowOverridgeFlags and overideFlags to OVERRIDE_FLAGS.NONE*/
 var MoveOverrideFlags = function(allowOverrideFlags,overrideFlags)
 {
     this.AllowOverrideFlags = allowOverrideFlags || OVERRIDE_FLAGS.ALL;
@@ -83,9 +83,10 @@ ActionSystem.prototype.CanOverride = function(key,index)
         var a = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
         var b = first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
         var c = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags);
+        var d = first.IsProjectile;
         var ignore = first.Player.flags_.Player.Has(PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE);
 
-        retVal = !ignore && (a || b || (c && first.Player.isInAttackFrame_));
+        retVal = !ignore && (a || b || (c && first.Player.isInAttackFrame_) || d);
     }
     return retVal;
 }
@@ -179,5 +180,6 @@ ActionSystem.prototype.Test = function(key,index)
     return second.MoveOverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
         || first.MoveOverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
         || second.MoveOverrideFlags.HasOverrideFlag(first.MoveOverrideFlags.AllowOverrideFlags)
+        || first.IsProjectile
         ;
 }

@@ -1,4 +1,6 @@
-﻿Player.prototype.IsVulnerable = function()
+﻿Player.prototype.HasRegisteredHit = function() { return !!this.registeredHit_.HitID; }
+
+Player.prototype.IsVulnerable = function()
 {
     var retVal = this.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)
                 || this.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE)
@@ -505,6 +507,8 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
     this.SetHoldFrame(this.baseTakeHitDelay_ * hitDelayFactor_);
     if(!this.IsBlocking())
         this.QueueHitSound(hitSound);
+
+    this.registeredHit_.HitID = null;
     return true;
 }
 /*Setting "this.winningFrame_" will cause this player to execute its win animation after its current animation is done.*/

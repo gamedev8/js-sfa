@@ -126,9 +126,23 @@ Player.prototype.ExecuteAnimation = function(name)
     return false;
 }
 /* Looks up a move */
-Player.prototype.FindAnimation = function(value)
+Player.prototype.FindAnimation = function(value,frame)
 {
     var keys = value.Keys;
+
+    /*check if the player wants to turn around*/
+    if(frame % 10 == 0)
+    {
+        for(var i = 0; i < keys.length; ++i)
+        {
+            if(!!(keys[i] & BUTTONS.TURN_AROUND))
+            {
+                this.TurnAround();
+                return;
+            }
+        }
+    }
+
     var matches = [];
     var retVal = null;
     var priority = -1;
@@ -162,12 +176,19 @@ Player.prototype.FindAnimation = function(value)
             if(!cmpValue)
                 cmpValue = this.CompareAlternateKeySequences(move,keys);
 
-            if(!!move.grappleDistance_)
-                if(!this.GetPhysics().CanGrapple(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_,move.matchAirborne_ === null ? null : (this.IsAirborne() && move.matchAirborne_)))
-                    continue;
 
             if(cmpValue == CONSTANTS.EXACT_MATCH)
+            {
+                if(!!move.grappleDistance_)
+                {
+                    if(!!this.registeredHit_.HitID)
+                        continue;
+                    if(!this.GetPhysics().CanGrapple(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_,move.matchAirborne_ === null ? null : (this.IsAirborne() && move.matchAirborne_)))
+                        continue;
+                }
+
                 return move;
+            }
 
             if(cmpValue == 0)
                 continue;

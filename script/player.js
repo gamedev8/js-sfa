@@ -1,27 +1,28 @@
 ﻿
 
 /*Encapsulates a new player*/
-var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameImageSrc,portriatImageSrc,slideFactor)
+var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
     this.name_ = name;
     this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + name.toLowerCase() +"-name-1.png";
     this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + name.toLowerCase() + "-x-portriat-1.png";
 
     /*these 2 are used so we can easily swap left and right when the player changes directions*/
-    this.leftKey_ = left;
-    this.rightKey_ = right;
+    this.leftKey_ = user.Left;
+    this.rightKey_ = user.Right;
     /*store all of the key mappings*/
     this.buttons_ = {};
-    this.buttons_[left] = {Ascii:left,Bit:1};
-    this.buttons_[right] = {Ascii:right,Bit:2};
-    this.buttons_[jump] = {Ascii:jump,Bit:4};
-    this.buttons_[crouch] = {Ascii:crouch,Bit:8};
-    this.buttons_[p1] = {Ascii:p1,Bit:16};
-    this.buttons_[p2] = {Ascii:p2,Bit:32};
-    this.buttons_[p3] = {Ascii:p3,Bit:64};
-    this.buttons_[k1] = {Ascii:k1,Bit:128};
-    this.buttons_[k2] = {Ascii:k2,Bit:256};
-    this.buttons_[k3] = {Ascii:k3,Bit:512};
+    this.buttons_[user.Left] =   {Ascii:user.Left,Bit:1};
+    this.buttons_[user.Right] =  {Ascii:user.Right,Bit:2};
+    this.buttons_[user.Up] =   {Ascii:user.Up,Bit:4};
+    this.buttons_[user.Down] = {Ascii:user.Down,Bit:8};
+    this.buttons_[user.P1] =     {Ascii:user.P1,Bit:16};
+    this.buttons_[user.P2] =     {Ascii:user.P2,Bit:32};
+    this.buttons_[user.P3] =     {Ascii:user.P3,Bit:64};
+    this.buttons_[user.K1] =     {Ascii:user.K1,Bit:128};
+    this.buttons_[user.K2] =     {Ascii:user.K2,Bit:256};
+    this.buttons_[user.K3] =     {Ascii:user.K3,Bit:512};
+    this.buttons_[user.Turn] =   {Ascii:user.Turn,Bit:1024};
 
 
     this.moves_ = {};
@@ -91,6 +92,7 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.slideFactor_ = slideFactor || 30;
     this.baseTakeHitDelay_ = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
     this.baseGiveHitDelay_ = CONSTANTS.DEFAULT_GIVE_HIT_DELAY;
+    this.index_ = 0;
     this.id_ = "";
     this.team_ = 0;
     this.defaultShadowImageSrc_ = "images/misc/misc/shadow.png";
@@ -100,6 +102,8 @@ var Player = function (name,width,right,jump,left,crouch,p1,p2,p3,k1,k2,k3,nameI
     this.Reset();
     this.AddGenericAnimations();
 }
+Player.prototype.SetIndex = function(index) { this.index_ = index; }
+Player.prototype.GetIndex = function() { return this.index_; }
 Player.prototype.SetAI = function(createAiFn) { this.ai_.SetAI(createAiFn); }
 Player.prototype.PlayerCount = 0;
 Player.prototype.TakeDamage = function(amount) { this.takeDamageFn_(amount); }
@@ -211,6 +215,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.registeredHit_ = new RegisteredHit();
     this.lastHitFrame_ = {};
     this.winningFrame_ = CONSTANTS.NO_FRAME;
+    this.target_ = 0;
     this.SetX(0);
     this.SetY(STAGE.FLOORY);
     this.ClearProjectiles();
@@ -475,7 +480,6 @@ Player.prototype.FrameMoveTrail = function(frame,stageX,stageY)
 /*Show the image at the current frame in the current animation*/
 Player.prototype.FrameMove = function(frame,stageX,stageY)
 {
-
     this.CheckDirection();
     if(this.isSliding_)
         this.Slide(frame);

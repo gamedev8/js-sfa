@@ -257,6 +257,7 @@ Match.prototype.Start = function(team1,team2)
     for(var i = 0; i < this.teamA_.Players.length; ++i)
     {
         this.teamA_.Players[i].id_ = "t1p" + i;
+        this.teamA_.Players[i].SetIndex(i);
         this.teamA_.Players[i].moveStageXFn_ = moveStageX(this,this.teamB_.Players);
         this.teamA_.Players[i].fixXFn_ = fixX(this,this.teamB_.Players);
         this.teamA_.Players[i].moveXFn_ = moveX(this,this.teamB_.Players);
@@ -290,6 +291,7 @@ Match.prototype.Start = function(team1,team2)
     for(var i = 0; i < this.teamB_.Players.length; ++i)
     {
         this.teamB_.Players[i].id_ = "t2p" + i;
+        this.teamB_.Players[i].SetIndex(i);
         this.teamB_.Players[i].moveStageXFn_ = moveStageX(this,this.teamA_.Players);
         this.teamB_.Players[i].fixXFn_ = fixX(this,this.teamA_.Players);
         this.teamB_.Players[i].moveXFn_ = moveX(this,this.teamA_.Players);

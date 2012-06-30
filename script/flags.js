@@ -55,6 +55,7 @@ var BUTTONS =
     ,LIGHT_KICK:128
     ,MEDIUM_KICK:256
     ,HARD_KICK:512
+    ,TURN_AROUND:1024
 }
 
 var MAX = 
@@ -460,6 +461,7 @@ var KEYS =
     ,Z:90
     ,X:88
     ,C:67
+    ,Q:81
 
 
     ,NUMPAD_1:97
@@ -478,6 +480,7 @@ var KEYS =
     ,B:66
     ,N:78
     ,M:77
+    ,L:76
 
     ,O:79
 };

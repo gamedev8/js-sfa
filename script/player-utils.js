@@ -70,6 +70,8 @@ var Animation = function(requiredFlags,name,duration,frames,keySequence,flags,pr
     this.matchAirborne_ = null;
 }
 
+Animation.prototype.IsAttack = function() { return this.baseAnimation_.isAttack_; }
+
 Animation.prototype.EndBlock = function()
 {
     this.baseAnimation_.skipFrameBlockCheck_ = true;

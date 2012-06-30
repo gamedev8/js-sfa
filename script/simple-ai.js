@@ -136,6 +136,9 @@
     SimpleRyuAI.prototype.FrameMove = function(frame)
     {
         player_.ClearInput();
+        if((frame % 20) == 0)
+            player.TargetLastAttacker();
+
         if(player_.flags_.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
         {
             if(!DoUppercut_())

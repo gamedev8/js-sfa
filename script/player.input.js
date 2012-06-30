@@ -202,7 +202,7 @@ Player.prototype.CheckForAnimation = function(frame)
         while(keys.length > 0)
         {
             var value = this.CutKey(keys,frame);
-            var move = this.FindAnimation(value);
+            var move = this.FindAnimation(value,frame);
             if(!!move && (!move.duration_ || (value.Duration <= move.duration_)))
             {
                 /*is there no current move, or is the user executing a new move*/

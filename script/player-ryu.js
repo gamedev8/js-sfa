@@ -1,7 +1,7 @@
 ﻿
 Player.prototype.CreateRyu = function(user)
 {
-    var player = new Player("Ryu",101,user.Right,user.Up,user.Left,user.Down,user.P1,user.P2,user.P3,user.K1,user.K2,user.K3);
+    var player = new Player("Ryu",101,user);
     player.defaultShadowImageSrc_ = "136"
     player.circle_.OffsetY = 50;
 
@@ -29,14 +29,14 @@ Player.prototype.CreateRyu = function(user)
     jump_land.AddFrameWithSound(player,1,"audio/misc/jump-land.zzz","","|images/misc/ryu/x-crouch-0.png",2,{Player:PLAYER_FLAGS.MOBILE});
 
 
-    var turn = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"turn",0,["turn"],0,false);
+    var turn = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"turn", 0, ["turn"], 0, false);
     //turn.poseState_ = POSE_FLAGS.STANDING;
     turn.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX,Pose:POSE_FLAGS.STANDING};
     turn.AddFrame(player,"","|images/misc/ryu/x-turn-0.png",2,{Player:PLAYER_FLAGS.MOBILE});
     turn.AddFrame(player,"","|images/misc/ryu/x-turn-1.png",2);
     turn.AddFrame(player,"","|images/misc/ryu/x-turn-2.png",2);
 
-    var cturn = player.AddAnimation(POSE_FLAGS.CROUCHING,"turn",0,["turn"],0,false);
+    var cturn = player.AddAnimation(POSE_FLAGS.CROUCHING,"turn", 0, ["turn"], 0, false);
     //cturn.poseState_ = POSE_FLAGS.CROUCHING;
     cturn.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX,Pose:POSE_FLAGS.CROUCHING};
     cturn.AddFrame(player,"","|images/misc/ryu/x-crouch-turn-0.png",2,{Player:PLAYER_FLAGS.MOBILE});
@@ -474,7 +474,7 @@ Player.prototype.CreateRyu = function(user)
         uppercut.isSpecialMove_ = true;
 
         uppercut.energyToAdd_ = 5;
-        uppercut.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
+        uppercut.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
 
         /*the following function will be executed each frame to compute the X coordinate of this move*/
         uppercut.vxFn_ = function(args)
@@ -750,6 +750,7 @@ Player.prototype.CreateRyu = function(user)
         else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
 
         var fireball = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"fireball p" + (x+1),50,[BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD, BUTTONS.FORWARD|button],0,false);
+        fireball.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.NONE);
         fireball.isSpecialMove_ = true;
         fireball.energyToAdd_ = 5;
         fireball.flags_ = {Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE};
@@ -885,7 +886,7 @@ Player.prototype.CreateRyuSuperMoves = function(player)
 
         var s_fireball = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"super fireball p" + (x+1),50,[BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD,0,BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD, BUTTONS.FORWARD|button],CONSTANTS.MAX_PRIORITY,false);
         s_fireball.isSuperMove_ = true;
-        s_fireball.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.NONE);
+        s_fireball.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.NONE);
 
 
         s_fireball.energyToSubtract_ = CONSTANTS.ONE_LEVEL * (x + 1);
