@@ -111,4 +111,7 @@ Team.prototype.Render = function(frame,deltaX)
     }
     for(var i = 0; i < this.Players.length; ++i)
         this.Players[i].Render(frame,deltaX);
+
+    this.Energybar.Render(frame);
+    this.Healthbar.Render(frame);
 }

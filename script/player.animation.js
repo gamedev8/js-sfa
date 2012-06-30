@@ -443,6 +443,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
     this.currentAnimation_ = newAnimation;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        this.GetMatch().OnSuperMoveCompleted(this);
         if(!!newAnimation.Animation.isSuperMove_)
         {
             this.GetMatch().OnSuperMoveStarted(this);

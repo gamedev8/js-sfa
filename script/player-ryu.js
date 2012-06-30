@@ -885,6 +885,8 @@ Player.prototype.CreateRyuSuperMoves = function(player)
 
         var s_fireball = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"super fireball p" + (x+1),50,[BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD,0,BUTTONS.CROUCH, BUTTONS.CROUCH|BUTTONS.FORWARD, BUTTONS.FORWARD, BUTTONS.FORWARD|button],CONSTANTS.MAX_PRIORITY,false);
         s_fireball.isSuperMove_ = true;
+        s_fireball.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.NONE);
+
 
         s_fireball.energyToSubtract_ = CONSTANTS.ONE_LEVEL * (x + 1);
         s_fireball.energyToAdd_ = 5;

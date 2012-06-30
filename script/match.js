@@ -439,10 +439,6 @@ Match.prototype.Render = function(frame)
 
     this.stage_.Render();
 
-    this.teamA_.Healthbar.Render(frame);
-    this.teamA_.Energybar.Render(frame);
-    this.teamB_.Healthbar.Render(frame);
-    this.teamB_.Energybar.Render(frame);
 }
 
 Match.prototype.Kill = function()
