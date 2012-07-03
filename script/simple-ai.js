@@ -1,5 +1,10 @@
 ﻿var CreateSimpleRyuAI = function(player)
 {
+    /*******************************************************/
+    /*******************  PRIVATE STATE    *****************/
+    /*******************************************************/
+
+
     /*private member*/
     var lightSuperFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:16} ];
     var mediumSuperFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:32} ];
@@ -125,6 +130,11 @@
         }
         return false;
     }
+
+    /*******************************************************/
+    /*******************  PUBLIC  STATE    *****************/
+    /*******************************************************/
+
 
     /**/
     var SimpleRyuAI = function()
