@@ -387,92 +387,108 @@ BasicAnimation.prototype.TryRender = function(frame,object,direction)
 }
 /************************************************************************/
 /************************************************************************/
-var FrameImageLookup = function()
+var CreateFrameImageLookup = function()
 {
-    this.images_ = {};
-    this.nbImages_ = 0;
-    this.nbImagesLoading_ = 0;
-    this.element_ = window.document.getElementById("spnImagesLoading");
-}
-/*Image only loaded once*/
-FrameImageLookup.prototype.Load = function(src)
-{
-    if(!this.images_.hasOwnProperty(src))
+    var images_ = {};
+    var nbImages_ = 0;
+    var nbImagesLoading_ = 0;
+    var element_ = window.document.getElementById("spnImagesLoading");
+    
+    var FrameImageLookup = function()
     {
-        ++this.nbImagesLoading_;
-        ++this.nbImages_;
-
-        this.element_.innerHTML = "0";
-        this.images_[src] = new Image();
-        //this.images_[src] = window.document.createElement("img");
-        this.images_[src].onload = (function(thisValue)
+    }
+    
+    FrameImageLookup.prototype.GetNbImages = function() { return nbImages_; }
+    FrameImageLookup.prototype.GetNbImagesLoading = function() { return nbImagesLoading_; }
+    
+    /*Image only loaded once*/
+    FrameImageLookup.prototype.Load = function(src)
+    {
+        if(!images_.hasOwnProperty(src))
         {
-            return function()
+            ++nbImagesLoading_;
+            ++nbImages_;
+    
+            element_.innerHTML = "0";
+            images_[src] = new Image();
+            //images_[src] = window.document.createElement("img");
+            images_[src].onload = (function(thisValue)
             {
-                if(!!--thisValue.nbImagesLoading_)
+                return function()
                 {
-                    thisValue.element_.innerHTML = (100*(thisValue.nbImages_-thisValue.nbImagesLoading_)/thisValue.nbImages_).toFixed(1);
+                    if(!!--thisValue.nbImagesLoading_)
+                    {
+                        thisValue.element_.innerHTML = (100*(thisValue.GetNbImages()-thisValue.GetNbImagesLoading())/thisValue.GetNbImages()).toFixed(1);
+                    }
+                    else
+                    {
+                        thisValue.element_.innerHTML = "100";
+                    }
                 }
-                else
-                {
-                    thisValue.element_.innerHTML = "100";
-                }
-            }
-        })(this);
-        this.images_[src].src = src;
+            })(this);
+            images_[src].src = src;
+        }
+        return images_[src];
     }
-    return this.images_[src];
+    FrameImageLookup.prototype.Get = function(src)
+    {
+        return images_[src];
+    }
+    return new FrameImageLookup();
 }
-FrameImageLookup.prototype.Get = function(src)
-{
-    return this.images_[src];
-}
-var frameImages_ = new FrameImageLookup();
+var frameImages_ = CreateFrameImageLookup();
 /************************************************************************/
 /************************************************************************/
-var SpriteLookup = function()
+var CreateSpriteLookup = function()
 {
-    this.data_ = {};
-    this.nbImages_ = 0;
-    this.nbImagesLoading_ = 0;
-    this.element_ = window.document.getElementById("spnImagesLoading");
-}
-/*Image only loaded once*/
-SpriteLookup.prototype.Load = function(key,spriteFilename,left,bottom,width,height)
-{
-
-    if(!!spriteFilename && (spriteFilename[0] != "|"))
-        frameImages_.Load(spriteFilename);
-
-    spriteFilename = spriteFilename.replace("|","");
-
-    if(!this.Get(key))
+        var data_ = {};
+        var nbImages_ = 0;
+        var nbImagesLoading_ = 0;
+        var element_ = window.document.getElementById("spnImagesLoading");
+    
+    
+    var SpriteLookup = function()
     {
-        this.data_[key] = {Key:key, Sprite:spriteFilename, Left:left, Bottom:bottom, Width:width, Height:height};
     }
-    return this.data_[key];
-}
-SpriteLookup.prototype.Get = function(key)
-{
-    return this.data_[key];
-}
-SpriteLookup.prototype.GetLeft = function(key)
-{
-    return (this.data_[key] || {}).Left || "";
-}
-SpriteLookup.prototype.Set = function(element, key)
-{
-    var data = this.Get(key);
-    if(!!data)
+    
+    /*Image only loaded once*/
+    SpriteLookup.prototype.Load = function(key,spriteFilename,left,bottom,width,height)
     {
-        element.style.backgroundPosition = data.Left + " " + data.Bottom;
-        element.style.width = data.Width;
-        element.style.height = data.Height;
-        if(element.style.display != "")
-            element.style.display = "";
+    
+        if(!!spriteFilename && (spriteFilename[0] != "|"))
+            frameImages_.Load(spriteFilename);
+    
+        spriteFilename = spriteFilename.replace("|","");
+    
+        if(!this.Get(key))
+        {
+            data_[key] = {Key:key, Sprite:spriteFilename, Left:left, Bottom:bottom, Width:width, Height:height};
+        }
+        return data_[key];
     }
+    SpriteLookup.prototype.Get = function(key)
+    {
+        return data_[key];
+    }
+    SpriteLookup.prototype.GetLeft = function(key)
+    {
+        return (data_[key] || {}).Left || "";
+    }
+    SpriteLookup.prototype.Set = function(element, key)
+    {
+        var data = this.Get(key);
+        if(!!data)
+        {
+            element.style.backgroundPosition = data.Left + " " + data.Bottom;
+            element.style.width = data.Width;
+            element.style.height = data.Height;
+            if(element.style.display != "")
+                element.style.display = "";
+        }
+    }
+    return new SpriteLookup();
 }
-var spriteLookup_ = new SpriteLookup();
+var spriteLookup_ = CreateSpriteLookup();
 /************************************************************************/
 /************************************************************************/
 var Frame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
