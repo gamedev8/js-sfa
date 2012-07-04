@@ -43,16 +43,12 @@ Stage.prototype.FadeOutMusic = function()
 }
 Stage.prototype.RestartMusic = function()
 {
-    soundManager_.Replay(this.music_);
+    soundManager_.Restart(this.music_);
 }
 
 Stage.prototype.PlayMusic = function()
 {
-    if(!soundManager_.IsPlaying(this.music_))
-    {
-        soundManager_.Restart(this.music_);
-        soundManager_.Play(this.music_,true);
-    }
+    soundManager_.Play(this.music_,true);
 }
 
 Stage.prototype.PauseMusic = function()

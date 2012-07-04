@@ -405,12 +405,12 @@ var CharSelect = function(user1,user2)
 
 CharSelect.prototype.RestartMusic = function()
 {
-    soundManager_.Replay(this.music_);
+    soundManager_.Restart(this.music_);
 }
 
 CharSelect.prototype.PlayMusic = function()
 {
-    soundManager_.PlayOrResume(this.music_,true);
+    soundManager_.Play(this.music_,true);
 }
 
 CharSelect.prototype.PauseMusic = function()

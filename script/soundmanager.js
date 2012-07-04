@@ -3,10 +3,13 @@
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
-   var items_ = {};
-   var fragment_ = {};
-   var sounds_ = [];
-   var extension_ = ".ogg";
+    var elements_ = {};
+    var maxChannels_ = 10;
+    var sounds_ = [];
+    var soundsToPlay_ = [];
+    var extension_ = ".ogg";
+    var parent_ = window.document.body;
+    var id_ = 0;
 
     var GetPath_ = function(path)
     {
@@ -14,35 +17,60 @@
     }
 
 
+    var GetSound_ = function(path)
+    {
+        for(var i = 0; i < sounds_.length; ++i)
+            if(sounds_[i].ID == path)
+                return sounds_[i];
+
+        return null;
+    }
+
+    var GetElement_ = function(path)
+    {
+        return window.document.getElementById(path);
+    }
+
+    var GetNextAvailableChannel_ = function()
+    {
+        for(var i = 0; i < maxChannels_; ++i)
+            if(!!sounds_[i].Element.paused)
+                return sounds_[i];
+
+        return null;
+    }
+
     /*******************************************************/
     /*******************  PUBLIC  STATE    *****************/
     /*******************************************************/
 
     var SoundManager = function()
     {
+        for(var i = 0; i < maxChannels_; ++i)
+        {
+            sounds_[i] = {ID:"", Element:new Audio()};
+        }
     }
 
     /*creates a DOM audio element and loads it*/
     SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
     {
-        if(!items_[path])
+        if(!elements_[path])
         {
-            nbChannels = nbChannels || 1;
-            //nbChannels  = 1;
             try
             {
-                items_[path] = {Channels:nbChannels,CurrentChannel:0,Elements:[],DefaultVolume:defaultVolume || 1};
-                for(var i = 0; i < nbChannels; ++i)
-                {
-                    items_[path].Elements[i] = new Audio();
-                    items_[path].Elements[i].type = "audio/mpeg";
-                    items_[path].Elements[i].src = GetPath_(path);
-                    items_[path].Elements[i].load();
-                }
+                var element = window.document.createElement("audio");
+                element.id = path;
+                element.preload = "auto";
+                element.src = GetPath_(path);
+
+                elements_[path] = element;
+                parent_.appendChild(element);
+
             }
             catch(err)
             {
-                items_[path] = null;
+                elements_[path] = null;
             }
         }
     }
@@ -50,121 +78,57 @@
     /**/
     SoundManager.prototype.Unload = function(path)
     {
-        if(!!items_[path])
+        var sound = GetSound_(path);
+        if(!!sound)
         {
-            for(var i = 0; i < items_[path].Channels; ++i)
-                items_[path].Elements[i].pause();
-            items_[path] = null;
-            //window.document.removeChild(items_[path]);
+            sound.Element.pause();
         }
-    }
-
-    /**/
-    SoundManager.prototype.SetVolume = function(path, value)
-    {
-        if(!!items_[path])
-        {
-            for(var i = 0; i < items_[path].Channels; ++i)
-                items_[path].Elements[i].volume = value;
-        }
-    }
-
-    /**/
-    SoundManager.prototype.GetVolume = function(path)
-    {
-        if(!!items_[path])
-        {
-            return items_[path].Elements[items_[path].CurrentChannel].volume;
-        }
-        return 0;
     }
 
     /**/
     SoundManager.prototype.IsPlaying = function(path)
     {
-        if(!!items_[path])
+        var sound = GetSound_(path);
+        if(!!sound && sound.Element.paused)
         {
-            return !items_[path].Elements[items_[path].CurrentChannel].paused;
+            return true;
         }
-        return 0;
+        return false;
     }
 
 
     /**/
     SoundManager.prototype.Restart = function(path,loops)
     {
-        if(!!items_[path])
+        var sound = GetSound_(path);
+        if(!!sound)
         {
-            if(!!items_[path].Elements[items_[path].CurrentChannel].duration)
-                items_[path].Elements[items_[path].CurrentChannel].currentTime = 0;
-            items_[path].Elements[items_[path].CurrentChannel].volume = items_[path].DefaultVolume;
+            sound.Element.pause();
+            sound.Element.currentTime = 0;
+            sound.Element.play();
         }
     }
 
     /**/
     SoundManager.prototype.Play = function(path,loops)
     {
-        if(!!items_[path])
+        var channel = GetNextAvailableChannel_();
+        if(!!channel)
         {
-            /*go to the next channel*/
-            if(++items_[path].CurrentChannel >= items_[path].Channels)
-                items_[path].CurrentChannel = 0;
+            var element = GetElement_(path);
+            channel.ID = path;
+            channel.Element.src = element.src;
+            channel.Element.play();
+            channel.Element.loops = !!loops;
+            if(!!channel.Element.currentTime)
+                channel.Element.currentTime = 0;
 
-            /*start playing from the time = 0*/
-            var el = items_[path].Elements[items_[path].CurrentChannel];
-            if(!!el.duration) el.currentTime = 0;
-            if(!!loops) el.loop = true;
-
-            el.volume = items_[path].DefaultVolume;
-            el.play();
-
-            if(!!el.error)
+            if(!!channel.Element.error)
             {
                 Alert(path);
-                Alert(el.error);
-                items_[path] = null;
+                Alert(channel.Element.error.code);
                 return;
             }
-        }
-    }
-
-    /*sets the volume and plays the sound*/
-    SoundManager.prototype.PlayWithVolume = function(obj,loops)
-    {
-        var path = obj.Value;
-        if(!!items_[path])
-        {
-            /*go to the next channel*/
-            if(++items_[path].CurrentChannel >= items_[path].Channels)
-                items_[path].CurrentChannel = 0;
-            /*start playing from time 0*/
-            var el = items_[path].Elements[items_[path].CurrentChannel];
-            if(!!el.duration) el.currentTime = 0;
-            el.loop = !!loops;
-
-            el.volume = obj.Volume;
-            el.play();
-
-            if(!!el.error)
-            {
-                Alert(path);
-                Alert(el.error.code);
-                items_[path] = null;
-                return;
-            }
-        }
-    }
-
-
-    /**/
-    SoundManager.prototype.Replay = function(path)
-    {
-        if(!!items_[path])
-        {
-            items_[path].Elements[items_[path].CurrentChannel].pause();
-            items_[path].Elements[items_[path].CurrentChannel].currentTime = 0;
-            items_[path].Elements[items_[path].CurrentChannel].volume = items_[path].DefaultVolume;
-            items_[path].Elements[items_[path].CurrentChannel].play();
         }
     }
 
@@ -172,37 +136,23 @@
     /**/
     SoundManager.prototype.Pause = function(path)
     {
-        if(!!items_[path])
+        var sound = GetSound_(path);
+        if(!!sound)
         {
-            items_[path].Elements[items_[path].CurrentChannel].pause();
+            sound.Element.pause();
         }
     }
 
     /**/
     SoundManager.prototype.Resume = function(path)
     {
-        if(!!items_[path])
+        var sound = GetSound_(path);
+        if(!!sound && !!sound.Element.paused)
         {
-            var el = items_[path].Elements[items_[path].CurrentChannel];
-            if(!!el.paused)
-                el.play();
+            sound.Element.play();
         }
     }
-    /**/
-    SoundManager.prototype.PlayOrResume = function(path,loops)
-    {
-        if(!!items_[path])
-        {
-            var el = items_[path].Elements[items_[path].CurrentChannel];
-            if(!!el.paused)
-            {
-                el.loop = !!loops;
-                el.play();
-            }
-            else
-                this.Play(path,loops);
-        }
-    }
+
 
     /**/
     SoundManager.prototype.Preload = function()
@@ -213,7 +163,7 @@
     /**/
     SoundManager.prototype.QueueSound = function(value,volume,delay)
     {
-        sounds_[sounds_.length] = {Value:value, Volume:volume||1, Frame:game_.GetCurrentFrame() + (delay||0)};
+        soundsToPlay_[soundsToPlay_.length] = {Value:value, Volume:volume||1, Frame:game_.GetCurrentFrame() + (delay||0)};
     }
 
 
@@ -225,10 +175,10 @@
     /**/
     SoundManager.prototype.Render = function(frame)
     {
-        for(var i in sounds_)
+        for(var i in soundsToPlay_)
         {
-            if(frame >= sounds_[i].Frame)
-                this.PlayWithVolume(sounds_.splice(i,1)[0]);
+            if(frame >= soundsToPlay_[i].Frame)
+                this.Play(soundsToPlay_.splice(i,1)[0].Value);
         }
     }
 
