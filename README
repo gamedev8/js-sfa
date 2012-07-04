@@ -5,4 +5,17 @@ Street Fighter Alpha
 
 * Currently only Ken and Ryu are playable *
 
-Jun-21-2012: Expect a huge update within the next few days. All animation will use css sprites, instead of individual images. This will allow for much faster load times and other performance enchancements.
+Keys:
+Jump: Up arrow
+Crouch: Down arrow
+Left: Left arrow
+Right: Right arrow
+
+Light punch: A
+Medium punch: S
+Hard punch: D
+Light kick: Z
+Medium kick: X
+Hard kick: C
+
+Turn around: Q
