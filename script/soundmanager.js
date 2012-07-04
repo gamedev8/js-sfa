@@ -39,6 +39,7 @@
                     items_[path].Elements[i].src = GetPath_(path);
                     items_[path].Elements[i].load();
                 }
+
             }
             catch(err)
             {
