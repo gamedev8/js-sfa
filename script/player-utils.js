@@ -400,6 +400,7 @@ var CreateFrameImageLookup = function()
     
     FrameImageLookup.prototype.GetNbImages = function() { return nbImages_; }
     FrameImageLookup.prototype.GetNbImagesLoading = function() { return nbImagesLoading_; }
+    FrameImageLookup.prototype.GetElement = function() { return element_; }
     
     /*Image only loaded once*/
     FrameImageLookup.prototype.Load = function(src)
@@ -418,11 +419,11 @@ var CreateFrameImageLookup = function()
                 {
                     if(!!--thisValue.nbImagesLoading_)
                     {
-                        thisValue.element_.innerHTML = (100*(thisValue.GetNbImages()-thisValue.GetNbImagesLoading())/thisValue.GetNbImages()).toFixed(1);
+                        thisValue.GetElement().innerHTML = (100*(thisValue.GetNbImages()-thisValue.GetNbImagesLoading())/thisValue.GetNbImages()).toFixed(1);
                     }
                     else
                     {
-                        thisValue.element_.innerHTML = "100";
+                        thisValue.GetElement().innerHTML = "100";
                     }
                 }
             })(this);
