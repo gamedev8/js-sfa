@@ -538,6 +538,7 @@ Frame.prototype.GetImageSrc = function(direction){if(direction > 0) { return thi
 /************************************************************************/
 var Projectile = function(player,animation,disintegrationAnimation, xOffset, yOffset, xSpeed, ySpeed, xFunc, yFunc, attackState, hitState, baseDamage, energyToAdd)
 {
+    
     this.energyToAdd_ = energyToAdd || 0;
     this.owner_ = player;
     this.animation_ = animation;
