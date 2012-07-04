@@ -1,4 +1,4 @@
-﻿var CreateSoundManager = function()
+var CreateSoundManager = function()
 {
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
@@ -34,7 +34,7 @@
     var GetNextAvailableChannel_ = function()
     {
         for(var i = 0; i < maxChannels_; ++i)
-            if(!!sounds_[i].Element.paused)
+            if(!!sounds_[i].Element.paused || sounds_[i].Element.currentTime > 999999)
                 return sounds_[i];
 
         return null;
@@ -62,6 +62,7 @@
                 var element = window.document.createElement("audio");
                 element.id = path;
                 element.preload = "auto";
+                element.load();
                 element.src = GetPath_(path);
 
                 elements_[path] = element;
@@ -118,10 +119,11 @@
             var element = GetElement_(path);
             channel.ID = path;
             channel.Element.src = element.src;
-            channel.Element.play();
+            //channel.Element.load();
             channel.Element.loops = !!loops;
             if(!!channel.Element.currentTime)
                 channel.Element.currentTime = 0;
+            channel.Element.play();
 
             if(!!channel.Element.error)
             {
