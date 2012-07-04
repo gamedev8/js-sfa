@@ -234,6 +234,21 @@ Player.prototype.CreateKen = function(user)
     hitReact_fk_throw.AddFrame(player, "", "|images/misc/ken/#-hit-a-1a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, 0, 0, 0, 0, 0, 0, 105);
     hitReact_fk_throw.AddFrame(player, "", "|images/misc/ken/#-hit-b-1a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, -160, 100, 0, 0, 0, 0, 0);
 
+    var hitReact_roll_throw = player.AddAnimation(POSE_FLAGS.ANY,"roll throw",0,["roll_throw"],0,false);
+    hitReact_roll_throw.isImplicit_ = true;
+    hitReact_roll_throw.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};
+    hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/x-hit-a-2.png", 8,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE});
+    hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/x-hit-b-2.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
+    for(var i = 0; i < 2; ++i)
+    {
+        hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/x-hit-air-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,-20,55);
+        hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/#-hit-b-2a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,60,0);
+        hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/x-hit-air-1.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,-25,0);
+        hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/x-hit-b-2.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,0,0);
+    }
+    hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/#-hit-a-1a.png", 4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,0,110);
+    hitReact_roll_throw.AddFrame(player,"","|images/misc/ken/#-hit-b-1a.png", 6,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,-160,50,0,0,0,0,0);
+
 
 
     var blockRelease = player.AddAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.ALLOW_BLOCK, "block", 0, ["block_relase"], -2, false);

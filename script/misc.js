@@ -56,7 +56,7 @@ var kensStage_ = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ke
 /*******************************************************************************************************************************/
 
 var announcer_ = CreateAnnouncer();
-var game_ = new Game();
+var game_ = CreateGame();
 
 var runGameLoop_ = (function(thisValue) { return function() { thisValue.RunGameLoop(); } })(game_);
 var runCharSelectLoop_ = (function(thisValue) { return function() { thisValue.RunCharSelectLoop(); } })(game_);
@@ -84,13 +84,13 @@ function StartQuickMatch()
 /*muhahahaha...*/
 function StartMayhem()
 {
-    var p1_ = Player.prototype.CreateRyu(u1_);
-    var p2_ = Player.prototype.CreateKen(u1_);
-    var p4_ = Player.prototype.CreateKen(u2_);
-    game_.StartMatch([p1_,p2_],[p4_], kensStage_);
+    //var p1_ = Player.prototype.CreateRyu(u1_);
+    var p2_ = Player.prototype.CreateRyu(u1_);
+    var p4_ = Player.prototype.CreateRyu(u2_);
+    game_.StartMatch([p2_],[p4_], kensStage_);
     game_.Pause();
-    debug_.T1TestAI(0);
-    debug_.T1TestAI(1);
+    //debug_.T1TestAI(0);
+    //debug_.T1TestAI(1);
 }
 
 /*Goes to the character selection screen*/
@@ -112,8 +112,8 @@ function Go()
 }
 function MaxOutEnergy()
 {
-    game_.match_.teamA_.Energybar.Change(1000);
-    game_.match_.teamB_.Energybar.Change(1000);
+    game_.GetMatch().teamA_.Energybar.Change(1000);
+    game_.GetMatch().teamB_.Energybar.Change(1000);
 }
 var debug_ = GetDebugInstance(game_);
 /*******************************************************************************************************************************/

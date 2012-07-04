@@ -16,418 +16,427 @@ var spnLag_ = window.document.getElementById("spnLag");
 var spnTargetFrames_ = window.document.getElementById("spnTargetFrames");
 var spnFrameTime_ = window.document.getElementById("spnFrameTime");
 
-/*Encapulates a new game*/
-var Game = function ()
-{
-    this.user1_ = null;
-    this.user2_ = null;
-    this.frame_ = 0;
-    this.keyboardState_ = {};
-    this.keyState_ = 0;
-    this.keyStates_ = [];
-    this.lastTime_ = this.GetCurrentTime();
-    this.speed_ = CONSTANTS.NORMAL_SPEED;
-    this.targetFPS_ = CONSTANTS.TARGET_FPS;
-    this.extraSpeed_ = 0;
-    this.fontSystem_ = new FontSystem();
-    this.text_ = this.fontSystem_.AddText("pnlText");
-    this.useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
-    this.state_ = 0;
-    this.isInitialized_ = false;
-}
 
-Game.prototype.IsGameOver = function()
+var CreateGame = function()
 {
-    return this.frame_ >= CONSTANTS.MAX_FRAME;
-}
+    var user1_ = null;
+    var user2_ = null;
+    var frame_ = 0;
+    var keyboardState_ = {};
+    var keyState_ = 0;
+    var keyStates_ = [];
+    var lastTime_ = 0;
+    var speed_ = CONSTANTS.NORMAL_SPEED;
+    var targetFPS_ = CONSTANTS.TARGET_FPS;
+    var extraSpeed_ = 0;
+    var fontSystem_ = CreateFontSystem();
+    var text_ = fontSystem_.AddText("pnlText");
+    var useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
+    var state_ = 0;
+    var isInitialized_ = false;
+    var managed_ = null;
+    var nextTimeout_ = 0;
+    var match_ = null;
 
-Game.prototype.AddManagedText = function(elementId,x,y,fontPath)
-{
-    return this.fontSystem_.AddText(elementId,"",x,y,0,fontPath);
-}
-
-Game.prototype.SetSpeed = function(value)
-{
-    this.speed_ = value;
-}
-Game.prototype.UseAlternateImageLoadingFunctions = function()
-{
-    return this.useAlternateImageLoadingFunctions_;
-}
-/*Resets the timer*/
-Game.prototype.ResetFrame = function()
-{
-    this.frame_ = 0;
-}
-/*returns the current frame*/
-Game.prototype.GetCurrentFrame = function ()
-{
-    return this.frame_;
-}
-/*Returns the current time in milliseconds*/
-Game.prototype.GetCurrentTime = function()
-{
-    if(!!Date.now)
-        return Date.now();
-    else
-        return (new Date() - new Date(0));
-}
-Game.prototype.HasState = function(flag)
-{
-    return (flag & this.state_) > 0
-}
-
-Game.prototype.AddState = function(flag)
-{
-    this.state_ |= flag;
-}
-
-Game.prototype.ToggleState = function(flag)
-{
-    this.state_ ^= flag;
-}
-
-Game.prototype.RemoveState = function(flag)
-{
-    this.state_ = (this.state_ | (flag)) ^ (flag);
-}
-
-
-Game.prototype.OnStageImagesLoaded = function()
-{
-    if(!!this.match_)
-        this.match_.stage_.Reset();
-}
-
-Game.prototype.ReleaseText = function()
-{
-    this.fontSystem_.Reset();
-    this.text_ = this.fontSystem_.AddText("pnlText","");
-}
-
-Game.prototype.ResetKeys = function()
-{
-    this.keyboardState_ = {};
-    if(!!this.managed_)
-        this.managed_.ResetKeys();
-}
-
-Game.prototype.Init = function()
-{
-    if(!this.isInitialized_)
+    /*Encapulates a new game*/
+    var Game = function ()
     {
-        var getKeyPressHandler = function(thisValue,isDown)
-        {
-            return function(e)
-            {
-                thisValue.HandleKeyPress(e,isDown);
-            }
-        }
+        lastTime_ = this.GetCurrentTime();
+    }
 
-        var resetKeys = function(thisValue)
-        {
-            return function(e)
-            {
-                thisValue.ResetKeys();
-            }
-        }
+    Game.prototype.GetMatch = function() { return match_; }
 
-        if(!!window.document.attachEvent)
-        {
-            window.document.attachEvent("onkeydown",getKeyPressHandler(this,true),true);
-            window.document.attachEvent("onkeyup",getKeyPressHandler(this,false),true);
-            /*window.attachEvent("onblur", resetKeys(this), true);*/
-            window.onblur = resetKeys(this);
-        }
+    Game.prototype.IsGameOver = function()
+    {
+        return frame_ >= CONSTANTS.MAX_FRAME;
+    }
+
+    Game.prototype.AddManagedText = function(elementId,x,y,fontPath)
+    {
+        return fontSystem_.AddText(elementId,"",x,y,0,fontPath);
+    }
+
+    Game.prototype.SetSpeed = function(value)
+    {
+        speed_ = value;
+    }
+
+    Game.prototype.GetSpeed = function() { return speed_; }
+    Game.prototype.GetCurrentFrame = function () { return frame_; }
+    Game.prototype.UseAlternateImageLoadingFunctions = function() { return useAlternateImageLoadingFunctions_; }
+
+    /*Resets the timer*/
+    Game.prototype.ResetFrame = function()
+    {
+        frame_ = 0;
+    }
+    /*returns the current frame*/
+    /*Returns the current time in milliseconds*/
+    Game.prototype.GetCurrentTime = function()
+    {
+        if(!!Date.now)
+            return Date.now();
         else
+            return (new Date() - new Date(0));
+    }
+    Game.prototype.HasState = function(flag)
+    {
+        return (flag & state_) > 0
+    }
+
+    Game.prototype.AddState = function(flag)
+    {
+        state_ |= flag;
+    }
+
+    Game.prototype.ToggleState = function(flag)
+    {
+        state_ ^= flag;
+    }
+
+    Game.prototype.RemoveState = function(flag)
+    {
+        state_ = (state_ | (flag)) ^ (flag);
+    }
+
+
+    Game.prototype.OnStageImagesLoaded = function()
+    {
+        if(!!match_)
+            match_.stage_.Reset();
+    }
+
+    Game.prototype.ReleaseText = function()
+    {
+        fontSystem_.Reset();
+        text_ = fontSystem_.AddText("pnlText","");
+    }
+
+    Game.prototype.ResetKeys = function()
+    {
+        keyboardState_ = {};
+        if(!!managed_)
+            managed_.ResetKeys();
+    }
+
+    Game.prototype.Init = function()
+    {
+        if(!isInitialized_)
         {
-            window.document.addEventListener("keydown",getKeyPressHandler(this,true),true);
-            window.document.addEventListener("keyup",getKeyPressHandler(this,false),true);
-            /*window.addEventListener("onblur", resetKeys(this), true);*/
-            window.onblur = resetKeys(this);
+            var getKeyPressHandler = function(thisValue,isDown)
+            {
+                return function(e)
+                {
+                    thisValue.HandleKeyPress(e,isDown);
+                }
+            }
+
+            var resetKeys = function(thisValue)
+            {
+                return function(e)
+                {
+                    thisValue.ResetKeys();
+                }
+            }
+
+            if(!!window.document.attachEvent)
+            {
+                window.document.attachEvent("onkeydown",getKeyPressHandler(this,true),true);
+                window.document.attachEvent("onkeyup",getKeyPressHandler(this,false),true);
+                /*window.attachEvent("onblur", resetKeys(this), true);*/
+                window.onblur = resetKeys(this);
+            }
+            else
+            {
+                window.document.addEventListener("keydown",getKeyPressHandler(this,true),true);
+                window.document.addEventListener("keyup",getKeyPressHandler(this,false),true);
+                /*window.addEventListener("onblur", resetKeys(this), true);*/
+                window.onblur = resetKeys(this);
+            }
+        }
+        isInitialized_ = true;
+
+    }
+
+    Game.prototype.PreloadTextImages = function()
+    {
+        if(!!isInitialized_)
+            return;
+        fontSystem_.Preload();
+    }
+
+    Game.prototype.InitDOM = function()
+    {
+        window.document.getElementById("pnlTeam1").style.display = "";
+        window.document.getElementById("pnlTeam2").style.display = "";
+        window.document.getElementById("bg0").style.display = "";
+        window.document.getElementById("bg1").style.display = "";
+    }
+
+    Game.prototype.ResetDOM = function()
+    {
+        window.document.getElementById("pnlTeam1").style.display = "none";
+        window.document.getElementById("pnlTeam2").style.display = "none";
+        window.document.getElementById("bg0").style.display = "none";
+        window.document.getElementById("bg1").style.display = "none";
+    }
+
+    Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
+    {
+        this.Break();
+        announcer_.Release();
+        if(!!match_)
+            match_.Release();
+        speed_ = CONSTANTS.NORMAL_SPEED;
+        var goodGuys = goodGuys;
+        var badGuys = badGuys;
+        var stage = stage;
+
+        if(!!charSelect_)
+        {
+            goodGuys = goodGuys || charSelect_.GetGoodGuys();
+            badGuys = badGuys || charSelect_.GetBadGuys();
+            stage = stage || charSelect_.GetStage();
+
+            charSelect_.Release();
+        }
+
+        match_ = new Match();
+        announcer_.SetMatch(match_);
+        this.Init();
+        this.InitDOM();
+        this.PreloadTextImages();
+
+        managed_ = match_;
+
+        match_.stage_.Set(stage);
+        match_.Start(goodGuys,badGuys);
+        isInitialized_ = true;
+        frame_ = 0;
+        this.RunGameLoop();
+    }
+
+    Game.prototype.StartCharSelect = function()
+    {
+        this.Break();
+        announcer_.Release();
+        speed_ = CONSTANTS.NORMAL_SPEED;
+        if(!!managed_)
+            managed_.Release();
+        if(!!match_)
+            match_.Release();
+        this.ResetDOM();
+        this.Init();
+        this.PreloadTextImages();
+        charSelect_ = new CharSelect(user1_,user2_);
+        charSelect_.Init(window.document.getElementById("pnlStage"));
+        managed_ = charSelect_;
+        /*center the screen*/
+        Stage.prototype.Center();
+        managed_.Resume();
+        isInitialized_ = true;
+        frame_ = 0;
+        this.RunCharSelectLoop();
+    }
+    /*Increases the game loop speed*/
+    Game.prototype.SpeedUp = function()
+    {
+        if(speed_ > CONSTANTS.MIN_DELAY)
+            speed_ -= CONSTANTS.SPEED_INCREMENT;
+    }
+    /*Decreases the game loop speed*/
+    Game.prototype.SlowDown = function()
+    {
+        if(speed_ < CONSTANTS.MAX_DELAY)
+            speed_ += CONSTANTS.SPEED_INCREMENT;
+    }
+    /*pauses the game*/
+    Game.prototype.Pause = function()
+    {
+        this.AddState(GAME_STATES.PAUSED);
+        this.AddState(GAME_STATES.STEP_FRAME);
+        window.document.getElementById("spnState").innerHTML = "State: Frame Step"
+        window.document.getElementById("spnState").className = "state paused"
+        if(!!managed_)
+            managed_.Pause();
+    }
+    /*resumes the game*/
+    Game.prototype.Resume = function()
+    {
+        this.RemoveState(GAME_STATES.PAUSED);
+        window.document.getElementById("spnState").innerHTML = "State: Running";
+        window.document.getElementById("spnState").className = "state running";
+        if(!!managed_)
+            managed_.Resume();
+    }
+    /*Returns true if the key is being released*/
+    Game.prototype.WasKeyPressed = function(key,keyCode,isDown)
+    {
+        return (keyCode == key && !!keyboardState_["_" + key] && !isDown)
+    }
+    /*Handle game wide key events, or pass the event on to the match*/
+    Game.prototype.HandleKeyPress = function(e,isDown)
+    {
+        var keyCode = e.which || e.keyCode;
+        /*Alert(keyCode);*/
+
+
+        if(this.WasKeyPressed(KEYS.O,keyCode,isDown))
+        {
+            this.Pause();
+        }
+        if(this.WasKeyPressed(KEYS.P,keyCode,isDown))
+        {
+            this.Resume();
+        }
+        if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
+        {
+            frame_ = CONSTANTS.MAX_FRAME + 1;
+            this.End();
+        }
+        if(this.WasKeyPressed(KEYS.EIGHT,keyCode,isDown))
+            this.SpeedUp();
+        if(this.WasKeyPressed(KEYS.NINE,keyCode,isDown))
+            this.SlowDown();
+
+        keyboardState_["_" + keyCode] = isDown;
+        if(!!managed_)
+            managed_.OnKeyStateChanged(isDown,keyCode,frame_);
+    }
+
+    Game.prototype.End = function()
+    {
+        this.ReleaseText();
+        this.ResetKeys();
+        managed_.Kill()
+        managed_ = null;
+        announcer_.Release();
+    }
+
+    Game.prototype.HandleInput = function()
+    {
+    }
+
+    Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
+    {
+        user1_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        return user1_;
+    }
+    Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
+    {
+        user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        return user2_;
+    }
+
+    /*Helper function*/
+    Game.prototype.GetGameLoopClosure = function(thisValue)
+    {
+        return function()
+        {
+            thisValue.RunGameLoop();
         }
     }
-    this.isInitialized_ = true;
 
-}
-
-Game.prototype.PreloadTextImages = function()
-{
-    if(!!this.isInitialized_)
-        return;
-    this.fontSystem_.Preload();
-}
-
-Game.prototype.InitDOM = function()
-{
-    window.document.getElementById("pnlTeam1").style.display = "";
-    window.document.getElementById("pnlTeam2").style.display = "";
-    window.document.getElementById("bg0").style.display = "";
-    window.document.getElementById("bg1").style.display = "";
-}
-
-Game.prototype.ResetDOM = function()
-{
-    window.document.getElementById("pnlTeam1").style.display = "none";
-    window.document.getElementById("pnlTeam2").style.display = "none";
-    window.document.getElementById("bg0").style.display = "none";
-    window.document.getElementById("bg1").style.display = "none";
-}
-
-Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
-{
-    this.Break();
-    announcer_.Release();
-    if(!!this.match_)
-        this.match_.Release();
-    this.speed_ = CONSTANTS.NORMAL_SPEED;
-    var goodGuys = goodGuys;
-    var badGuys = badGuys;
-    var stage = stage;
-
-    if(!!this.charSelect_)
+    /*Helper function*/
+    Game.prototype.GetCharSelectLoopClosure = function(thisValue)
     {
-        goodGuys = goodGuys || this.charSelect_.GetGoodGuys();
-        badGuys = badGuys || this.charSelect_.GetBadGuys();
-        stage = stage || this.charSelect_.GetStage();
-
-        this.charSelect_.Release();
+        return function()
+        {
+            thisValue.RunCharSelectLoop();
+        }
     }
 
-    this.match_ = new Match();
-    announcer_.SetMatch(this.match_);
-    this.Init();
-    this.InitDOM();
-    this.PreloadTextImages();
-
-    this.managed_ = this.match_;
-
-    this.match_.stage_.Set(stage);
-    this.match_.Start(goodGuys,badGuys);
-    this.isInitialized_ = true;
-    this.frame_ = 0;
-    this.RunGameLoop();
-}
-
-Game.prototype.StartCharSelect = function()
-{
-    this.Break();
-    announcer_.Release();
-    this.speed_ = CONSTANTS.NORMAL_SPEED;
-    if(!!this.managed_)
-        this.managed_.Release();
-    if(!!this.match_)
-        this.match_.Release();
-    this.ResetDOM();
-    this.Init();
-    this.PreloadTextImages();
-    this.charSelect_ = new CharSelect(this.user1_,this.user2_);
-    this.charSelect_.Init(window.document.getElementById("pnlStage"));
-    this.managed_ = this.charSelect_;
-    /*center the screen*/
-    Stage.prototype.Center();
-    this.managed_.Resume();
-    this.isInitialized_ = true;
-    this.frame_ = 0;
-    this.RunCharSelectLoop();
-}
-/*Increases the game loop speed*/
-Game.prototype.SpeedUp = function()
-{
-    if(this.speed_ > CONSTANTS.MIN_DELAY)
-        this.speed_ -= CONSTANTS.SPEED_INCREMENT;
-}
-/*Decreases the game loop speed*/
-Game.prototype.SlowDown = function()
-{
-    if(this.speed_ < CONSTANTS.MAX_DELAY)
-        this.speed_ += CONSTANTS.SPEED_INCREMENT;
-}
-/*pauses the game*/
-Game.prototype.Pause = function()
-{
-    this.AddState(GAME_STATES.PAUSED);
-    this.AddState(GAME_STATES.STEP_FRAME);
-    window.document.getElementById("spnState").innerHTML = "State: Frame Step"
-    window.document.getElementById("spnState").className = "state paused"
-    if(!!this.managed_)
-        this.managed_.Pause();
-}
-/*resumes the game*/
-Game.prototype.Resume = function()
-{
-    this.RemoveState(GAME_STATES.PAUSED);
-    window.document.getElementById("spnState").innerHTML = "State: Running";
-    window.document.getElementById("spnState").className = "state running";
-    if(!!this.managed_)
-        this.managed_.Resume();
-}
-/*Returns true if the key is being released*/
-Game.prototype.WasKeyPressed = function(key,keyCode,isDown)
-{
-    return (keyCode == key && !!this.keyboardState_["_" + key] && !isDown)
-}
-/*Handle game wide key events, or pass the event on to the match*/
-Game.prototype.HandleKeyPress = function(e,isDown)
-{
-    var keyCode = e.which || e.keyCode;
-    /*Alert(keyCode);*/
-
-
-    if(this.WasKeyPressed(KEYS.O,keyCode,isDown))
+    /*Shows the frame rate on screen*/
+    Game.prototype.ShowFPS = function()
     {
-        this.Pause();
-    }
-    if(this.WasKeyPressed(KEYS.P,keyCode,isDown))
-    {
-        this.Resume();
-    }
-    if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
-    {
-        this.frame_ = CONSTANTS.MAX_FRAME + 1;
-        this.End();
-    }
-    if(this.WasKeyPressed(KEYS.EIGHT,keyCode,isDown))
-        this.SpeedUp();
-    if(this.WasKeyPressed(KEYS.NINE,keyCode,isDown))
-        this.SlowDown();
+        if(frame_ % targetFPS_ == 0)
+        {
+            var now = this.GetCurrentTime();
+            var elapsed = now - lastTime_;
+            lastTime_ = now;
 
-    this.keyboardState_["_" + keyCode] = isDown;
-    if(!!this.managed_)
-        this.managed_.OnKeyStateChanged(isDown,keyCode,this.frame_);
-}
-
-Game.prototype.End = function()
-{
-    this.ReleaseText();
-    this.ResetKeys();
-    this.managed_.Kill()
-    this.managed_ = null;
-    announcer_.Release();
-}
-
-Game.prototype.HandleInput = function()
-{
-}
-
-Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
-{
-    this.user1_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
-    return this.user1_;
-}
-Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
-{
-    this.user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
-    return this.user2_;
-}
-
-/*Helper function*/
-Game.prototype.GetGameLoopClosure = function(thisValue)
-{
-    return function()
-    {
-        thisValue.RunGameLoop();
-    }
-}
-
-/*Helper function*/
-Game.prototype.GetCharSelectLoopClosure = function(thisValue)
-{
-    return function()
-    {
-        thisValue.RunCharSelectLoop();
-    }
-}
-
-/*Shows the frame rate on screen*/
-Game.prototype.ShowFPS = function()
-{
-    if(this.frame_ % this.targetFPS_ == 0)
-    {
-        var now = this.GetCurrentTime();
-        var elapsed = now - this.lastTime_;
-        this.lastTime_ = now;
-
-        var fps = Math.floor(CONSTANTS.FPS_VALUE / elapsed);
-        spnFPS_.innerHTML = fps;
-    }
-}
-
-Game.prototype.Break = function()
-{
-    window.clearTimeout(this.nextTimeout_);
-}
-
-/*Basic game loop*/
-Game.prototype.RunGameLoop = function()
-{
-    this.HandleInput();
-    if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
-    {
-        this.RemoveState(GAME_STATES.STEP_FRAME);
-        ++this.frame_;
-        //this.match_.PreFrameMove(this.frame_);
-        this.match_.FrameMove(this.frame_, this.keyboardState_);
-        announcer_.FrameMove(this.frame_);
-        soundManager_.FrameMove(this.frame_);
-        if(!this.match_.isSuperMoveActive_)
-            this.fontSystem_.FrameMove(this.frame_);
-
-        this.match_.Render(this.frame_);
-        if(!this.match_.isSuperMoveActive_)
-            this.fontSystem_.Render(this.frame_);
-        announcer_.Render(this.frame_);
-        soundManager_.Render(this.frame_);
-
-        this.match_.RenderComplete(this.frame_);
-        this.ShowFPS();
+            var fps = Math.floor(CONSTANTS.FPS_VALUE / elapsed);
+            spnFPS_.innerHTML = fps;
+        }
     }
 
-    if(!this.match_.IsMatchOver(this.frame_))
+    Game.prototype.Break = function()
     {
-        //this.nextTimeout_ = window.requestAnimFrame(runGameLoop_,this.speed_);
-        this.nextTimeout_ = window.setTimeout(runGameLoop_,this.speed_);
+        window.clearTimeout(nextTimeout_);
     }
-    else
-    {
-        this.match_.HandleMatchOver(this.frame_);
-    }
-}
 
-Game.prototype.RunCharSelectLoop = function()
-{
-    if(!!this.charSelect_ && this.charSelect_.delayAfterSelect_ < CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+    /*Basic game loop*/
+    Game.prototype.RunGameLoop = function()
     {
         this.HandleInput();
         if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
         {
             this.RemoveState(GAME_STATES.STEP_FRAME);
-            ++this.frame_;
-            this.charSelect_.FrameMove(this.frame_);
-            soundManager_.FrameMove(this.frame_);
+            ++frame_;
+            //match_.PreFrameMove(frame_);
+            match_.FrameMove(frame_, keyboardState_);
+            announcer_.FrameMove(frame_);
+            soundManager_.FrameMove(frame_);
+            if(!match_.isSuperMoveActive_)
+                fontSystem_.FrameMove(frame_);
 
-            if(!!this.charSelect_.isDone_ && this.charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
-            {
-                this.managed_ = null;
-                this.StartMatch();
-            }
-            this.charSelect_.Render(this.frame_);
-            soundManager_.Render(this.frame_);
+            match_.Render(frame_);
+            if(!match_.isSuperMoveActive_)
+                fontSystem_.Render(frame_);
+            announcer_.Render(frame_);
+            soundManager_.Render(frame_);
+
+            match_.RenderComplete(frame_);
             this.ShowFPS();
         }
 
-        if(!this.IsGameOver())
+        if(!match_.IsMatchOver(frame_))
         {
-            //this.nextTimeout_ = window.requestAnimFrame(runCharSelectLoop_,this.speed_);
-            this.nextTimeout_ = window.setTimeout(runCharSelectLoop_,this.speed_);
+            //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
+            nextTimeout_ = window.setTimeout(runGameLoop_,speed_);
         }
         else
         {
-            Alert("user aborted.");
+            match_.HandleMatchOver(frame_);
         }
     }
-}
 
+    Game.prototype.RunCharSelectLoop = function()
+    {
+        if(!!charSelect_ && charSelect_.delayAfterSelect_ < CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+        {
+            this.HandleInput();
+            if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
+            {
+                this.RemoveState(GAME_STATES.STEP_FRAME);
+                ++frame_;
+                charSelect_.FrameMove(frame_);
+                soundManager_.FrameMove(frame_);
+
+                if(!!charSelect_.isDone_ && charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+                {
+                    managed_ = null;
+                    this.StartMatch();
+                }
+                charSelect_.Render(frame_);
+                soundManager_.Render(frame_);
+                this.ShowFPS();
+            }
+
+            if(!this.IsGameOver())
+            {
+                //nextTimeout_ = window.requestAnimFrame(runCharSelectLoop_,speed_);
+                nextTimeout_ = window.setTimeout(runCharSelectLoop_,speed_);
+            }
+            else
+            {
+                Alert("user aborted.");
+            }
+        }
+    }
+
+    return new Game();
+}
 function Alert(text)
 {
     /*if(!!console && !!console.log)

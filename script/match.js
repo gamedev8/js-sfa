@@ -24,6 +24,7 @@ var Match = function()
     this.allowInput_ = false;
     this.PreloadSounds();
 }
+Match.prototype.GetStage = function() { return this.stage_; }
 Match.prototype.ResetKeys = function()
 {
     for(var i = 0; i < this.teamA_.Players.length; ++i)
@@ -108,7 +109,7 @@ Match.prototype.GetEnergy = function(team)
 /*Gets the current frame*/
 Match.prototype.GetCurrentFrame = function()
 {
-    return this.GetGame().frame_;
+    return this.GetGame().GetCurrentFrame();
 }
 /*A team has just been defeated*/
 Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
@@ -117,7 +118,7 @@ Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
     this.ReleaseAllInput();
 
     this.allowInput_ = false;
-    var frame = this.GetGame().frame_;
+    var frame = this.GetGame().GetCurrentFrame();
     this.GetGame().SetSpeed(CONSTANTS.SLOW_SPEED);
     this.defeatedTeam_ = team;
     switch(this.defeatedTeam_)
@@ -148,7 +149,7 @@ Match.prototype.DeadAnimationComplete = function(player,frame)
     if(!this.isRoundOver_)
     {
         this.isRoundOver_ = true;
-        this.GetGame().speed_ = CONSTANTS.NORMAL_SPEED;
+        this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
         this.gotoNewRoundFrame_ = frame;
 
         announcer_.EndRound();
@@ -171,7 +172,7 @@ Match.prototype.Reset = function()
     {
         this.allowInput_ = false;
         ++this.round_;
-        this.GetGame().speed_ = CONSTANTS.NORMAL_SPEED;
+        this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
         this.gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
         this.teamA_.Cursor = 0;
         this.teamB_.Cursor = 0;

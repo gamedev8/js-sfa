@@ -215,6 +215,25 @@ Player.prototype.CreateRyu = function(user)
     hitReact_eject.AddFrame(player,"","|images/misc/ryu/x-hit-air-1.png", CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
     hitReact_eject.Chain(hitReact_bounce);
 
+
+    var hitReact_shoulder_throw = player.AddAnimation(POSE_FLAGS.ANY, "shoulder throw", 0, ["shoulder_throw"], 0, false);
+    hitReact_shoulder_throw.isImplicit_ = true;
+    hitReact_shoulder_throw.flags_ = { Player: PLAYER_FLAGS.HOLD_ZINDEX };
+    hitReact_shoulder_throw.AddFrame(player, "", "|images/misc/ryu/x-hit-slf-0.png", 8, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, { Player: PLAYER_FLAGS.MOBILE });
+    hitReact_shoulder_throw.AddFrame(player, "", "|images/misc/ryu/x-hit-sln-0.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, 0, 0, 0, 0, 0, -20, 20);
+    hitReact_shoulder_throw.AddFrame(player, "", "|images/misc/ryu/#-hit-shf-1a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABL }, MISC_FLAGS.NONE, 0, 0, 0, 0, 0, -60, 180);
+    hitReact_shoulder_throw.AddFrame(player, "", "|images/misc/ryu/#-hit-smn-0a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, 0, 0, 0, 0, 0, 80, 150);
+    hitReact_shoulder_throw.AddFrame(player, "", "|images/misc/ryu/#-hit-shn-1a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, -100, 100, 0, 0, 0, 0, 0);
+
+
+    var hitReact_fk_throw = player.AddAnimation(POSE_FLAGS.ANY, "flip kick throw", 0, ["fk_throw"], 0, false);
+    hitReact_fk_throw.isImplicit_ = true;
+    hitReact_fk_throw.flags_ = { Player: PLAYER_FLAGS.HOLD_ZINDEX };
+    hitReact_fk_throw.AddFrame(player, "", "|images/misc/ryu/x-hit-slf-0.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, { Player: PLAYER_FLAGS.MOBILE });
+    hitReact_fk_throw.AddFrame(player, "", "|images/misc/ryu/x-hit-sln-0.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, { Player: PLAYER_FLAGS.MOBILE }, 0, 0, 0, 0, 0, -40, 0);
+    hitReact_fk_throw.AddFrame(player, "", "|images/misc/ryu/#-hit-shf-1a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, 0, 0, 0, 0, 0, 0, 105);
+    hitReact_fk_throw.AddFrame(player, "", "|images/misc/ryu/#-hit-shn-1a.png", 4, { Player: PLAYER_FLAGS.SUPER_INVULNERABLE }, MISC_FLAGS.NONE, -160, 100, 0, 0, 0, 0, 0);
+
     var hitReact_roll_throw = player.AddAnimation(POSE_FLAGS.ANY,"roll throw",0,["roll_throw"],0,false);
     hitReact_roll_throw.isImplicit_ = true;
     hitReact_roll_throw.flags_ = {Player:PLAYER_FLAGS.HOLD_ZINDEX};

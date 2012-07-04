@@ -10,63 +10,63 @@
 
     Debug.prototype.P1 = function()
     {
-        if(!!game_.match_)
-            return game_.match_.teamA_.Players[0];
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamA_.Players[0];
         return null;
     }
 
     Debug.prototype.P2 = function()
     {
-        if(!!game_.match_)
-            return game_.match_.teamB_.Players[0];
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamB_.Players[0];
         return null;
     }
 
     Debug.prototype.T1 = function(index)
     {
-        if(!!game_.match_)
-            return game_.match_.teamA_.Players[index || 0];
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamA_.Players[index || 0];
         return null;
     }
 
     Debug.prototype.T2 = function(index)
     {
-        if(!!game_.match_)
-            return game_.match_.teamB_.Players[index || 0];
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamB_.Players[index || 0];
         return null;
     }
 
     Debug.prototype.P1SendInput = function(input)
     {
-        if(!!game_.match_)
-            return game_.match_.teamA_.Players[0].SendInput(input);
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamA_.Players[0].SendInput(input);
         return null;
     }
 
     Debug.prototype.P1ClearInput = function()
     {
-        if(!!game_.match_)
-            return game_.match_.teamA_.Players[0].ClearInput();
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamA_.Players[0].ClearInput();
         return null;
     }
 
     Debug.prototype.P2SendInput = function(input)
     {
-        if(!!game_.match_)
-            return game_.match_.teamB_.Players[0].SendInput(input);
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamB_.Players[0].SendInput(input);
         return null;
     }
 
     Debug.prototype.P2ClearInput = function()
     {
-        if(!!game_.match_)
-            return game_.match_.teamB_.Players[0].ClearInput();
+        if(!!game_.GetMatch())
+            return game_.GetMatch().teamB_.Players[0].ClearInput();
         return null;
     }
 
     Debug.prototype.P1TestAI = function()
     {
-        if(!!game_.match_)
+        if(!!game_.GetMatch())
         {
             this.P1().SetAI(CreateSimpleRyuAI);
         }
@@ -75,7 +75,7 @@
 
     Debug.prototype.P2TestAI = function()
     {
-        if(!!game_.match_)
+        if(!!game_.GetMatch())
         {
             this.P2().SetAI(CreateSimpleRyuAI);
         }
@@ -85,7 +85,7 @@
  
     Debug.prototype.T1TestAI = function(index)
     {
-        if(!!game_.match_)
+        if(!!game_.GetMatch())
         {
             this.T1(index || 0).SetAI(CreateSimpleRyuAI);
         }
@@ -94,7 +94,7 @@
  
     Debug.prototype.T2TestAI = function(index)
     {
-        if(!!game_.match_)
+        if(!!game_.GetMatch())
         {
             this.T2(index || 0).SetAI(CreateSimpleRyuAI);
         }

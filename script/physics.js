@@ -4,8 +4,8 @@
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
 
-    var GetMatch_ = function() { return game_.match_; }
-    var GetStage_ = function() { return GetMatch_().stage_; }
+    var GetMatch_ = function() { return game_.GetMatch(); }
+    var GetStage_ = function() { return GetMatch_().GetStage(); }
 
     var HasIntersection_ = function(a, b)
     {
