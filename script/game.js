@@ -37,6 +37,7 @@ var CreateGame = function()
     var managed_ = null;
     var nextTimeout_ = 0;
     var match_ = null;
+    var charSelect_ = null;
 
     /*Encapulates a new game*/
     var Game = function ()
