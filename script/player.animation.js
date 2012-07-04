@@ -485,7 +485,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
         this.canInterrupt_ = false;
         this.ClearVxFn();
         this.ClearVyFn();
-        this.currentAnimation_.ID = _c3(this.id_,this.currentAnimation_.Animation.baseAnimation_.name_,this.GetGame().frame_);
+        this.currentAnimation_.ID = _c3(this.id_,this.currentAnimation_.Animation.baseAnimation_.name_,this.GetGame().GetCurrentFrame());
         this.currentAnimation_.FrameIndex = 0;
         this.ignoreHoldFrame_ = false;
         this.ignoreCollisionsWith_ = "";
@@ -647,7 +647,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 
 Player.prototype.InitSprite = function()
 {
-    this.spriteElement_.style.backgroundImage = "url('images/misc/" + this.name_ + "/sprites.png')";
+    this.spriteElement_.style.backgroundImage = "url('images/misc/" + this.name_.toLowerCase() + "/sprites.png')";
 }
 
 Player.prototype.SetSprite = function()
