@@ -536,7 +536,7 @@ Player.prototype.ForceLose = function(attackDirection)
 
     this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
     this.KnockDownDefeat(frame,attackDirection);
-    this.QueueSound("audio/" + this.name_ + "/dead.zzz");
+    this.QueueSound("audio/" + this.name_.toLowerCase() + "/dead.zzz");
     this.ClearInput();
 }
 /*Player gets is defeated*/
@@ -596,7 +596,7 @@ Player.prototype.Drop = function()
         this.isBeingThrown_ = false;
         //attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(-this.direction_);
-        this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().frame_,Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});
+        this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});
         this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
         this.PerformJump(direction * move.vx_ * 0,move.vy_ * 0);
     }

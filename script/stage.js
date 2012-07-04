@@ -19,7 +19,7 @@
 }
 
 Stage.prototype.GetGame = function() { return game_; }
-Stage.prototype.GetMatch = function() { return this.GetGame().match_; }
+Stage.prototype.GetMatch = function() { return this.GetGame().GetMatch(); }
 Stage.prototype.GetPhysics = function() { return this.GetMatch().physics_; }
 
 Stage.prototype.Set = function(params)
@@ -32,7 +32,7 @@ Stage.prototype.Set = function(params)
     this.maxLeftScroll_  = params.maxLeftScroll_; 
     this.maxRightScroll_ = params.maxRightScroll_;
 
-    this.music_ = "audio/" + params.name_ + "/theme.zzz";
+    this.music_ = "audio/" + params.name_.toLowerCase() + "/theme.zzz";
     soundManager_.Load(this.music_);
     this.fadeOutMusic_ = 0;
 }
@@ -155,7 +155,7 @@ Stage.prototype.ClampY = function(y,delta)
 /**/
 Stage.prototype.FixX = function(amount)
 {
-    var stageMovedX = game_.match_.deltaX_;
+    var stageMovedX = game_.GetMatch().deltaX_;
     if(!!stageMovedX)
     {
         /*ensure the directions are the opposite*/
