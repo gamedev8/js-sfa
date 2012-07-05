@@ -1,16 +1,26 @@
-﻿var CreateSoundManager = function()
+var CreateSoundManager = function()
 {
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
    var items_ = {};
-   var fragment_ = {};
    var sounds_ = [];
-   var extension_ = ".ogg";
+   var extension_ = ".wav";
+   var id_ = 0;
 
     var GetPath_ = function(path)
     {
         return path.replace(".zzz",extension_);
+    }
+
+    var GetElement_ = function(id)
+    {
+        return window.document.getElementById(id);
+    }
+
+    var GetCurrentElement_ = function(path)
+    {
+        return GetElement_(items_[path].Elements[items_[path].CurrentChannel]);
     }
 
 
@@ -34,10 +44,16 @@
                 items_[path] = {Channels:nbChannels,CurrentChannel:0,Elements:[],DefaultVolume:defaultVolume || 1};
                 for(var i = 0; i < nbChannels; ++i)
                 {
-                    items_[path].Elements[i] = new Audio();
-                    items_[path].Elements[i].type = "audio/mpeg";
-                    items_[path].Elements[i].src = GetPath_(path);
-                    items_[path].Elements[i].load();
+                    var el = new Audio();
+                    var id = "sound" + id_;
+                    items_[path].Elements[i] = id;
+                    el.type = "audio/mpeg";
+                    el.src = GetPath_(path) + "?qaz=" + id;
+                    el.load();
+                    el.id = id;
+                    window.document.body.appendChild(el);
+
+                    ++id_;
                 }
 
             }
@@ -54,7 +70,7 @@
         if(!!items_[path])
         {
             for(var i = 0; i < items_[path].Channels; ++i)
-                items_[path].Elements[i].pause();
+                GetElement_(items_[path].Elements[i]).pause();
             items_[path] = null;
             //window.document.removeChild(items_[path]);
         }
@@ -66,7 +82,7 @@
         if(!!items_[path])
         {
             for(var i = 0; i < items_[path].Channels; ++i)
-                items_[path].Elements[i].volume = value;
+                GetElement_(items_[path].Elements[i]).volume = value;
         }
     }
 
@@ -75,7 +91,7 @@
     {
         if(!!items_[path])
         {
-            return items_[path].Elements[items_[path].CurrentChannel].volume;
+            return GetCurrentElement_(path).volume;
         }
         return 0;
     }
@@ -85,7 +101,7 @@
     {
         if(!!items_[path])
         {
-            return !items_[path].Elements[items_[path].CurrentChannel].paused;
+            return !GetCurrentElement_(path).paused;
         }
         return 0;
     }
@@ -96,9 +112,10 @@
     {
         if(!!items_[path])
         {
-            if(!!items_[path].Elements[items_[path].CurrentChannel].duration)
-                items_[path].Elements[items_[path].CurrentChannel].currentTime = 0;
-            items_[path].Elements[items_[path].CurrentChannel].volume = items_[path].DefaultVolume;
+            var el = GetCurrentElement_(path);
+            if(!!el.duration)
+                el.currentTime = 0;
+            el.volume = items_[path].DefaultVolume;
         }
     }
 
@@ -112,7 +129,7 @@
                 items_[path].CurrentChannel = 0;
 
             /*start playing from the time = 0*/
-            var el = items_[path].Elements[items_[path].CurrentChannel];
+            var el = GetCurrentElement_(path);
             if(!!el.duration) el.currentTime = 0;
             if(!!loops) el.loop = true;
 
@@ -139,8 +156,14 @@
             if(++items_[path].CurrentChannel >= items_[path].Channels)
                 items_[path].CurrentChannel = 0;
             /*start playing from time 0*/
-            var el = items_[path].Elements[items_[path].CurrentChannel];
-            if(!!el.duration) el.currentTime = 0;
+            var el = GetCurrentElement_(path);
+            if(!!el.currentTime)
+            {
+                el.currentTime = 0;
+                if(!!el.currentTime)
+                    el.load();
+            }
+
             el.loop = !!loops;
 
             el.volume = obj.Volume;
@@ -162,10 +185,11 @@
     {
         if(!!items_[path])
         {
-            items_[path].Elements[items_[path].CurrentChannel].pause();
-            items_[path].Elements[items_[path].CurrentChannel].currentTime = 0;
-            items_[path].Elements[items_[path].CurrentChannel].volume = items_[path].DefaultVolume;
-            items_[path].Elements[items_[path].CurrentChannel].play();
+            var el = GetCurrentElement_(path);
+            el.pause();
+            el.currentTime = 0;
+            el.volume = items_[path].DefaultVolume;
+            el.play();
         }
     }
 
@@ -175,7 +199,7 @@
     {
         if(!!items_[path])
         {
-            items_[path].Elements[items_[path].CurrentChannel].pause();
+            GetCurrentElement_(path).pause();
         }
     }
 
@@ -184,7 +208,7 @@
     {
         if(!!items_[path])
         {
-            var el = items_[path].Elements[items_[path].CurrentChannel];
+            var el = GetCurrentElement_(path);
             if(!!el.paused)
                 el.play();
         }
@@ -194,7 +218,7 @@
     {
         if(!!items_[path])
         {
-            var el = items_[path].Elements[items_[path].CurrentChannel];
+            var el = GetCurrentElement_(path);
             if(!!el.paused)
             {
                 el.loop = !!loops;
