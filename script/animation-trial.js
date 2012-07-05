@@ -1,4 +1,4 @@
-﻿var AnimationTrail = function(animations,zIndex,delay)
+var AnimationTrail = function(animations,zIndex,delay)
 {
     this.FollowElement = null;
     this.Trail = [];
@@ -169,7 +169,8 @@ AnimationTrail.prototype.Render = function(frame,stageDiffX,stageDiffY)
                         if(currentItem.Element.children[0].style.backgroundPositionX != spriteLookup_.GetLeft(frameToRender.RightSrc)
                             || currentItem.Element.children[0].style.backgroundPositionX != spriteLookup_.GetLeft(frameToRender.LeftSrc))
                         {
-                            currentItem.Element.children[0].style.backgroundImage = "url(" + data.Sprite + ")";
+                            if(!currentItem.Element.children[0].style.backgroundImage)
+                                currentItem.Element.children[0].style.backgroundImage = "url(" + data.Sprite + ")";
                             currentItem.Element.children[0].style.backgroundPosition = data.Left + " " + data.Bottom;
                             currentItem.Element.children[0].style.width = data.Width;
                             currentItem.Element.children[0].style.height = data.Height;

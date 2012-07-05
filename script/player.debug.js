@@ -1,4 +1,4 @@
-﻿/*Renders debug info*/
+/*Renders debug info*/
 Player.prototype.RenderDebugInfo = function()
 {
     /*
@@ -139,6 +139,7 @@ Player.prototype.DebugShowDirsHelper = function(bit)
 
 Player.prototype.DebugShowKeys = function()
 {
+    return;
     var output = "";
     var tmp = "";
     for(var i = 0, length = this.keyStates_.length; i < length; ++i)
