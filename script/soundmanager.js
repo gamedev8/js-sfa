@@ -5,7 +5,7 @@
     /*******************************************************/
    var items_ = {};
    var sounds_ = [];
-   var extension_ = ".wav";
+   var extension_ = ".ogg";
    var id_ = 0;
 
     var GetPath_ = function(path)
@@ -47,7 +47,7 @@
                     var el = new Audio();
                     var id = "sound" + id_;
                     items_[path].Elements[i] = id;
-                    el.type = "audio/mpeg";
+                    //el.type = "application/ogg";
                     el.src = GetPath_(path) + "?qaz=" + id;
                     el.load();
                     el.id = id;
@@ -158,11 +158,7 @@
             /*start playing from time 0*/
             var el = GetCurrentElement_(path);
             if(!!el.currentTime)
-            {
                 el.currentTime = 0;
-                if(!!el.currentTime)
-                    el.load();
-            }
 
             el.loop = !!loops;
 
