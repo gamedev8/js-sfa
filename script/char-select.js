@@ -427,7 +427,7 @@ CharSelect.prototype.Pause = function()
 /**/
 CharSelect.prototype.Resume = function()
 {
-    //this.PlayMusic();
+    this.PlayMusic();
 }
 
 CharSelect.prototype.GetRow = function(user)
