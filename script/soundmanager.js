@@ -257,8 +257,8 @@ var CreateSoundManager = function()
 }
 var soundManager_ = CreateSoundManager();
 soundManager_.Preload();
-=======
-﻿var CreateSoundManager = function()
+
+var CreateSoundManager = function()
 {
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
@@ -517,4 +517,4 @@ soundManager_.Preload();
 }
 var soundManager_ = CreateSoundManager();
 soundManager_.Preload();
->>>>>>> eb46f54b5281235ecca84652f0aaaece5800efe7
+
