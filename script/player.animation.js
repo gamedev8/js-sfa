@@ -189,6 +189,11 @@ Player.prototype.FindAnimation = function(value,frame)
 
                 return move;
             }
+            else
+            {
+                if(!!move.grappleDistance_)
+                    continue;
+            }
 
             if(cmpValue == 0)
                 continue;
@@ -464,11 +469,17 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
     this.currentAnimation_ = newAnimation;
     if(!!newAnimation && !!newAnimation.Animation)
     {
-        this.GetMatch().OnSuperMoveCompleted(this);
+        if(this.IsExecutingSuperMove())
+        {
+            this.GetMatch().OnSuperMoveCompleted(this);
+            this.SetExecutingSuperMove(false);
+        }
         if(!!newAnimation.Animation.isSuperMove_)
         {
+            this.SetZOrder(20);
             this.GetMatch().OnSuperMoveStarted(this);
             this.QueueSuperMoveChargeSound();
+            this.SetExecutingSuperMove(true);
         }
 
         /*must start a move on the ground to hold airborne*/
@@ -576,7 +587,10 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             ++this.currentAnimation_.FrameIndex;
 
         if(!!(newFrame.FlagsToClear.Combat & COMBAT_FLAGS.SUPER_MOVE_PAUSE))
+        {
             this.GetMatch().OnSuperMoveCompleted(this);
+            this.SetExecutingSuperMove(false);
+        }
         /*if the new frame spawns a projectile, handle that here*/
         if(!this.flags_.Combat.Has(COMBAT_FLAGS.PROJECTILE_ACTIVE) && !!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.SPAWN_PROJECTILE))
             this.projectiles_[newFrame.chainProjectile_].Throw(frame,stageX,stageY);

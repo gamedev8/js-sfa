@@ -1,4 +1,4 @@
-/*Renders debug info*/
+﻿/*Renders debug info*/
 Player.prototype.RenderDebugInfo = function()
 {
     /*

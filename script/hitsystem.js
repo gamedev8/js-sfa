@@ -1,6 +1,6 @@
 ﻿
 
-var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
+var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,isGrapple,hitX,hitY,attackDirection,who,hitID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
 {
     this.BehaviorFlags = behaviorFlags;
     this.HitState = hitState;
@@ -10,6 +10,7 @@ var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,ene
     this.Damage = damage;
     this.EnergyToAdd = energyToAdd;
     this.IsProjectile = isProjectile;
+    this.IsGrapple = isGrapple;
     this.HitX = hitX;
     this.HitY = hitY;
     this.Who = who;
@@ -38,7 +39,7 @@ MoveOverrideFlags.prototype.HasAllowOverrideFlag = function(flag) { return !!fla
 MoveOverrideFlags.prototype.HasOverrideFlag = function(flag) { return !!flag && !!(this.OverrideFlags & flag); }
 
 
-var ActionDetails = function(overrideFlags,player,otherID,isProjectile,startFrame,frame,otherPlayer)
+var ActionDetails = function(overrideFlags,player,otherID,isProjectile,isGrapple,startFrame,frame,otherPlayer)
 {
     this.MoveOverrideFlags = overrideFlags;
     this.Frame = frame || 0;
@@ -46,6 +47,7 @@ var ActionDetails = function(overrideFlags,player,otherID,isProjectile,startFram
 
     this.Key = this.GetKey(player.id_,otherID);
     this.IsProjectile = isProjectile;
+    this.IsGrapple = isGrapple;
     this.Player = player;
     this.OtherPlayer = otherPlayer;
     this.PlayerID = player.id_;
@@ -84,9 +86,15 @@ ActionSystem.prototype.CanOverride = function(key,index)
         var b = first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
         var c = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags);
         var d = first.IsProjectile;
+        var e = !!second && second.IsGrapple;
+        var f = first.IsGrapple;
         var ignore = first.Player.flags_.Player.Has(PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE);
 
-        retVal = !ignore && (a || b || (c && first.Player.isInAttackFrame_) || d);
+        retVal = !!ignore && (a || b || (c && first.Player.isInAttackFrame_) || d);
+        if(!!e)
+            return false;
+        if(!!f)
+            return false;
     }
     return retVal;
 }
@@ -177,9 +185,11 @@ ActionSystem.prototype.Test = function(key,index)
     {
         return false;
     }
-    return second.MoveOverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
+    return (second.MoveOverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
         || first.MoveOverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
         || second.MoveOverrideFlags.HasOverrideFlag(first.MoveOverrideFlags.AllowOverrideFlags)
         || first.IsProjectile
+        || first.IsGrapple)
+        && !second.IsGrapple
         ;
 }

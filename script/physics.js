@@ -159,6 +159,8 @@
     /*Test each player to see if the hit region intersects with them*/
     Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound)
     {
+        if(p2.IsGrappled() && !(attackFlags & ATTACK_FLAGS.THROW_EJECT))
+            return;
         if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
             return;
         /*need to reform the "invulernable" flags - there are too many*/
@@ -168,7 +170,7 @@
         if(p2.lastHitFrame_[p1.id_] == p1.GetHitFrameID(hitID))
             return;
         /*if the attack is a throw, it can not grab more than one player*/
-        if(!!p1.grappledPlayerId_ && (p1.grappledPlayerId_ != p2.id_))
+        if(p1.IsGrappling() && !p1.IsGrappling(p2.id_))
             return;
         if(p2.IsAirborne() && !!(attackFlags & ATTACK_FLAGS.CAN_AIR_JUGGLE))
         {

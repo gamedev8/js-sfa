@@ -1,4 +1,4 @@
-var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat"];
+﻿var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat"];
 
 var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
 {

@@ -24,7 +24,13 @@
     var blockInput_ = [{IsDown:true,Button:BUTTONS.BACK}];
 
     /*private member*/
+    var throwInput_ = [{IsDown:true,Button:BUTTONS.FORWARD}, {IsDown:true,Button:BUTTONS.FORWARD|64}];
+
+    /*private member*/
     var player_ = player;
+
+    /*private member*/
+    var inputToSend_ = [];
 
     /*private function*/
     var GetOtherTeam_ = function()
@@ -102,30 +108,40 @@
         return false;
     }
 
-
-    /*private member*/
-    var ThrowFireball_ = function()
+    var SendInput_ = function(frame, input)
     {
-        if(ThrowSuperFireball_())
-            return;
-        
-        if(GetCloseEnemy_(200))
-            player_.SendInput(lightFireballInput_);
-        else
-            player_.SendInput(hardFireballInput_);
+        inputToSend_.push({Frame:frame,Input:input});
+    }
+
+    /**/
+    var DoThrow_ = function(frame)
+    {
+        SendInput_(frame,{IsDown:true,Button:BUTTONS.FORWARD});
+        SendInput_(frame+1,{IsDown:true,Button:BUTTONS.FORWARD|BUTTONS.HARD_PUNCH});
     }
 
     /*private member*/
-    var DoUppercut_ = function()
+    var ThrowFireball_ = function(frame)
+    {
+        if(ThrowSuperFireball_())
+            return;
+        if(GetCloseEnemy_(200))
+            SendInput_(frame,lightFireballInput_);
+        else
+            SendInput_(frame,hardFireballInput_);
+    }
+
+    /*private member*/
+    var DoUppercut_ = function(frame)
     {
         if(!!GetAirborneEnemy_(200))
         {
-            player_.SendInput(lightUppercutInput_);
+            SendInput_(frame,lightUppercutInput_);
             return true;
         }
         else if(!!GetAirborneEnemy_(300))
         {
-            player_.SendInput(hardUppercutInput_);
+            SendInput_(frame,hardUppercutInput_);
             return true;
         }
         return false;
@@ -145,30 +161,45 @@
 
     SimpleRyuAI.prototype.FrameMove = function(frame)
     {
+        
         player_.ClearInput();
         if((frame % 20) == 0)
-            player.TargetLastAttacker();
+            player.TargetLastAttacker(frame);
 
         if(player_.flags_.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
         {
-            if(!DoUppercut_())
+            if(!DoUppercut_(frame))
             {
-                player_.SendInput(blockInput_);
+                SendInput_(frame,blockInput_);
             }
         }
         else
         {
             /*are all players on the other team on the ground?*/
-            if(IsOtherTeamOnGround_())
+            if(IsOtherTeamOnGround_(frame))
             {
-                ThrowFireball_();
+                ThrowFireball_(frame);
             }
             else
             {
-                if(!DoUppercut_())
+                if(!DoUppercut_(frame))
                 {
-                    ThrowFireball_();
+                    ThrowFireball_(frame);
                 }
+            }
+        }
+
+        var i = 0;
+        while(i < inputToSend_.length)
+        {
+            if(inputToSend_[i].Frame == frame)
+            {
+                player_.SendInput(inputToSend_[i].Input);
+                inputToSend_.splice(i,1);
+            }
+            else
+            {
+                ++i;
             }
         }
     }

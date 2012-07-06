@@ -253,7 +253,7 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     this.registeredHit_.BlockSound = blockSound || 0;
     this.registeredHit_.OtherPlayer = otherPlayer;
 
-    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,this.currentAnimation_.StartFrame,frame,otherPlayer));
+    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,!!(behaviorFlags & BEHAVIOR_FLAGS.THROW),this.currentAnimation_.StartFrame,frame,otherPlayer));
 
     if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
@@ -675,7 +675,7 @@ Player.prototype.SlideBack =  function(frame,attackFlags,hitDelayFactor,energyTo
 /*Sets up the closure to be called later*/
 Player.prototype.SetGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2)
 {
-    if(!!(behaviorFlags & BEHAVIOR_FLAGS.THROW))
+    if(!!(attackFlags & ATTACK_FLAGS.THROW_START))
         this.grappledPlayerId_ = p2.id_;
 
     this.giveHitFn_ = (function(thisValue,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2)
@@ -690,17 +690,16 @@ Player.prototype.SetGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,be
 /*This player just hit the other player*/
 Player.prototype.GiveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
 {
-    if(!!(behaviorFlags & BEHAVIOR_FLAGS.THROW))
+    if(!!(attackFlags & ATTACK_FLAGS.THROW_START))
     {
-        if(!this.grappledPlayer_)
-            this.grappledPlayer_ = otherPlayer;
-        else
-        {
-            this.HandleGrapple(this.currentAnimation_.FrameIndex-1,frame,0,0);
-            this.grappledPlayer_ = null;
-            this.grappledPlayerId_ = "";
-            hitDelayFactor = 0;
-        }
+        this.grappledPlayer_ = otherPlayer;
+    }
+    else if(!!(attackFlags & ATTACK_FLAGS.THROW_EJECT))
+    {
+        this.HandleGrapple(this.currentAnimation_.FrameIndex-1,frame,0,0);
+        this.grappledPlayer_ = null;
+        this.grappledPlayerId_ = "";
+        hitDelayFactor = 0;
     }
     else
     {
@@ -709,6 +708,14 @@ Player.prototype.GiveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
 
     this.ChangeEnergy(energyToAdd);
     this.SetHoldFrame(this.baseGiveHitDelay_ * hitDelayFactor);
+}
+
+Player.prototype.IsGrappling = function(id)
+{
+    if(!!id)
+        return this.grappledPlayerId_ == id;
+    else
+        return !!this.grappledPlayerId_;
 }
 
 /*allows the animation to store some initial coordinates*/

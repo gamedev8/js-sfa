@@ -1,4 +1,4 @@
-var CreateSoundManager = function()
+﻿var CreateSoundManager = function()
 {
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/

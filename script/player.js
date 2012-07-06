@@ -114,6 +114,8 @@ Player.prototype.GetStage = function() { return this.GetMatch().stage_; }
 Player.prototype.GetGame = function() { return game_; }
 Player.prototype.GetHealth = function() { return this.getHealthFn_(); }
 Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
+Player.prototype.IsExecutingSuperMove = function () { return this.isExecutingSuperMove_; }
+Player.prototype.SetExecutingSuperMove = function (value) { this.isExecutingSuperMove_ = value; }
 Player.prototype.GetEnergyLevel = function()
 {
     var value = this.GetEnergy();
@@ -150,6 +152,7 @@ Player.prototype.IncCombo = function()
 
 Player.prototype.Reset = function(ignoreDirection)
 {
+    this.isExecutingSuperMove_ = false;
     this.isLosing_ = false;
     this.lastShadowLeft_ = null;
     this.lastShadowRight_ = null;
@@ -222,6 +225,8 @@ Player.prototype.Reset = function(ignoreDirection)
 }
 
 
+Player.prototype.IsGrappled = function() { return this.isBeingThrown_; }
+
 Player.prototype.CreateElement = function(x,y,parentElement)
 {
     parentElement = (parentElement || window.document.getElementById("pnlStage"));
@@ -280,7 +285,11 @@ Player.prototype.MoveToBack = function(dontMoveOtherPlayers)
 }
 Player.prototype.MoveToFront = function(dontMoveOtherPlayers)
 {
-    this.SetZOrder(3);
+    if(this.IsExecutingSuperMove())
+        this.SetZOrder(16);
+    else
+        this.SetZOrder(14);
+
     if(!dontMoveOtherPlayers)
         this.moveOtherPlayersToBackFn_();
 }

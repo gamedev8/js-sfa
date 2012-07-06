@@ -14,7 +14,7 @@ div.stance-container-p2 {right:32px;}
 .stance-name {position:absolute;z-index:3;bottom:0px;background-image:url(../images/misc/font3/name-sprites.png);}
 .stance-shadow {position:absolute;z-index:1;background-image:url(../images/misc/misc/char-sprites.png);}
 div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
-div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:3;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
+div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.stage .ken-bg0{position:absolute;top:-20px;left:0px;}
 div.stage .ken-bg1{position:absolute;bottom:0px;left:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}

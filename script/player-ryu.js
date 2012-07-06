@@ -323,9 +323,9 @@ Player.prototype.CreateRyu = function(user)
 
 
     var throw1X = -4;
-    var throw1 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_shoulder_throw");
+    var throw1 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_shoulder_throw");
     throw1.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
-    throw1.AddAlternateKeySequence([BUTTONS.HARD_PUNCH]);
+    throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.SetGrappleDistance(100);
     throw1.matchAirborne_ = true;
     throw1.AddFrame(player,"","|images/misc/ryu/x-throw-0-0.png",10,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
@@ -336,9 +336,9 @@ Player.prototype.CreateRyu = function(user)
 
 
     var throw2X = -4;
-    var throw2 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_fk_throw");
+    var throw2 = player.AddThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_fk_throw");
     throw2.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
-    throw2.AddAlternateKeySequence([BUTTONS.HARD_KICK]);
+    throw2.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
     throw2.SetGrappleDistance(100);
     throw2.matchAirborne_ = true;
     throw2.AddFrame(player,"","|images/misc/ryu/x-throw-0-0.png",7,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
