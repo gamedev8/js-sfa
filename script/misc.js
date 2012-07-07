@@ -70,8 +70,8 @@ function OnStageImagesLoaded()
 /*Human users*/
 var u1_ = game_.AddUser1(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
 var u2_ = game_.AddUser2(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q);
-var u3_ = game_.AddUser2(1,2,3,4,5,6,7,8,9,10,11);
-var u4_ = game_.AddUser2(11,12,13,14,15,16,17,18,19,20,21);
+var u3_ = game_.AddUser(1,2,3,4,5,6,7,8,9,10,11);
+var u4_ = game_.AddUser(11,12,13,14,15,16,17,18,19,20,21);
 
 
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
@@ -90,11 +90,11 @@ function StartMayhem()
     var p2_ = Player.prototype.CreateKen(u2_);
     var p3_ = Player.prototype.CreateRyu(u3_);
     var p4_ = Player.prototype.CreateKen(u4_);
-    game_.StartMatch([p1_, p2_],[p3_,p4_], kensStage_);
+    game_.StartMatch([p3_, p2_],[p1_,p4_], kensStage_);
     game_.Pause();
-    debug_.T1TestAI(0);
-    debug_.T2TestAI(0);
-    debug_.T2TestAI(1);
+    //debug_.T1TestAI(0);
+    //debug_.T2TestAI(0);
+    //debug_.T2TestAI(1);
 }
 
 /*Goes to the character selection screen*/

@@ -780,10 +780,10 @@ Player.prototype.CreateKen = function(user)
         /*the following function will be executed each frame to compute the X coordinate of this move*/
         spinkick.vxFn_ = function(args) { return function(dx, t) { return dx * 2; } }
 
-        spinkick.vxAirFn_ = function(args) { return function(dx, t) { return (!dx ? 1 : dx) * 1.2; } }
+        spinkick.vxAirFn_ = function(args) { return function(dx, t) { return (!dx ? 1 : dx) * 1.5; } }
         spinkick.vyAirFn_ = function(args) { return function(dy, t) { return dy; } }
 
-        var nbFrames = 1;
+        var nbFrames = 2;
         var hitDelayFactor = 1.3333;
         var baseDamage = 10;
         var rearFlags = ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2|ATTACK_FLAGS.HARD;
@@ -792,16 +792,16 @@ Player.prototype.CreateKen = function(user)
         spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-1.png", 2, { Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, 100);
         spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-2.png", nbFrames, { Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, -50);
         spinkick.AddFrameWithSound(player,1,"audio/misc/spinkick-0.zzz", "", "|images/misc/ken/x-hk-3.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, 40, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 230, y: 97 }, { state: HIT_FLAGS.NEAR, x: 140, y: 97}, { state: HIT_FLAGS.NEAR, x: 230, y: 127 }, { state: HIT_FLAGS.NEAR, x: 140, y: 127}], rearFlags, CONSTANTS.SECOND_HIT, hitDelayFactor, 2);
-        spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-4.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB });
+        spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-4.png", nbFrames-1, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB });
         spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-5.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, -60, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: -60, y: 97 }, { state: HIT_FLAGS.NEAR, x: 30, y: 97}, { state: HIT_FLAGS.NEAR, x: -60, y: 127 }, { state: HIT_FLAGS.NEAR, x: 30, y: 127}], rearFlags, 3 * (i + 1), hitDelayFactor, 2);
-        spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-6.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, 0, 0, 0, null, +40);
+        spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-6.png", nbFrames-1, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, 0, 0, 0, null, +40);
 
         for (var i = 0; i < (1 + x); ++i)
         {
             spinkick.AddFrameWithSound(player,1,"audio/misc/spinkick-0.zzz", "", "|images/misc/ken/x-hk-3.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, 40, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 230, y: 97 }, { state: HIT_FLAGS.NEAR, x: 140, y: 97}, { state: HIT_FLAGS.NEAR, x: 230, y: 127 }, { state: HIT_FLAGS.NEAR, x: 140, y: 127}], rearFlags, 3 * (i + 1), hitDelayFactor, 2);
-            spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-4.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB });
+            spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-4.png", nbFrames-1, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB });
             spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-5.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, -30, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: -30, y: 97 }, { state: HIT_FLAGS.NEAR, x: 30, y: 97}, { state: HIT_FLAGS.NEAR, x: -30, y: 127 }, { state: HIT_FLAGS.NEAR, x: 30, y: 127}], rearFlags, 3 * (i + 1), hitDelayFactor, 2);
-            spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-6.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, 0, 0, 0, null, +40);
+            spinkick.AddFrame(player, "", "|images/misc/ken/x-hk-6.png", nbFrames-1, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, 0, 0, 0, null, +40);
         }
 
         spinkick.EndBlock();

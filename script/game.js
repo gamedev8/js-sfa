@@ -328,6 +328,10 @@ var CreateGame = function()
         user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
         return user2_;
     }
+    Game.prototype.AddUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
+    {
+        return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+    }
 
     /*Helper function*/
     Game.prototype.GetGameLoopClosure = function(thisValue)

@@ -172,6 +172,8 @@
         /*if the attack is a throw, it can not grab more than one player*/
         if(p1.IsGrappling() && !p1.IsGrappling(p2.id_))
             return;
+        if(p2.IsGrappling())
+            return;
         if(p2.IsAirborne() && !!(attackFlags & ATTACK_FLAGS.CAN_AIR_JUGGLE))
         {
             //return;
@@ -230,6 +232,8 @@
     /*Handles projectiles hitting a player*/
     Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
     {
+        if(p2.IsGrappling())
+            return;
         if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
             return;
         if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE))
