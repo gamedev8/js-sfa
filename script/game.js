@@ -38,11 +38,11 @@ var CreateGame = function()
     var nextTimeout_ = 0;
     var match_ = null;
     var charSelect_ = null;
-
     /*Encapulates a new game*/
     var Game = function ()
     {
         lastTime_ = this.GetCurrentTime();
+        this.Start();
     }
 
     Game.prototype.GetMatch = function() { return match_; }
@@ -118,6 +118,13 @@ var CreateGame = function()
         keyboardState_ = {};
         if(!!managed_)
             managed_.ResetKeys();
+    }
+
+    Game.prototype.Start = function()
+    {
+        Stage.prototype.Center();
+        window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.jpg)";
+        
     }
 
     Game.prototype.Init = function()
