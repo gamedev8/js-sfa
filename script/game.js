@@ -123,7 +123,7 @@ var CreateGame = function()
     Game.prototype.Start = function()
     {
         Stage.prototype.Center();
-        window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.jpg)";
+        window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.png)";
         
     }
 
