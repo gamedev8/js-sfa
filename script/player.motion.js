@@ -259,8 +259,8 @@ Player.prototype.FaceTarget = function()
     }
     else
     {
-        otherFront = this.GetMatch().teamB_.Players[this.target_].GetAbsFrontX();
-        otherBack = this.GetMatch().teamB_.Players[this.target_].GetAbsBackX();
+        otherFront = this.GetMatch().teamA_.Players[this.target_].GetAbsFrontX();
+        otherBack = this.GetMatch().teamA_.Players[this.target_].GetAbsBackX();
 
         myFront = this.GetAbsFrontX();
         myBack = this.GetAbsBackX();
