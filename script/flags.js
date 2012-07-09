@@ -108,6 +108,13 @@ var BLOCKSOUND =
     ,HK:1 << 6
 }
 
+var AIRBORNE_FLAGS = 
+{
+    YES:1 << 0
+    ,NO:1 << 1
+    ,EQUAL:1 << 2
+}
+
 var PLAYER_FLAGS = 
 {
     MOBILE:1 << 0

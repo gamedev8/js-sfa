@@ -116,8 +116,8 @@
     /**/
     var DoThrow_ = function(frame)
     {
-        SendInput_(frame,{IsDown:true,Button:BUTTONS.FORWARD});
-        SendInput_(frame+1,{IsDown:true,Button:BUTTONS.FORWARD|BUTTONS.HARD_PUNCH});
+        SendInput_(frame,[{IsDown:true,Button:BUTTONS.FORWARD}]);
+        SendInput_(frame+1,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:true,Button:BUTTONS.HARD_PUNCH}]);
     }
 
     /*private member*/
@@ -162,29 +162,32 @@
     SimpleRyuAI.prototype.FrameMove = function(frame)
     {
         
-        player_.ClearInput();
-        if((frame % 20) == 0)
-            player.TargetLastAttacker(frame);
+        if(inputToSend_.length == 0)
+        {
+            player_.ClearInput();
+            if((frame % 20) == 0)
+                player.TargetLastAttacker(frame);
 
-        if(player_.flags_.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
-        {
-            if(!DoUppercut_(frame))
-            {
-                SendInput_(frame,blockInput_);
-            }
-        }
-        else
-        {
-            /*are all players on the other team on the ground?*/
-            if(IsOtherTeamOnGround_(frame))
-            {
-                ThrowFireball_(frame);
-            }
-            else
+            if(player_.flags_.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
             {
                 if(!DoUppercut_(frame))
                 {
+                    SendInput_(frame,blockInput_);
+                }
+            }
+            else
+            {
+                /*are all players on the other team on the ground?*/
+                if(IsOtherTeamOnGround_(frame))
+                {
                     ThrowFireball_(frame);
+                }
+                else
+                {
+                    if(!DoUppercut_(frame))
+                    {
+                        ThrowFireball_(frame);
+                    }
                 }
             }
         }

@@ -1,7 +1,8 @@
-﻿
-Player.prototype.CreateRyu = function(user)
+﻿Player.prototype.CreateRyu = function(user)
 {
     var player = new Player("Ryu",101,user);
+    //player.SetSpriteData(GetRyu1ImageData());
+    
     player.defaultShadowImageSrc_ = "136"
     player.circle_.OffsetY = 50;
 
@@ -328,6 +329,7 @@ Player.prototype.CreateRyu = function(user)
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.SetGrappleDistance(100);
     throw1.matchAirborne_ = true;
+    throw1.SetOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw1.AddFrame(player,"","|images/misc/ryu/x-throw-0-0.png",10,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw1.AddFrame(player,"","|images/misc/ryu/x-throw-0-1.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw1.AddFrame(player,"","|images/misc/ryu/x-throw-0-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
@@ -341,6 +343,7 @@ Player.prototype.CreateRyu = function(user)
     throw2.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
     throw2.SetGrappleDistance(100);
     throw2.matchAirborne_ = true;
+    throw2.SetOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw2.AddFrame(player,"","|images/misc/ryu/x-throw-0-0.png",7,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw2.AddFrame(player,"","|images/misc/ryu/x-throw-1-0.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw2.AddFrame(player,"","|images/misc/ryu/x-throw-1-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,-20);

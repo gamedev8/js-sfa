@@ -149,10 +149,18 @@ ActionSystem.prototype.FrameMove = function(frame)
                 /*player 1 registers action*/
                 item[0].Player.RegisterHit(frame);
             }
+            else if(!!item[0])
+            {
+                item[0].Player.DidntHit(frame);
+            }
             if(!!item[1] && (canP2Hit || canDoubleHit))
             {
                 /*player 2 registers action*/
                 item[1].Player.RegisterHit(frame);
+            }
+            else if(!!item[1])
+            {
+                item[1].Player.DidntHit(frame);
             }
             /*clear the action*/
             this.Actions[i] = null;

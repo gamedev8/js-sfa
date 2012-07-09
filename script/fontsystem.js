@@ -210,24 +210,24 @@ var CreateFontSystem = function()
         frameImages_.Load("images/misc/font2/84.png");
 
         /*
-	    spriteLookup_.Load("images/misc/font2/32.png","images/misc/font2/font-sprites.png", "0px", "0px", "16px", "41px");
-	    spriteLookup_.Load("images/misc/font2/48.png","images/misc/font2/font-sprites.png", "-16px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/49.png","images/misc/font2/font-sprites.png", "-48px", "0px", "26px", "41px");
-	    spriteLookup_.Load("images/misc/font2/50.png","images/misc/font2/font-sprites.png", "-74px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/51.png","images/misc/font2/font-sprites.png", "-106px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/52.png","images/misc/font2/font-sprites.png", "-138px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/53.png","images/misc/font2/font-sprites.png", "-170px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/54.png","images/misc/font2/font-sprites.png", "-202px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/55.png","images/misc/font2/font-sprites.png", "-234px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/56.png","images/misc/font2/font-sprites.png", "0px", "-41px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/57.png","images/misc/font2/font-sprites.png", "-32px", "-41px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/66.png","images/misc/font2/font-sprites.png", "-64px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/67.png","images/misc/font2/font-sprites.png", "-80px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/72.png","images/misc/font2/font-sprites.png", "-96px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/73.png","images/misc/font2/font-sprites.png", "-112px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/77.png","images/misc/font2/font-sprites.png", "-128px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/79.png","images/misc/font2/font-sprites.png", "-144px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/84.png","images/misc/font2/font-sprites.png", "-160px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/32.png","|images/misc/font2/font-sprites.png", "0px", "0px", "16px", "41px");
+	    spriteLookup_.Load("images/misc/font2/48.png","|images/misc/font2/font-sprites.png", "-16px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/49.png","|images/misc/font2/font-sprites.png", "-48px", "0px", "26px", "41px");
+	    spriteLookup_.Load("images/misc/font2/50.png","|images/misc/font2/font-sprites.png", "-74px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/51.png","|images/misc/font2/font-sprites.png", "-106px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/52.png","|images/misc/font2/font-sprites.png", "-138px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/53.png","|images/misc/font2/font-sprites.png", "-170px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/54.png","|images/misc/font2/font-sprites.png", "-202px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/55.png","|images/misc/font2/font-sprites.png", "-234px", "0px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/56.png","|images/misc/font2/font-sprites.png", "0px", "-41px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/57.png","|images/misc/font2/font-sprites.png", "-32px", "-41px", "32px", "41px");
+	    spriteLookup_.Load("images/misc/font2/66.png","|images/misc/font2/font-sprites.png", "-64px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/67.png","|images/misc/font2/font-sprites.png", "-80px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/72.png","|images/misc/font2/font-sprites.png", "-96px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/73.png","|images/misc/font2/font-sprites.png", "-112px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/77.png","|images/misc/font2/font-sprites.png", "-128px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/79.png","|images/misc/font2/font-sprites.png", "-144px", "-51px", "16px", "31px");
+	    spriteLookup_.Load("images/misc/font2/84.png","|images/misc/font2/font-sprites.png", "-160px", "-51px", "16px", "31px");
         */
     }
 

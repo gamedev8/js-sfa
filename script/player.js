@@ -88,6 +88,7 @@ var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor
     this.headOffsetX_ = 40;
     this.headOffsetY_ = 10;
     this.ai_ = new CreateAIProxy(this);
+    this.hasPendingGrapple_ = false;
     /**/
     this.slideFactor_ = slideFactor || 30;
     this.baseTakeHitDelay_ = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
@@ -116,6 +117,8 @@ Player.prototype.GetHealth = function() { return this.getHealthFn_(); }
 Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
 Player.prototype.IsExecutingSuperMove = function () { return this.isExecutingSuperMove_; }
 Player.prototype.SetExecutingSuperMove = function (value) { this.isExecutingSuperMove_ = value; }
+Player.prototype.IsBeingGrappled = function() { return this.isBeingThrown_; }
+Player.prototype.SetBeingGrappled = function(value) { this.isBeingThrown_ = value; }
 Player.prototype.GetEnergyLevel = function()
 {
     var value = this.GetEnergy();
@@ -132,6 +135,9 @@ Player.prototype.GetEnergyLevel = function()
 
 Player.prototype.GetName = function() { return this.name_; }
 Player.prototype.IsDead = function() { return !this.GetHealth(); }
+
+Player.prototype.HasPendingGrapple = function() { return this.hasPendingGrapple_; }
+Player.prototype.SetPendingGrapple = function(value) { this.hasPendingGrapple_ = value; }
 
 Player.prototype.SetPaused = function(paused)
 {
@@ -152,6 +158,7 @@ Player.prototype.IncCombo = function()
 
 Player.prototype.Reset = function(ignoreDirection)
 {
+    this.SetPendingGrapple(false);
     this.isExecutingSuperMove_ = false;
     this.isLosing_ = false;
     this.lastShadowLeft_ = null;
@@ -223,9 +230,6 @@ Player.prototype.Reset = function(ignoreDirection)
     this.SetY(STAGE.FLOORY);
     this.ClearProjectiles();
 }
-
-
-Player.prototype.IsGrappled = function() { return this.isBeingThrown_; }
 
 Player.prototype.CreateElement = function(x,y,parentElement)
 {
@@ -496,7 +500,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
     this.HandleProjectiles(frame,stageX,stageY);
     this.OtherAnimationFrameMove(frame, stageX, stageY);
 
-    if(!!this.isBeingThrown_)
+    if(!!this.IsBeingGrappled())
         return;
 
     if(!!this.frameFreeze_)

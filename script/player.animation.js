@@ -179,11 +179,11 @@ Player.prototype.FindAnimation = function(value,frame)
 
             if(cmpValue == CONSTANTS.EXACT_MATCH)
             {
-                if(!!move.grappleDistance_)
+                if(!!move.GetGrappleDistance())
                 {
                     if(!!this.registeredHit_.HitID)
                         continue;
-                    if(!this.GetPhysics().CanGrapple(this.team_,this.GetAbsFrontX(),this.y_,move.grappleDistance_,move.matchAirborne_ === null ? null : (this.IsAirborne() && move.matchAirborne_)))
+                    if(!this.TryStartGrapple(move.GetGrappleDistance(),move.GetOtherPlayerAirborneFlags()))
                         continue;
                 }
 
@@ -191,15 +191,15 @@ Player.prototype.FindAnimation = function(value,frame)
             }
             else
             {
-                if(!!move.grappleDistance_)
+                if(!!move.GetGrappleDistance())
                     continue;
             }
 
             if(cmpValue == 0)
                 continue;
-            if((cmpValue == CONSTANTS.PRIORITY_MATCH) && move.priority_ > priority)
+            if((cmpValue == CONSTANTS.PRIORITY_MATCH) && move.GetPriority() > priority)
             {
-                priority = move.priority_;
+                priority = move.GetPriority();
                 retVal = move;
             }
         }
@@ -469,6 +469,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
     this.currentAnimation_ = newAnimation;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        this.SetPendingGrapple(false);
         if(this.IsExecutingSuperMove())
         {
             this.GetMatch().OnSuperMoveCompleted(this);
@@ -481,6 +482,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
             this.QueueSuperMoveChargeSound();
             this.SetExecutingSuperMove(true);
         }
+
 
         /*must start a move on the ground to hold airborne*/
         if(this.IsAirborne())
@@ -661,7 +663,13 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 
 Player.prototype.InitSprite = function()
 {
-    this.spriteElement_.style.backgroundImage = "url('images/misc/" + this.name_.toLowerCase() + "/sprites.png')";
+    var src = "images/misc/" + this.name_.toLowerCase() + "/sprites.png";
+    this.spriteElement_.style.backgroundImage = "url('" + src + "')";
+}
+
+Player.prototype.SetSpriteData = function(base64Data)
+{
+    this.spriteElement_.style.backgroundImage = "url(" + base64Data + ")";
 }
 
 Player.prototype.SetSprite = function()

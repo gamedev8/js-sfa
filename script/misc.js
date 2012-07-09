@@ -92,9 +92,9 @@ function StartMayhem()
     var p4_ = Player.prototype.CreateKen(u4_);
     game_.StartMatch([p3_, p2_],[p1_,p4_], kensStage_);
     game_.Pause();
-    //debug_.T1TestAI(0);
-    //debug_.T2TestAI(0);
-    //debug_.T2TestAI(1);
+    debug_.T1TestAI(0);
+    debug_.T2TestAI(0);
+    debug_.T2TestAI(1);
 }
 
 /*Goes to the character selection screen*/

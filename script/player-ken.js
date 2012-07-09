@@ -2,6 +2,8 @@
 Player.prototype.CreateKen = function(user)
 {
     var player = new Player("ken",101,user);
+    //player.SetSpriteData(GetKen1ImageData());
+
     player.defaultShadowImageSrc_ = "136"
     player.circle_.OffsetY = 50;
 
@@ -290,6 +292,7 @@ Player.prototype.CreateKen = function(user)
     throw1.vy_ = 90;
     throw1.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE, OVERRIDE_FLAGS.ALL);
     throw1.matchAirborne_ = true;
+    throw1.SetOtherPlayerAirborneFlags(AIRBORNE_FLAGS.EQUAL);
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK]);
@@ -821,6 +824,7 @@ Player.prototype.CreateKen = function(user)
         else if (x == 3) button = BUTTONS.HARD_PUNCH;
 
         var roll = player.AddAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1, "roll p" + x, 100, [BUTTONS.CROUCH, BUTTONS.CROUCH | BUTTONS.BACK, BUTTONS.BACK, BUTTONS.BACK | button], 0, false);
+        roll.moveOverrideFlags_ = new MoveOverrideFlags(OVERRIDE_FLAGS.NULL, OVERRIDE_FLAGS.THROW);
         roll.isSpecialMove_ = true;
         roll.userData_ = { Type: USER_DATA_TYPES.OFFSET, topOffset: -75 };
         roll.AddRepeatingFrame(player, "", "|images/misc/ken/x-roll-p1-0.png", 2, { Player: PLAYER_FLAGS.SMALLER_AABB | PLAYER_FLAGS.IGNORE_COLLISIONS }, { Player: PLAYER_FLAGS.MOBILE }, rollX + 2);

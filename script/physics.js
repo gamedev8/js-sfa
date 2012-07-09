@@ -159,7 +159,11 @@
     /*Test each player to see if the hit region intersects with them*/
     Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound)
     {
-        if(p2.IsGrappled() && !(attackFlags & ATTACK_FLAGS.THROW_EJECT))
+        /*is p1 ejecting p2 from a grapple?*/
+        if(!!(attackFlags & ATTACK_FLAGS.THROW_EJECT) && !p1.IsGrappling(p2.id_))
+            return;
+        /*is p2 being grappled by p1?*/
+        if(p2.IsBeingGrappled() && !p1.IsGrappling(p2.id_))
             return;
         if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
             return;
@@ -180,6 +184,7 @@
         }
         else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE))
             return;
+        var isGrapple = !!(behaviorFlags & BEHAVIOR_FLAGS.THROW);
         var p1Left = p1.GetLeftX(true);
         var p1Right = p1.GetRightX(true);
         var p1Top = p1.GetBoxTop();
@@ -202,10 +207,10 @@
 
                 var x = p1Left + points[i].x;
                 var y = p1Bottom + points[i].y;
-                if(((points[i].x == -1) && !!p2.isBeingThrown_) || (x >= p2Left && x < p2Right && y >= p2Bottom && y < p2Top))
+                if(((points[i].x == -1) && !!p2.IsBeingGrappled()) || (x >= p2Left && x < p2Right && y >= p2Bottom && y < p2Top))
                 {
                     p1.SetGiveHit(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
-                    p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,false,STAGE.MAX_STAGEX - x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
+                    p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,STAGE.MAX_STAGEX - x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
                     break;
                 }
             }
@@ -219,10 +224,10 @@
 
                 var x = p1Right - points[i].x;
                 var y = p1Bottom + points[i].y;
-                if(((points[i].x == -1) && !!p2.isBeingThrown_) || ((x <= p2Right && x > p2Left && y >= p2Bottom && y < p2Top)))
+                if(((points[i].x == -1) && !!p2.IsBeingGrappled()) || ((x <= p2Right && x > p2Left && y >= p2Bottom && y < p2Top)))
                 {
                     p1.SetGiveHit(attackFlags,hitDelayFactor,energyToAdd, behaviorFlags,p2);
-                    p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,false,x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
+                    p2.SetRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,x,y,p1.direction_,p1.id_,p1.GetHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
                     break;
                 }
             }
@@ -273,7 +278,7 @@
                 if(p2.direction_ > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
+                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,false,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
                 {
                     p1.ChangeEnergy(projectile.energyToAdd_);
                     projectile.HitPlayer(frame);
@@ -295,7 +300,7 @@
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
+                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,false,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
                 {
                     p1.ChangeEnergy(projectile.energyToAdd_);
                     projectile.HitPlayer(frame);
@@ -778,7 +783,7 @@
     }
 
     /*checks if any player from ther other team is within the given distance*/
-    Physics.prototype.CanGrapple = function(team,x,y,distance,mustBeAirborne)
+    Physics.prototype.GetGrappledPlayer = function(team,x,y,distance,airborneFlags,isAirborne)
     {
         var match = GetMatch_();
         switch(team)
@@ -786,35 +791,19 @@
             case CONSTANTS.TEAM1:
             {
                 for(var i = 0; i < match.teamB_.Players.length; ++i)
-                    if((Math.abs(x - match.teamB_.Players[i].GetMidX()) < distance)
-                        && (Math.abs(y - match.teamB_.Players[i].y_) < distance)
-                        && (!(match.teamB_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
-                        && ((mustBeAirborne === null)
-                            || (mustBeAirborne == (match.teamB_.Players[i].IsAirborne())))
-                        && (!match.teamB_.Players[i].grappledPlayer_
-                        && (!match.teamB_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.THROW)))
-                        && (!match.teamB_.Players[i].HasRegisteredHit())
-                        )
-                        return true;
+                    if(match.teamB_.Players[i].CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.teamB_.Players[i];
                 break;
             }
             case CONSTANTS.TEAM2:
             {
                 for(var i = 0; i < match.teamA_.Players.length; ++i)
-                    if((Math.abs(x - match.teamA_.Players[i].GetMidX()) < distance)
-                        && (Math.abs(y - match.teamA_.Players[i].y_) < distance)
-                        && (!(match.teamA_.Players[i].flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
-                        && ((mustBeAirborne === null)
-                            || (mustBeAirborne == (match.teamA_.Players[i].IsAirborne())))
-                        && (!match.teamA_.Players[i].grappledPlayer_)
-                        && (!match.teamA_.Players[i].currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.THROW))
-                        && (!match.teamA_.Players[i].HasRegisteredHit())
-                        )
-                        return true;
+                    if(match.teamA_.Players[i].CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.teamA_.Players[i];
                 break;
             }
         }
-        return false;
+        return null;
     }
 
     /*checks if players are within the given distance*/

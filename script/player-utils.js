@@ -68,6 +68,7 @@ var Animation = function(requiredFlags,name,duration,frames,keySequence,flags,pr
     this.isSpecialMove_ = false;
     /*when set to true, for this animation to be performed while airborne, the other player must also be airborne*/
     this.matchAirborne_ = null;
+    this.otherPlayerAirborneFlags_;
 }
 
 Animation.prototype.IsAttack = function() { return this.baseAnimation_.isAttack_; }
@@ -91,6 +92,10 @@ Animation.prototype.XModifier = function(args) { return this.vxFn_(args); }
 Animation.prototype.YModifier = function(args) { return this.vyFn_(args); }
 Animation.prototype.AirYModifier = function(args) { return this.vyAirFn_(args); }
 Animation.prototype.AirXModifier = function(args) { return this.vxAirFn_(args); }
+Animation.prototype.SetOtherPlayerAirborneFlags = function(flags) { this.otherPlayerAirborneFlags_ = flags; }
+Animation.prototype.GetOtherPlayerAirborneFlags = function() { return this.otherPlayerAirborneFlags_; }
+Animation.prototype.GetGrappleDistance = function() { return this.grappleDistance_; }
+Animation.prototype.GetPriority = function() { return this.priority_; }
 
 Animation.prototype.Chain = function(move,frameOffset)
 {

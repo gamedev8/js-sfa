@@ -147,11 +147,52 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
     }
 }
 
+/*returns true if a grapple can be performed*/
+Player.prototype.TryStartGrapple = function(distance, airborneFlags)
+{
+    var retVal = false;
+    var player = this.GetPhysics().GetGrappledPlayer(this.team_,this.GetAbsFrontX(),this.y_,distance,airborneFlags,this.IsAirborne());
+    if(!!player)
+    {
+        retVal = true;
+        player.SetPendingGrapple(true);
+    }
+
+    return retVal;
+}
+
+/*returns true if this player can be grappled*/
+Player.prototype.CanBeGrappled = function(x,y,distance,airborneFlags,isAirborne)
+{
+    /*player can not have a grapple on him already!*/
+    if(this.HasPendingGrapple() || this.IsBeingGrappled())
+        return false;
+
+    if((airborneFlags == AIRBORNE_FLAGS.YES) && !this.IsAirborne())
+        return false;
+    else if((airborneFlags == AIRBORNE_FLAGS.NO) && this.IsAirborne())
+        return false;
+    else if((airborneFlags == AIRBORNE_FLAGS.EQUAL) && (isAirborne != this.IsAirborne()))
+        return false;
+
+    var retVal = false;
+
+    if((Math.abs(x - this.GetMidX()) < distance)
+        && (Math.abs(y - this.y_) < distance)
+        && (!(this.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
+        && (!this.grappledPlayer_
+        && (!this.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.THROW)))
+        && (!this.HasRegisteredHit())
+        )
+            retVal = true;
+
+    return retVal;
+}
 
 /*Forced computation on the player who is being thrown by this player*/
 Player.prototype.HandleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
 {
-    if(!!this.grappledPlayer_.currentAnimation_.Animation && !!this.grappledPlayer_.isBeingThrown_)
+    if(!!this.grappledPlayer_.currentAnimation_.Animation && !!this.grappledPlayer_.IsBeingGrappled())
     {
         var forcedFrame = this.grappledPlayer_.currentAnimation_.Animation.baseAnimation_.frames_[forcedFrameIndex];
         if(!!forcedFrame)
@@ -228,7 +269,7 @@ Player.prototype.HandleAttack = function(frame, moveFrame)
 }
 
 /*If the player gets hit - this function must be called to set all of the details of the hit*/
-Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName,hitSound,blockSound)
+Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,damage,energyToAdd,isGrapple,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
     this.lastHitFrame_[who] = hitID;
     this.registeredHit_.AttackState = attackState;
@@ -253,7 +294,10 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     this.registeredHit_.BlockSound = blockSound || 0;
     this.registeredHit_.OtherPlayer = otherPlayer;
 
-    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,!!(behaviorFlags & BEHAVIOR_FLAGS.THROW),this.currentAnimation_.StartFrame,frame,otherPlayer));
+    if(!!isGrapple)
+        this.SetPendingGrapple(true);
+
+    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,isGrapple,this.currentAnimation_.StartFrame,frame,otherPlayer));
 
     if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
@@ -303,9 +347,13 @@ Player.prototype.IsBlocking = function()
 {
     return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING);
 }
+Player.prototype.DidntHit = function(frame)
+{
+}
 /*The player was just hit and must react*/
 Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound)
 {
+    this.registeredHit_.HitID = null;
     this.freezeUntilFrame_ = 0;
     if(!!otherPlayer)
     {
@@ -334,7 +382,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
             this.flags_.Player.Remove(PLAYER_FLAGS.BLOCKING);
         }
 
-        this.isBeingThrown_ = true;
+        this.SetBeingGrappled(true);
 
         if(!!invokedAnimationName)
         {
@@ -379,7 +427,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
         if(!!damage)
             this.IncCombo();
 
-        if(!!energyToAdd && !(!!(attackState & ATTACK_FLAGS.THROW_END)))
+        if(!!energyToAdd && !(!!(attackState & ATTACK_FLAGS.THROW_EJECT)))
             energyToAdd = Math.ceil(energyToAdd/2);
 
         if(this.flags_.Pose.Has(POSE_FLAGS.CROUCHING))
@@ -431,9 +479,9 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
             this.SpawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
         /*if any player is dead, then the whole team is dead.*/
         this.ForceTeamLose(frame,attackDirection);
-        if(!!this.isBeingThrown_)
+        if(!!this.IsBeingGrappled())
         {
-            this.isBeingThrown_ = false;
+            this.SetBeingGrappled(false);
             attackDirection = -this.GetRelativeDirection(attackDirection);
             this.Eject(attackState,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
         }
@@ -446,9 +494,9 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
         return;
     }
 
-    if(!!(attackState & ATTACK_FLAGS.THROW_EJECT) && !!this.isBeingThrown_)
+    if(!!(attackState & ATTACK_FLAGS.THROW_EJECT) && !!this.IsBeingGrappled())
     {
-        this.isBeingThrown_ = false;
+        this.SetBeingGrappled(false);
         attackDirection = -this.GetRelativeDirection(attackDirection);
         this.Eject(attackState,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
         hitDelayFactor_ = 0;
@@ -508,7 +556,6 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
     if(!this.IsBlocking())
         this.QueueHitSound(hitSound);
 
-    this.registeredHit_.HitID = null;
     return true;
 }
 /*Setting "this.winningFrame_" will cause this player to execute its win animation after its current animation is done.*/
@@ -593,7 +640,7 @@ Player.prototype.Drop = function()
     var move = this.moves_[_c3("_",POSE_FLAGS.STANDING,"_eject")];
     if(!!move)
     {
-        this.isBeingThrown_ = false;
+        this.SetBeingGrappled(false);
         //attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(-this.direction_);
         this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});

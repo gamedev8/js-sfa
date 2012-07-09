@@ -409,7 +409,7 @@ Player.prototype.Slide = function(frame)
         return this.StopSlide();
     if(!!this.frameFreeze_ && !this.IsBlocking())
         return;
-    if(this.t_ >= CONSTANTS.HALF_PI || !this.isSliding_ || !!this.isBeingThrown_)
+    if(this.t_ >= CONSTANTS.HALF_PI || !this.isSliding_ || !!this.IsBeingGrappled())
     {
         this.StopSlide();
         return;
