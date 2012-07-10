@@ -148,10 +148,10 @@
         perfect_.IsAnimating = false;
         perfect_.StartFrame = 0;
 
-        if(match_.round_ < 10)
+        if(match_.GetRound() < 10)
         {
             soundManager_.QueueSound("audio/misc/round.zzz");
-            soundManager_.QueueSound("audio/misc/" + match_.round_ +".zzz",1,45);
+            soundManager_.QueueSound("audio/misc/" + match_.GetRound() +".zzz",1,45);
         }
         else
         {
@@ -172,30 +172,30 @@
         var delay = 0;
         var showPerfect = false;
 
-        if(match_.teamA_.Healthbar.Amount == 0 && match_.teamB_.Healthbar.Amount == 0)
+        if(match_.GetTeamA().GetHealthbar().GetAmount() == 0 && match_.GetTeamB().GetHealthbar().GetAmount() == 0)
         {
             soundManager_.QueueSound("audio/misc/draw.zzz",1,delay);
         }
-        else if(match_.teamA_.Healthbar.Amount == 0)
+        else if(match_.GetTeamA().GetHealthbar().GetAmount() == 0)
         {
             soundManager_.QueueSound("audio/misc/you.zzz",1,delay);
-            if(match_.teamB_.Players[0].ai_.IsRunning())
+            if(match_.GetTeamB().GetPlayer(0).ai_.IsRunning())
                 soundManager_.QueueSound("audio/misc/lose.zzz",1,delay+35);
             else
                 soundManager_.QueueSound("audio/misc/win.zzz",1,delay+35);
 
-            if(showPerfect = (match_.teamB_.Healthbar.Amount == match_.teamB_.Healthbar.Max))
+            if(showPerfect = (match_.GetTeamB().GetHealthbar().GetAmount() == match_.GetTeamB().GetHealthbar().GetMax()))
                 soundManager_.QueueSound("audio/misc/perfect.zzz",1,delay+95);
         }
         else
         {
             soundManager_.QueueSound("audio/misc/you.zzz",1,delay);
-            if(match_.teamA_.Players[0].ai_.IsRunning())
+            if(match_.GetTeamA().GetPlayer(0).ai_.IsRunning())
                 soundManager_.QueueSound("audio/misc/lose.zzz",1,delay+35);
             else
                 soundManager_.QueueSound("audio/misc/win.zzz",1,delay+35);
 
-            if(showPerfect = (match_.teamA_.Healthbar.Amount == match_.teamB_.Healthbar.Max))
+            if(showPerfect = (match_.GetTeamA().GetHealthbar().GetAmount() == match_.GetTeamB().GetHealthbar().GetMax()))
                 soundManager_.QueueSound("audio/misc/perfect.zzz",1,delay+95);
         }
         

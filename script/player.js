@@ -110,8 +110,8 @@ Player.prototype.PlayerCount = 0;
 Player.prototype.TakeDamage = function(amount) { this.takeDamageFn_(amount); }
 Player.prototype.ChangeEnergy = function(amount) { if(!!amount) this.changeEnergyFn_(amount); }
 Player.prototype.GetMatch = function() { return this.GetGame().GetMatch(); }
-Player.prototype.GetPhysics = function() { return this.GetMatch().physics_; }
-Player.prototype.GetStage = function() { return this.GetMatch().stage_; }
+Player.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
+Player.prototype.GetStage = function() { return this.GetMatch().GetStage(); }
 Player.prototype.GetGame = function() { return game_; }
 Player.prototype.GetHealth = function() { return this.getHealthFn_(); }
 Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
@@ -119,6 +119,10 @@ Player.prototype.IsExecutingSuperMove = function () { return this.isExecutingSup
 Player.prototype.SetExecutingSuperMove = function (value) { this.isExecutingSuperMove_ = value; }
 Player.prototype.IsBeingGrappled = function() { return this.isBeingThrown_; }
 Player.prototype.SetBeingGrappled = function(value) { this.isBeingThrown_ = value; }
+Player.prototype.GetNameImageSrc = function() { return this.nameImageSrc_; }
+Player.prototype.GetPortriatImageSrc = function() { return this.portriatImageSrc_; }
+Player.prototype.GetName = function() { return this.name_; }
+
 Player.prototype.GetEnergyLevel = function()
 {
     var value = this.GetEnergy();

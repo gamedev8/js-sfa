@@ -20,7 +20,7 @@
 
 Stage.prototype.GetGame = function() { return game_; }
 Stage.prototype.GetMatch = function() { return this.GetGame().GetMatch(); }
-Stage.prototype.GetPhysics = function() { return this.GetMatch().physics_; }
+Stage.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
 
 Stage.prototype.Set = function(params)
 {
@@ -166,10 +166,10 @@ Stage.prototype.AlignPlayersX = function()
 {
     var match = this.GetMatch();
 
-    for(var i = 0, length = match.teamA_.Players.length; i < length; ++i)
-        match.teamA_.Players[i].AlignX(this.deltaX_);
-    for(var i = 0, length = match.teamB_.Players.length; i < length; ++i)
-        match.teamB_.Players[i].AlignX(this.deltaX_);
+    for(var i = 0, length = match.GetTeamA().GetPlayers().length; i < length; ++i)
+        match.GetTeamA().GetPlayer(i).AlignX(this.deltaX_);
+    for(var i = 0, length = match.GetTeamB().GetPlayers().length; i < length; ++i)
+        match.GetTeamB().GetPlayer(i).AlignX(this.deltaX_);
 }
 
 
@@ -420,17 +420,17 @@ Stage.prototype.CanScrollX = function ()
 {
     var flag = true;
     var match = this.GetMatch();
-    for(var i = 0; i < match.teamA_.Players.length; ++i)
+    for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
     {
-        if(match.teamA_.Players[i].GetX() == STAGE.MIN_X)
+        if(match.GetTeamA().GetPlayer(i).GetX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
         }
     }
-    for(var i = 0; i < match.teamB_.Players.length; ++i)
+    for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
     {
-        if(match.teamB_.Players[i].GetX() == STAGE.MIN_X)
+        if(match.GetTeamB().GetPlayer(i).GetX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;

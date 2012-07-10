@@ -67,14 +67,14 @@ ActionDetails.prototype.GetKey = function(playerID,otherID)
 }
 
 
-var ActionSystem = function(actionFrameDelay)
+var HitSystem = function(actionFrameDelay)
 {
     this.Actions = {};
     this.ActionFrameDelay = actionFrameDelay || CONSTANTS.DEFAULT_ACTION_FRAME_DELAY;
 }
 
 
-ActionSystem.prototype.CanOverride = function(key,index)
+HitSystem.prototype.CanOverride = function(key,index)
 {
     var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
     var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
@@ -100,7 +100,7 @@ ActionSystem.prototype.CanOverride = function(key,index)
 }
 
 
-ActionSystem.prototype.FrameMove = function(frame)
+HitSystem.prototype.FrameMove = function(frame)
 {
     for(var i in this.Actions)
     {
@@ -169,7 +169,7 @@ ActionSystem.prototype.FrameMove = function(frame)
     }
 }
 
-ActionSystem.prototype.Register = function(details)
+HitSystem.prototype.Register = function(details)
 {
     if(!this.Actions[details.Key])
         this.Actions[details.Key] = {ActionFrame:details.Frame + this.ActionFrameDelay}
@@ -179,7 +179,7 @@ ActionSystem.prototype.Register = function(details)
         this.Actions[details.Key][1] = details;
 }
 
-ActionSystem.prototype.Test = function(key,index)
+HitSystem.prototype.Test = function(key,index)
 {
     var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
     var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];

@@ -36,7 +36,7 @@ Player.prototype.CleanUpKeyStateChanges = function(frame)
 /*Simuates pressing keys*/
 Player.prototype.SendInput = function(input)
 {
-    if(!input || !this.GetMatch().allowInput_)
+    if(!input || !this.GetMatch().GetAllowInput())
         return;
 
     var frame = this.GetMatch().GetCurrentFrame();

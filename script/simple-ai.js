@@ -36,9 +36,9 @@
     var GetOtherTeam_ = function()
     {
         if(player_.team_ == BUTTONS.FORWARD)
-            return player_.GetMatch().teamB_.Players;
+            return player_.GetMatch().GetTeamB().GetPlayers();
         else
-            return player_.GetMatch().teamA_.Players;
+            return player_.GetMatch().GetTeamA().GetPlayers();
     }
 
     /*private member*/

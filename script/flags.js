@@ -414,6 +414,8 @@ var CONSTANTS =
     ,COL2:1
     ,COL3:2
     ,COL4:3
+
+    ,MAX_CREDITS:9
 };
 var CHARACTERS = 
 {
@@ -488,8 +490,10 @@ var KEYS =
     ,N:78
     ,M:77
     ,L:76
-
     ,O:79
+
+    ,SPACE:32
+    ,CNTRL:17
 };
 
 var GAME_STATES = 

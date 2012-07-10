@@ -54,12 +54,19 @@ var kensStage_ = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ke
 /*******************************************************************************************************************************/
 /*******************************************************************************************************************************/
 /*******************************************************************************************************************************/
+function Alert(text)
+{
+    if(!!console && !!console.log)
+        console.log(text);
+}
 
 var announcer_ = CreateAnnouncer();
 var game_ = CreateGame();
+var fontSystem_ = CreateFontSystem();
 
 var runGameLoop_ = (function(thisValue) { return function() { thisValue.RunGameLoop(); } })(game_);
 var runCharSelectLoop_ = (function(thisValue) { return function() { thisValue.RunCharSelectLoop(); } })(game_);
+var runInsertCoinScreenLoop_ = (function(thisValue) { return function() { thisValue.RunInsertCoinScreenLoop(); } })(game_);
 
 /*overriden OnStageImagesLoaded function, just incase the images load too slow*/
 function OnStageImagesLoaded()
@@ -104,6 +111,13 @@ function StartCharacterSelection()
     game_.StartCharSelect();
 }
 
+/*Goes to the character selection screen*/
+function StartInsertCoin()
+{
+    game_.Resume();
+    game_.StartInsertCoinScreen();
+}
+
 /*******************************************************************************************************************************/
 function Go()
 {
@@ -116,8 +130,8 @@ function Go()
 }
 function MaxOutEnergy()
 {
-    game_.GetMatch().teamA_.Energybar.Change(1000);
-    game_.GetMatch().teamB_.Energybar.Change(1000);
+    game_.GetMatch().GetTeamA().Energybar.Change(1000);
+    game_.GetMatch().GetTeamB().Energybar.Change(1000);
 }
 var debug_ = GetDebugInstance(game_);
 /*******************************************************************************************************************************/
@@ -127,3 +141,4 @@ var debug_ = GetDebugInstance(game_);
 //StartMayhem();
 //StartQuickMatch();
 //StartCharacterSelection();
+StartInsertCoin();

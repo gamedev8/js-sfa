@@ -29,8 +29,7 @@ var CreateGame = function()
     var speed_ = CONSTANTS.NORMAL_SPEED;
     var targetFPS_ = CONSTANTS.TARGET_FPS;
     var extraSpeed_ = 0;
-    var fontSystem_ = CreateFontSystem();
-    var text_ = fontSystem_.AddText("pnlText");
+    var text_ = null;//fontSystem_.AddText("pnlText");
     var useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
     var state_ = 0;
     var isInitialized_ = false;
@@ -38,11 +37,12 @@ var CreateGame = function()
     var nextTimeout_ = 0;
     var match_ = null;
     var charSelect_ = null;
+    var insertCoinScreen_ = null;
     /*Encapulates a new game*/
     var Game = function ()
     {
         lastTime_ = this.GetCurrentTime();
-        this.Start();
+        this.InitGame();
     }
 
     Game.prototype.GetMatch = function() { return match_; }
@@ -104,7 +104,7 @@ var CreateGame = function()
     Game.prototype.OnStageImagesLoaded = function()
     {
         if(!!match_)
-            match_.stage_.Reset();
+            match_.GetStage().Reset();
     }
 
     Game.prototype.ReleaseText = function()
@@ -120,11 +120,10 @@ var CreateGame = function()
             managed_.ResetKeys();
     }
 
-    Game.prototype.Start = function()
+    Game.prototype.InitGame = function()
     {
         Stage.prototype.Center();
         window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.png)";
-        
     }
 
     Game.prototype.Init = function()
@@ -173,7 +172,7 @@ var CreateGame = function()
         fontSystem_.Preload();
     }
 
-    Game.prototype.InitDOM = function()
+    Game.prototype.ShowElements = function()
     {
         window.document.getElementById("pnlTeam1").style.display = "";
         window.document.getElementById("pnlTeam2").style.display = "";
@@ -181,7 +180,7 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "";
     }
 
-    Game.prototype.ResetDOM = function()
+    Game.prototype.HideElements = function()
     {
         window.document.getElementById("pnlTeam1").style.display = "none";
         window.document.getElementById("pnlTeam2").style.display = "none";
@@ -191,11 +190,7 @@ var CreateGame = function()
 
     Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
     {
-        this.Break();
-        announcer_.Release();
-        if(!!match_)
-            match_.Release();
-        speed_ = CONSTANTS.NORMAL_SPEED;
+        this.ResetGameData();
         var goodGuys = goodGuys;
         var badGuys = badGuys;
         var stage = stage;
@@ -209,42 +204,59 @@ var CreateGame = function()
             charSelect_.Release();
         }
 
-        match_ = new Match();
-        announcer_.SetMatch(match_);
-        this.Init();
-        this.InitDOM();
-        this.PreloadTextImages();
-
+        match_ = CreateMatch();
         managed_ = match_;
+        announcer_.SetMatch(match_);
+        this.ShowElements();
 
-        match_.stage_.Set(stage);
-        match_.Start(goodGuys,badGuys);
-        isInitialized_ = true;
-        frame_ = 0;
+
+        this.Go(goodGuys,badGuys,stage);
         this.RunGameLoop();
     }
 
     Game.prototype.StartCharSelect = function()
     {
-        this.Break();
-        announcer_.Release();
-        speed_ = CONSTANTS.NORMAL_SPEED;
-        if(!!managed_)
-            managed_.Release();
-        if(!!match_)
-            match_.Release();
-        this.ResetDOM();
+        this.ResetGameData();
+        charSelect_ = new CharSelect(user1_,user2_);
+        managed_ = charSelect_;
+
+        this.Go();
+        this.RunCharSelectLoop();
+    }
+    /**/
+    Game.prototype.StartInsertCoinScreen = function()
+    {
+        this.ResetGameData();
+        insertCoinScreen_ = CreateInsertCoinScreen(user1_,user2_);
+        managed_ = insertCoinScreen_;
+
+        this.Go();
+        this.RunInsertCoinScreenLoop();
+    }
+    /**/
+    Game.prototype.Go = function()
+    {
         this.Init();
         this.PreloadTextImages();
-        charSelect_ = new CharSelect(user1_,user2_);
-        charSelect_.Init(window.document.getElementById("pnlStage"));
-        managed_ = charSelect_;
-        /*center the screen*/
         Stage.prototype.Center();
-        managed_.Resume();
         isInitialized_ = true;
         frame_ = 0;
-        this.RunCharSelectLoop();
+        managed_.Start.apply(managed_,arguments);
+    }
+    /*resets common data*/
+    Game.prototype.ResetGameData = function()
+    {
+        this.HideElements();
+        this.Break();
+        this.ReleaseText();
+        announcer_.Release();
+        speed_ = CONSTANTS.NORMAL_SPEED;
+        if(!!charSelect_)
+            charSelect_.Release();
+        if(!!match_)
+            match_.Release();
+        if(!!insertCoinScreen_)
+            insertCoinScreen_.Release();
     }
     /*Increases the game loop speed*/
     Game.prototype.SpeedUp = function()
@@ -327,12 +339,12 @@ var CreateGame = function()
 
     Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
     {
-        user1_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        user1_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
         return user1_;
     }
     Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
     {
-        user2_ = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        user2_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
         return user2_;
     }
     Game.prototype.AddUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
@@ -340,23 +352,6 @@ var CreateGame = function()
         return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
     }
 
-    /*Helper function*/
-    Game.prototype.GetGameLoopClosure = function(thisValue)
-    {
-        return function()
-        {
-            thisValue.RunGameLoop();
-        }
-    }
-
-    /*Helper function*/
-    Game.prototype.GetCharSelectLoopClosure = function(thisValue)
-    {
-        return function()
-        {
-            thisValue.RunCharSelectLoop();
-        }
-    }
 
     /*Shows the frame rate on screen*/
     Game.prototype.ShowFPS = function()
@@ -389,11 +384,11 @@ var CreateGame = function()
             match_.FrameMove(frame_, keyboardState_);
             announcer_.FrameMove(frame_);
             soundManager_.FrameMove(frame_);
-            if(!match_.isSuperMoveActive_)
+            if(!match_.IsSuperMoveActive())
                 fontSystem_.FrameMove(frame_);
 
             match_.Render(frame_);
-            if(!match_.isSuperMoveActive_)
+            if(!match_.IsSuperMoveActive())
                 fontSystem_.Render(frame_);
             announcer_.Render(frame_);
             soundManager_.Render(frame_);
@@ -406,6 +401,35 @@ var CreateGame = function()
         {
             //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             nextTimeout_ = window.setTimeout(runGameLoop_,speed_);
+        }
+        else
+        {
+            match_.HandleMatchOver(frame_);
+        }
+    }
+
+    Game.prototype.RunInsertCoinScreenLoop = function()
+    {
+        this.HandleInput();
+        if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
+        {
+            this.RemoveState(GAME_STATES.STEP_FRAME);
+            ++frame_;
+            insertCoinScreen_.FrameMove(frame_);
+            soundManager_.FrameMove(frame_);
+            fontSystem_.FrameMove(frame_);
+
+
+            insertCoinScreen_.Render(frame_);
+            soundManager_.Render(frame_);
+            fontSystem_.Render(frame_);
+            this.ShowFPS();
+        }
+
+        if(!insertCoinScreen_.IsDone(frame_))
+        {
+            //nextTimeout_ = window.requestAnimFrame(runInsertCoinScreenLoop_,speed_);
+            nextTimeout_ = window.setTimeout(runInsertCoinScreenLoop_,speed_);
         }
         else
         {
@@ -448,11 +472,6 @@ var CreateGame = function()
     }
 
     return new Game();
-}
-function Alert(text)
-{
-    /*if(!!console && !!console.log)
-        console.log(text);*/
 }
 
 window.requestAnimFrame = (function(){

@@ -430,6 +430,13 @@ CharSelect.prototype.Resume = function()
     this.PlayMusic();
 }
 
+/**/
+CharSelect.prototype.Start = function()
+{
+    this.Init();
+    this.PlayMusic();
+}
+
 CharSelect.prototype.GetRow = function(user)
 {
     if((user.selected_ <= this.charsRow1_.Max) && (user.selected_ >= this.charsRow1_.Min))

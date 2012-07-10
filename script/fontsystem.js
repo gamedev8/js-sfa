@@ -70,7 +70,7 @@ ManagedText.prototype.GetSrc = function(letter)
 }
 
 /*Changes the managed text*/
-ManagedText.prototype.Change = function(newText)
+ManagedText.prototype.Change = function(newText,x,hideFrame)
 {
     this.Text = "" + newText;
     this.MustUpdate = true;
@@ -99,6 +99,11 @@ ManagedText.prototype.Change = function(newText)
             this.Element.children[i].src = this.GetSrc(this.Text.charAt(i));
         }
     }
+
+    if(!!hideFrame)
+    {
+        this.ShowNow(x,hideFrame);
+    }
 }
 
 /*increments the X*/
@@ -117,8 +122,8 @@ ManagedText.prototype.MoveY = function(dy)
 
 ManagedText.prototype.HideNow = function() { this.Element.style.display = "none";}
 ManagedText.prototype.Hide = function() { this.SetTarget(-this.Width,this.Y); }
-ManagedText.prototype.ShowNow = function(x) { this.X = x || 0; this.Element.style.display = ""; this.MustUpdate = true;}
-ManagedText.prototype.Show = function() { this.SetTarget(0,this.Y); }
+ManagedText.prototype.ShowNow = function(x,hideFrame) { this.X = (x != 0 ? x : null) || 0; this.Element.style.display = ""; this.MustUpdate = true; if(!!hideFrame) {this.HideFrame = hideFrame;}}
+ManagedText.prototype.Show = function(hideFrame) { this.SetTarget(0,this.Y); if(!!hideFrame) {this.HideFrame = hideFrame;}}
 
 /*toggles between using the left and right css properties for horizontal positioning*/
 ManagedText.prototype.ChangeDirection = function()

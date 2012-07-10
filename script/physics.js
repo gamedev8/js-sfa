@@ -48,7 +48,7 @@
         var retVal = [];
         var match = GetMatch_();
         var PADDING = 1;
-        var players = (team == CONSTANTS.TEAM1) ? match.teamB_.Players : match.teamA_.Players;
+        var players = (team == CONSTANTS.TEAM1) ? match.GetTeamB().GetPlayers() : match.GetTeamA().GetPlayers();
         var distance = 0;
         var otherRect = {};
         var hasP1RightIntersection = false;
@@ -380,7 +380,7 @@
 
             if(amount > 0) /*moving right*/
             {
-                amount = match.stage_.ClampX(myRect.Right,amount);
+                amount = match.GetStage().ClampX(myRect.Right,amount);
                 if(!amount) return amount;
 
                 myRect.OldRight = myRect.Right;
@@ -410,7 +410,7 @@
             }
             else /*moving left*/
             {
-                amount = match.stage_.ClampX(myRect.Left,amount);
+                amount = match.GetStage().ClampX(myRect.Left,amount);
                 if(!amount) return amount;
 
                 myRect.OldLeft = myRect.Left;
@@ -472,7 +472,7 @@
 
             if(amount > 0) /*moving right*/
             {
-                amount = match.stage_.ClampX(myRect.Right,amount);
+                amount = match.GetStage().ClampX(myRect.Right,amount);
                 if(!amount) return amount;
 
                 myRect.OldRight = myRect.Right;
@@ -533,7 +533,7 @@
             }
             else /*moving left*/
             {
-                amount = match.stage_.ClampX(myRect.Left,amount);
+                amount = match.GetStage().ClampX(myRect.Left,amount);
                 if(!amount) return amount;
 
                 myRect.OldLeft = myRect.Left;
@@ -724,20 +724,20 @@
 
         var minX = STAGE.MAX_STAGEX;
         var retVal = null;
-        for(var i = 0, length = match.teamA_.Players.length; i < length; ++i)
+        for(var i = 0, length = match.GetTeamA().GetPlayers().length; i < length; ++i)
         {
-            if(match.teamA_.Players[i].GetLeftX() < minX)
+            if(match.GetTeamA().GetPlayer(i).GetLeftX() < minX)
             {
-                minX = match.teamA_.Players[i].GetLeftX();
-                retVal = match.teamA_.Players[i];
+                minX = match.GetTeamA().GetPlayer(i).GetLeftX();
+                retVal = match.GetTeamA().GetPlayer(i);
             }
         }
-        for(var i = 0, length = match.teamB_.Players.length; i < length; ++i)
+        for(var i = 0, length = match.GetTeamB().GetPlayers().length; i < length; ++i)
         {
-            if(match.teamB_.Players[i].GetLeftX() < minX)
+            if(match.GetTeamB().GetPlayer(i).GetLeftX() < minX)
             {
-                minX = match.teamB_.Players[i].GetLeftX();
-                retVal = match.teamB_.Players[i];
+                minX = match.GetTeamB().GetPlayer(i).GetLeftX();
+                retVal = match.GetTeamB().GetPlayer(i);
             }
         }
 
@@ -750,20 +750,20 @@
 
         var maxX = STAGE.MIN_STAGEX;
         var retVal = null;
-        for(var i = 0, length = match.teamA_.Players.length; i < length; ++i)
+        for(var i = 0, length = match.GetTeamA().GetPlayers().length; i < length; ++i)
         {
-            if(match.teamA_.Players[i].GetLeftX() > maxX)
+            if(match.GetTeamA().GetPlayer(i).GetLeftX() > maxX)
             {
-                maxX = match.teamA_.Players[i].GetLeftX();
-                retVal = match.teamA_.Players[i];
+                maxX = match.GetTeamA().GetPlayer(i).GetLeftX();
+                retVal = match.GetTeamA().GetPlayer(i);
             }
         }
-        for(var i = 0, length = match.teamB_.Players.length; i < length; ++i)
+        for(var i = 0, length = match.GetTeamB().GetPlayers().length; i < length; ++i)
         {
-            if(match.teamB_.Players[i].GetLeftX() > maxX)
+            if(match.GetTeamB().GetPlayer(i).GetLeftX() > maxX)
             {
-                maxX = match.teamB_.Players[i].GetLeftX();
-                retVal = match.teamB_.Players[i];
+                maxX = match.GetTeamB().GetPlayer(i).GetLeftX();
+                retVal = match.GetTeamB().GetPlayer(i);
             }
         }
 
@@ -790,16 +790,16 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < match.teamB_.Players.length; ++i)
-                    if(match.teamB_.Players[i].CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
-                        return match.teamB_.Players[i];
+                for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
+                    if(match.GetTeamB().GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.GetTeamB().GetPlayer(i);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < match.teamA_.Players.length; ++i)
-                    if(match.teamA_.Players[i].CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
-                        return match.teamA_.Players[i];
+                for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
+                    if(match.GetTeamA().GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.GetTeamA().GetPlayer(i);
                 break;
             }
         }
@@ -823,15 +823,15 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < match.teamB_.Players.length; ++i)
-                    if(match.teamB_.Players[i].GetMidX() < x)
+                for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
+                    if(match.GetTeamB().GetPlayer(i).GetMidX() < x)
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < match.teamA_.Players.length; ++i)
-                    if(match.teamA_.Players[i].GetMidX() < x)
+                for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
+                    if(match.GetTeamA().GetPlayer(i).GetMidX() < x)
                         return true;
                 break;
             }
@@ -847,15 +847,15 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < match.teamB_.Players.length; ++i)
-                    if(match.teamB_.Players[i].GetMidX() > x)
+                for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
+                    if(match.GetTeamB().GetPlayer(i).GetMidX() > x)
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < match.teamA_.Players.length; ++i)
-                    if(match.teamA_.Players[i].GetMidX() > x)
+                for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
+                    if(match.GetTeamA().GetPlayer(i).GetMidX() > x)
                         return true;
                 break;
             }
