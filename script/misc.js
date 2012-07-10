@@ -56,8 +56,10 @@ var kensStage_ = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ke
 /*******************************************************************************************************************************/
 function Alert(text)
 {
+    /*
     if(!!console && !!console.log)
         console.log(text);
+    */
 }
 
 var announcer_ = CreateAnnouncer();
