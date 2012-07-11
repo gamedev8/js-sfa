@@ -168,7 +168,7 @@
             if((frame % 20) == 0)
                 player.TargetLastAttacker(frame);
 
-            if(player_.flags_.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
+            if(player_.Flags.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
             {
                 if(!DoUppercut_(frame))
                 {

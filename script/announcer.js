@@ -13,7 +13,7 @@
     var Init_ = function()
     {
         var y = 0;
-        round_.Animation = new BasicAnimation("round",[]);
+        round_.Animation = CreateBasicAnimation("round",[]);
         round_.Animation.AddFrame(this,"|images/misc/misc/round-0.png",2,0,y);
         round_.Animation.AddFrame(this,"|images/misc/misc/round-1.png",3,0,y);
         round_.Animation.AddFrame(this,"|images/misc/misc/round-2.png",1,0,y);
@@ -29,7 +29,7 @@
         round_.Animation.AddFrame(this,"|images/misc/misc/round-12.png",3,0,y - 217);
 
         var y = 0;
-        roundNumber_.Animation = new BasicAnimation("round number");
+        roundNumber_.Animation = CreateBasicAnimation("round number");
         roundNumber_.Animation.AddFrame(this,"|images/misc/misc/1-0.png",1,0,y - 8);
         roundNumber_.Animation.AddFrame(this,"|images/misc/misc/1-1.png",2,0,y - 13);
         roundNumber_.Animation.AddFrame(this,"|images/misc/misc/1-2.png",1,0,y - 13);
@@ -46,7 +46,7 @@
         roundNumber_.Animation.AddFrame(this,"|images/misc/misc/1-12.png",1,0,y - 256);
 
         var y = 0;
-        fight_.Animation = new BasicAnimation("fight");
+        fight_.Animation = CreateBasicAnimation("fight");
         fight_.Animation.AddFrame(this,"|images/misc/misc/fight-0.png",5,0,y - 24);
         fight_.Animation.AddFrame(this,"|images/misc/misc/fight-1.png",5,0,y - 24);
         fight_.Animation.AddFrame(this,"|images/misc/misc/fight-2.png",1,0,y - 27);
@@ -63,7 +63,7 @@
         fight_.Animation.AddFrame(this,"|images/misc/misc/fight-13.png",5,0,y - 242);
 
         var y = 28;
-        ko_.Animation = new BasicAnimation("ko");
+        ko_.Animation = CreateBasicAnimation("ko");
         ko_.Animation.AddFrame(this,"|images/misc/misc/ko-0.png",1,0,y);
         ko_.Animation.AddFrame(this,"|images/misc/misc/ko-1.png",1,0,y);
         ko_.Animation.AddFrame(this,"|images/misc/misc/ko-2.png",1,0,y);
@@ -81,7 +81,7 @@
 
         var y = 0;
         var x = 0;
-        perfect_.Animation = new BasicAnimation("perfect");
+        perfect_.Animation = CreateBasicAnimation("perfect");
         perfect_.Animation.AddFrame(this,"|images/misc/misc/perfect-0.png",4,0,y);
         perfect_.Animation.AddFrame(this,"|images/misc/misc/perfect-1.png",4,x - 8,y + 15);
         perfect_.Animation.AddFrame(this,"|images/misc/misc/perfect-2.png",4,x - 8,y + 15);

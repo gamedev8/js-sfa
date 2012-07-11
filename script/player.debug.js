@@ -23,7 +23,7 @@ Player.prototype.RenderDebugInfo = function()
     */
 
 
-    if(!!this.flags_.Combat.Has(COMBAT_FLAGS.ATTACK) && this.currentFrame_.HitPoints.length > 0)
+    if(!!this.Flags.Combat.Has(COMBAT_FLAGS.ATTACK) && this.currentFrame_.HitPoints.length > 0)
     {
         var points = this.currentFrame_.HitPoints;
         var x = this.GetX();

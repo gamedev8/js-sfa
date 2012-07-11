@@ -110,11 +110,11 @@ Player.prototype.CompareKeySequence = function(move,keys)
     var isMatch = true;
     do
     {
-        if(move.keySequence_[keyIndex] != keys[keyIndex])
+        if(move.GetKey(keyIndex) != keys[keyIndex])
         {
             isExactMatch = false;
         }
-        if((move.keySequence_[keyIndex] & keys[keyIndex]) != move.keySequence_[keyIndex])
+        if((move.GetKey(keyIndex) & keys[keyIndex]) != move.GetKey(keyIndex))
         {
             isMatch = false;
             break;
@@ -134,18 +134,18 @@ Player.prototype.CompareAlternateKeySequences = function(move,keys)
 {
     var isExactMatch = false;
     var isMatch = false;
-    outer : for(var i = 0; i < move.alternateKeySequences_.length; ++i)
+    outer : for(var i = 0, length = move.GetAlternateKeySequencesLength(); i < length; ++i)
     {
         isExactMatch = true;
         isMatch = true;
 
-        inner : for(var j = 0; j < move.alternateKeySequences_[i].length; ++j)
+        inner : for(var j = 0, iLength = move.GetAlternateKeySequenceLength(i); j < iLength; ++j)
         {
-            if(move.alternateKeySequences_[i][j] != keys[j])
+            if(move.GetAlternateKeySequence(i,j) != keys[j])
             {
                 isExactMatch = false;
             }
-            if((move.alternateKeySequences_[i][j] & keys[j]) != move.alternateKeySequences_[i][j])
+            if((move.GetAlternateKeySequence(i,j) & keys[j]) != move.GetAlternateKeySequence(i,j))
             {
                 isMatch = false;
                 break inner;
@@ -175,12 +175,12 @@ Player.prototype.CutKey = function (keys,frame)
 /*returns true if the player is in a state where the current animation can be interupted with another animation*/
 Player.prototype.AllowInterupt = function()
 {
-    return this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_1)
-            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_2)
-            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_3)
-            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_4)
-            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_5)
-            || this.flags_.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_6)
+    return this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_1)
+            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_2)
+            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_3)
+            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_4)
+            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_5)
+            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_6)
         ;
 }
 /*Check the current key sequence for a move to execute*/
@@ -191,7 +191,7 @@ Player.prototype.CheckForAnimation = function(frame)
     this.checkedForAnimation_ = true;
 
 
-    if(this.flags_.Player.Has(PLAYER_FLAGS.MOBILE) || (this.AllowInterupt() && !this.interuptAnimation_))
+    if(this.Flags.Player.Has(PLAYER_FLAGS.MOBILE) || (this.AllowInterupt() && !this.interuptAnimation_))
     {
         this.keyStateChanged_ = false;
         var keys = [];
@@ -203,10 +203,10 @@ Player.prototype.CheckForAnimation = function(frame)
         {
             var value = this.CutKey(keys,frame);
             var move = this.FindAnimation(value,frame);
-            if(!!move && (!move.duration_ || (value.Duration <= move.duration_)))
+            if(!!move && (!move.Duration || (value.Duration <= move.Duration)))
             {
                 /*is there no current move, or is the user executing a new move*/
-                if(!this.currentAnimation_ || (this.currentAnimation_.Animation.baseAnimation_.name_ != move.baseAnimation_.name_))
+                if(!this.currentAnimation_ || (this.currentAnimation_.Animation.BaseAnimation.name_ != move.BaseAnimation.name_))
                 {
                     if(this.AllowInterupt())
                         this.interuptAnimation_ = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.direction_};

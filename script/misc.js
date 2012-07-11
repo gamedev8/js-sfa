@@ -132,8 +132,8 @@ function Go()
 }
 function MaxOutEnergy()
 {
-    game_.GetMatch().GetTeamA().Energybar.Change(1000);
-    game_.GetMatch().GetTeamB().Energybar.Change(1000);
+    game_.GetMatch().GetTeamA().GetEnergybar().Change(1000);
+    game_.GetMatch().GetTeamB().GetEnergybar().Change(1000);
 }
 var debug_ = GetDebugInstance(game_);
 /*******************************************************************************************************************************/

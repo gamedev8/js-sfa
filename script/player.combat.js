@@ -2,9 +2,9 @@
 
 Player.prototype.IsVulnerable = function()
 {
-    var retVal = this.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)
-                || this.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE)
-                || this.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS)
+    var retVal = this.Flags.Player.Has(PLAYER_FLAGS.INVULNERABLE)
+                || this.Flags.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE)
+                || this.Flags.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS)
         ;
     return !retVal;
 }
@@ -98,7 +98,7 @@ Player.prototype.SetAllowBlock = function(attackId,frame,isAllowed,x,y)
             this.blockedAttacks_[this.blockedAttacks_.length] = {AttackId:attackId};
         
         /*allow the block animation*/
-        this.flags_.Pose.Add(POSE_FLAGS.ALLOW_BLOCK);
+        this.Flags.Pose.Add(POSE_FLAGS.ALLOW_BLOCK);
     }
     else
     {
@@ -108,9 +108,9 @@ Player.prototype.SetAllowBlock = function(attackId,frame,isAllowed,x,y)
             /*if there are no more attacks, remove the ability to block*/
             if(this.blockedAttacks_.length == 0)
             {
-                this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
+                this.Flags.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
                 /*if the player is blocking, then remove it*/
-                if(this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING))
+                if(this.Flags.Player.Has(PLAYER_FLAGS.BLOCKING))
                     this.ignoreHoldFrame_ = true; /*ignores the hold frame on the current animation, which then causes the animation to continue, and then end*/
             }
         }
@@ -129,7 +129,7 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
         if(!this.AddBlockableAirAttack(attackId))
             this.blockedAirAttacks_[this.blockedAirAttacks_.length] = {AttackId:attackId};
         /*allow block*/
-        this.flags_.Pose.Add(POSE_FLAGS.ALLOW_AIR_BLOCK);
+        this.Flags.Pose.Add(POSE_FLAGS.ALLOW_AIR_BLOCK);
         /*air attacks can also be blocked on the ground*/
         this.SetAllowBlock(attackId,frame,isAllowed,x,y);
     }
@@ -140,7 +140,7 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
         {
             /*if there are no more attacks, remove the ability to block*/
             if(this.blockedAirAttacks_.length == 0)
-                this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_AIR_BLOCK);
+                this.Flags.Pose.Remove(POSE_FLAGS.ALLOW_AIR_BLOCK);
             /*air attacks can also be blocked on the ground*/
             this.SetAllowBlock(attackId,frame,isAllowed,x,y);
         }
@@ -179,9 +179,9 @@ Player.prototype.CanBeGrappled = function(x,y,distance,airborneFlags,isAirborne)
 
     if((Math.abs(x - this.GetMidX()) < distance)
         && (Math.abs(y - this.y_) < distance)
-        && (!(this.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
+        && (!(this.Flags.Player.Has(PLAYER_FLAGS.INVULNERABLE)))
         && (!this.grappledPlayer_
-        && (!this.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.THROW)))
+        && (!this.currentAnimation_.Animation.OverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.THROW)))
         && (!this.HasRegisteredHit())
         )
             retVal = true;
@@ -194,7 +194,7 @@ Player.prototype.HandleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
 {
     if(!!this.grappledPlayer_.currentAnimation_.Animation && !!this.grappledPlayer_.IsBeingGrappled())
     {
-        var forcedFrame = this.grappledPlayer_.currentAnimation_.Animation.baseAnimation_.frames_[forcedFrameIndex];
+        var forcedFrame = this.grappledPlayer_.currentAnimation_.Animation.BaseAnimation.frames_[forcedFrameIndex];
         if(!!forcedFrame)
         {
             var offsetX = forcedFrame.X;
@@ -237,7 +237,7 @@ Player.prototype.HandleProjectiles = function(frame,stageX,stageY)
     }
     /*No projectiles are active, clear the projectile state and allow the player to throw another projectile*/
     if(!hasActiveProjectiles)
-        this.flags_.Combat.Remove(COMBAT_FLAGS.PROJECTILE_ACTIVE);
+        this.Flags.Combat.Remove(COMBAT_FLAGS.PROJECTILE_ACTIVE);
 }
 
 /*Handles attacking players on the opposing team*/
@@ -265,7 +265,7 @@ Player.prototype.HandleAttack = function(frame, moveFrame)
         this.onEndAirAttackFn_(this.currentAnimation_.ID);
     }
 
-    this.attackFn_(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackState,moveFrame.BaseDamage,this.currentAnimation_.Animation.moveOverrideFlags_,moveFrame.EnergyToAdd,this.currentAnimation_.Animation.behaviorFlags_,this.currentAnimation_.Animation.invokedAnimationName_,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound);
+    this.attackFn_(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackState,moveFrame.BaseDamage,this.currentAnimation_.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.currentAnimation_.Animation.BehaviorFlags,this.currentAnimation_.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound);
 }
 
 /*If the player gets hit - this function must be called to set all of the details of the hit*/
@@ -297,9 +297,9 @@ Player.prototype.SetRegisteredHit = function(attackState,hitState,flags,frame,da
     if(!!isGrapple)
         this.SetPendingGrapple(true);
 
-    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.moveOverrideFlags_,this,who,isProjectile,isGrapple,this.currentAnimation_.StartFrame,frame,otherPlayer));
+    this.GetMatch().RegisterAction(new ActionDetails(this.currentAnimation_.Animation.OverrideFlags,this,who,isProjectile,isGrapple,this.currentAnimation_.StartFrame,frame,otherPlayer));
 
-    if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
+    if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
     return true;
 }
@@ -333,19 +333,19 @@ Player.prototype.RegisterHit = function(frame)
 /**/
 Player.prototype.IsBlockingLow = function()
 {
-    return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING) && this.flags_.Pose.Has(POSE_FLAGS.CROUCHING);
+    return this.Flags.Player.Has(PLAYER_FLAGS.BLOCKING) && this.Flags.Pose.Has(POSE_FLAGS.CROUCHING);
 }
 Player.prototype.IsBlockingInAir = function()
 {
-    return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING) && this.IsAirborne();
+    return this.Flags.Player.Has(PLAYER_FLAGS.BLOCKING) && this.IsAirborne();
 }
 Player.prototype.IsBlockingHigh = function()
 {
-    return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING) && !this.flags_.Pose.Has(POSE_FLAGS.CROUCHING);
+    return this.Flags.Player.Has(PLAYER_FLAGS.BLOCKING) && !this.Flags.Pose.Has(POSE_FLAGS.CROUCHING);
 }
 Player.prototype.IsBlocking = function()
 {
-    return this.flags_.Player.Has(PLAYER_FLAGS.BLOCKING);
+    return this.Flags.Player.Has(PLAYER_FLAGS.BLOCKING);
 }
 Player.prototype.DidntHit = function(frame)
 {
@@ -363,7 +363,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
     }
     this.lastHitFrame_[who] = hitID;
     this.lastHit_ = {x:hitX,y:hitY};
-    if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
+    if(!!isProjectile && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
     var move = null;
     var slideAmount = 0;
@@ -377,9 +377,9 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
         if(this.IsBlocking())
         {
             /*player attempt to block is overriden*/
-            this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
+            this.Flags.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
             /*if the player is blocking, then remove it*/
-            this.flags_.Player.Remove(PLAYER_FLAGS.BLOCKING);
+            this.Flags.Player.Remove(PLAYER_FLAGS.BLOCKING);
         }
 
         this.SetBeingGrappled(true);
@@ -389,7 +389,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
             move = this.moves_[invokedAnimationName];
             if(!!move)
             {
-                move.controllerAnimation_ = otherPlayer.currentAnimation_;
+                move.ControllerAnimation = otherPlayer.currentAnimation_;
             }
         }
         this.QueueGrappleSound();
@@ -419,9 +419,9 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
         if(this.IsBlocking())
         {
             /*player attempt to block was overriden*/
-            this.flags_.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
+            this.Flags.Pose.Remove(POSE_FLAGS.ALLOW_BLOCK);
             /*if the player is blocking, then remove it*/
-            this.flags_.Player.Remove(PLAYER_FLAGS.BLOCKING);
+            this.Flags.Player.Remove(PLAYER_FLAGS.BLOCKING);
         }
 
         if(!!damage)
@@ -430,7 +430,7 @@ Player.prototype.TakeHit = function(attackState,hitState,flags,startFrame,frame,
         if(!!energyToAdd && !(!!(attackState & ATTACK_FLAGS.THROW_EJECT)))
             energyToAdd = Math.ceil(energyToAdd/2);
 
-        if(this.flags_.Pose.Has(POSE_FLAGS.CROUCHING))
+        if(this.Flags.Pose.Has(POSE_FLAGS.CROUCHING))
         {
             if(!!(attackState & ATTACK_FLAGS.TRIP)) {move = this.moves_[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
             if(!!(attackState & ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.moves_[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cLN")];}
@@ -581,7 +581,7 @@ Player.prototype.ForceLose = function(attackDirection)
     var direction = attackDirection || -this.direction_;
     this.AbortThrow();
 
-    this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
+    this.Flags.Player.Add(PLAYER_FLAGS.DEAD);
     this.KnockDownDefeat(frame,attackDirection);
     this.QueueSound("audio/" + this.name_.toLowerCase() + "/dead.zzz");
     this.ClearInput();
@@ -597,7 +597,7 @@ Player.prototype.ForceTeamLose = function(frame,attackDirection)
         var frame = this.GetMatch().GetCurrentFrame();
         var direction = attackDirection || -this.direction_;
 
-        this.flags_.Player.Add(PLAYER_FLAGS.DEAD);
+        this.Flags.Player.Add(PLAYER_FLAGS.DEAD);
         this.GetMatch().DefeatTeam(this.team_,attackDirection,frame,this.id_);
     }
 }
@@ -609,15 +609,15 @@ Player.prototype.KnockDownDefeat = function(frame,attackDirection)
         attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(attackDirection);
         this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_,AttackDirection:direction});
-        this.flags_.Player.Add(PLAYER_FLAGS.AIRBORNE);
-        this.PerformJump(direction * move.vx_,move.vy_);
+        this.Flags.Player.Add(PLAYER_FLAGS.AIRBORNE);
+        this.PerformJump(direction * move.Vx,move.Vy);
     }
 }
 
 /*Player gets back up*/
 Player.prototype._DEBUG_Getup = function()
 {
-    this.flags_.Player.Remove(PLAYER_FLAGS.DEAD);
+    this.Flags.Player.Remove(PLAYER_FLAGS.DEAD);
     this.TakeDamage(-20);
     var move = this.moves_[_c3("_",MISC_FLAGS.NONE,"_getup")];
     this.SetCurrentAnimation({Animation:move,StartFrame:this.GetMatch().GetCurrentFrame(),Direction:this.direction_,AttackDirection:this.direction_});
@@ -628,10 +628,10 @@ Player.prototype.TakeTrip = function(attackState,hitState,flags,frame,damage,isP
     var move = this.moves_[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];
     if(!!move)
     {
-        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
+        this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE);
         var direction = this.GetAttackDirection(attackDirection);
         this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_,AttackDirection:direction});
-        this.PerformJump(direction * move.vx_ * fx,move.vy_ * fy);
+        this.PerformJump(direction * move.Vx * fx,move.Vy * fy);
     }
 }
 /*Player falls*/
@@ -644,8 +644,8 @@ Player.prototype.Drop = function()
         //attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(-this.direction_);
         this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});
-        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
-        this.PerformJump(direction * move.vx_ * 0,move.vy_ * 0);
+        this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE);
+        this.PerformJump(direction * move.Vx * 0,move.Vy * 0);
     }
 }
 /*Player aborts throw*/
@@ -667,9 +667,9 @@ Player.prototype.Eject = function(attackState,hitState,flags,frame,damage,isProj
     {
         //attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(attackDirection);
-        this.SetCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.direction_, AttackDirection:direction, Vx:move.vx_ * fx, Vy:move.vy_ * fy});
-        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
-        this.PerformJump(direction * move.vx_ * fx,move.vy_ * fy);
+        this.SetCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.direction_, AttackDirection:direction, Vx:move.Vx * fx, Vy:move.Vy * fy});
+        this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE);
+        this.PerformJump(direction * move.Vx * fx,move.Vy * fy);
     }
 }
 /*Player gets knocked down*/
@@ -680,8 +680,8 @@ Player.prototype.KnockDown = function(attackState,hitState,flags,frame,damage,is
     {
         var direction = this.GetAttackDirection(attackDirection);
         this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_,AttackDirection:direction});
-        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
-        this.PerformJump(direction * move.vx_ * fx,move.vy_ * fy);
+        this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE);
+        this.PerformJump(direction * move.Vx * fx,move.Vy * fy);
     }
 }
 /*Player takes a hit while in the air*/
@@ -692,7 +692,7 @@ Player.prototype.TakeAirborneHit = function(attackState,hitState,flags,frame,dam
     {   
         var direction = -this.GetAttackDirection(attackDirection);
         this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_,AttackDirection:direction});
-        this.PerformJump(direction * move.vx_ * fx,move.vy_ * fy);
+        this.PerformJump(direction * move.Vx * fx,move.Vy * fy);
     }
     
 }

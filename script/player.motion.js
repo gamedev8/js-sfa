@@ -71,16 +71,16 @@ Player.prototype.AlignX = function(deltaX) { this.x_ += (deltaX * -this.directio
 
 Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.spriteElement_.style.right = value+"px"; } else {this.spriteElement_.style.left = value+"px";}}
 Player.prototype.SetImageY = function(value) { this.spriteElement_.style.bottom = value+"px"; }
-Player.prototype.IsCrouching = function() { return this.flags_.Pose.Has(POSE_FLAGS.CROUCHING); }
+Player.prototype.IsCrouching = function() { return this.Flags.Pose.Has(POSE_FLAGS.CROUCHING); }
 Player.prototype.IsOnGround = function() { return this.y_ == STAGE.FLOORY; }
-Player.prototype.IsAirborne = function() { return this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE) || this.flags_.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
+Player.prototype.IsAirborne = function() { return this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
 Player.prototype.IsDescending = function() { return this.lastFrameY_ > this.constY_; }
 Player.prototype.JumpedOverAPlayer = function() { return this.IsAirborne() && this.IsDescending() && !!this.mustChangeDirection_; }
 Player.prototype.CanBeJuggled = function()
 {
     return this.IsAirborne()
         && !!this.currentAnimation_.Animation
-        && !!this.currentAnimation_.Animation.allowJuggle_
+        && !!this.currentAnimation_.Animation.AllowJuggle
     ;
 }
 Player.prototype.SetDirection = function(value)
@@ -160,7 +160,7 @@ Player.prototype.ChangeDirection = function(quick)
     }
     if(!quick)
     {
-        if(this.flags_.Pose.Has(POSE_FLAGS.CROUCHING))
+        if(this.Flags.Pose.Has(POSE_FLAGS.CROUCHING))
         {
             var move = this.moves_[_c3("_",POSE_FLAGS.CROUCHING,"_turn")];
             this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_});
@@ -383,7 +383,7 @@ Player.prototype.ShowSmallDirt = function(frame)
 /*Puts a player in sliding motion*/
 Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
 {
-    if(!!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+    if(!!this.currentAnimation_.Animation.Flags.Combat && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
         return this.StopSlide();
 
     if(this.isSliding_)
@@ -405,7 +405,7 @@ Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
 /*Handles the player sliding*/
 Player.prototype.Slide = function(frame)
 {
-    if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.flags_.Combat && !!(this.currentAnimation_.Animation.flags_.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+    if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.Flags.Combat && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
         return this.StopSlide();
     if(!!this.frameFreeze_ && !this.IsBlocking())
         return;
@@ -452,7 +452,7 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
 {
     //this.x1 = this.x0_ + ((this.jumpVelocityX_ * this.jumpT_) * 0.1);
     var y = this.y0_ + ((this.jumpVelocityY_ * this.jumpT_) - ((CONSTANTS.HALF_G) * (this.jumpT_*this.jumpT_))) * CONSTANTS.Y_DAMPING;
-    if(!!(this.flags_.Pose.Has(POSE_FLAGS.HOLD_AIRBORNE)))
+    if(!!(this.Flags.Pose.Has(POSE_FLAGS.HOLD_AIRBORNE)))
         this.HoldJump();
 
     ++this.jumpT_;
@@ -460,10 +460,10 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
     var dx = this.jumpVelocityX_ * CONSTANTS.X_DAMPING;
     var dy = y - this.oldY_;
 
-    if(!!this.vxFn_)
-        dx = this.vxFn_(dx,this.jumpT_);
-    if(!!this.vyFn_)
-        dy = this.vyFn_(dy,this.jumpT_);
+    if(!!this.VxFn)
+        dx = this.VxFn(dx,this.jumpT_);
+    if(!!this.VyFn)
+        dy = this.VyFn(dy,this.jumpT_);
 
     this.oldY_ = y;
 
@@ -472,10 +472,10 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
 
     if(!ignoreYCheck && this.GetY() <= STAGE.FLOORY)
     {
-        this.flags_.Pose.Remove(POSE_FLAGS.AIRBORNE);
-        this.flags_.Pose.Remove(POSE_FLAGS.AIRBORNE_FB);
-        this.vxFn_ = null;
-        this.vyFn_ = null;
+        this.Flags.Pose.Remove(POSE_FLAGS.AIRBORNE);
+        this.Flags.Pose.Remove(POSE_FLAGS.AIRBORNE_FB);
+        this.VxFn = null;
+        this.VyFn = null;
         this.jumpT_ = 0;
         return false;
     }
@@ -498,11 +498,11 @@ Player.prototype.PerformJump = function(vx,vy,vxFn,vyFn)
     /*store a timer*/
     if(!!vx)
     {
-        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE_FB);
+        this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE_FB);
     }
     else
     {
-        this.flags_.Pose.Add(POSE_FLAGS.AIRBORNE);
+        this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE);
     }
     this.AdvanceJump(true);
 }
@@ -521,12 +521,12 @@ Player.prototype.HoldJump = function()
     }
 }
 
-Player.prototype.SetVyFn = function(fn) { this.vyFn_ = this.vyFn_ || fn; }
-Player.prototype.SetVxFn = function(fn) { this.vxFn_ = this.vxFn_ || fn; }
+Player.prototype.SetVyFn = function(fn) { this.VyFn = this.VyFn || fn; }
+Player.prototype.SetVxFn = function(fn) { this.VxFn = this.VxFn || fn; }
 
-Player.prototype.ResetVyFn = function(fn) { this.vyFn_ = function(b) { return b;} }
-Player.prototype.ResetVxFn = function(fn) { this.vxFn_ = function(b) { return b;} }
+Player.prototype.ResetVyFn = function(fn) { this.VyFn = function(b) { return b;} }
+Player.prototype.ResetVxFn = function(fn) { this.VxFn = function(b) { return b;} }
 
-Player.prototype.ClearVyFn = function() { this.vyFn_ = null; }
-Player.prototype.ClearVxFn = function() { this.vxFn_ = null; }
+Player.prototype.ClearVyFn = function() { this.VyFn = null; }
+Player.prototype.ClearVxFn = function() { this.VxFn = null; }
 

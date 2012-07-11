@@ -82,13 +82,13 @@ HitSystem.prototype.CanOverride = function(key,index)
     var retVal  = false;
     if(!!first.OtherPlayer && !!first.Player.currentAnimation_.Animation)
     {
-        var a = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
-        var b = first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
-        var c = first.Player.currentAnimation_.Animation.moveOverrideFlags_.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.moveOverrideFlags_.AllowOverrideFlags);
+        var a = first.Player.currentAnimation_.Animation.OverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
+        var b = first.OtherPlayer.currentAnimation_.Animation.OverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
+        var c = first.Player.currentAnimation_.Animation.OverrideFlags.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.OverrideFlags.AllowOverrideFlags);
         var d = first.IsProjectile;
         var e = !!second && second.IsGrapple;
         var f = first.IsGrapple;
-        var ignore = first.Player.flags_.Player.Has(PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE);
+        var ignore = first.Player.Flags.Player.Has(PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE);
 
         retVal = !!ignore && (a || b || (c && first.Player.isInAttackFrame_) || d);
         if(!!e)

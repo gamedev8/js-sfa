@@ -37,31 +37,31 @@ User.prototype.AddStanceAnimations = function()
 {
     if(!this.isInitialized_)
     {
-        this.animations_["ryu"] = new BasicAnimation("ryu_stance",[],true);
+        this.animations_["ryu"] = CreateBasicAnimation("ryu_stance",[],true);
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-0.png",5);
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-1.png",5);
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-2.png",5);
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-3.png",5);
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-2.png",5);    
         this.animations_["ryu"].AddFrame(this,"|ryu-x-stance-1.png",5);
-        this.animations_["ryu_selected"] = new BasicAnimation("ryu_selected",[],true);
+        this.animations_["ryu_selected"] = CreateBasicAnimation("ryu_selected",[],true);
         this.animations_["ryu_selected"].AddFrame(this,"|ryu-x-win-2-0.png",5);
         this.animations_["ryu_selected"].AddFrame(this,"|ryu-x-win-2-1.png",5);
         this.animations_["ryu_selected"].AddFrame(this,"|ryu-x-win-2-2.png",CONSTANTS.MAX_FRAME);
 
-        this.animations_["ken"] = new BasicAnimation("ken_stance",[],true);
+        this.animations_["ken"] = CreateBasicAnimation("ken_stance",[],true);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-0.png",5);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-1.png",5);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-2.png",5);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-3.png",5);
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-2.png",5);    
         this.animations_["ken"].AddFrame(this,"|ken-x-stance-1.png",5);
-        this.animations_["ken_selected"] = new BasicAnimation("ken_selected",[],true);
+        this.animations_["ken_selected"] = CreateBasicAnimation("ken_selected",[],true);
         this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-0.png",5);
         this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-1.png",5);
         this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-2.png",CONSTANTS.MAX_FRAME);
 
-        this.animations_["sagat"] = new BasicAnimation("sagat_stance",[],true);
+        this.animations_["sagat"] = CreateBasicAnimation("sagat_stance",[],true);
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-0.png",5);
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-3.png",5);
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-2.png",5);
@@ -69,7 +69,7 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-2.png",5);    
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-3.png",5);    
 
-        this.animations_["guy"] = new BasicAnimation("guy_stance",[],true);
+        this.animations_["guy"] = CreateBasicAnimation("guy_stance",[],true);
         this.animations_["guy"].AddFrame(this,"|guy-x-stance-0.png",26);
         this.animations_["guy"].AddFrame(this,"|guy-x-stance-3.png",15);
         this.animations_["guy"].AddFrame(this,"|guy-x-stance-2.png",15);
@@ -77,19 +77,19 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["guy"].AddFrame(this,"|guy-x-stance-2.png",15);
         this.animations_["guy"].AddFrame(this,"|guy-x-stance-3.png",15);
 
-        this.animations_["birdie"] = new BasicAnimation("birdie_stance",[],true);
+        this.animations_["birdie"] = CreateBasicAnimation("birdie_stance",[],true);
         this.animations_["birdie"].AddFrame(this,"|birdie-x-stance-0.png",15);
         this.animations_["birdie"].AddFrame(this,"|birdie-x-stance-1.png",15);
         this.animations_["birdie"].AddFrame(this,"|birdie-x-stance-2.png",15);
         this.animations_["birdie"].AddFrame(this,"|birdie-x-stance-3.png",15);
 
-        this.animations_["chunli"] = new BasicAnimation("chunli_stance",[],true);
+        this.animations_["chunli"] = CreateBasicAnimation("chunli_stance",[],true);
         this.animations_["chunli"].AddFrame(this,"|chunli-x-stance-0.png",10);
         this.animations_["chunli"].AddFrame(this,"|chunli-x-stance-1.png",10);
         this.animations_["chunli"].AddFrame(this,"|chunli-x-stance-2.png",10);
         this.animations_["chunli"].AddFrame(this,"|chunli-x-stance-3.png",10);
 
-        this.animations_["charlie"] = new BasicAnimation("charlie_stance",[],true);
+        this.animations_["charlie"] = CreateBasicAnimation("charlie_stance",[],true);
         this.animations_["charlie"].AddFrame(this,"|charlie-x-stance-0.png",5);
         this.animations_["charlie"].AddFrame(this,"|charlie-x-stance-1.png",5);
         this.animations_["charlie"].AddFrame(this,"|charlie-x-stance-2.png",5);
@@ -97,7 +97,7 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["charlie"].AddFrame(this,"|charlie-x-stance-2.png",5);
         this.animations_["charlie"].AddFrame(this,"|charlie-x-stance-1.png",5);
 
-        this.animations_["sodom"] = new BasicAnimation("sodom_stance",[],true);
+        this.animations_["sodom"] = CreateBasicAnimation("sodom_stance",[],true);
         this.animations_["sodom"].AddFrame(this,"|sodom-x-stance-0.png",5);
         this.animations_["sodom"].AddFrame(this,"|sodom-x-stance-1.png",5);
         this.animations_["sodom"].AddFrame(this,"|sodom-x-stance-2.png",5);
@@ -106,7 +106,7 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["sodom"].AddFrame(this,"|sodom-x-stance-5.png",5);
 
 
-        this.animations_["adon"] = new BasicAnimation("adon_stance",[],true);
+        this.animations_["adon"] = CreateBasicAnimation("adon_stance",[],true);
         this.animations_["adon"].AddFrame(this,"|adon-x-stance-0.png",5);
         this.animations_["adon"].AddFrame(this,"|adon-x-stance-1.png",5);
         this.animations_["adon"].AddFrame(this,"|adon-x-stance-2.png",5);
@@ -114,7 +114,7 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["adon"].AddFrame(this,"|adon-x-stance-4.png",5);
 
 
-        this.animations_["rose"] = new BasicAnimation("rose_stance",[],true);
+        this.animations_["rose"] = CreateBasicAnimation("rose_stance",[],true);
         this.animations_["rose"].AddFrame(this,"|rose-x-c-stance-0.png",5);
         this.animations_["rose"].AddFrame(this,"|rose-x-c-stance-1.png",5);
         this.animations_["rose"].AddFrame(this,"|rose-x-c-stance-2.png",5);
@@ -123,7 +123,7 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["rose"].AddFrame(this,"|rose-x-c-stance-5.png",5);
 
 
-        this.animations_["random"] = new BasicAnimation("random",[],true);
+        this.animations_["random"] = CreateBasicAnimation("random",[],true);
         this.animations_["random"].AddFrame(this,"|rose-x-c-stance-0.png",5);
         this.animations_["random"].AddFrame(this,"|adon-x-stance-0.png",5);
         this.animations_["random"].AddFrame(this,"|sodom-x-stance-0.png",5);
@@ -173,7 +173,7 @@ User.prototype.Init = function(isUser1)
     if(!!isUser1)
     {
         this.selected_ = CHARACTERS.RYU;
-        this.animations_["select_icon"] = new BasicAnimation("select_icon",[],true);
+        this.animations_["select_icon"] = CreateBasicAnimation("select_icon",[],true);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p1-select-0.png",1);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p1-select-1.png",1);
 
@@ -184,7 +184,7 @@ User.prototype.Init = function(isUser1)
     else
     {
         this.selected_ = CHARACTERS.KEN;
-        this.animations_["select_icon"] = new BasicAnimation("select_icon",[],true);
+        this.animations_["select_icon"] = CreateBasicAnimation("select_icon",[],true);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p2-select-0.png",1);
         this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p2-select-1.png",1);
 

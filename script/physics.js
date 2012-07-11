@@ -9,7 +9,7 @@
 
     var HasIntersection_ = function(a, b)
     {
-        if((a.flags_.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS) || b.flags_.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS)) || (a.ignoreCollisionsWith_ == b.id_) || (b.ignoreCollisionsWith_ == a.id_))
+        if((a.Flags.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS) || b.Flags.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS)) || (a.ignoreCollisionsWith_ == b.id_) || (b.ignoreCollisionsWith_ == a.id_))
             return false;
 
         var retVal = false;
@@ -65,7 +65,7 @@
 
         for(var i = 0, length = players.length; i < length; ++i)
         {
-            if((who.flags_.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS) || players[i].flags_.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS)) || (who.ignoreCollisionsWith_ == players[i].id_) || (players[i].ignoreCollisionsWith_ == who.id_))
+            if((who.Flags.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS) || players[i].Flags.Player.Has(PLAYER_FLAGS.IGNORE_COLLISIONS)) || (who.ignoreCollisionsWith_ == players[i].id_) || (players[i].ignoreCollisionsWith_ == who.id_))
                 continue;
 
             distance = 0;
@@ -165,10 +165,10 @@
         /*is p2 being grappled by p1?*/
         if(p2.IsBeingGrappled() && !p1.IsGrappling(p2.id_))
             return;
-        if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
+        if(p2.Flags.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
             return;
         /*need to reform the "invulernable" flags - there are too many*/
-        if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
+        if(p2.Flags.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
             return;
         /*frame can not hit more than once*/
         if(p2.lastHitFrame_[p1.id_] == p1.GetHitFrameID(hitID))
@@ -182,7 +182,7 @@
         {
             //return;
         }
-        else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE))
+        else if(p2.Flags.Player.Has(PLAYER_FLAGS.INVULNERABLE))
             return;
         var isGrapple = !!(behaviorFlags & BEHAVIOR_FLAGS.THROW);
         var p1Left = p1.GetLeftX(true);
@@ -239,20 +239,20 @@
     {
         if(p2.IsGrappling())
             return;
-        if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
+        if(p2.Flags.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
             return;
-        if(p2.flags_.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE))
+        if(p2.Flags.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE))
             return;
-        //if(p2.flags_.Player.Has(PLAYER_FLAGS.DEAD))
+        //if(p2.Flags.Player.Has(PLAYER_FLAGS.DEAD))
         //    return;
-        if(p2.flags_.Player.Has(PLAYER_FLAGS.IGNORE_PROJECTILES))
+        if(p2.Flags.Player.Has(PLAYER_FLAGS.IGNORE_PROJECTILES))
             return;
         if(p2.IsAirborne() && !!projectile && !!(projectile.flagsToSend_ & ATTACK_FLAGS.SUPER) && !!projectile.canJuggle_)
         {
             /*allows super fireballs to hit multiple times in the air*/
         }
 
-        else if(p2.flags_.Player.Has(PLAYER_FLAGS.INVULNERABLE) || !projectile)
+        else if(p2.Flags.Player.Has(PLAYER_FLAGS.INVULNERABLE) || !projectile)
             return;
         if(!projectile.CanHit(frame))
             return;
@@ -278,9 +278,9 @@
                 if(p2.direction_ > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,false,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
+                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
                 {
-                    p1.ChangeEnergy(projectile.energyToAdd_);
+                    p1.ChangeEnergy(projectile.EnergyToAdd);
                     projectile.HitPlayer(frame);
                 }
             }
@@ -300,9 +300,9 @@
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.energyToAdd_,false,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
+                if(p2.SetRegisteredHit(projectile.attackState_,projectile.hitState_,projectile.flagsToSend_,frame,projectile.baseDamage_,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.direction_,p1.id_,null,null,null,projectile.fx_,projectile.fy_,0,0,projectile.hitSound_,projectile.blockSound_))
                 {
-                    p1.ChangeEnergy(projectile.energyToAdd_);
+                    p1.ChangeEnergy(projectile.EnergyToAdd);
                     projectile.HitPlayer(frame);
                 }
             }

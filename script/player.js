@@ -139,14 +139,13 @@ Player.prototype.GetEnergyLevel = function()
 
 Player.prototype.GetName = function() { return this.name_; }
 Player.prototype.IsDead = function() { return !this.GetHealth(); }
-
 Player.prototype.HasPendingGrapple = function() { return this.hasPendingGrapple_; }
 Player.prototype.SetPendingGrapple = function(value) { this.hasPendingGrapple_ = value; }
-
-Player.prototype.SetPaused = function(paused)
-{
-    this.isPaused_ = paused;
-}
+Player.prototype.SetPaused = function(paused) { this.isPaused_ = paused; }
+Player.prototype.GetAdjustShadowPosition = function() { return this.adjustShadowPosition_; }
+Player.prototype.SetAdjustShadowPosition = function(value) { this.adjustShadowPosition_ = value; }
+Player.prototype.SetFlags = function(value) { this.Flags = value; }
+Player.prototype.GetFlags = function() { return this.Flags; }
 
 Player.prototype.ResetCombo = function()
 {
@@ -188,7 +187,7 @@ Player.prototype.Reset = function(ignoreDirection)
     if (!ignoreDirection)
         this.direction_ = 1;
     this.health_ = 100;
-    this.flags_ = new PlayerFlags(this);
+    this.Flags = new PlayerFlags(this);
     this.keyState_ = 0;
     this.keyStates_ = [];
     this.isInAttackFrame_ = false;
@@ -306,8 +305,8 @@ Player.prototype.ChangeSpeed = function(amount)
 {
     var fastestFrame = 999999;
     for(var i in this.moves_)
-        for(var x = 0; x < this.moves_[i].baseAnimation_.frames_.length; ++x)
-            fastestFrame = Math.min(this.moves_[i].baseAnimation_.frames_[x].Frames,fastestFrame);
+        for(var x = 0; x < this.moves_[i].BaseAnimation.frames_.length; ++x)
+            fastestFrame = Math.min(this.moves_[i].BaseAnimation.frames_[x].Frames,fastestFrame);
     fastestFrame -= 1;
     for(var i in this.moves_)
         this.moves_[i].frameSpeed_ = Math.min(Math.max(this.moves_[i].frameSpeed_ + amount, CONSTANTS.MIN_FRAME_DELAY), fastestFrame);
@@ -325,7 +324,7 @@ Player.prototype.GetNextFrameID = function()
 /*If the move is a projectile, and a projectile is already active, then this returns true;*/
 Player.prototype.IsProjectileInUse = function(move)
 {
-    return (!!(move.flags_.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE)) && !!this.flags_.Combat.Has(COMBAT_FLAGS.PROJECTILE_ACTIVE);
+    return (!!(move.Flags.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE)) && !!this.Flags.Combat.Has(COMBAT_FLAGS.PROJECTILE_ACTIVE);
 }
 
 /*Gets the direction of the attack relative to the current player*/
@@ -475,7 +474,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
             this.HandleAttack(frame, this.currentFrame_);
         if(!!this.grappledPlayer_)
             this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
-        if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.trail_)
+        if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.Trail)
             this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
         if(!this.forceImmobile_ && this.IsDead())
             this.ForceTeamLose(frame);
@@ -490,7 +489,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 Player.prototype.FrameMoveTrail = function(frame,stageX,stageY)
 {
     var index = this.currentAnimation_.Animation.GetFrameIndex(this.currentFrame_.ID)
-    this.currentAnimation_.Animation.trail_.FrameMove(frame,index,this.direction_,stageX,stageY);
+    this.currentAnimation_.Animation.Trail.FrameMove(frame,index,this.direction_,stageX,stageY);
 }
 
 
@@ -517,7 +516,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
         if(!!currentFrame || (!!this.currentFrame_ && (!!(this.currentFrame_.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME))))
         {
             /*check to see if the move allows you to change direction mid-move*/
-            if(!!this.mustChangeDirection_ && !!(this.currentAnimation_.Animation.flags_.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
+            if(!!this.mustChangeDirection_ && !!(this.currentAnimation_.Animation.Flags.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {
                 this.ChangeDirection();
                 return;
@@ -531,7 +530,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
                     var direction = 1;
                     if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
                         direction = this.currentAnimation_.AttackDirection;
-                    //this.PerformJump(direction * this.currentAnimation_.Animation.vx_,this.currentAnimation_.Animation.vy_,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
+                    //this.PerformJump(direction * this.currentAnimation_.Animation.Vx,this.currentAnimation_.Animation.Vy,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
                     this.PerformJump(direction * this.currentAnimation_.Vx,this.currentAnimation_.Vy,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
                 }
                 else
@@ -547,10 +546,10 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
                 {
                     if(this.IsBlocking())
                     {
-                        this.flags_.Player.Remove(PLAYER_FLAGS.MOBILE);
+                        this.Flags.Player.Remove(PLAYER_FLAGS.MOBILE);
                         this.ForceHoldFrame(frame);
                     }
-                    if(!this.AdvanceJump() && !this.currentAnimation_.Animation.isThrow_)
+                    if(!this.AdvanceJump() && !this.currentAnimation_.Animation.IsThrow)
                     {
                         this.TryChainAnimation(frame);
                         return;
@@ -561,7 +560,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
             if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME) && !this.ignoreHoldFrame_)
             {
                 /*get the key that must be pressed*/
-                var key = this.currentAnimation_.Animation.keySequence_[this.currentAnimation_.Animation.keySequence_.length - 1];
+                var key = this.currentAnimation_.Animation.GetKey(this.currentAnimation_.Animation.GetKeySequenceLength() - 1);
                 /*if the key is NOT pressed, then offset into the next frame in the current move*/
                 if(!this.IsKeyDown(key))
                 {
@@ -573,7 +572,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
             else if(!!currentFrame && !!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.MUST_HOLD_KEY)) /*Does the move require the key to be held? ... */
             {
                 /*the last key in the keySequence must be the required key*/
-                var key = this.currentAnimation_.Animation.keySequence_[this.currentAnimation_.Animation.keySequence_.length - 1];
+                var key = this.currentAnimation_.Animation.GetKey(this.currentAnimation_.Animation.GetKeySequenceLength() - 1);
                 if(this.IsKeyDown(key)) /*... and was the key pressed?*/
                 {
                     this.SetCurrentFrame(currentFrame,frame,stageX,stageY);
