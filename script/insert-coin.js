@@ -29,7 +29,8 @@
     InsertCoinScreen.prototype.Init = function() { }
     InsertCoinScreen.prototype.PreLoadSounds = function()
     {
-        soundManager_.Load("audio/misc/credit.zzz",3);
+        /*soundManager_.Load("audio/misc/credit.zzz",3);*/
+        utils_.AddScript("insert-coin.js");
     }
 
 
@@ -70,10 +71,10 @@
     InsertCoinScreen.prototype.Release = function()
     {
         this.isDone_ = true;
-        RemoveFromDOM(capElement_);
-        RemoveFromDOM(insertCoinElement_);
-        RemoveFromDOM(creditsTextElement_);
-        RemoveFromDOM(creditsElement_);
+        utils_.RemoveFromDOM(capElement_);
+        utils_.RemoveFromDOM(insertCoinElement_);
+        utils_.RemoveFromDOM(creditsTextElement_);
+        utils_.RemoveFromDOM(creditsElement_);
     }
 
 

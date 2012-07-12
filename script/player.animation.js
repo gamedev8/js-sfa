@@ -663,7 +663,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 
 Player.prototype.InitSprite = function()
 {
-    var src = "images/misc/" + this.name_.toLowerCase() + "/sprites.png";
+    var src = "images/misc/" + this.folder_.toLowerCase() + "/sprites.png";
     this.spriteElement_.style.backgroundImage = "url('" + src + "')";
 }
 

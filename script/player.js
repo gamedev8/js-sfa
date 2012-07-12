@@ -4,8 +4,9 @@
 var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
     this.name_ = name;
-    this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + name.toLowerCase() +"-name-1.png";
-    this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + name.toLowerCase() + "-x-portriat-1.png";
+    this.folder_ = name + (!!user.isAlternateChar_ ? "2" : "");
+    this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + this.name_.toLowerCase() +"-name-1.png";
+    this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + this.folder_.toLowerCase() + "-x-portriat-1.png";
 
     /*these 2 are used so we can easily swap left and right when the player changes directions*/
     this.leftKey_ = user.Left;
@@ -627,19 +628,19 @@ Player.prototype.Release = function()
     var parentElement = (parentElement || window.document.getElementById("pnlStage"));
 
     for(var i = 0; i < this.frontHitReportImages_.length; ++i)
-        RemoveFromDOM(this.frontHitReportImages_[i]);
+        utils_.RemoveFromDOM(this.frontHitReportImages_[i]);
     for(var i = 0; i < this.rearHitReportImages_.length; ++i)
-        RemoveFromDOM(this.rearHitReportImages_[i]);
+        utils_.RemoveFromDOM(this.rearHitReportImages_[i]);
     for(var i = 0; i < this.otherAnimations_.Dirt.length; ++i)
-        RemoveFromDOM(this.otherAnimations_.Dirt[i].Element);
+        utils_.RemoveFromDOM(this.otherAnimations_.Dirt[i].Element);
     for(var i = 0; i < this.otherAnimations_.BigDirt.length; ++i)
-        RemoveFromDOM(this.otherAnimations_.BigDirt[i].Element);
+        utils_.RemoveFromDOM(this.otherAnimations_.BigDirt[i].Element);
     this.ClearProjectiles();
     for(var i = 0; i < this.projectiles_.length; ++i)
         this.projectiles_[i].Release();
 
     this.ReleaseDebugElements();
 
-    RemoveFromDOM(this.shadowContainer_);
-    RemoveFromDOM(this.element_);
+    utils_.RemoveFromDOM(this.shadowContainer_);
+    utils_.RemoveFromDOM(this.element_);
 }

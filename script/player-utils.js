@@ -592,7 +592,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
         this.element_ = window.document.createElement("div");
         this.element_.className="projectile";
         this.element_.style.display="none";
-        this.element_.style.backgroundImage = "url(images/misc/" + player.name_.toLowerCase() + "/projectiles.png)";
+        this.element_.style.backgroundImage = "url(images/misc/" + player.folder_.toLowerCase() + "/projectiles.png)";
         window.document.getElementById("pnlStage").appendChild(this.element_);
         this.isActive_ = false;
         this.attackState_ = attackState || 0;
@@ -636,7 +636,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
 
     Projectile.prototype.Release = function()
     {
-        RemoveFromDOM(this.element_);
+        utils_.RemoveFromDOM(this.element_);
     }
 
     /*Fires the projectile*/

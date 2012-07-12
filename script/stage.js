@@ -21,7 +21,15 @@
 Stage.prototype.GetGame = function() { return game_; }
 Stage.prototype.GetMatch = function() { return this.GetGame().GetMatch(); }
 Stage.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
-
+Stage.prototype.OnAudioLoaded = function()
+{
+    this.PlayMusic();
+}
+Stage.prototype.LoadSounds = function(params)
+{
+    this.music_ = "audio/" + params.name_.toLowerCase() + "/theme.zzz";
+    utils_.AddScript(params.name_.toLowerCase() + "-theme.js",this.OnAudioLoaded,this);
+}
 Stage.prototype.Set = function(params)
 {
     this.bgImg0_.xOffset = params.bg0XOffset_;
@@ -32,8 +40,7 @@ Stage.prototype.Set = function(params)
     this.maxLeftScroll_  = params.maxLeftScroll_; 
     this.maxRightScroll_ = params.maxRightScroll_;
 
-    this.music_ = "audio/" + params.name_.toLowerCase() + "/theme.zzz";
-    soundManager_.Load(this.music_);
+    this.LoadSounds(params);
     this.fadeOutMusic_ = 0;
 }
 

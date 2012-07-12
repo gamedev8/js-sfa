@@ -2,7 +2,8 @@
 /**/
 Player.prototype.InitSounds = function()
 {
-    soundManager_.Load("audio/" + this.name_.toLowerCase() + "/dead.zzz");
+    /*soundManager_.Load("audio/" + this.name_.toLowerCase() + "/dead.zzz");*/
+    utils_.AddScript(this.name_.toLowerCase() + ".js");
 }
 
 /**/

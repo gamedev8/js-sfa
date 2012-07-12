@@ -32,6 +32,39 @@
     {
     }
 
+    /*creates a DOM audio element and loads it with base64 data*/
+    SoundManager.prototype.LoadBase64 = function(path,nbChannels,defaultVolume,base64Data)
+    {
+        if(!items_[path])
+        {
+            nbChannels = nbChannels || 1;
+            //nbChannels  = 1;
+            try
+            {
+                items_[path] = {Channels:nbChannels,CurrentChannel:0,Elements:[],DefaultVolume:defaultVolume || 1};
+                for(var i = 0; i < nbChannels; ++i)
+                {
+                    var el = new Audio();
+                    var id = "sound" + id_;
+                    items_[path].Elements[i] = id;
+                    //el.type = "application/ogg";
+                    el.src = base64Data;
+                    el.load();
+                    el.id = id;
+                    window.document.body.appendChild(el);
+
+                    ++id_;
+                }
+
+            }
+            catch(err)
+            {
+                items_[path] = null;
+            }
+        }
+
+        return path;
+    }
     /*creates a DOM audio element and loads it*/
     SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
     {
@@ -70,9 +103,12 @@
         if(!!items_[path])
         {
             for(var i = 0; i < items_[path].Channels; ++i)
-                GetElement_(items_[path].Elements[i]).pause();
+            {
+                var element = GetElement_(items_[path].Elements[i]);
+                element.pause();
+                window.document.body.removeChild(element);
+            }
             items_[path] = null;
-            //window.document.removeChild(items_[path]);
         }
     }
 

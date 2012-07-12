@@ -43,7 +43,7 @@ div.team2Keys {color:#ff6666;right:0px;}
 .paused {background:#ff0000;color:#fff;border:solid 1px #ffaaaa;}
 .frame-rate{background:#666;text-transform:uppercase;}
 
-div.projectile{position:absolute;bottom:35px;z-index:10;background-position:0 0;background-repeat:no-repeat;}
+div.projectile{position:absolute;bottom:35px;z-index:20;background-position:0 0;background-repeat:no-repeat;}
 
 div.circle-debug{position:absolute;bottom:35px;}
 b.right{display:none;background-color:#ff0000;}
@@ -53,7 +53,7 @@ b.hit{background-color:#ff0000;color:#fff;z-index:100;}
 
 b{position:absolute;display:inline-block;width:10px;line-height:15px;vertical-align:middle;color:#000;text-align:center;font-size:8px;text-transform:uppercase;}
 
-div.team{position:absolute;top:20px;z-index:20;}
+div.team{position:absolute;top:20px;z-index:25;}
 div.team div{position:absolute;}
 div.team img{position:absolute;}
 div.team div.health-bar{top:20px;}
@@ -81,7 +81,7 @@ div.team2 div.health-bar .life{left:-292px;}
 div.team2 .name{right:0px;}
 div.team2 .portriat{right:0px;}
 
-.dirt,.big-dirt,.front-hit-report,.rear-hit-report{position:absolute;z-index:11; background-position: 0 0;outline:none;border:none;}
+.dirt,.big-dirt,.front-hit-report,.rear-hit-report{position:absolute;z-index:20; background-position: 0 0;outline:none;border:none;}
 .dirt{background-image:url(../images/misc/misc/dirt-sprites.png);}
 .big-dirt{background-image:url(../images/misc/misc/dirt-sprites.png);}
 .front-hit-report{background-image:url(../images/misc/misc/blast-sprites.png);}

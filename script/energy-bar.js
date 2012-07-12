@@ -68,7 +68,7 @@ var CreateEnergyBar = function(pnlID,team)
     /**/
     EnergyBar.prototype.Release = function()
     {
-        RemoveChildrenFromDOM(this.GetParentElement(), true);
+        utils_.RemoveChildrenFromDOM(this.GetParentElement(), true);
     }
 
     /*initialized the energy bar*/

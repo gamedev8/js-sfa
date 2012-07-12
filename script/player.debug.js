@@ -54,8 +54,8 @@ Player.prototype.RenderDebugInfo = function()
 /**/
 Player.prototype.ReleaseDebugElements = function()
 {
-    RemoveFromDOM(this.debugHit_);
-    RemoveFromDOM(this.debKeysElement_);
+    utils_.RemoveFromDOM(this.debugHit_);
+    utils_.RemoveFromDOM(this.debKeysElement_);
 }
 
 

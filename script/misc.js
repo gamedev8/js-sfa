@@ -1,40 +1,97 @@
-﻿var RemoveFromDOM = function(element)
+﻿var CreateUtils = function()
 {
-    if(!!element)
-    {
-        while(element.children.length > 0)
-            RemoveChildrenFromDOM(element.children[0]);
-        var parentNode = element.parentNode;
-        if(!!parentNode)
-            parentNode.removeChild(element);
-        else
-            element = null;
-    }
-}
+    var loadingCount_ = 0;
 
-var RemoveChildrenFromDOM = function(element,keepOrginalElement)
-{
-    if(!!element)
+    var Utils = function()
     {
-        if(!element.parentNode)
+    }
+
+    Utils.prototype.ShowLoading = function(show,duration)
+    {
+        var pnlLoading = window.document.getElementById("pnlLoading");
+        if(!!show)
         {
-            if(!keepOrginalElement)
-                element = null;
-        }
-        else if(element.children.length == 0)
-        {
-            if(!keepOrginalElement)
-                element.parentNode.removeChild(element);
+            pnlLoading.style.display = "";
+            ++loadingCount_;
+            pnlLoading.innerHTML = "Loading: (" + loadingCount_ + " files remaining)";
         }
         else
+        {
+            if(! --loadingCount_)
+                pnlLoading.style.display = "none";
+        }
+    }
+
+    Utils.prototype.AddScript = function(src, callbackFn, context)
+    {
+        src = "script/audio/" + src;
+        if(!window.document.getElementById(src))
+        {
+            var script = window.document.createElement("script");
+            script.id = src;
+            script.src = src;
+            script.onload = (function(startTime,onload,thisValue)
+            {
+                return function()
+                {
+                    var duration = Date.now() - startTime;
+                    utils_.ShowLoading(false, duration);
+                    if(!!onload)
+                    {
+                        if(!!thisValue)
+                            onload.call(thisValue);
+                        else
+                            onload();
+                    }
+                }
+            })(Date.now(),callbackFn,context);
+            this.ShowLoading(true);
+            window.document.body.appendChild(script);
+        }
+    }
+
+    Utils.prototype.RemoveFromDOM = function(element)
+    {
+        if(!!element)
         {
             while(element.children.length > 0)
+                utils_.RemoveChildrenFromDOM(element.children[0]);
+            var parentNode = element.parentNode;
+            if(!!parentNode)
+                parentNode.removeChild(element);
+            else
+                element = null;
+        }
+    }
+
+    Utils.prototype.RemoveChildrenFromDOM = function(element,keepOrginalElement)
+    {
+        if(!!element)
+        {
+            if(!element.parentNode)
             {
-                RemoveChildrenFromDOM(element.children[0]);
+                if(!keepOrginalElement)
+                    element = null;
+            }
+            else if(element.children.length == 0)
+            {
+                if(!keepOrginalElement)
+                    element.parentNode.removeChild(element);
+            }
+            else
+            {
+                while(element.children.length > 0)
+                {
+                    utils_.RemoveChildrenFromDOM(element.children[0]);
+                }
             }
         }
     }
+
+    return new Utils();
 }
+var utils_ = CreateUtils();
+
 
 var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0Img, bg1Img)
 {
@@ -82,6 +139,9 @@ var u2_ = game_.AddUser2(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARR
 var u3_ = game_.AddUser(1,2,3,4,5,6,7,8,9,10,11);
 var u4_ = game_.AddUser(11,12,13,14,15,16,17,18,19,20,21);
 
+//u3_.isAlternateChar_ = true;
+u4_.isAlternateChar_ = true;
+
 
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
@@ -95,13 +155,11 @@ function StartQuickMatch()
 /*muhahahaha...*/
 function StartMayhem()
 {
-    var p1_ = Player.prototype.CreateRyu(u1_);
     var p2_ = Player.prototype.CreateKen(u2_);
     var p3_ = Player.prototype.CreateRyu(u3_);
     var p4_ = Player.prototype.CreateKen(u4_);
-    game_.StartMatch([p3_, p2_],[p1_,p4_], kensStage_);
+    game_.StartMatch([p2_],[p3_,p4_], kensStage_);
     game_.Pause();
-    debug_.T1TestAI(0);
     debug_.T2TestAI(0);
     debug_.T2TestAI(1);
 }

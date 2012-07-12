@@ -20,7 +20,6 @@ var CreateMatch = function()
 
     var Match = function()
     {
-        this.PreloadSounds();
     }
     Match.prototype.GetPhysics = function() { return physics_; }
     Match.prototype.GetTeamA = function() { return teamA_; }
@@ -245,6 +244,7 @@ var CreateMatch = function()
     /*Initializes a new match*/
     Match.prototype.Start = function(team1,team2,stage)
     {
+        this.LoadSounds();
         this.GetStage().Set(stage);
         this.GetStage().Resume();
         var moveStageX          = function(thisValue,players) { return function(amount,dontOverrideSign) { for(var i = 0; i < players.length;++i) {amount = thisValue.GetStage().ScrollX(amount,this,players[i],thisValue,dontOverrideSign);}; return amount; } };
@@ -478,8 +478,9 @@ var CreateMatch = function()
     }
 
 
-    Match.prototype.PreloadSounds = function()
+    Match.prototype.LoadSounds = function()
     {
+        /*
         soundManager_.Load("audio/misc/lp.zzz",3);
         soundManager_.Load("audio/misc/mp.zzz",3);
         soundManager_.Load("audio/misc/hp.zzz",3);
@@ -521,6 +522,8 @@ var CreateMatch = function()
         soundManager_.Load("audio/misc/win.zzz",1);
         soundManager_.Load("audio/misc/lose.zzz",1);
         soundManager_.Load("audio/misc/perfect.zzz",1);
+        */
+        utils_.AddScript("match.js");
     }
 
     return new Match();

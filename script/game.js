@@ -217,7 +217,7 @@ var CreateGame = function()
     Game.prototype.StartCharSelect = function()
     {
         this.ResetGameData();
-        charSelect_ = new CharSelect(user1_,user2_);
+        charSelect_ = CreateCharSelect(user1_,user2_);
         managed_ = charSelect_;
 
         this.Go();
