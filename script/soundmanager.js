@@ -5,7 +5,7 @@
     /*******************************************************/
    var items_ = {};
    var sounds_ = [];
-   var extension_ = ".mp3";
+   var extension_ = ".ogg";
    var id_ = 0;
 
     var GetPath_ = function(path)
