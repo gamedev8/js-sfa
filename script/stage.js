@@ -16,6 +16,7 @@
     this.maxLeftScroll_ = 0;
     this.maxRightScroll_ = 0;
     this.music_ = null;
+    this.params_ = null;
 }
 
 Stage.prototype.GetGame = function() { return game_; }
@@ -25,22 +26,28 @@ Stage.prototype.OnAudioLoaded = function()
 {
     this.PlayMusic();
 }
-Stage.prototype.LoadSounds = function(params)
+Stage.prototype.LoadAssets = function()
 {
-    this.music_ = "audio/" + params.name_.toLowerCase() + "/theme.zzz";
-    utils_.AddScript(params.name_.toLowerCase() + "-theme.js",this.OnAudioLoaded,this);
+    this.music_ = "audio/" + this.params_.name_.toLowerCase() + "/theme.zzz";
+    stuffLoader_.Queue(this.params_.name_.toLowerCase() + "-theme.js",RESOURCE_TYPES.BASE64AUDIO);
+    stuffLoader_.Queue(this.params_.bg0Img_,RESOURCE_TYPES.IMAGE);
+    stuffLoader_.Queue(this.params_.bg1Img_,RESOURCE_TYPES.IMAGE);
 }
-Stage.prototype.Set = function(params)
+Stage.prototype.Setup = function(params)
 {
-    this.bgImg0_.xOffset = params.bg0XOffset_;
-    this.bgImg0_.element.src = params.bg0Img_;
-    this.bgImg1_.element.src = params.bg1Img_;
-    this.bgImg0_.element.className = params.name_ + "-bg0";
-    this.bgImg1_.element.className = params.name_ + "-bg1";
-    this.maxLeftScroll_  = params.maxLeftScroll_; 
-    this.maxRightScroll_ = params.maxRightScroll_;
+    this.params_ = params;
+    this.LoadAssets();
+}
+Stage.prototype.Start = function()
+{
+    this.bgImg0_.xOffset = this.params_.bg0XOffset_;
+    this.bgImg0_.element.src = this.params_.bg0Img_;
+    this.bgImg1_.element.src = this.params_.bg1Img_;
+    this.bgImg0_.element.className = this.params_.name_ + "-bg0";
+    this.bgImg1_.element.className = this.params_.name_ + "-bg1";
+    this.maxLeftScroll_  = this.params_.maxLeftScroll_; 
+    this.maxRightScroll_ = this.params_.maxRightScroll_;
 
-    this.LoadSounds(params);
     this.fadeOutMusic_ = 0;
 }
 

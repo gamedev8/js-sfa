@@ -878,8 +878,8 @@ Player.prototype.CreateKenSuperMoves = function(player)
 
         var maxIter = x < 2 ? 1 : x;
         var dx = (x+4);
-        s_uppercut.AddFrameWithSound(player,1,"audio/ken/super-start.zzz","",folder + "/x-uppercut-p1-0.png",38,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},dx,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
-        s_uppercut.AddFrameWithSound(player,1,"audio/ken/shoryuepa.zzz","",folder + "/x-uppercut-p1-0.png",1,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},dx,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
+        s_uppercut.AddFrameWithSound(player,1,"audio/ken/super-start.zzz","",folder + "/x-uppercut-p1-0.png",76,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},dx,0,0,25,0,0,0,null,0,0,0,-CONSTANTS.ONE_LEVEL*(x+1));
+        s_uppercut.AddFrameWithSound(player,1,"audio/ken/shoryuepa.zzz"  ,"",folder + "/x-uppercut-p1-0.png",1,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},{Player:PLAYER_FLAGS.MOBILE,Combat:COMBAT_FLAGS.SUPER_MOVE_PAUSE},dx);
         for(var i = 0; i < maxIter; ++i)
         {
             s_uppercut.AddRepeatingFrame(player,"",folder + "/x-uppercut-p1-0.png",3,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},{Player:PLAYER_FLAGS.MOBILE,Combat:COMBAT_FLAGS.SUPER_MOVE_PAUSE},dx);

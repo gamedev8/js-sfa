@@ -5,7 +5,7 @@
     /*******************************************************/
    var items_ = {};
    var sounds_ = [];
-   var extension_ = ".ogg";
+   var extension_ = ".mp3";
    var id_ = 0;
 
     var GetPath_ = function(path)
@@ -31,6 +31,8 @@
     var SoundManager = function()
     {
     }
+
+    SoundManager.prototype.GetExtension = function() { return extension_; }
 
     /*creates a DOM audio element and loads it with base64 data*/
     SoundManager.prototype.LoadBase64 = function(path,nbChannels,defaultVolume,base64Data)

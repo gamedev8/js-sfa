@@ -580,6 +580,10 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             isNewFrame = true;
         }
     }
+    var isNewSound = !!newFrame
+                && !!newFrame.soundFilename_ 
+                && ((!this.currentFrame_) || (!!this.currentFrame_ && (this.currentFrame_.soundFilename_ != newFrame.soundFilename_)));
+
 
     this.currentFrame_ = newFrame;
     if(!!newFrame)
@@ -652,7 +656,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         }
 
         /*this must run before SetSprite*/
-        if((!!newFrame.soundFilename_ || !!newFrame.FlagsToSet.SwingSound) && !!isNewFrame)
+        if((!!newFrame.soundFilename_ || !!newFrame.FlagsToSet.SwingSound) && !!isNewSound)
         {
             this.QueueSwingSound(newFrame.FlagsToSet.SwingSound);
             if(!!newFrame.soundFilename_)

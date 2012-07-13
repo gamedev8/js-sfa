@@ -19,7 +19,7 @@
     /*public*/
     var InsertCoinScreen = function()
     {
-        this.PreLoadSounds();
+        this.LoadAssets();
     }
 
 
@@ -27,10 +27,19 @@
     InsertCoinScreen.prototype.Pause = function() { }
     InsertCoinScreen.prototype.ResetKeys = function() { }
     InsertCoinScreen.prototype.Init = function() { }
-    InsertCoinScreen.prototype.PreLoadSounds = function()
+    InsertCoinScreen.prototype.LoadAssets = function()
     {
         /*soundManager_.Load("audio/misc/credit.zzz",3);*/
-        utils_.AddScript("insert-coin.js");
+        /*utils_.AddBase64Audio("insert-coin.js");*/
+        stuffLoader_.Queue("insert-coin.js",RESOURCE_TYPES.BASE64AUDIO);
+        stuffLoader_.Queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/announcer-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/font1/insert.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/font1/credits.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/font1/cap.png",RESOURCE_TYPES.IMAGE);
+        for(var i = 49; i < 58; ++i)
+            stuffLoader_.Queue("images/misc/font1/" + i + ".png",RESOURCE_TYPES.IMAGE);
+
     }
 
 

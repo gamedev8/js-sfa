@@ -10,6 +10,7 @@
             function OnStageImagesLoaded() {}
         </script>
         <div id="pnlDimBackground" class="dimBackground" style="display:none">&nbsp;</div>
+        <div id="pnlLoadingProgress" class="loadingBackground" style="display:none"><span id="pnlLoading" class="loading">Loading...</span></div>
         <img onload="OnStageImagesLoaded()" id="bg0" style="left:0px" />
         <img onload="OnStageImagesLoaded()" id="bg1" style="left:0px" />
         <!--<div class="time"></div>-->
@@ -54,7 +55,6 @@
         <br />
         <br />
         <br /><span id="spnState" class="state running">State: Running</span>
-        <br /><span id="pnlLoading" class="loading" style="display:none;">Loading...</span>
     </div>
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
@@ -65,7 +65,7 @@
         </select>
         <input type="button" onclick="Go()" value="Go" />
     </div>
-    <script type="text/javascript" src="script/number-extensions.js"></script>
+    <script type="text/javascript" src="script/stuff-loader.js"></script>
     <script type="text/javascript" src="script/soundmanager.js"></script>
     <script type="text/javascript" src="script/flags.js"></script>
     <script type="text/javascript" src="script/fontsystem.js"></script>

@@ -20,7 +20,7 @@
         var currentFrame = this.frames_[this.frames_.length-1];
         currentFrame.soundFilename_ = soundFilename;
         currentFrame.soundVolume_ = volume;
-        soundManager_.Load(currentFrame.soundFilename_,3,volume);
+        //soundManager_.Load(currentFrame.soundFilename_,3,volume);
     }
 
     /*Adds a frame to the move*/
@@ -81,7 +81,7 @@
                 currentFrame.soundFilename_ = soundFilename;
                 currentFrame.soundVolume_ = volume;
                 imageID = currentFrame.ImageID;
-                soundManager_.Load(currentFrame.soundFilename_,3,volume);
+                //soundManager_.Load(currentFrame.soundFilename_,3,volume);
             }
             else
             {

@@ -99,7 +99,7 @@ var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor
     this.team_ = 0;
     this.defaultShadowImageSrc_ = "images/misc/misc/shadow.png";
     this.winAnimationNames_ = [];
-    this.InitSounds();
+    this.LoadAssets();
     this.CreateElement();
     this.Reset();
     this.AddGenericAnimations();

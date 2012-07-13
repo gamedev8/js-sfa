@@ -408,7 +408,7 @@ var CreateCharSelect = function(user1,user2)
         this.music_ = "audio/misc/player-select.zzz";
         this.sounds_ = [];
 
-        this.LoadSounds();
+        this.LoadAssets();
     }
 
     CharSelect.prototype.RestartMusic = function()
@@ -579,7 +579,7 @@ var CreateCharSelect = function(user1,user2)
         parentElement.style.backgroundRepeat = "no-repeat";
 
         /*init music*/
-        soundManager_.Load(this.music_);
+        //soundManager_.Load(this.music_);
 
         /*Init user 1*/
         if(!!u1_)
@@ -841,7 +841,7 @@ var CreateCharSelect = function(user1,user2)
 	    spriteLookup_.Load("images/misc/misc/p2-select-sodom.png","|images/misc/misc/head-sprites.png", "-2304px", "-288px", "256px", "288px");
     }
 
-    CharSelect.prototype.LoadSounds = function()
+    CharSelect.prototype.LoadAssets = function()
     {
         /*
         soundManager_.Load("audio/misc/p-select-move-0.zzz",3);
@@ -849,7 +849,16 @@ var CreateCharSelect = function(user1,user2)
         soundManager_.Load("audio/misc/p-select-choose-0.zzz",3);
         soundManager_.Load("audio/misc/p-select-choose-1.zzz",3);
         */
-        utils_.AddScript("char-select.js");
+        /*utils_.AddBase64Audio("char-select.js");*/
+        stuffLoader_.Queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
+        stuffLoader_.Queue("images/misc/misc/player-select.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/font3/name-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/char-misc-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/head-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/player-select-back-bg.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/player-select-bg.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/stance-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/char-sprites.png",RESOURCE_TYPES.IMAGE);
     }
 
     return new CharSelect();

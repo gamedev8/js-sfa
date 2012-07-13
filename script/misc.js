@@ -6,36 +6,20 @@
     {
     }
 
-    Utils.prototype.ShowLoading = function(show,duration)
+    Utils.prototype.AddBase64Audio = function(src, callbackFn, context)
     {
-        var pnlLoading = window.document.getElementById("pnlLoading");
-        if(!!show)
-        {
-            pnlLoading.style.display = "";
-            ++loadingCount_;
-            pnlLoading.innerHTML = "Loading: (" + loadingCount_ + " files remaining)";
-        }
-        else
-        {
-            if(! --loadingCount_)
-                pnlLoading.style.display = "none";
-        }
-    }
-
-    Utils.prototype.AddScript = function(src, callbackFn, context)
-    {
-        src = "script/audio/" + src;
+        src = "script/audio/" + src.replace(".js",soundManager_.GetExtension()) + ".js";
         if(!window.document.getElementById(src))
         {
             var script = window.document.createElement("script");
             script.id = src;
             script.src = src;
+            script.type = "text/javascript"
             script.onload = (function(startTime,onload,thisValue)
             {
                 return function()
                 {
                     var duration = Date.now() - startTime;
-                    utils_.ShowLoading(false, duration);
                     if(!!onload)
                     {
                         if(!!thisValue)
@@ -45,7 +29,6 @@
                     }
                 }
             })(Date.now(),callbackFn,context);
-            this.ShowLoading(true);
             window.document.body.appendChild(script);
         }
     }
@@ -152,14 +135,18 @@ function StartQuickMatch()
     game_.Pause();
 }
 
-/*muhahahaha...*/
-function StartMayhem()
+/* multi player battle */
+function StartDramaticBattle()
 {
     var p2_ = Player.prototype.CreateKen(u2_);
     var p3_ = Player.prototype.CreateRyu(u3_);
     var p4_ = Player.prototype.CreateKen(u4_);
-    game_.StartMatch([p2_],[p3_,p4_], kensStage_);
+    game_.StartMatch([p2_],[p3_,p4_], kensStage_, StartDramaticBattleAI);
     game_.Pause();
+}
+
+function StartDramaticBattleAI()
+{
     debug_.T2TestAI(0);
     debug_.T2TestAI(1);
 }
@@ -185,7 +172,7 @@ function Go()
     switch(sel.selectedIndex)
     {
         case 0: StartCharacterSelection(); break;
-        case 1: StartMayhem(); break;
+        case 1: StartDramaticBattle(); break;
     };
 }
 function MaxOutEnergy()

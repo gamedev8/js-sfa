@@ -38,6 +38,9 @@ var CreateGame = function()
     var match_ = null;
     var charSelect_ = null;
     var insertCoinScreen_ = null;
+    var pnlLoadingProgress_ = window.document.getElementById("pnlLoadingProgress");
+    var pnlLoading_ = window.document.getElementById("pnlLoading");
+
     /*Encapulates a new game*/
     var Game = function ()
     {
@@ -188,7 +191,7 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "none";
     }
 
-    Game.prototype.StartMatch = function(goodGuys,badGuys, stage)
+    Game.prototype.StartMatch = function(goodGuys,badGuys,stage,callback)
     {
         this.ResetGameData();
         var goodGuys = goodGuys;
@@ -204,14 +207,13 @@ var CreateGame = function()
             charSelect_.Release();
         }
 
-        match_ = CreateMatch();
+        match_ = CreateMatch(goodGuys,badGuys,stage);
         managed_ = match_;
         announcer_.SetMatch(match_);
         this.ShowElements();
 
 
-        this.Go(goodGuys,badGuys,stage);
-        this.RunGameLoop();
+        this.Go(this.RunGameLoop,callback);
     }
 
     Game.prototype.StartCharSelect = function()
@@ -220,8 +222,7 @@ var CreateGame = function()
         charSelect_ = CreateCharSelect(user1_,user2_);
         managed_ = charSelect_;
 
-        this.Go();
-        this.RunCharSelectLoop();
+        this.Go(this.RunCharSelectLoop);
     }
     /**/
     Game.prototype.StartInsertCoinScreen = function()
@@ -229,19 +230,53 @@ var CreateGame = function()
         this.ResetGameData();
         insertCoinScreen_ = CreateInsertCoinScreen(user1_,user2_);
         managed_ = insertCoinScreen_;
-
-        this.Go();
-        this.RunInsertCoinScreenLoop();
+        this.Go(this.RunInsertCoinScreenLoop);
     }
     /**/
-    Game.prototype.Go = function()
+    Game.prototype.Go = function(loopFn, callback)
     {
         this.Init();
         this.PreloadTextImages();
         Stage.prototype.Center();
         isInitialized_ = true;
         frame_ = 0;
-        managed_.Start.apply(managed_,arguments);
+        this.StartLoading(loopFn, callback);
+    }
+    /*shows the loading screen*/
+    Game.prototype.ShowLoading = function(show)
+    {
+        if(!!show)
+            pnlLoadingProgress_.style.display = "";
+        else
+        {
+            pnlLoadingProgress_.style.display = "none";
+            pnlLoading_.innerHTML = "";
+        }
+    }
+    /*starts loading assets*/
+    Game.prototype.StartLoading = function(loopFn, callback)
+    {
+        this.ShowLoading(true);
+        var createClosure = function(thisRef,fn1, fn2) { return function() { thisRef.OnDoneLoading(fn1,fn2); } }
+
+        stuffLoader_.Start(this.OnProgress,createClosure(this, loopFn, callback),this);
+    }
+    /*executed when the assets are done loading*/
+    Game.prototype.OnDoneLoading = function(runLoopFn, callback)
+    {
+        this.ShowLoading(false);
+        managed_.Start(managed_);
+        runLoopFn.call(this);
+        if(!!callback)
+            callback();
+    }
+    /*executed when an asset is done loading*/
+    Game.prototype.OnProgress = function(nbRemaining)
+    {
+        if(!nbRemaining)
+            pnlLoading_.innerHTML = "Done loading";
+        else
+            pnlLoading_.innerHTML = "Loading";
     }
     /*resets common data*/
     Game.prototype.ResetGameData = function()

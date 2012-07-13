@@ -441,6 +441,20 @@ var TEXT =
     HIT_COMBO:"HIT COMBO"
 };
 
+var LOADING_STATES = 
+{
+    WAITING:1 << 0
+    ,DOWNLOADING:1 << 1
+    ,DONE:1 << 2
+    ,ERROR:1 << 3
+};
+
+var RESOURCE_TYPES = 
+{
+    IMAGE:1
+    ,BASE64AUDIO:2
+};
+
 var KEYS = 
 {
     ESCAPE:27

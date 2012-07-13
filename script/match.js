@@ -2,7 +2,7 @@
 function _c3(a,b,c) { return String.prototype.concat(String.prototype.concat(a,b),c); }
 function _c4(a,b,c,d) { return String.prototype.concat(String.prototype.concat(String.prototype.concat(a,b),c),d); }
 /* Encapulates a new match */
-var CreateMatch = function()
+var CreateMatch = function(team1,team2,stage)
 {
     var teamA_ = CreateTeam(1);
     var teamB_ = CreateTeam(2);
@@ -20,6 +20,8 @@ var CreateMatch = function()
 
     var Match = function()
     {
+        this.LoadAssets();
+        this.GetStage().Setup(stage);
     }
     Match.prototype.GetPhysics = function() { return physics_; }
     Match.prototype.GetTeamA = function() { return teamA_; }
@@ -242,10 +244,9 @@ var CreateMatch = function()
     }
 
     /*Initializes a new match*/
-    Match.prototype.Start = function(team1,team2,stage)
+    Match.prototype.Start = function()
     {
-        this.LoadSounds();
-        this.GetStage().Set(stage);
+        this.GetStage().Start();
         this.GetStage().Resume();
         var moveStageX          = function(thisValue,players) { return function(amount,dontOverrideSign) { for(var i = 0; i < players.length;++i) {amount = thisValue.GetStage().ScrollX(amount,this,players[i],thisValue,dontOverrideSign);}; return amount; } };
         var fixX                = function(thisValue,players) { return function(amount) {thisValue.GetPhysics().FixX(amount,this,false,true);  return 0; } };
@@ -478,52 +479,19 @@ var CreateMatch = function()
     }
 
 
-    Match.prototype.LoadSounds = function()
+    Match.prototype.LoadAssets = function()
     {
-        /*
-        soundManager_.Load("audio/misc/lp.zzz",3);
-        soundManager_.Load("audio/misc/mp.zzz",3);
-        soundManager_.Load("audio/misc/hp.zzz",3);
-        soundManager_.Load("audio/misc/lk.zzz",3);
-        soundManager_.Load("audio/misc/mk.zzz",3);
-        soundManager_.Load("audio/misc/hk.zzz",3);
-
-        soundManager_.Load("audio/misc/block.zzz",3);
-        soundManager_.Load("audio/misc/block-projectile.zzz",3);
-
-        soundManager_.Load("audio/misc/grapple.zzz",3);
-
-        soundManager_.Load("audio/misc/hit-lp.zzz",3);
-        soundManager_.Load("audio/misc/hit-mp.zzz",3);
-        soundManager_.Load("audio/misc/hit-hp.zzz",3);
-        soundManager_.Load("audio/misc/hit-lk.zzz",3);
-        soundManager_.Load("audio/misc/hit-mk.zzz",3);
-        soundManager_.Load("audio/misc/hit-hk.zzz",3);
-        soundManager_.Load("audio/misc/hit-hp-3.zzz",3);
-
-
-        soundManager_.Load("audio/misc/super-charge.zzz",3);
-
-        soundManager_.Load("audio/misc/round.zzz",1);
-        soundManager_.Load("audio/misc/1.zzz",1);
-        soundManager_.Load("audio/misc/2.zzz",1);
-        soundManager_.Load("audio/misc/3.zzz",1);
-        soundManager_.Load("audio/misc/4.zzz",1);
-        soundManager_.Load("audio/misc/5.zzz",1);
-        soundManager_.Load("audio/misc/6.zzz",1);
-        soundManager_.Load("audio/misc/7.zzz",1);
-        soundManager_.Load("audio/misc/8.zzz",1);
-        soundManager_.Load("audio/misc/9.zzz",1);
-        soundManager_.Load("audio/misc/ko.zzz",1);
-        soundManager_.Load("audio/misc/draw.zzz",1);
-        soundManager_.Load("audio/misc/fight.zzz",1);
-        soundManager_.Load("audio/misc/final.zzz",1);
-        soundManager_.Load("audio/misc/you.zzz",1);
-        soundManager_.Load("audio/misc/win.zzz",1);
-        soundManager_.Load("audio/misc/lose.zzz",1);
-        soundManager_.Load("audio/misc/perfect.zzz",1);
-        */
-        utils_.AddScript("match.js");
+        stuffLoader_.Queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
+        stuffLoader_.Queue("images/misc/misc/shadow-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/dirt-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/blast-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/bars-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl0.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl1.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl2.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/health-bar-life.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/health-bar-damage.png",RESOURCE_TYPES.IMAGE);
     }
 
     return new Match();
