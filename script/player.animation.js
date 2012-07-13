@@ -581,8 +581,9 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         }
     }
     var isNewSound = !!newFrame
-                && !!newFrame.soundFilename_ 
-                && ((!this.currentFrame_) || (!!this.currentFrame_ && (this.currentFrame_.soundFilename_ != newFrame.soundFilename_)));
+                && (!!newFrame.soundFilename_ 
+                && ((!this.currentFrame_) || (!!this.currentFrame_ && (this.currentFrame_.soundFilename_ != newFrame.soundFilename_))))
+                || !!newFrame.FlagsToSet.SwingSound;
 
 
     this.currentFrame_ = newFrame;
