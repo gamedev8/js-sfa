@@ -141,7 +141,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     Animation.prototype.GetFrameIndex  = function(id) { return this.BaseAnimation.GetFrameIndex(id); }
     Animation.prototype.SetGrappleDistance = function(x)
     {
-        grappleDistance_ = x;
+        this.GrappleDistance = x;
         this.BehaviorFlags = BEHAVIOR_FLAGS.THROW;
         this.IsThrow = true;
     }
