@@ -276,7 +276,7 @@ var CreateGame = function()
         if(!nbRemaining)
             pnlLoading_.innerHTML = "Done loading";
         else
-            pnlLoading_.innerHTML = "Loading";
+            pnlLoading_.innerHTML = "Loading (" + nbRemaining + ")";
     }
     /*resets common data*/
     Game.prototype.ResetGameData = function()
