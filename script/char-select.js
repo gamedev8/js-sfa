@@ -31,8 +31,26 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
     this.isInitialized_ = false;
     this.chooseCharacterFn_ = null;
     this.getOtherCharacterFn_ = null;
+    this.getOtherIsAlternateFn_ = null;
     this.randomSelect_ = 0;
     this.isAlternateChar_ = false;
+}
+
+
+User.prototype.GetFolder = function() { return this.folder_; }
+User.prototype.GetName = function() { return this.currentStance_.replace("_selected", ""); }
+
+User.prototype.SetChar = function(char, isAlternate)
+{
+    var name = "";
+    switch(char)
+    {
+        case CHARACTERS.KEN: { name = "ken"; break;}
+        case CHARACTERS.RYU: { name = "ryu"; break;}
+    }
+    this.selected_ = char;
+    this.currentStance_ = name + "_selected";
+    this.folder_ = name + (!!isAlternate ? "2" : "");
 }
 
 User.prototype.AddStanceAnimations = function()
@@ -220,12 +238,12 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
                 {
                     this.isCharSelected_ = true;
                     this.chooseCharacterFn_(this);
-                    this.folder_ = this.currentStance_;
-                    this.currentStance_ += "_selected";
-                    if(this.getOtherCharacterFn_() == this.currentStance_)
+                    this.isAlternateChar_ = (keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3);
+                    if(this.getOtherCharacterFn_() == this.selected_)
                     {
-                        this.isAlternateChar_ = true;
+                         this.isAlternateChar_ = !this.getOtherIsAlternateFn_()
                     }
+                    this.SetChar(this.selected_, this.isAlternateChar_);
                 }
             }
 
@@ -411,6 +429,29 @@ var CreateCharSelect = function(user1,user2)
         this.LoadAssets();
     }
 
+    CharSelect.prototype.GetTeamA = function() { return [u1_]; }
+    CharSelect.prototype.GetTeamB = function() { return [u2_]; }
+
+
+    /**/
+    CharSelect.prototype.GetPlayers = function(users)
+    {
+        var retVal = [];
+
+        for(var i = 0; i < users.length; ++i)
+            retVal.push(users[i].GetPlayer());
+
+        return retVal;
+    }
+
+
+    /*For now - only Ken's stage is implemented*/
+    CharSelect.prototype.GetStage = function()
+    {
+        return kensStage_;
+    }
+
+
     CharSelect.prototype.RestartMusic = function()
     {
         soundManager_.Restart(this.music_);
@@ -589,7 +630,8 @@ var CreateCharSelect = function(user1,user2)
             u1_.Init(true);
             u1_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
             u1_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser1ChooseSound(); } })(this);
-            u1_.getOtherCharacterFn_ = (function(thisValue) { return function(direction) { return thisValue.currentStance_; } })(u2_);
+            u1_.getOtherCharacterFn_ = (function(thisValue) { return function(direction) { return thisValue.selected_; } })(u2_);
+            u1_.getOtherIsAlternateFn_ = (function(thisValue) { return function(direction) { return thisValue.isAlternateChar_; } })(u2_);
 
             if(u1_.selected_ == null)
                 u1_.selected_ = CHARACTERS.RYU;
@@ -605,7 +647,8 @@ var CreateCharSelect = function(user1,user2)
             u2_.Init(false);
             u2_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
             u2_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser2ChooseSound(); } })(this);
-            u2_.getOtherCharacterFn_ = (function(thisValue) { return function(direction) { return thisValue.currentStance_; } })(u1_);
+            u2_.getOtherCharacterFn_ = (function(thisValue) { return function(direction) { return thisValue.selected_; } })(u1_);
+            u2_.getOtherIsAlternateFn_ = (function(thisValue) { return function(direction) { return thisValue.isAlternateChar_; } })(u1_);
 
             if(u1_.selected_ == null)
                 u1_.selected_ = CHARACTERS.KEN;
@@ -649,25 +692,6 @@ var CreateCharSelect = function(user1,user2)
     {
         u1_.Render(frame);
         u2_.Render(frame);
-    }
-
-
-    /**/
-    CharSelect.prototype.GetGoodGuys = function()
-    {
-        return [u1_.GetPlayer()];
-    }
-
-    /**/
-    CharSelect.prototype.GetBadGuys = function()
-    {
-        return [u2_.GetPlayer()];
-    }
-
-    /*For now - only Ken's stage is implemented*/
-    CharSelect.prototype.GetStage = function()
-    {
-        return kensStage_;
     }
 
     /**/
@@ -839,6 +863,21 @@ var CreateCharSelect = function(user1,user2)
 	    spriteLookup_.Load("images/misc/misc/p2-select-ryu.png","|images/misc/misc/head-sprites.png", "-1792px", "-288px", "256px", "288px");
 	    spriteLookup_.Load("images/misc/misc/p2-select-sagat.png","|images/misc/misc/head-sprites.png", "-2048px", "-288px", "256px", "288px");
 	    spriteLookup_.Load("images/misc/misc/p2-select-sodom.png","|images/misc/misc/head-sprites.png", "-2304px", "-288px", "256px", "288px");
+    }
+
+    CharSelect.prototype.LoadUserAssets = function(users)
+    {
+        for(var i = 0; i < users.length; ++i)
+        {
+            var user = users[i];
+            if(!!user.GetName())
+            {
+                var name = user.GetName();
+                var folder = user.GetFolder();
+                stuffLoader_.Queue("script/player-" + name + ".js",RESOURCE_TYPES.SCRIPT);
+                stuffLoader_.Queue("script/player-" + folder + "-spritedata.js",RESOURCE_TYPES.SCRIPT);
+            }
+        }
     }
 
     CharSelect.prototype.LoadAssets = function()

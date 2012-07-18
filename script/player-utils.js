@@ -170,7 +170,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 }
 /************************************************************************/
 /************************************************************************/
-var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
+var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,centeredOffset,topOffset,isLooping)
 {
     var GenericAnimation = function()
     {
@@ -186,6 +186,14 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
         this.initialPlayerY_ = 0;
         this.isActive_ = false;
         this.direction_ = 0;
+        this.centeredOffset_ = centeredOffset;
+        this.topOffset_ = topOffset;
+        this.isLooping_ = isLooping || false;
+        this.internalFrame_ = 0;
+    }
+    GenericAnimation.prototype.Reset = function()
+    {
+        this.internalFrame_ = 0;
     }
     GenericAnimation.prototype.HasUserData = function(index)
     {
@@ -216,11 +224,20 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
     }
     GenericAnimation.prototype.GetFrame = function(frameDelta) { return this.BaseAnimation.GetFrame.apply(this.BaseAnimation,arguments); }
     GenericAnimation.prototype.GetNextFrameOffset = function(id) { return this.BaseAnimation.GetNextFrameOffset.apply(this.BaseAnimation,arguments); }
-    GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,stageY,playerX,playerY)
+    GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,stageY,playerX,playerY,playerWidth)
     {
         var offsetX = 0;
         var offsetY = 0;
-        var delta = frame - startFrame;
+        var delta = 0;
+        if(!!this.isLooping_)
+        {
+            if(this.internalFrame_ > this.BaseAnimation.nbFrames_)
+                this.internalFrame_ = 0;
+            delta = this.internalFrame_++;
+        }
+        else
+            delta = frame - startFrame;
+
         var newFrame = this.GetFrame(delta);
         if(!newFrame)
         {
@@ -236,6 +253,12 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
                 element.style.display = "";
             offsetX = newFrame.X;
             offsetY = newFrame.Y;
+
+            if(!!this.centeredOffset_)
+                offsetX = playerWidth * this.centeredOffset_;
+            if(!!this.topOffset_)
+                offsetY = this.topOffset_;
+
             if(this.direction_ > 0)
             {
                 var data = spriteLookup_.Get(newFrame.RightSrc)
@@ -259,12 +282,18 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
                     element.style.height = data.Height;
                 }
 
+
                 /*move the image to the middle of the point*/
                 offsetX -= (parseInt(element.style.width)/2);
                 offsetY -= (parseInt(element.style.height)/2);
             }
 
-            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_TO_PLAYER))
+            {
+                offsetX += playerX;
+                offsetY += playerY;
+            }
+            else if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
             {
                 offsetX += playerX - this.initialPlayerX_;
                 offsetY += playerY - this.initialPlayerY_;
@@ -275,7 +304,9 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
         if(this.direction_ > 0)
         {
             element.style.left = "";
-            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_TO_PLAYER))
+                element.style.right = offsetX + "px";
+            else if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
                 element.style.right = (offsetX + this.initialX_) + "px";
             else
                 element.style.right = (offsetX + this.initialX_ + (this.initialStageX_ - stageX)) + "px";
@@ -283,7 +314,9 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state)
         else
         {
             element.style.right = "";
-            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_TO_PLAYER))
+                element.style.left = offsetX + "px";
+            else if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
                 element.style.left = (offsetX + this.initialX_) + "px";
             else
                 element.style.left = (offsetX + this.initialX_  - (this.initialStageX_ - stageX)) + "px";

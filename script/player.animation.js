@@ -38,6 +38,18 @@ Player.prototype.AddGenericAnimation = function(state,team,name,moveFlags)
 
     return this.otherAnimations_[key];
 }
+/*helper function - adds the dizzy stars animation*/
+Player.prototype.AddDizzyAnimation = function(centeredOffset,topOffset)
+{
+    this.otherAnimations_.Dizzy[this.otherAnimations_.Dizzy.length] =
+    {
+        Direction:this.direction_
+        ,StartFrame:0
+        ,Element:this.dizzyElement_
+        ,Animation:CreateGenericAnimation("dizzy",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
+    };
+    return this.otherAnimations_.Dizzy[this.otherAnimations_.Dizzy.length-1].Animation;
+}
 /* Helper function - adds a dirt animation for the player */
 Player.prototype.AddDirtAnimation = function()
 {
@@ -285,6 +297,15 @@ Player.prototype.GetFreeBigDirtIndex = function()
     return -1;
 }
 
+Player.prototype.SpawnDizzy = function(frame)
+{   
+    this.dizzyIndex_ = +!this.dizzyIndex_;
+    var instance = this.otherAnimations_.Dizzy[this.dizzyIndex_];
+    instance.StartFrame = frame;
+    instance.Animation.direction_ = this.direction_;
+    instance.Animation.initialX_ = this.GetX() - this.headOffsetX_;
+    instance.Animation.initialY_ = this.GetConstOffsetTop() - this.headOffsetY_;
+}
 
 Player.prototype.SpawnSmallDirt = function(frame,offsetX)
 {

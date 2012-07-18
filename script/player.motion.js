@@ -29,10 +29,12 @@ Player.prototype.GetAbsFrontX = function(useImageWidth) { if(this.direction_ > 0
 Player.prototype.GetAbsBackX = function(useImageWidth)  { if(this.direction_ > 0){ return this.GetRightX(useImageWidth); } else { return this.GetLeftX(useImageWidth); } }
 
 Player.prototype.GetBoxTop = function() { return this.y_ + (this.GetBoxHeight()); }
+Player.prototype.GetConstOffsetTop = function() { return this.height_ + STAGE.FLOORY; }
 Player.prototype.GetOffsetBoxTop = function() { return this.y_ + (this.GetBoxHeight()) + this.yTopOffset_; }
 Player.prototype.GetBoxBottom = function() { return this.y_; }
 Player.prototype.GetOffsetBoxBottom = function() { return this.y_ + this.yBottomOffset_; }
 /*Player.prototype.GetConstWidth = function() { return (!!this.currentAnimation_ && !!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.IsAttack()) ? this.GetBoxWidth() : this.width_; }*/
+Player.prototype.GetConstHeight = function() { return this.height_; }
 Player.prototype.GetConstWidth = function() { return this.width_; }
 Player.prototype.GetConstFrontX = function() { return this.GetX() + this.GetConstWidth(); }
 Player.prototype.GetFrontX = function() { return this.GetX() + this.GetBoxWidth(); }

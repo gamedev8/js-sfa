@@ -9,6 +9,7 @@
         this.isAttack_ = isAttack == undefined ? true : isAttack;
         this.allowAirBlock_ = allowAirBlock;
         this.lastFrameOffset = 0;
+        this.nbFrames_ = 0;
     }
 
     BaseAnimation.prototype.SetIsThrow = function(value) { isThrow_ = value; }
@@ -37,6 +38,7 @@
             shadowImage = player.defaultShadowImageSrc_;
         ++player.nbFrames_;
         this.frames_[this.frames_.length] = CreateFrame(this.frames_.length,player.GetNextFrameID(),shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd);
+        this.nbFrames_ += this.frames_[this.frames_.length - 1].Frames;
 
         var currentFrame = this.frames_[this.frames_.length-1];
 

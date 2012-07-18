@@ -1,10 +1,10 @@
 ﻿
 
 /*Encapsulates a new player*/
-var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor)
+var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
     this.name_ = name;
-    this.folder_ = name + (!!user.isAlternateChar_ ? "2" : "");
+    this.folder_ = user.folder_;
     this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + this.name_.toLowerCase() +"-name-1.png";
     this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + this.folder_.toLowerCase() + "-x-portriat-1.png";
 
@@ -32,6 +32,7 @@ var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor
     this.otherAnimations_ = {};
     this.otherAnimations_.Dirt = [];
     this.otherAnimations_.BigDirt = [];
+    this.otherAnimations_.Dizzy = [];
     this.frontHitReport_ = [];
     this.rearHitReport_ = [];
     this.dirtIndices_ = [];
@@ -45,6 +46,7 @@ var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor
 
 
     this.element_ = null;
+    this.dizzyElement_ = null;
     this.image_ = null;
     this.spriteElement_ = null;
     this.shadowContainer_ = null;
@@ -83,6 +85,7 @@ var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor
 
     this.nbFrames_ = 0;
     this.projectiles_ = [];
+    this.height_ = height;
     this.width_ = width;
     this.halfWidth_ = width/2;
     this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
@@ -99,6 +102,10 @@ var Player = function (name,width,user,nameImageSrc,portriatImageSrc,slideFactor
     this.team_ = 0;
     this.defaultShadowImageSrc_ = "images/misc/misc/shadow.png";
     this.winAnimationNames_ = [];
+
+    window["Create" + user.GetFolder() + "SpriteData"]();
+
+
     this.LoadAssets();
     this.CreateElement();
     this.Reset();
@@ -162,6 +169,8 @@ Player.prototype.IncCombo = function()
 
 Player.prototype.Reset = function(ignoreDirection)
 {
+    this.dizzyIndex_ = 0;
+    this.dizzyValue_ = 0;
     this.SetPendingGrapple(false);
     this.isExecutingSuperMove_ = false;
     this.isLosing_ = false;
@@ -251,9 +260,10 @@ Player.prototype.CreateElement = function(x,y,parentElement)
         return i;
     }
 
-    //this.image_ = createImage.call(this,"player");
 
-
+    this.dizzyElement_ = window.document.createElement("div");
+    this.dizzyElement_.className = "player-dizzy";
+    this.dizzyElement_.style.display = "none";
     this.spriteElement_ = window.document.createElement("div");
     this.spriteElement_.className = "player-sprite";
     this.element_.appendChild(this.spriteElement_);
@@ -270,6 +280,7 @@ Player.prototype.CreateElement = function(x,y,parentElement)
 
     parentElement.appendChild(this.shadowContainer_);
     parentElement.appendChild(this.element_);
+    parentElement.appendChild(this.dizzyElement_);
 
     this.CreateDebugElements();
 }
@@ -413,6 +424,13 @@ Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
         if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,STAGE.FLOORY,this.x_,STAGE.FLOORY))
             this.bigDirtIndices_.splice(bigDirtIndex,1);
     }
+    /*dizzy*/
+    if(this.IsDizzy())
+    {
+        var item = this.otherAnimations_.Dizzy[this.dizzyIndex_];
+        if(item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,STAGE.FLOORY,this.x_,this.y_,this.GetBoxWidth()))
+            item.StartFrame = frame;
+    }
 }
 /*Prevents the animation from continuing for one frame*/
 Player.prototype.HoldFrame = function(frame)
@@ -466,6 +484,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
     if(!this.isPaused_)
     {
+        this.DecreaseDizziness(frame);
         if(this.ai_.IsRunning())
             this.ai_.FrameMove(frame);
         this.CheckForInterupt(frame);
@@ -643,4 +662,16 @@ Player.prototype.Release = function()
 
     utils_.RemoveFromDOM(this.shadowContainer_);
     utils_.RemoveFromDOM(this.element_);
+    utils_.RemoveFromDOM(this.dizzyElement_);
+}
+
+/**/
+Player.prototype.Pause = function()
+{
+}
+
+
+/**/
+Player.prototype.Resume = function()
+{
 }

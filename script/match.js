@@ -235,12 +235,16 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.Pause = function()
     {
         this.GetStage().Pause();
+        this.GetTeamA().Pause();
+        this.GetTeamB().Pause();
     }
 
     /**/
     Match.prototype.Resume = function()
     {
         this.GetStage().Resume();
+        this.GetTeamA().Resume();
+        this.GetTeamB().Resume();
     }
 
     /*Initializes a new match*/
@@ -492,6 +496,7 @@ var CreateMatch = function(team1,team2,stage)
         stuffLoader_.Queue("images/misc/misc/energy-bar-lvl2.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/health-bar-life.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/health-bar-damage.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
     }
 
     return new Match();

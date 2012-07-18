@@ -35,7 +35,7 @@
     SoundManager.prototype.GetExtension = function() { return extension_; }
 
     /*creates a DOM audio element and loads it with base64 data*/
-    SoundManager.prototype.LoadBase64 = function(path,nbChannels,defaultVolume,base64Data)
+    SoundManager.prototype.LoadBase64 = function(path,nbChannels,defaultVolume,base64Data,loop)
     {
         if(!items_[path])
         {
@@ -53,6 +53,7 @@
                     el.src = base64Data;
                     el.load();
                     el.id = id;
+                    el.loop = !!loop;
                     window.document.body.appendChild(el);
 
                     ++id_;
@@ -198,7 +199,7 @@
             if(!!el.currentTime)
                 el.currentTime = 0;
 
-            el.loop = !!loops;
+            //el.loop = !!loops;
 
             el.volume = obj.Volume;
             el.play();
@@ -233,7 +234,47 @@
     {
         if(!!items_[path])
         {
-            GetCurrentElement_(path).pause();
+            var el = GetCurrentElement_(path);
+            el.forcePaused_ = true;
+            el.pause();
+        }
+    }
+
+    /**/
+    SoundManager.prototype.PauseAll = function()
+    {
+        for(var i in items_)
+        {
+            if(!items_[i])
+                continue;
+            for(var x = 0; x < items_[i].Channels; ++x)
+            {
+                var el = GetElement_(items_[i].Elements[x]);
+                if(!el.paused)
+                {
+                    el.forcePaused_ = true;
+                    el.pause();
+                }
+            }
+        }
+    }
+
+    /**/
+    SoundManager.prototype.ResumeAll = function()
+    {
+        for(var i in items_)
+        {
+            if(!items_[i])
+                continue;
+            for(var x = 0; x < items_[i].Channels; ++x)
+            {
+                var el = GetElement_(items_[i].Elements[x]);
+                if(!!el.forcePaused_)
+                {
+                    el.play();
+                    el.forcePaused_ = undefined;
+                }
+            }
         }
     }
 
@@ -243,7 +284,7 @@
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
-            if(!!el.paused)
+            if(!!el.forcePaused_)
                 el.play();
         }
     }

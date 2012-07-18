@@ -1,5 +1,60 @@
 ﻿Player.prototype.AddGenericAnimations = function()
 {
+    var dizzyFrames = 2;
+    var offsetXPct = 0.4;
+    var offsetY = 10;
+    for(var i = 0; i < 2; ++i)
+    {
+        var dizzyAnim = this.AddDizzyAnimation(offsetXPct,offsetY);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-0.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-1.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-2.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-3.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-4.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-5.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-6.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-7.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-8.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-9.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-10.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-11.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-12.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-13.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-14.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-15.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-16.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-17.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-18.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-19.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-20.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-21.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-22.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-23.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-24.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-25.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-26.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-27.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-28.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-29.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-30.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-31.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-32.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-33.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-34.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-35.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-36.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-37.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-38.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-39.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-40.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-41.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-42.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-43.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-44.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-45.png",dizzyFrames);
+        dizzyAnim.AddFrame(this,null,"|images/misc/misc/dizzy-" + i + "-46.png",dizzyFrames);
+    }
+
     var specialAnimFrames = 2;
     var animFrames4 = 4;
     

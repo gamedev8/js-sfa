@@ -1,80 +1,4 @@
-﻿var CreateUtils = function()
-{
-    var loadingCount_ = 0;
-
-    var Utils = function()
-    {
-    }
-
-    Utils.prototype.AddBase64Audio = function(src, callbackFn, context)
-    {
-        src = "script/audio/" + src.replace(".js",soundManager_.GetExtension()) + ".js";
-        if(!window.document.getElementById(src))
-        {
-            var script = window.document.createElement("script");
-            script.id = src;
-            script.src = src;
-            script.type = "text/javascript"
-            script.onload = (function(startTime,onload,thisValue)
-            {
-                return function()
-                {
-                    var duration = Date.now() - startTime;
-                    if(!!onload)
-                    {
-                        if(!!thisValue)
-                            onload.call(thisValue);
-                        else
-                            onload();
-                    }
-                }
-            })(Date.now(),callbackFn,context);
-            window.document.body.appendChild(script);
-        }
-    }
-
-    Utils.prototype.RemoveFromDOM = function(element)
-    {
-        if(!!element)
-        {
-            while(element.children.length > 0)
-                utils_.RemoveChildrenFromDOM(element.children[0]);
-            var parentNode = element.parentNode;
-            if(!!parentNode)
-                parentNode.removeChild(element);
-            else
-                element = null;
-        }
-    }
-
-    Utils.prototype.RemoveChildrenFromDOM = function(element,keepOrginalElement)
-    {
-        if(!!element)
-        {
-            if(!element.parentNode)
-            {
-                if(!keepOrginalElement)
-                    element = null;
-            }
-            else if(element.children.length == 0)
-            {
-                if(!keepOrginalElement)
-                    element.parentNode.removeChild(element);
-            }
-            else
-            {
-                while(element.children.length > 0)
-                {
-                    utils_.RemoveChildrenFromDOM(element.children[0]);
-                }
-            }
-        }
-    }
-
-    return new Utils();
-}
-var utils_ = CreateUtils();
-
+﻿
 
 var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0Img, bg1Img)
 {
@@ -95,8 +19,7 @@ var kensStage_ = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ke
 /*******************************************************************************************************************************/
 /*******************************************************************************************************************************/
 function Alert(text)
-{
-    /*
+{    /*
     if(!!console && !!console.log)
         console.log(text);
     */
@@ -129,19 +52,21 @@ u4_.isAlternateChar_ = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    var p1_ = Player.prototype.CreateRyu(u1_);
-    var p2_ = Player.prototype.CreateKen(u2_);
-    game_.StartMatch([p1_],[p2_], kensStage_);
+    u1_.SetChar(CHARACTERS.KEN);
+    u2_.SetChar(CHARACTERS.RYU);
+
+    game_.StartMatch([u1_],[u2], kensStage_);
     game_.Pause();
 }
 
 /* multi player battle */
 function StartDramaticBattle()
 {
-    var p2_ = Player.prototype.CreateKen(u2_);
-    var p3_ = Player.prototype.CreateRyu(u3_);
-    var p4_ = Player.prototype.CreateKen(u4_);
-    game_.StartMatch([p2_],[p3_,p4_], kensStage_, StartDramaticBattleAI);
+    u2_.SetChar(CHARACTERS.KEN);
+    u1_.SetChar(CHARACTERS.RYU,true);
+    u3_.SetChar(CHARACTERS.KEN,true);
+
+    game_.StartMatch([u2_],[u1_,u3_], kensStage_, StartDramaticBattleAI);
     game_.Pause();
 }
 

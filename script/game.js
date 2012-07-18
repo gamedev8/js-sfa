@@ -191,18 +191,34 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "none";
     }
 
-    Game.prototype.StartMatch = function(goodGuys,badGuys,stage,callback)
+    Game.prototype.StartMatch = function(teamA,teamB,stage,callback)
     {
         this.ResetGameData();
-        var goodGuys = goodGuys;
-        var badGuys = badGuys;
-        var stage = stage;
+        //  [load stage assets here]
 
+        var fn = function(thisValue)
+        {
+            return function()
+            {
+                thisValue.CreateMatch(teamA,teamB,stage,callback);
+            }
+        }
+
+        charSelect_ = charSelect_ || CreateCharSelect();
+        charSelect_.LoadUserAssets(teamA);
+        charSelect_.LoadUserAssets(teamB);
+
+        this.StartLoading(null,fn(this));
+    }
+
+
+    Game.prototype.CreateMatch = function(teamA,teamB,stage,callback)
+    {
         if(!!charSelect_)
         {
-            goodGuys = goodGuys || charSelect_.GetGoodGuys();
-            badGuys = badGuys || charSelect_.GetBadGuys();
-            stage = stage || charSelect_.GetStage();
+            goodGuys = charSelect_.GetPlayers(teamA);
+            badGuys = charSelect_.GetPlayers(teamB);
+            stage = charSelect_.GetStage();
 
             charSelect_.Release();
         }
@@ -265,8 +281,11 @@ var CreateGame = function()
     Game.prototype.OnDoneLoading = function(runLoopFn, callback)
     {
         this.ShowLoading(false);
-        managed_.Start(managed_);
-        runLoopFn.call(this);
+        if(!!runLoopFn)
+        {
+            managed_.Start(managed_);
+            runLoopFn.call(this);
+        }
         if(!!callback)
             callback();
     }
@@ -314,6 +333,7 @@ var CreateGame = function()
         window.document.getElementById("spnState").className = "state paused"
         if(!!managed_)
             managed_.Pause();
+        soundManager_.PauseAll();
     }
     /*resumes the game*/
     Game.prototype.Resume = function()
@@ -323,6 +343,7 @@ var CreateGame = function()
         window.document.getElementById("spnState").className = "state running";
         if(!!managed_)
             managed_.Resume();
+        soundManager_.ResumeAll();
     }
     /*Returns true if the key is being released*/
     Game.prototype.WasKeyPressed = function(key,keyCode,isDown)
@@ -487,7 +508,7 @@ var CreateGame = function()
                 if(!!charSelect_.isDone_ && charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
                 {
                     managed_ = null;
-                    this.StartMatch();
+                    this.StartMatch(charSelect_.GetTeamA(),charSelect_.GetTeamB(),charSelect_.GetStage());
                 }
                 charSelect_.Render(frame_);
                 soundManager_.Render(frame_);

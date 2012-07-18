@@ -105,6 +105,18 @@
     }
 
 
+    Team.prototype.Pause = function()
+    {
+        for(var i = 0; i < this.GetPlayers().length; ++i)
+            this.GetPlayer(i).Pause();
+    }
+
+    Team.prototype.Resume = function()
+    {
+        for(var i = 0; i < this.GetPlayers().length; ++i)
+            this.GetPlayer(i).Resume();
+    }
+
     /**/
     Team.prototype.FrameMove = function(frame, keyboardState, x, y)
     {
