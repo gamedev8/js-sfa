@@ -28,6 +28,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
     this.stanceElement_ = {X:0,Y:0,Element:null};
     this.shadowElement_ = {X:0,Y:0,Element:null};
     this.nameElement_ = {X:0,Y:0,Element:null};
+    this.randomCharFace_ = {X:0,Y:0,Element:null}
     this.isInitialized_ = false;
     this.chooseCharacterFn_ = null;
     this.getOtherCharacterFn_ = null;
@@ -190,6 +191,9 @@ User.prototype.Init = function(isUser1)
 
     parentElement.appendChild(this.element_.Element);
 
+    this.randomCharFace_.Element = window.document.createElement("div");
+    parentElement.appendChild(this.randomCharFace_.Element);
+
     if(!!isUser1)
     {
         this.selected_ = CHARACTERS.RYU;
@@ -199,7 +203,8 @@ User.prototype.Init = function(isUser1)
 
         this.element_.Element.className = "stance-container-p1";
         this.portriatElement_.className = "select-portriat-p1";
-        this.selectedCharStance_.Element.className = "select-stance-p1"
+        this.selectedCharStance_.Element.className = "select-stance-p1";
+        this.randomCharFace_.Element.className = "select-random-p1";
     }
     else
     {
@@ -210,7 +215,8 @@ User.prototype.Init = function(isUser1)
 
         this.element_.Element.className = "stance-container-p2";
         this.portriatElement_.className = "select-portriat-p2";
-        this.selectedCharStance_.Element.className = "select-stance-p2"
+        this.selectedCharStance_.Element.className = "select-stance-p2";
+        this.randomCharFace_.Element.className = "select-random-p2";
     }
 }
 
@@ -249,7 +255,14 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
 
             if(!!direction)
             {
+                var mustChange = (this.selected_ == CHARACTERS.RANDOM1 || this.selected_ == CHARACTERS.RANDOM2);
                 this.changeCharacterFn_(direction);
+
+                if(!!mustChange && (this.selected_ != CHARACTERS.RANDOM1 || this.selected_ != CHARACTERS.RANDOM2))
+                {
+                    this.randomSelect_ = 0;
+                    this.randomCharFace_.Element.style.display = "none";
+                }
                 this.ShowCharacter();
             }
             if(!!this.isCharSelected_)
@@ -295,6 +308,14 @@ User.prototype.ShowCharacter = function()
 
     spriteLookup_.Set(this.nameElement_.Element, "images/misc/font3/name-" + this.currentStance_ + ".png");
     //this.nameElement_.Element.src = "images/misc/font3/" + this.currentStance_ + ".png";
+
+    if(!this.isCharSelected_ && !!this.randomSelect_)
+    {
+        if(this.player_ == 1)
+            spriteLookup_.Set(this.randomCharFace_.Element, "images/misc/misc/char-" + this.currentStance_ + "-l.png");
+        else
+            spriteLookup_.Set(this.randomCharFace_.Element, "images/misc/misc/char-" + this.currentStance_ + "-r.png");
+    }
 
 }
 
@@ -459,7 +480,7 @@ var CreateCharSelect = function(user1,user2)
 
     CharSelect.prototype.PlayMusic = function()
     {
-        soundManager_.Play(this.music_,true);
+        soundManager_.PlayOrResume(this.music_,true);
     }
 
     CharSelect.prototype.PauseMusic = function()

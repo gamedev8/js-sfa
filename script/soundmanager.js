@@ -243,39 +243,11 @@
     /**/
     SoundManager.prototype.PauseAll = function()
     {
-        for(var i in items_)
-        {
-            if(!items_[i])
-                continue;
-            for(var x = 0; x < items_[i].Channels; ++x)
-            {
-                var el = GetElement_(items_[i].Elements[x]);
-                if(!el.paused)
-                {
-                    el.forcePaused_ = true;
-                    el.pause();
-                }
-            }
-        }
     }
 
     /**/
     SoundManager.prototype.ResumeAll = function()
     {
-        for(var i in items_)
-        {
-            if(!items_[i])
-                continue;
-            for(var x = 0; x < items_[i].Channels; ++x)
-            {
-                var el = GetElement_(items_[i].Elements[x]);
-                if(!!el.forcePaused_)
-                {
-                    el.play();
-                    el.forcePaused_ = undefined;
-                }
-            }
-        }
     }
 
     /**/

@@ -668,10 +668,14 @@ Player.prototype.Release = function()
 /**/
 Player.prototype.Pause = function()
 {
+    if(this.IsDizzy())
+        soundManager_.Pause("audio/misc/dizzy.zzz");
 }
 
 
 /**/
 Player.prototype.Resume = function()
 {
+    if(this.IsDizzy())
+        soundManager_.Resume("audio/misc/dizzy.zzz");
 }
