@@ -11,16 +11,27 @@
     }
 
 
-    AnimationTrail.prototype.Add = function(animation)
+    AnimationTrail.prototype.Add = function(animation,followElement,folder)
     {
         var img = window.document.createElement("div");
         img.className = "player-sprite";
 
         var div = window.document.createElement("div");
         div.className = "player";
+        div.style.backgroundImage = "url(images/misc/" + folder + "/trail-sprites.png)";
         div.appendChild(img);
 
         this.Trail[this.Trail.length] = {StartFrame:0,Element:div,Animation:animation,FrameIndex:0,LastImageSrc:"",Coords:[]};
+
+        this.FollowElement = this.FollowElement || followElement;
+        if(!!this.FollowElement)
+        {
+            var container = this.FollowElement.parentNode;
+            if(container.children.length == 0)
+                container.appendChild(div);
+            else
+                container.insertBefore(div,container.children[0]);
+        }
     }
 
 
@@ -35,9 +46,8 @@
 
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
-                this.FollowElement.parentNode.removeChild(this.Trail[i].Element);
-                this.Trail[i].Element.children[0].style.backgroundImage = "";
-                this.Trail[i].Element.children[0].style.backgroundPosition = "";
+                //this.FollowElement.parentNode.removeChild(this.Trail[i].Element);
+                this.Trail[i].Element.style.display = "none";
                 this.Trail[i].FrameIndex = 0;
             }
         }
@@ -56,10 +66,12 @@
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
                 this.Trail[i].Animation.ClearAllFrameUserData();
+                /*
                 if(container.children.length == 0)
                     container.appendChild(this.Trail[i].Element);
                 else
                     container.insertBefore(this.Trail[i].Element,container.children[0]);
+                */
                 this.Trail[i].StartFrame = frame + (this.Delay * (i + 1));
                 this.Trail[i].FrameIndex = 0;
             }
@@ -165,18 +177,7 @@
                     var frameToRender = this.GetCurrentFrame(i);
                     if(!!frameToRender)
                     {
-                        var data = spriteLookup_.Get(frameToRender.GetImageSrc(this.direction_));
-                        if(!!data)
-                        {
-                            if(currentItem.Element.children[0].style.backgroundPositionX != spriteLookup_.GetLeft(frameToRender.RightSrc)
-                                || currentItem.Element.children[0].style.backgroundPositionX != spriteLookup_.GetLeft(frameToRender.LeftSrc))
-                            {
-                                currentItem.Element.children[0].style.backgroundImage = "url(" + data.Sprite + ")";
-                                currentItem.Element.children[0].style.backgroundPosition = data.Left + " " + data.Bottom;
-                                currentItem.Element.children[0].style.width = data.Width;
-                                currentItem.Element.children[0].style.height = data.Height;
-                            }
-                        }
+                        spriteLookup_.Set(currentItem.Element,frameToRender.GetImageSrc(this.direction_));
                     }
                 }
             }

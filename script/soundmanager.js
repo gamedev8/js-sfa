@@ -235,7 +235,6 @@
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
-            el.forcePaused_ = true;
             el.pause();
         }
     }
@@ -256,7 +255,7 @@
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
-            if(!!el.forcePaused_)
+            if(!!el.paused)
                 el.play();
         }
     }

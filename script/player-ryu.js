@@ -961,7 +961,7 @@ Player.prototype.CreateRyuSuperMoves = function(player)
             s_fireball_trail.AddTrailFrame(player,folder + "/x-fb-3-shadow-" + trailIndex + ".png",1);
             s_fireball_trail.AddTrailFrame(player,folder + "/x-fb-3-shadow-" + trailIndex + ".png",CONSTANTS.FRAME_MAX);
 
-            trail.Add(s_fireball_trail);
+            trail.Add(s_fireball_trail,player.element_,player.folder_);
         }
 
 

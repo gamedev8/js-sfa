@@ -962,7 +962,7 @@ Player.prototype.CreateKenSuperMoves = function(player)
             s_uppercut_trail.AddTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-4.png",6);
             s_uppercut_trail.AddTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-5.png",CONSTANTS.MAX_FRAME);
 
-            trail.Add(s_uppercut_trail);
+            trail.Add(s_uppercut_trail,player.element_,player.folder_);
         }
 
 
