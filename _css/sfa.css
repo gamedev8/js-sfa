@@ -11,9 +11,12 @@ body div.select {height:100%;width:100%;background:url(../images/misc/misc/playe
 .select-stance-p2, .select-stance-p1 {position:absolute;z-index:2;bottom:0px;background-image:url(../images/misc/misc/stance-sprites.png)}
 .select-stance-p1 {left:0px;}
 .select-stance-p2 {right:0px;}
-.select-icon {position:absolute;background-image:url(../images/misc/misc/char-misc-sprites.png);}
+.select-icon {position:absolute;z-index:3;background-image:url(../images/misc/misc/char-misc-sprites.png);}
 .select-portriat-p1 {position:absolute;top:0px;left:0px;z-index:5;background-image:url(../images/misc/misc/head-sprites.png);}
 .select-portriat-p2 {position:absolute;top:0px;right:0px;z-index:5;background-image:url(../images/misc/misc/head-sprites.png);}
+.select-random-p1, .select-random-p2{position:absolute;bottom:42px;z-index:1;background-image:url(../images/misc/misc/char-sprites.png);}
+.select-random-p1{left:256px;}
+.select-random-p2{right:256px;}
 div.stance-container-p1, div.stance-container-p2 {position:absolute;z-index:10;bottom:24px;width:200px;}
 div.stance-container-p1 {left:32px;}
 div.stance-container-p2 {right:32px;}
