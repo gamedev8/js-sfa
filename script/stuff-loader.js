@@ -9,7 +9,7 @@
     Utils.prototype.AddBase64Audio = function(src, callbackFn, context)
     {
         src = "script/audio/" + src.replace(".js",soundManager_.GetExtension()) + ".js";
-        this.AddScript(src,callbackFn,context);
+        return this.AddScript(src,callbackFn,context);
     }
 
     Utils.prototype.AddScript = function(src, callbackFn, context)
@@ -35,7 +35,10 @@
                 }
             })(Date.now(),callbackFn,context);
             window.document.body.appendChild(script);
+            return true;
         }
+        else
+            return false;
     }
 
     Utils.prototype.RemoveFromDOM = function(element)
@@ -84,7 +87,7 @@ var utils_ = CreateUtils();
 
 var CreateStuffLoader = function()
 {
-    var stuff_ = [];
+    var stuff_ = {};
     var nbElements_ = 0;
     var callback_ = null;
     var context_ = null;
@@ -108,7 +111,6 @@ var CreateStuffLoader = function()
                 callback_.call(context_ || window);
             }
 
-            stuff_ = [];
             //callback_ = null;
         }
         Report_();
@@ -126,13 +128,15 @@ var CreateStuffLoader = function()
 
     var DownloadBase64Audio_ = function(index)
     {
-        utils_.AddBase64Audio(stuff_[index].Src, CreateOnDoneCallback_(index));
+        if(!utils_.AddBase64Audio(stuff_[index].Src, CreateOnDoneCallback_(index)))
+            OnDone_();
     }
 
 
     var DownloadScript_ = function(index)
     {
-        utils_.AddScript(stuff_[index].Src, CreateOnDoneCallback_(index));
+        if(!utils_.AddScript(stuff_[index].Src, CreateOnDoneCallback_(index)))
+            OnDone_();
     }
 
     /***********************/
@@ -146,12 +150,13 @@ var CreateStuffLoader = function()
         if(!stuff_[src])
         {
             stuff_[src] = {Type:type,State:LOADING_STATES.WAITING,Src:src};
-            ++nbElements_;
         }
     }
 
     StuffLoader.prototype.Start = function(reportProgressCallback, callback, context)
     {
+        for(var i in stuff_)
+            ++nbElements_;
         callback_ = callback;
         context_ = context;
         reportProgressCallback_ = reportProgressCallback;
@@ -166,6 +171,7 @@ var CreateStuffLoader = function()
                 case RESOURCE_TYPES.SCRIPT: { DownloadScript_(i); break; }
             };
         }
+        stuff_ = {};
     }
 
     /***********************/

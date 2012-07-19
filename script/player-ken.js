@@ -286,7 +286,7 @@ Player.prototype.CreateKen = function(user)
     blockRelease.Flags = ({ Player: PLAYER_FLAGS.BLOCKING | PLAYER_FLAGS.MOVE_TO_BACK });
     blockRelease.AddFrame(player, "", folder + "/x-block-1.png", 2, { Player: PLAYER_FLAGS.BLOCKING });
     blockRelease.AddFrame(player, "", folder + "/x-block-0.png", 2, { Player: PLAYER_FLAGS.BLOCKING });
-    /*The POSE_FLAGS.ALLOW_BLOCK is checked seperately, it absolutely must be there, or else the move will not match!
+    /*The POSE_FLAGS.ALLOW_BLOCK is checked seperately, it absolutely must be there, or else the move will not be found!
     Only one of the other flags need to match*/
     var block = player.AddAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.ALLOW_BLOCK, "block", 0, [BUTTONS.BACK], -2, false);
     block.Flags = ({ Player: PLAYER_FLAGS.BLOCKING | PLAYER_FLAGS.MOVE_TO_BACK });

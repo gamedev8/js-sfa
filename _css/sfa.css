@@ -40,13 +40,13 @@ div.Announce span {display:inline-block;position:relative;width:0px;background-i
 /*div.loading{position:absolute;left:40%;top:40%;text-align:center;font-family:arial;font-size:300%;}*/
 div.show-keys {z-index:3000;padding:3px 0;background:#222;}
 div.team2Keys div.show-keys , div.team1Keys div.show-keys {margin-top:100px;border-bottom:solid 1px #000;padding:3px 0;background:#222;}
-div.team1Keys,div.team2Keys {position:absolute;width:280px;bottom:200px;}
+div.team1Keys,div.team2Keys {display:none;position:absolute;width:280px;bottom:200px;}
 div.team1Keys {color:#aaaaff;left:0px;}
 div.team2Keys {color:#ff6666;right:0px;}
 
 .state {margin:3px 0;}
-.running {background:#00aa00;color:#fff;border:solid 1px #000;}
-.paused {background:#ff0000;color:#fff;border:solid 1px #ffaaaa;}
+.running {background:#00aa00;color:#fff;}
+.paused {margin-top:2px;background:#ff0000;color:#fff;}
 .frame-rate{background:#666;text-transform:uppercase;}
 
 div.projectile{position:absolute;bottom:35px;z-index:20;background-position:0 0;background-repeat:no-repeat;}

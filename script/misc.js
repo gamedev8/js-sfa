@@ -55,8 +55,7 @@ function StartQuickMatch()
     u1_.SetChar(CHARACTERS.KEN);
     u2_.SetChar(CHARACTERS.RYU);
 
-    game_.StartMatch([u1_],[u2], kensStage_);
-    game_.Pause();
+    game_.StartMatch(true,[u1_],[u2], kensStage_);
 }
 
 /* multi player battle */
@@ -66,8 +65,8 @@ function StartDramaticBattle()
     u1_.SetChar(CHARACTERS.RYU,true);
     u3_.SetChar(CHARACTERS.KEN,true);
 
-    game_.StartMatch([u2_],[u1_,u3_], kensStage_, StartDramaticBattleAI);
     game_.Pause();
+    game_.StartMatch(true,[u2_],[u1_,u3_], kensStage_, StartDramaticBattleAI);
 }
 
 function StartDramaticBattleAI()

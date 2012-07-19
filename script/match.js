@@ -248,10 +248,9 @@ var CreateMatch = function(team1,team2,stage)
     }
 
     /*Initializes a new match*/
-    Match.prototype.Start = function()
+    Match.prototype.Start = function(ignoreMusic)
     {
         this.GetStage().Start();
-        this.GetStage().Resume();
         var moveStageX          = function(thisValue,players) { return function(amount,dontOverrideSign) { for(var i = 0; i < players.length;++i) {amount = thisValue.GetStage().ScrollX(amount,this,players[i],thisValue,dontOverrideSign);}; return amount; } };
         var fixX                = function(thisValue,players) { return function(amount) {thisValue.GetPhysics().FixX(amount,this,false,true);  return 0; } };
         var moveX               = function(thisValue,players) { return function(amount) {amount = thisValue.GetStage().ScrollX(amount,this,null,thisValue); thisValue.GetPhysics().MoveX(amount,this,false,true); return 0; } };
@@ -360,7 +359,8 @@ var CreateMatch = function(team1,team2,stage)
         this.GetTeamB().GetHealthbar().Init();
         this.GetTeamB().GetEnergybar().Init();
 
-        this.GetStage().PlayMusic();
+        if(!ignoreMusic)
+            this.GetStage().PlayMusic();
     }
     /*Handles key state changes*/
     Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)

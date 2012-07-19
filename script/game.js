@@ -191,8 +191,9 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "none";
     }
 
-    Game.prototype.StartMatch = function(teamA,teamB,stage,callback)
+    Game.prototype.StartMatch = function(startPaused,teamA,teamB,stage,callback)
     {
+        this.startPaused_ = startPaused;
         this.ResetGameData();
         //  [load stage assets here]
 
@@ -283,8 +284,10 @@ var CreateGame = function()
         this.ShowLoading(false);
         if(!!runLoopFn)
         {
-            managed_.Start(managed_);
+            managed_.Start(!!this.startPaused_);
             runLoopFn.call(this);
+            if(!!this.startPaused_)
+                this.Pause();
         }
         if(!!callback)
             callback();
@@ -324,13 +327,23 @@ var CreateGame = function()
         if(speed_ < CONSTANTS.MAX_DELAY)
             speed_ += CONSTANTS.SPEED_INCREMENT;
     }
-    /*pauses the game*/
-    Game.prototype.Pause = function()
+
+    Game.prototype.IsPaused = function() { return this.HasState(GAME_STATES.PAUSED); }
+
+    Game.prototype.QuickPause = function()
     {
         this.AddState(GAME_STATES.PAUSED);
         this.AddState(GAME_STATES.STEP_FRAME);
         window.document.getElementById("spnState").innerHTML = "State: Frame Step"
         window.document.getElementById("spnState").className = "state paused"
+        window.document.getElementById("spnStepFrame").className = "state running"
+        window.document.getElementById("spnResume").className = "state running"
+    }
+
+    /*pauses the game*/
+    Game.prototype.Pause = function()
+    {
+        this.QuickPause();
         if(!!managed_)
             managed_.Pause();
         soundManager_.PauseAll();
@@ -341,6 +354,8 @@ var CreateGame = function()
         this.RemoveState(GAME_STATES.PAUSED);
         window.document.getElementById("spnState").innerHTML = "State: Running";
         window.document.getElementById("spnState").className = "state running";
+        window.document.getElementById("spnStepFrame").className = ""
+        window.document.getElementById("spnResume").className = ""
         if(!!managed_)
             managed_.Resume();
         soundManager_.ResumeAll();
@@ -508,7 +523,7 @@ var CreateGame = function()
                 if(!!charSelect_.isDone_ && charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
                 {
                     managed_ = null;
-                    this.StartMatch(charSelect_.GetTeamA(),charSelect_.GetTeamB(),charSelect_.GetStage());
+                    this.StartMatch(false,charSelect_.GetTeamA(),charSelect_.GetTeamB(),charSelect_.GetStage());
                 }
                 charSelect_.Render(frame_);
                 soundManager_.Render(frame_);

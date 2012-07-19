@@ -367,6 +367,8 @@ Player.prototype.ClearDizzy = function()
 }
 Player.prototype.ChangeDizzy = function(value)
 {
+    if(this.IsDead())
+        return;
     this.dizzyValue_ = Math.max(this.dizzyValue_ + value, 0);
 }
 Player.prototype.GetDizzyValue = function(value)
@@ -379,6 +381,8 @@ Player.prototype.IsDizzy = function()
 }
 Player.prototype.IncreaseDizziness = function(frame,attackState,damage)
 {
+    if(this.IsDead())
+        return;
     var value = 0;
 
     if(!!(attackState & ATTACK_FLAGS.LIGHT)) {value += CONSTANTS.LIGHT_INCREASE_DIZZY;}
@@ -677,6 +681,9 @@ Player.prototype.KnockDownDefeat = function(frame,attackDirection)
 }
 Player.prototype.GetDizzy = function(attackState,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
+    if(this.IsDead())
+        return;
+
     var move = this.moves_[_c3("_",POSE_FLAGS.STANDING,"_hr_dizzy")];
     if(!!move)
     {
