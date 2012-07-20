@@ -47,6 +47,10 @@
 
     Team.prototype.Init = function()
     {
+        this.GetPortriatImg().style.display = "";
+        this.GetNameImg().style.display = "";
+        this.GetHealthbar().Init();
+        this.GetEnergybar().Init();
     }
 
 
@@ -102,6 +106,7 @@
         this.GetEnergybar().Release();
         for(var i = 0; i < this.GetPlayers().length; ++i)
             this.GetPlayer(i).Release();
+        this.SetCursor(0);
     }
 
 

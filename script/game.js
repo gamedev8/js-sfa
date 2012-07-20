@@ -107,7 +107,7 @@ var CreateGame = function()
     Game.prototype.OnStageImagesLoaded = function()
     {
         if(!!match_)
-            match_.GetStage().Reset();
+            match_.GetStage().Init();
     }
 
     Game.prototype.ReleaseText = function()
@@ -263,11 +263,15 @@ var CreateGame = function()
     Game.prototype.ShowLoading = function(show)
     {
         if(!!show)
+        {
             pnlLoadingProgress_.style.display = "";
+            pnlLoading_.className = "loading";
+        }
         else
         {
             pnlLoadingProgress_.style.display = "none";
             pnlLoading_.innerHTML = "";
+            pnlLoading_.className = "done-loading";
         }
     }
     /*starts loading assets*/
@@ -296,9 +300,9 @@ var CreateGame = function()
     Game.prototype.OnProgress = function(nbRemaining)
     {
         if(!nbRemaining)
-            pnlLoading_.innerHTML = "Done loading";
+            pnlLoading_.innerHTML = "done";
         else
-            pnlLoading_.innerHTML = "Loading (" + nbRemaining + ")";
+            pnlLoading_.innerHTML = nbRemaining;
     }
     /*resets common data*/
     Game.prototype.ResetGameData = function()

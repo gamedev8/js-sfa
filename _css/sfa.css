@@ -1,4 +1,4 @@
-﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:10px}
+﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:10px;overflow:hidden;}
 body div.select {height:100%;width:100%;background:url(../images/misc/misc/player-select-bg.png) no-repeat 0px 0px;}
 .capcom,.credits,.insert-coin,.credits-text{position:absolute;}
 .capcom{background-image:url(../images/misc/font1/cap.png);width:352px;height:41px;bottom:42px;left:208px;}
@@ -25,12 +25,13 @@ div.stance-container-p2 {right:32px;}
 div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
 div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.loadingBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;text-align:center;}
-span.loading {position:relative;font-size:40px;top:50%;}
+span.loading {font-weight:bold;color:#00aa00;}
+span.done-loading {font-weight:normal;color:#000;}
 div.stage .ken-bg0{position:absolute;top:-20px;left:0px;}
 div.stage .ken-bg1{position:absolute;bottom:0px;left:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
 div.shadow .shadow{position:absolute;bottom:0px;background-image:url(../images/misc/misc/shadow-sprites.png);}
-div.player-dizzy{position:absolute;bottom:0px;background-image:url(../images/misc/misc/misc-sprites.png);background-color:Transparent;z-index:30;}
+div.player-dizzy{position:absolute;bottom:0px;background-image:url(../images/misc/misc/misc-sprites.png);background-color:Transparent;z-index:14;}
 div.player{position:absolute;bottom:35px;z-index:1;/*border:solid 1px #000;*/}
 div.player .player-sprite{position:relative;bottom:0px;}
 

@@ -223,7 +223,7 @@ var CreateMatch = function(team1,team2,stage)
             }
 
             this.SetRoundOver(false);
-            this.GetStage().Reset();
+            this.GetStage().Init();
             this.GetGame().ReleaseText();
 
             this.GetTeamA().GetHealthbar().Reset();
@@ -351,13 +351,9 @@ var CreateMatch = function(team1,team2,stage)
         for(var i = 1; i < this.GetTeamB().GetPlayers().length; ++i)
             this.GetTeamB().GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
-        this.GetStage().Reset();
-
-        this.GetTeamA().GetHealthbar().Init();
-        this.GetTeamA().GetEnergybar().Init();
-
-        this.GetTeamB().GetHealthbar().Init();
-        this.GetTeamB().GetEnergybar().Init();
+        this.GetStage().Init();
+        this.GetTeamA().Init();
+        this.GetTeamB().Init();
 
         if(!ignoreMusic)
             this.GetStage().PlayMusic();

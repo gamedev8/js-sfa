@@ -663,6 +663,12 @@ Player.prototype.Release = function()
     utils_.RemoveFromDOM(this.shadowContainer_);
     utils_.RemoveFromDOM(this.element_);
     utils_.RemoveFromDOM(this.dizzyElement_);
+    for(var i in this.moves_)
+    {
+        var trail = this.moves_[i].Trail;
+        if(!!trail)
+            trail.Release();
+    }
 }
 
 /**/

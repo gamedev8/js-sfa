@@ -48,6 +48,16 @@ User.prototype.SetChar = function(char, isAlternate)
     {
         case CHARACTERS.KEN: { name = "ken"; break;}
         case CHARACTERS.RYU: { name = "ryu"; break;}
+
+        case CHARACTERS.RANDOM1:
+        case CHARACTERS.RANDOM2:
+        {
+            switch(this.currentStance_)
+            {
+                case "ryu": { return this.SetChar(CHARACTERS.RYU, isAlternate); }
+                case "ken": { return this.SetChar(CHARACTERS.KEN, isAlternate); }
+            };
+        }
     }
     this.selected_ = char;
     this.currentStance_ = name + "_selected";
@@ -166,6 +176,7 @@ User.prototype.Release = function()
     utils_.RemoveFromDOM(this.selectIcon_.Element);
     utils_.RemoveFromDOM(this.portriatElement_);
     utils_.RemoveFromDOM(this.element_.Element);
+    utils_.RemoveFromDOM(this.randomCharFace_.Element);
     this.isCharSelected_ = false;
 }
 

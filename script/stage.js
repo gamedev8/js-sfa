@@ -387,7 +387,7 @@ Stage.prototype.Center = function()
 }
 
 /*inits the background images*/
-Stage.prototype.Reset = function()
+Stage.prototype.Init = function()
 {
     var screenWidth = GetWidth(window.document.body);
     var screenHeight = GetHeight(window.document.body);

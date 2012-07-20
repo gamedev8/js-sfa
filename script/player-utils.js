@@ -379,11 +379,6 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction)
             offsetY += newFrame.Y;
             if(direction > 0)
             {
-                /*
-                if(!!newFrame.RightSrc && (element.src != newFrame.RightSrc))
-                    element.src  = frameImages_.Get(newFrame.RightSrc).src;
-                */
-
                 var data = spriteLookup_.Get(newFrame.RightSrc)
                 if(!!data && (element.style.backgroundPositionX != data.Left))
                 {
@@ -402,10 +397,6 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction)
             }
             else
             {
-                /*
-                if(!!newFrame.LeftSrc && (element.src != newFrame.LeftSrc))
-                    element.src  = frameImages_.Get(newFrame.LeftSrc).src;
-                */
                 var data = spriteLookup_.Get(newFrame.LeftSrc)
                 if(!!data && (element.style.backgroundPositionX != data.Left))
                 {
@@ -501,10 +492,6 @@ var CreateSpriteLookup = function()
     /*Image only loaded once*/
     SpriteLookup.prototype.Load = function(key,spriteFilename,left,bottom,width,height)
     {
-    
-        if(!!spriteFilename && (spriteFilename[0] != "|"))
-            frameImages_.Load(spriteFilename);
-    
         spriteFilename = spriteFilename.replace("|","");
     
         if(!this.Get(key))
@@ -561,10 +548,6 @@ var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsT
         this.LeftSrc =  !!image ? image.replace("#-","r-").replace("x-","l-") : "";
         this.AttackState = attackState || 0;
         this.HitPoints = hitPoints || [];
-        if(!!this.RightSrc && (this.RightSrc[0] != "|"))
-            frameImages_.Load(this.RightSrc);
-        if((this.RightSrc != this.LeftSrc) && (!!this.LeftSrc && this.LeftSrc[0] != "|"))
-            frameImages_.Load(this.LeftSrc);
 
         this.RightSrc = this.RightSrc.replace("|","");
         this.LeftSrc  = this.LeftSrc.replace("|","");

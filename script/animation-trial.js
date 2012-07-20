@@ -10,6 +10,16 @@
         this.StageDeltaY = 0;
     }
 
+    AnimationTrail.prototype.Id = 0;
+    AnimationTrail.prototype.GetNextId = function() { return AnimationTrail.prototype.Id++; }
+
+    AnimationTrail.prototype.Release = function()
+    {
+        for(var i = 0, length = this.Trail.length; i < length; ++i)
+        {
+            utils_.RemoveFromDOM(this.Trail[i].Element);
+        }
+    }
 
     AnimationTrail.prototype.Add = function(animation,followElement,folder)
     {
