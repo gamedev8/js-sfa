@@ -101,6 +101,61 @@
         return null;
     }
 
+    Debug.prototype.KeyCount = 1000;
+
+    Debug.prototype.InjectPlayer = function(playerId,team)
+    {
+        if(!game_.GetMatch() || !game_.GetMatch().TeamA || !game_.GetMatch().TeamB)
+        {
+            AlertError("You can only inject a player during a match.");
+            return;
+        }
+
+        game_.Pause();
+        right = Debug.prototype.KeyCount++;
+        up = Debug.prototype.KeyCount++;
+        left = Debug.prototype.KeyCount++;
+        down = Debug.prototype.KeyCount++;
+        p1 = Debug.prototype.KeyCount++;
+        p2 = Debug.prototype.KeyCount++;
+        p3 = Debug.prototype.KeyCount++;
+        k1 = Debug.prototype.KeyCount++;
+        k2 = Debug.prototype.KeyCount++;
+        k3 = Debug.prototype.KeyCount++;
+        turn = Debug.prototype.KeyCount++;
+        var user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        user.SetChar(playerId);
+        if(!!user.GetName())
+        {
+            var name = user.GetName();
+            var folder = user.GetFolder();
+            stuffLoader_.Queue("script/player-" + name + ".js",RESOURCE_TYPES.SCRIPT);
+            stuffLoader_.Queue("script/player-" + folder + "-spritedata.js",RESOURCE_TYPES.SCRIPT);
+
+            var onDone = (function(user)
+            {
+                return function()
+                {
+                    var player = user.GetPlayer();
+                    if(team == 1)
+                        game_.GetMatch().TeamA.AddPlayer(player);
+                    else
+                        game_.GetMatch().TeamB.AddPlayer(player);
+                    game_.GetMatch().SetupPlayer(player,team);
+                    player.SetAI(CreateSimpleRyuAI);
+                }
+            })(user);
+            stuffLoader_.Start(null,onDone,null);
+        }
+        else
+        {
+            AlertError("user not found");
+
+        }
+
+
+    }
+
    /*implemented as a singleton*/
     var instance_ = instance_ || new Debug();
     return instance_;

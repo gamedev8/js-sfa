@@ -195,7 +195,7 @@ Player.prototype.FindAnimation = function(value,frame)
                 {
                     if(!!this.registeredHit_.HitID)
                         continue;
-                    if(!this.TryStartGrapple(move.GrappleDistance,move.GetOtherPlayerAirborneFlags()))
+                    if(!this.TryStartGrapple(move,frame))
                         continue;
                 }
 
@@ -697,7 +697,7 @@ Player.prototype.SetSpriteData = function(base64Data)
     this.spriteElement_.style.backgroundImage = "url(" + base64Data + ")";
 }
 
-Player.prototype.SetSprite = function()
+Player.prototype.SetSprite = function(frame)
 {
     if(this.currentAnimation_.Direction > 0)
     {
@@ -725,6 +725,8 @@ Player.prototype.SetSprite = function()
         this.OffsetImageX(this.currentFrame_.ImageOffsetX);
     if(this.currentFrame_.ImageOffsetY != undefined)
         this.OffsetImageY(this.currentFrame_.ImageOffsetY);
+    if(!!this.currentAnimation_ && !!this.currentAnimation_.Animation)
+        this.currentAnimation_.Animation.RenderChildren(frame,this.currentAnimation_.StartFrame,this.currentAnimation_.Direction,parseInt(this.element_.style.zIndex) + 1,this.x_,this.y_);
 }
 
 /*Sets the x and y on the element*/
@@ -735,7 +737,7 @@ Player.prototype.Render = function(frame,stageDiffX)
     {
         if(!!this.currentFrame_)
         {
-            this.SetSprite();
+            this.SetSprite(frame);
             if(!!this.currentFrame_.ShadowImageSrc && (this.shadow_._relSrc != this.currentFrame_.ShadowImageSrc))
             {
                 this.shadow_._relSrc  = this.currentFrame_.ShadowImageSrc;

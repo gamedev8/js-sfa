@@ -180,10 +180,10 @@ Stage.prototype.AlignPlayersX = function()
 {
     var match = this.GetMatch();
 
-    for(var i = 0, length = match.GetTeamA().GetPlayers().length; i < length; ++i)
-        match.GetTeamA().GetPlayer(i).AlignX(this.deltaX_);
-    for(var i = 0, length = match.GetTeamB().GetPlayers().length; i < length; ++i)
-        match.GetTeamB().GetPlayer(i).AlignX(this.deltaX_);
+    for(var i = 0, length = match.TeamA.GetPlayers().length; i < length; ++i)
+        match.TeamA.GetPlayer(i).AlignX(this.deltaX_);
+    for(var i = 0, length = match.TeamB.GetPlayers().length; i < length; ++i)
+        match.TeamB.GetPlayer(i).AlignX(this.deltaX_);
 }
 
 
@@ -270,7 +270,6 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     else
         return retVal * 2;
 
-
     var direction = 1;
     /*decouple the direction of the amount from the players direction since we are using absolute positions in this function*/
     if(!dontOverrideSign)
@@ -283,6 +282,12 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
         {
             if(amount > 0) {direction = 1;amount = Math.abs(amount);} else {direction = -1; amount = -Math.abs(amount);}
         }
+    }
+
+    if(!p2)
+    {
+        this._MoveX(-amount,true);
+        return retVal;
     }
 
     /*physics with stage*/
@@ -434,17 +439,17 @@ Stage.prototype.CanScrollX = function ()
 {
     var flag = true;
     var match = this.GetMatch();
-    for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
+    for(var i = 0; i < match.TeamA.GetPlayers().length; ++i)
     {
-        if(match.GetTeamA().GetPlayer(i).GetX() == STAGE.MIN_X)
+        if(match.TeamA.GetPlayer(i).GetX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
         }
     }
-    for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
+    for(var i = 0; i < match.TeamB.GetPlayers().length; ++i)
     {
-        if(match.GetTeamB().GetPlayer(i).GetX() == STAGE.MIN_X)
+        if(match.TeamB.GetPlayer(i).GetX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;

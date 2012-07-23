@@ -10,7 +10,7 @@
             function OnStageImagesLoaded() {}
         </script>
         <div id="pnlDimBackground" class="dimBackground" style="display:none">&nbsp;</div>
-        <div id="pnlLoadingProgress" class="loadingBackground" style="display:none"><span id="pnlLoading" class="loading">Loading...</span></div>
+        <div id="pnlLoadingProgress" class="loadingBackground" style="display:none"></div>
         <img onload="OnStageImagesLoaded()" id="bg0" style="left:0px" />
         <img onload="OnStageImagesLoaded()" id="bg1" style="left:0px" />
         <!--<div class="time"></div>-->
@@ -42,7 +42,6 @@
             <span style="display:none;" id="pnlKO" class="KO">&nbsp;</span>
         </div>
     </div>
-    <div class="loading">Loading: <span id="spnImagesLoading">0</span>%</div>
     <div id="pnlStatus">
         <br /><span class="frame-rate">frame rate: <span id="spnFPS">0</span> FPS</span>
         <br />
@@ -56,10 +55,11 @@
         <br />
         <br /><span id="spnState" class="state running">State: Running</span>
     </div>
+    <div class="loading">loading: <span id="pnlLoading" class="loading">done</span></div>
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div class="menu">
-        <input type="button" onclick="StartDramaticBattle()" value="Quick match" />
+        <input type="button" onclick="StartDramaticBattle()" value="Start 2 on 1 match" />
     </div>
     <script type="text/javascript" src="script/stuff-loader.js"></script>
     <script type="text/javascript" src="script/soundmanager.js"></script>

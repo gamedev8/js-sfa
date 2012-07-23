@@ -324,7 +324,7 @@ Player.prototype.CreateKen = function(user)
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK]);
     throw1.SetGrappleDistance(100);
-    throw1.AddFrameWithSound(player,1,"audio/ken/thrust-0.zzz", "", folder + "/x-throw-0-0.png", 10, { Combat: COMBAT_FLAGS.ATTACK }, { Player: PLAYER_FLAGS.MOBILE }, 0, 0, 0, 0, null, 0, 0, ATTACK_FLAGS.THROW_START, [{ state: HIT_FLAGS.NEAR, x: 130, y: 145 }, { state: HIT_FLAGS.FAR, x: 170, y: 185}], ATTACK_FLAGS.NONE, 1);
+    throw1.AddFrameWithSound(player,1,"audio/ken/thrust-0.zzz", "", folder + "/x-throw-0-0.png", 10, MISC_FLAGS.NONE, { Player: PLAYER_FLAGS.MOBILE }, 0, 0, 0, 0, null, 0, 0, ATTACK_FLAGS.THROW_START, [{ state: HIT_FLAGS.NEAR, x: 130, y: 145 }, { state: HIT_FLAGS.FAR, x: 170, y: 185}], ATTACK_FLAGS.NONE, 1);
     throw1.AddFrame(player, "", folder + "/x-throw-0-1.png", 8, MISC_FLAGS.NONE, MISC_FLAGS.NONE);
     /*first roll*/
     throw1.AddRepeatingFrame(player, "", folder + "/x-throw-0-2.png", 6, {Pose:POSE_FLAGS.AIRBORNE}, MISC_FLAGS.NONE, throw1X);
@@ -823,7 +823,7 @@ Player.prototype.CreateKen = function(user)
         spinkick.AddFrame(player, "", folder + "/x-hk-2.png", nbFrames, { Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, -50);
         spinkick.AddFrameWithSound(player,1,"audio/misc/spinkick-0.zzz", "", folder + "/x-hk-3.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, 40, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: 230, y: 97 }, { state: HIT_FLAGS.NEAR, x: 140, y: 97}, { state: HIT_FLAGS.NEAR, x: 230, y: 127 }, { state: HIT_FLAGS.NEAR, x: 140, y: 127}], rearFlags, CONSTANTS.SECOND_HIT, hitDelayFactor, 2);
         spinkick.AddFrame(player, "", folder + "/x-hk-4.png", nbFrames-1, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB });
-        spinkick.AddFrame(player, "", folder + "/x-hk-5.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, -60, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: -60, y: 97 }, { state: HIT_FLAGS.NEAR, x: 30, y: 97}, { state: HIT_FLAGS.NEAR, x: -60, y: 127 }, { state: HIT_FLAGS.NEAR, x: 30, y: 127}], rearFlags, 3 * (i + 1), hitDelayFactor, 2);
+        spinkick.AddFrame(player, "", folder + "/x-hk-5.png", nbFrames, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB, Combat: COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK }, MISC_FLAGS.NONE, 0, 0, 0, baseDamage, null, -60, 0, ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD, [{ state: HIT_FLAGS.NEAR, x: -60, y: 97 }, { state: HIT_FLAGS.NEAR, x: -30, y: 97}, { state: HIT_FLAGS.NEAR, x: -60, y: 127 }, { state: HIT_FLAGS.NEAR, x: 30, y: 127}], rearFlags, 3 * (i + 1), hitDelayFactor, 2);
         spinkick.AddFrame(player, "", folder + "/x-hk-6.png", nbFrames-1, { Pose:POSE_FLAGS.HOLD_AIRBORNE, Player: PLAYER_FLAGS.SMALLER_AABB }, 0, 0, 0, 0, 0, null, +40);
 
         for (var i = 0; i < (1 + x); ++i)
@@ -874,7 +874,7 @@ Player.prototype.CreateKen = function(user)
 
 Player.prototype.CreateKenSuperMoves = function(player)
 {
-    var folder = "|images/misc/" + player.folder_;
+    var folder = "images/misc/" + player.folder_;
     var uppercutVelocityY = 120;
     var uppercutVelocityYRate = 60;
     var uppercutVelocityXRate = 20;
@@ -934,8 +934,42 @@ Player.prototype.CreateKenSuperMoves = function(player)
         s_uppercut.AddFrame(player,"",folder + "/x-uppercut-p1-5.png",CONSTANTS.MAX_FRAME,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
         s_uppercut.Chain(uppercut_land);
 
+        /*add the uppercut charge up*/
+        var charge_up = CreateBasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
+        charge_up.AddFrame(player,folder + "/x-energize-0-0.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-1.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-2.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-3.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-4.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-5.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-6.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-7.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-8.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-9.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-10.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-11.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-12.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-13.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-14.png",3,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-15.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-16.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-17.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-18.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-19.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-20.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-21.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-22.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-23.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-24.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-25.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-26.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-27.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-28.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-29.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-30.png",2,0,0);
+        charge_up.AddFrame(player,folder + "/x-energize-0-31.png",2,0,0);
 
-
+        s_uppercut.AddAnimation(charge_up);
         /*add the trail for the super move*/
         
         var trail = CreateAnimationTrail([]);

@@ -234,9 +234,9 @@ Player.prototype.CheckDirection = function()
             this.TurnAround();
         else
         {
-            if((this.direction_ == 1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_))
+            if((this.direction_ == 1) && this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_) === false)
                 this.TurnAround();
-            else if((this.direction_ == -1) && !this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_))
+            else if((this.direction_ == -1) && this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_) === false)
                 this.TurnAround();
         }
     }

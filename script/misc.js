@@ -24,6 +24,11 @@ function Alert(text)
         console.log(text);
     */
 }
+function AlertError(text)
+{
+    if(!!console && !!console.error)
+        console.error(text);
+}
 
 var announcer_ = CreateAnnouncer();
 var game_ = CreateGame();
@@ -52,10 +57,10 @@ u4_.isAlternateChar_ = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    u1_.SetChar(CHARACTERS.KEN);
-    u2_.SetChar(CHARACTERS.RYU);
+    u2_.SetChar(CHARACTERS.KEN);
+    //u2_.SetChar(CHARACTERS.KEN);
 
-    game_.StartMatch(true,[u1_],[u2], kensStage_);
+    game_.StartMatch(true,[u2_],[], kensStage_);
 }
 
 /* multi player battle */
@@ -65,8 +70,7 @@ function StartDramaticBattle()
     u1_.SetChar(CHARACTERS.RYU,true);
     u3_.SetChar(CHARACTERS.KEN,true);
 
-    game_.Pause();
-    game_.StartMatch(true,[u2_],[u1_,u3_], kensStage_, StartDramaticBattleAI);
+    game_.StartMatch(false,[u2_],[u1_,u3_], kensStage_, StartDramaticBattleAI);
 }
 
 function StartDramaticBattleAI()

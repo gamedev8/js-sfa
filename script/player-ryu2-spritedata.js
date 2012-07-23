@@ -434,4 +434,21 @@ Createryu2SpriteData = function()
 	spriteLookup_.Load("images/misc/ryu2/r-fb-2-shadow-2.png","|images/misc/ryu2/trail-sprites.png", "-2166px", "-25px", "188px", "206px");
 	spriteLookup_.Load("images/misc/ryu2/r-fb-3-shadow-1.png","|images/misc/ryu2/trail-sprites.png", "-2354px", "-33px", "228px", "198px");
 	spriteLookup_.Load("images/misc/ryu2/r-fb-3-shadow-2.png","|images/misc/ryu2/trail-sprites.png", "-2582px", "-33px", "228px", "198px");
+    /*misc*/
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-0.png","images/misc/ryu2/misc-sprites.png", "0px", "-85px", "36px", "46px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-1.png","images/misc/ryu2/misc-sprites.png", "-36px", "-8px", "94px", "123px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-2.png","images/misc/ryu2/misc-sprites.png", "-130px", "-15px", "108px", "116px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-3.png","images/misc/ryu2/misc-sprites.png", "-238px", "0px", "124px", "131px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-4.png","images/misc/ryu2/misc-sprites.png", "-362px", "-36px", "80px", "95px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-5.png","images/misc/ryu2/misc-sprites.png", "-442px", "-8px", "144px", "123px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-6.png","images/misc/ryu2/misc-sprites.png", "-586px", "-16px", "124px", "115px");
+	spriteLookup_.Load("images/misc/ryu2/l-super-fireball-spark-7.png","images/misc/ryu2/misc-sprites.png", "-710px", "-8px", "106px", "123px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-0.png","images/misc/ryu2/misc-sprites.png", "0px", "-216px", "36px", "46px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-1.png","images/misc/ryu2/misc-sprites.png", "-36px", "-139px", "94px", "123px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-2.png","images/misc/ryu2/misc-sprites.png", "-130px", "-146px", "108px", "116px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-3.png","images/misc/ryu2/misc-sprites.png", "-238px", "-131px", "124px", "131px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-4.png","images/misc/ryu2/misc-sprites.png", "-362px", "-167px", "80px", "95px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-5.png","images/misc/ryu2/misc-sprites.png", "-442px", "-139px", "144px", "123px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-6.png","images/misc/ryu2/misc-sprites.png", "-586px", "-147px", "124px", "115px");
+	spriteLookup_.Load("images/misc/ryu2/r-super-fireball-spark-7.png","images/misc/ryu2/misc-sprites.png", "-710px", "-139px", "106px", "123px");
 }

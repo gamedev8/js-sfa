@@ -67,14 +67,13 @@ var CreateGame = function()
 
     Game.prototype.GetSpeed = function() { return speed_; }
     Game.prototype.GetCurrentFrame = function () { return frame_; }
-    Game.prototype.UseAlternateImageLoadingFunctions = function() { return useAlternateImageLoadingFunctions_; }
 
     /*Resets the timer*/
     Game.prototype.ResetFrame = function()
     {
         frame_ = 0;
     }
-    /*returns the current frame*/
+
     /*Returns the current time in milliseconds*/
     Game.prototype.GetCurrentTime = function()
     {
@@ -126,7 +125,6 @@ var CreateGame = function()
     Game.prototype.InitGame = function()
     {
         Stage.prototype.Center();
-        window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.png)";
     }
 
     Game.prototype.Init = function()
@@ -270,7 +268,7 @@ var CreateGame = function()
         else
         {
             pnlLoadingProgress_.style.display = "none";
-            pnlLoading_.innerHTML = "";
+            pnlLoading_.innerHTML = "done";
             pnlLoading_.className = "done-loading";
         }
     }

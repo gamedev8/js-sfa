@@ -357,7 +357,7 @@
     throw1.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.SetGrappleDistance(100);
     throw1.SetOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
-    throw1.AddFrame(player,"",folder + "/x-throw-0-0.png",10,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
+    throw1.AddFrame(player,"",folder + "/x-throw-0-0.png",10,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw1.AddFrame(player,"",folder + "/x-throw-0-1.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw1.AddFrame(player,"",folder + "/x-throw-0-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw1.AddFrameWithSound(player,1,"audio/ryu/throw-0.zzz","",folder + "/x-throw-0-3.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
@@ -370,7 +370,7 @@
     throw2.AddAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
     throw2.SetGrappleDistance(100);
     throw2.SetOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
-    throw2.AddFrame(player,"",folder + "/x-throw-0-0.png",7,{Combat:COMBAT_FLAGS.ATTACK},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
+    throw2.AddFrame(player,"",folder + "/x-throw-0-0.png",7,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw2.AddFrame(player,"",folder + "/x-throw-1-0.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw2.AddFrame(player,"",folder + "/x-throw-1-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,-20);
     throw2.AddFrameWithSound(player,1,"audio/ryu/throw-1.zzz","",folder + "/x-throw-1-2.png",5,{Combat:COMBAT_FLAGS.ATTACK},MISC_FLAGS.NONE,-20,0,0,100,null,0,0,ATTACK_FLAGS.THROW_EJECT,[{x:-1,y:-1,Fx:1,Fy:0.5}],ATTACK_FLAGS.NONE,2,1,15);
@@ -844,7 +844,7 @@
         spinkick.AddFrame(player,"",folder + "/x-hk-2.png",2,{Player:PLAYER_FLAGS.SMALLER_AABB},0,0,-50);
         spinkick.AddFrameWithSound(player,1,"audio/misc/spinkick-0.zzz","",folder + "/x-hk-3.png",2,{Pose:POSE_FLAGS.HOLD_AIRBORNE, Player:PLAYER_FLAGS.SMALLER_AABB,Combat:COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,baseDamage,null,40,0,ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.TRIP,[{state:HIT_FLAGS.NEAR, x:230, y:97}, {state:HIT_FLAGS.NEAR, x:140, y:97}, {state:HIT_FLAGS.NEAR,x:230,y:127},{state:HIT_FLAGS.NEAR,x:140,y:127}],rearFlags,CONSTANTS.FIRST_HIT,CONSTANTS.SINGLE, 1, 2);
         spinkick.AddFrame(player,"",folder + "/x-hk-4.png",2,{Pose:POSE_FLAGS.HOLD_AIRBORNE, Player:PLAYER_FLAGS.SMALLER_AABB});
-        spinkick.AddFrame(player,"",folder + "/x-hk-5.png",2,{Pose:POSE_FLAGS.HOLD_AIRBORNE, Player:PLAYER_FLAGS.SMALLER_AABB,Combat:COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,baseDamage,null,-60,0,ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.TRIP,[{state:HIT_FLAGS.NEAR, x:-60, y:97 }, { state:HIT_FLAGS.NEAR, x:30, y:97},{state:HIT_FLAGS.NEAR,x:-60,y:127},{state:HIT_FLAGS.NEAR,x:30,y:127}],rearFlags,++hit,CONSTANTS.SINGLE, 1, 2);
+        spinkick.AddFrame(player,"",folder + "/x-hk-5.png",2,{Pose:POSE_FLAGS.HOLD_AIRBORNE, Player:PLAYER_FLAGS.SMALLER_AABB,Combat:COMBAT_FLAGS.ATTACK, HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,baseDamage,null,-60,0,ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.TRIP,[{state:HIT_FLAGS.NEAR, x:-60, y:97 }, { state:HIT_FLAGS.NEAR, x:-30, y:97},{state:HIT_FLAGS.NEAR,x:-60,y:127},{state:HIT_FLAGS.NEAR,x:30,y:127}],rearFlags,++hit,CONSTANTS.SINGLE, 1, 2);
         spinkick.AddFrame(player,"",folder + "/x-hk-6.png",2,{Pose:POSE_FLAGS.HOLD_AIRBORNE, Player:PLAYER_FLAGS.SMALLER_AABB},0,0,0,0,0,null,+40);
 
         for(var i = 0; i < (1 + x); ++i)
@@ -872,7 +872,7 @@
 
 Player.prototype.CreateRyuSuperMoves = function(player)
 {
-    var folder = "|images/misc/" + player.folder_;
+    var folder = "images/misc/" + player.folder_;
 
     var speed = 13;
     for(var x = 0; x < 3; ++x)
@@ -947,6 +947,46 @@ Player.prototype.CreateRyuSuperMoves = function(player)
         s_fireball.AddFrameWithSound(player,1,"audio/misc/super-projectile-0.zzz","",folder + "/x-fb-3.png",31);
         s_fireball.AddFrame(player,"",folder + "/x-k1-4.png",6);
 
+        /*add an animation for the fireball charge up*/
+        var fb_residue = CreateBasicAnimation("fireball charge",[],false,0,folder + "/misc-sprites.png");
+        fb_residue.AddEmptyFrame(player,1);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-0.png",3,0,142);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-1.png",1,-42,98);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-0.png",2,0,142);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-1.png",1,-42,98);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-0.png",1,0,142);
+
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",2,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-1.png",2,-42,98);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-1.png",2,-42,98);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-1.png",2,-42,98);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",2,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-2.png",1,-53,100);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-3.png",1,-49,103);
+
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-4.png",1,24,86);
+
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-5.png",4,122,83);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-6.png",5,141,86);
+        fb_residue.AddFrame(player,folder + "/x-super-fireball-spark-7.png",4,141,86);
+
+        s_fireball.AddAnimation(fb_residue);
 
         /*add the trail for the super move*/
         
@@ -963,9 +1003,7 @@ Player.prototype.CreateRyuSuperMoves = function(player)
 
             trail.Add(s_fireball_trail,player.element_,player.folder_);
         }
-
-
-
+        
         s_fireball.Trail = trail;
 
     }

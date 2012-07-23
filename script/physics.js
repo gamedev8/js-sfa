@@ -48,7 +48,7 @@
         var retVal = [];
         var match = GetMatch_();
         var PADDING = 1;
-        var players = (team == CONSTANTS.TEAM1) ? match.GetTeamB().GetPlayers() : match.GetTeamA().GetPlayers();
+        var players = (team == CONSTANTS.TEAM1) ? match.TeamB.GetPlayers() : match.TeamA.GetPlayers();
         var distance = 0;
         var otherRect = {};
         var hasP1RightIntersection = false;
@@ -159,6 +159,8 @@
     /*Test each player to see if the hit region intersects with them*/
     Physics.prototype.TryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound)
     {
+        if(!p2)
+            return;
         /*is p1 ejecting p2 from a grapple?*/
         if(!!(attackFlags & ATTACK_FLAGS.THROW_EJECT) && !p1.IsGrappling(p2.id_))
             return;
@@ -237,6 +239,8 @@
     /*Handles projectiles hitting a player*/
     Physics.prototype.TryProjectileAttack = function(frame,projectile,p1,p2)
     {
+        if(!p2)
+            return;
         if(p2.IsGrappling())
             return;
         if(p2.Flags.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
@@ -724,20 +728,27 @@
 
         var minX = STAGE.MAX_STAGEX;
         var retVal = null;
-        for(var i = 0, length = match.GetTeamA().GetPlayers().length; i < length; ++i)
+
+        var tALength = match.TeamA.GetPlayers().length;
+        var tBLength = match.TeamB.GetPlayers().length;
+
+        if(!tALength || !tBLength)
+            return null;
+
+        for(var i = 0; i < tALength; ++i)
         {
-            if(match.GetTeamA().GetPlayer(i).GetLeftX() < minX)
+            if(match.TeamA.GetPlayer(i).GetLeftX() < minX)
             {
-                minX = match.GetTeamA().GetPlayer(i).GetLeftX();
-                retVal = match.GetTeamA().GetPlayer(i);
+                minX = match.TeamA.GetPlayer(i).GetLeftX();
+                retVal = match.TeamA.GetPlayer(i);
             }
         }
-        for(var i = 0, length = match.GetTeamB().GetPlayers().length; i < length; ++i)
+        for(var i = 0; i < tBLength; ++i)
         {
-            if(match.GetTeamB().GetPlayer(i).GetLeftX() < minX)
+            if(match.TeamB.GetPlayer(i).GetLeftX() < minX)
             {
-                minX = match.GetTeamB().GetPlayer(i).GetLeftX();
-                retVal = match.GetTeamB().GetPlayer(i);
+                minX = match.TeamB.GetPlayer(i).GetLeftX();
+                retVal = match.TeamB.GetPlayer(i);
             }
         }
 
@@ -750,20 +761,27 @@
 
         var maxX = STAGE.MIN_STAGEX;
         var retVal = null;
-        for(var i = 0, length = match.GetTeamA().GetPlayers().length; i < length; ++i)
+
+        var tALength = match.TeamA.GetPlayers().length;
+        var tBLength = match.TeamB.GetPlayers().length;
+
+        if(!tALength || !tBLength)
+            return null;
+
+        for(var i = 0; i < tALength; ++i)
         {
-            if(match.GetTeamA().GetPlayer(i).GetLeftX() > maxX)
+            if(match.TeamA.GetPlayer(i).GetLeftX() > maxX)
             {
-                maxX = match.GetTeamA().GetPlayer(i).GetLeftX();
-                retVal = match.GetTeamA().GetPlayer(i);
+                maxX = match.TeamA.GetPlayer(i).GetLeftX();
+                retVal = match.TeamA.GetPlayer(i);
             }
         }
-        for(var i = 0, length = match.GetTeamB().GetPlayers().length; i < length; ++i)
+        for(var i = 0; i < tBLength; ++i)
         {
-            if(match.GetTeamB().GetPlayer(i).GetLeftX() > maxX)
+            if(match.TeamB.GetPlayer(i).GetLeftX() > maxX)
             {
-                maxX = match.GetTeamB().GetPlayer(i).GetLeftX();
-                retVal = match.GetTeamB().GetPlayer(i);
+                maxX = match.TeamB.GetPlayer(i).GetLeftX();
+                retVal = match.TeamB.GetPlayer(i);
             }
         }
 
@@ -773,13 +791,13 @@
     Physics.prototype.IsLeftMostPlayer = function(id)
     {
         var p = this.GetLeftMostPlayer();
-        return p.id_ == id;
+        return !!p && p.id_ == id;
     }
     /**/
     Physics.prototype.IsRightMostPlayer = function(id)
     {
         var p = this.GetRightMostPlayer();
-        return p.id_ == id;
+        return !!p && p.id_ == id;
     }
 
     /*checks if any player from ther other team is within the given distance*/
@@ -790,16 +808,16 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
-                    if(match.GetTeamB().GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
-                        return match.GetTeamB().GetPlayer(i);
+                for(var i = 0, length = match.TeamB.GetPlayers().length; i < length; ++i)
+                    if(match.TeamB.GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.TeamB.GetPlayer(i);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
-                    if(match.GetTeamA().GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
-                        return match.GetTeamA().GetPlayer(i);
+                for(var i = 0, length = match.TeamA.GetPlayers().length; i < length; ++i)
+                    if(match.TeamA.GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.TeamA.GetPlayer(i);
                 break;
             }
         }
@@ -823,15 +841,21 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
-                    if(match.GetTeamB().GetPlayer(i).GetMidX() < x)
+                var nbPlayers = match.TeamB.GetPlayers().length;
+                if(nbPlayers == 0)
+                    return null;
+                for(var i = 0; i < nbPlayers; ++i)
+                    if(match.TeamB.GetPlayer(i).GetMidX() < x)
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
-                    if(match.GetTeamA().GetPlayer(i).GetMidX() < x)
+                var nbPlayers = match.TeamA.GetPlayers().length;
+                if(nbPlayers == 0)
+                    return null;
+                for(var i = 0; i < nbPlayers; ++i)
+                    if(match.TeamA.GetPlayer(i).GetMidX() < x)
                         return true;
                 break;
             }
@@ -847,15 +871,21 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < match.GetTeamB().GetPlayers().length; ++i)
-                    if(match.GetTeamB().GetPlayer(i).GetMidX() > x)
+                var nbPlayers = match.TeamB.GetPlayers().length;
+                if(nbPlayers == 0)
+                    return null;
+                for(var i = 0; i < nbPlayers; ++i)
+                    if(match.TeamB.GetPlayer(i).GetMidX() > x)
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < match.GetTeamA().GetPlayers().length; ++i)
-                    if(match.GetTeamA().GetPlayer(i).GetMidX() > x)
+                var nbPlayers = match.TeamA.GetPlayers().length;
+                if(nbPlayers == 0)
+                    return null;
+                for(var i = 0; i < nbPlayers; ++i)
+                    if(match.TeamA.GetPlayer(i).GetMidX() > x)
                         return true;
                 break;
             }

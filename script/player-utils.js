@@ -47,6 +47,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.InvokedAnimationName = invokedAnimationName || "";
         this.ControllerAnimation = null;
         this.Trail = null;
+        this.Animations = [];
         this.AllowJuggle = false;
         this.IgnoresCollisions = false;
         this.OtherPlayerAirborneFlags;
@@ -103,6 +104,11 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.ChainAnimationFrame = (frameOffset || 0);
     }
 
+    Animation.prototype.AddAnimation = function(animation)
+    {
+        this.Animations.push(animation);
+    }
+
     Animation.prototype.AddFrameWithSound = function(player,volume,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
     {
         this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
@@ -113,6 +119,10 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     {
         this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
         return this.BaseAnimation.AddFrame.apply(this.BaseAnimation,arguments);
+    }
+    Animation.prototype.AddOffsetFrame = function(player,shadowImage,image,nbFrames,x,y)
+    {
+        return this.BaseAnimation.AddOffsetFrame.apply(this.BaseAnimation,arguments);
     }
     Animation.prototype.AddRepeatingFrameWithSound = function(player,volume,soundFilename,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd)
     {
@@ -164,6 +174,12 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     Animation.prototype.SetHardAttack = function()
     {
         this.EnergyToAdd = (3);
+    }
+
+    Animation.prototype.RenderChildren = function(frame,startFrame,direction,zIndex,x,y)
+    {
+        for(var i = 0, length = this.Animations.length; i < length; ++i)
+            this.Animations[i].TryRender(frame, {StartFrame:startFrame,ZIndex:zIndex,X:x,Y:y}, direction);
     }
 
     return new Animation();
@@ -328,7 +344,7 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
 }
 /************************************************************************/
 /************************************************************************/
-var CreateBasicAnimation = function(name,frames,isLooping,direction)
+var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
 {
     var BasicAnimation = function()
     {
@@ -336,11 +352,29 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction)
         this.isLooping_ = isLooping || false;
         this.internalFrame_ = 0;
         this.direction_  = direction || 0;
+        if(!!bgImg)
+            this.CreateElement(bgImg);
+    }
+
+    BasicAnimation.prototype.Count = 0;
+
+    BasicAnimation.prototype.CreateElement = function(bgImg)
+    {
+        this.element_ = window.document.createElement("div");
+        this.element_.className = "basic-animation";
+        this.element_.style.display = "none";
+        this.element_.style.backgroundImage = "url(" + bgImg + ")";
+        window.document.getElementById("pnlStage").appendChild(this.element_);
     }
 
     BasicAnimation.prototype.GetFrame = function(frameDelta)
     {
         return this.BaseAnimation.GetFrame.apply(this.BaseAnimation,arguments);
+    }
+
+    BasicAnimation.prototype.AddEmptyFrame = function(owner,nbFrames)
+    {
+        this.BaseAnimation.AddEmptyFrame.apply(this.BaseAnimation,arguments);
     }
 
     BasicAnimation.prototype.AddFrame = function(owner,image,nbFrames)
@@ -351,11 +385,13 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction)
     BasicAnimation.prototype.TryRender = function(frame,object,direction)
     {
         direction = direction || this.direction_;
-        var element = object.Element;
+        var element = this.element_ || object.Element;
         var startFrame = object.StartFrame;
 
         var offsetX = object.X || 0;
         var offsetY = object.Y || 0;
+        if(!!object.ZIndex)
+            element.style.zIndex = object.ZIndex;
         var delta = 0;
         if(!!this.isLooping_)
         {
@@ -533,7 +569,7 @@ var CreateSpriteLookup = function()
 var spriteLookup_ = CreateSpriteLookup();
 /************************************************************************/
 /************************************************************************/
-var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
+var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackFlags,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
 {
     var Frame = function()
     {
@@ -546,7 +582,7 @@ var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsT
         this.ShadowImageSrc = !!shadowImage ? "images/misc/misc/shadow-" + shadowImage + ".png" : null;
         this.RightSrc = !!image ? image.replace("#-","l-").replace("x-","r-") : "";
         this.LeftSrc =  !!image ? image.replace("#-","r-").replace("x-","l-") : "";
-        this.AttackState = attackState || 0;
+        this.AttackFlags = attackFlags || 0;
         this.HitPoints = hitPoints || [];
 
         this.RightSrc = this.RightSrc.replace("|","");
@@ -593,7 +629,7 @@ var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsT
 }
 /************************************************************************/
 /************************************************************************/
-var CreateProjectile = function(player,animation,disintegrationAnimation, xOffset, yOffset, xSpeed, ySpeed, xFunc, yFunc, attackState, hitState, baseDamage, energyToAdd)
+var CreateProjectile = function(player,animation,disintegrationAnimation, xOffset, yOffset, xSpeed, ySpeed, xFunc, yFunc, attackFlags, hitState, baseDamage, energyToAdd)
 {
     var energyToAdd_ = energyToAdd || 0;
     var Projectile = function()
@@ -619,7 +655,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
         this.element_.style.backgroundImage = "url(images/misc/" + player.folder_.toLowerCase() + "/projectiles.png)";
         window.document.getElementById("pnlStage").appendChild(this.element_);
         this.isActive_ = false;
-        this.attackState_ = attackState || 0;
+        this.attackState_ = attackFlags || 0;
         this.hitState_ = hitState || 0;
         this.baseDamage_ = baseDamage || 0;
         this.flagsToSend_ = MISC_FLAGS.NONE;

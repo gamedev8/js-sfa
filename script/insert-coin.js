@@ -74,6 +74,7 @@
 
         text1_ = fontSystem_.AddText("pnlCredits","",432,555,0,"font1");
         //text1_.ShowNow(432);
+        window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.png)";
     }
 
 
@@ -84,6 +85,7 @@
         utils_.RemoveFromDOM(insertCoinElement_);
         utils_.RemoveFromDOM(creditsTextElement_);
         utils_.RemoveFromDOM(creditsElement_);
+        window.document.getElementById("pnlStage").style.backgroundImage = "";
     }
 
 

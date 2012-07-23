@@ -25,6 +25,12 @@
     }
 
     /*Adds a frame to the move*/
+    BaseAnimation.prototype.AddOffsetFrame = function(player,image,nbFrames,x,y)
+    {
+        this.AddFrame(player,null,image,nbFrame,0,0,x,y);
+    }
+
+    /*Adds a frame to the move*/
     BaseAnimation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd)
     {
         if(!!this.frames_.length > 0)
@@ -164,6 +170,11 @@ var CreateBasicBaseAnimation = function(frames,name)
             if((count += this.frames_[i].Frames) >= frameDelta)
                 return this.frames_[i];
         return null;
+    }
+    /*Adds a frame to the move*/
+    BasicBaseAnimation.prototype.AddEmptyFrame = function(owner,nbFrames)
+    {
+        this.AddFrame(owner,"",nbFrames,0,0);
     }
     /*Adds a frame to the move*/
     BasicBaseAnimation.prototype.AddFrame = function(owner,image,nbFrames,x,y)

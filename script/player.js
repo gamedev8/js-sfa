@@ -121,7 +121,7 @@ Player.prototype.GetMatch = function() { return this.GetGame().GetMatch(); }
 Player.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
 Player.prototype.GetStage = function() { return this.GetMatch().GetStage(); }
 Player.prototype.GetGame = function() { return game_; }
-Player.prototype.GetHealth = function() { return this.getHealthFn_(); }
+Player.prototype.GetHealth = function() { return !!this.getHealthFn_ ? this.getHealthFn_() : -1; }
 Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
 Player.prototype.IsExecutingSuperMove = function () { return this.isExecutingSuperMove_; }
 Player.prototype.SetExecutingSuperMove = function (value) { this.isExecutingSuperMove_ = value; }
@@ -171,6 +171,7 @@ Player.prototype.Reset = function(ignoreDirection)
 {
     this.dizzyIndex_ = 0;
     this.dizzyValue_ = 0;
+    this.maxDizzyValue_ = CONSTANTS.MAX_DIZZY_VALUE;
     this.SetPendingGrapple(false);
     this.isExecutingSuperMove_ = false;
     this.isLosing_ = false;
@@ -242,6 +243,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.SetX(0);
     this.SetY(STAGE.FLOORY);
     this.ClearProjectiles();
+    this.ClearDizzy();
 }
 
 Player.prototype.CreateElement = function(x,y,parentElement)
@@ -447,6 +449,12 @@ Player.prototype.ForceHoldFrame = function(frame)
     if(!!this.currentFrame_)
         ++this.currentAnimation_.StartFrame;
 }
+/*Prevents the animation from continuing for one frame*/
+Player.prototype.ForceNextFrame = function(frame)
+{
+    if(!!this.currentFrame_)
+        this.currentAnimation_.StartFrame = frame - this.currentFrame_.GetEndFrameOffset();
+}
 
 /*Can the current move be interrupted by a speial move?*/
 Player.prototype.CheckForInterupt = function(frame)
@@ -584,7 +592,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
                 /*if the key is NOT pressed, then offset into the next frame in the current move*/
                 if(!this.IsKeyDown(key))
                 {
-                    this.HoldFrame(frame);
+                    this.ForceNextFrame(frame);
                     /*must clear frame because the current frame has a HOLD_FRAME flag*/
                     this.SetCurrentFrame(null,frame);
                 }

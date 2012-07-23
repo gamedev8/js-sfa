@@ -11,7 +11,7 @@
     var comboText_ = null;
     var currentCombo_ = 0;
     var currentComboRefCount_ = 0;
-
+    var nbPlayers_ = 0;
 
     var Team = function(num)
     {
@@ -20,7 +20,23 @@
     Team.prototype.GetGame = function() { return game_; }
     Team.prototype.GetPlayer = function(value) { return this.GetPlayers()[value]; }
     Team.prototype.GetPlayers = function() { return players_; }
-    Team.prototype.SetPlayers = function(value) { players_ = value; }
+    Team.prototype.SetPlayers = function(value)
+    {
+        players_ = value;
+        this.SetPlayerIndexes();
+        nbPlayers_ = players_.length;
+    }
+    Team.prototype.AddPlayer = function(value)
+    {
+        players_.push(value);
+        this.SetPlayerIndexes();
+        nbPlayers_ = players_.length;
+    }
+    Team.prototype.SetPlayerIndexes = function()
+    {
+        for(var i = 0, length = players_.length; i < length; ++i)
+            players_[i].SetIndex(i);
+    }
     Team.prototype.GetCursor = function() { return cursor_; }
     Team.prototype.SetCursor = function(value) { cursor_ = value; }
     Team.prototype.GetLastCursor = function() { return lastCursor_; }
@@ -104,7 +120,7 @@
         this.GetComboText().HideNow();
         this.GetHealthbar().Release();
         this.GetEnergybar().Release();
-        for(var i = 0; i < this.GetPlayers().length; ++i)
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).Release();
         this.SetCursor(0);
     }
@@ -112,13 +128,13 @@
 
     Team.prototype.Pause = function()
     {
-        for(var i = 0; i < this.GetPlayers().length; ++i)
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).Pause();
     }
 
     Team.prototype.Resume = function()
     {
-        for(var i = 0; i < this.GetPlayers().length; ++i)
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).Resume();
     }
 
@@ -126,11 +142,11 @@
     Team.prototype.FrameMove = function(frame, keyboardState, x, y)
     {
         if(frame % 100 == 0)
-            this.SetCursor(((this.GetCursor() + 1) < this.GetPlayers().length) ? (this.GetCursor()+1) : 0);
+            this.SetCursor(((this.GetCursor() + 1) < nbPlayers_) ? (this.GetCursor()+1) : 0);
 
-        for(var i = 0; i < this.GetPlayers().length; ++i)
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).HandleInput(keyboardState,frame);
-        for(var i = 0; i < this.GetPlayers().length; ++i)
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).OnFrameMove(frame,x,y);
 
         this.GetHealthbar().FrameMove(frame);
@@ -144,10 +160,13 @@
         if(this.GetCursor() != this.GetLastCursor())
         {
             this.SetLastCursor(this.GetCursor());
-            spriteLookup_.Set(this.GetNameImg(), this.GetPlayer(this.GetCursor()).GetNameImageSrc());
-            spriteLookup_.Set(this.GetPortriatImg(), this.GetPlayer(this.GetCursor()).GetPortriatImageSrc());
+            if(!!this.GetPlayer(this.GetCursor()))
+            {
+                spriteLookup_.Set(this.GetNameImg(), this.GetPlayer(this.GetCursor()).GetNameImageSrc());
+                spriteLookup_.Set(this.GetPortriatImg(), this.GetPlayer(this.GetCursor()).GetPortriatImageSrc());
+            }
         }
-        for(var i = 0; i < this.GetPlayers().length; ++i)
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).Render(frame,deltaX);
 
         this.GetEnergybar().Render(frame);

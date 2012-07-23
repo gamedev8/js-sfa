@@ -25,8 +25,8 @@ div.stance-container-p2 {right:32px;}
 div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
 div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.loadingBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;text-align:center;}
-span.loading {font-weight:bold;color:#00aa00;}
-span.done-loading {font-weight:normal;color:#000;}
+span.loading {font-weight:bold;color:#aaaaff;}
+span.done-loading {font-weight:normal;color:#00aa00;}
 div.stage .ken-bg0{position:absolute;top:-20px;left:0px;}
 div.stage .ken-bg1{position:absolute;bottom:0px;left:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
@@ -34,6 +34,7 @@ div.shadow .shadow{position:absolute;bottom:0px;background-image:url(../images/m
 div.player-dizzy{position:absolute;bottom:0px;background-image:url(../images/misc/misc/misc-sprites.png);background-color:Transparent;z-index:14;}
 div.player{position:absolute;bottom:35px;z-index:1;/*border:solid 1px #000;*/}
 div.player .player-sprite{position:relative;bottom:0px;}
+div.basic-animation{position:absolute;}
 
 div.Announce {position:absolute;top:143px;width:100%;text-align:center;background:Transparent;z-index:99999;}
 div.Announce span {display:inline-block;position:relative;width:0px;background-image:url(../images/misc/misc/announcer-sprites.png);}

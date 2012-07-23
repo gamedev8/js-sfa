@@ -4,8 +4,6 @@ function _c4(a,b,c,d) { return String.prototype.concat(String.prototype.concat(S
 /* Encapulates a new match */
 var CreateMatch = function(team1,team2,stage)
 {
-    var teamA_ = CreateTeam(1);
-    var teamB_ = CreateTeam(2);
     var defeatedTeam_ = -1;
     var isRoundOver_ = false;
     var gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
@@ -20,12 +18,14 @@ var CreateMatch = function(team1,team2,stage)
 
     var Match = function()
     {
+        this.TeamA = CreateTeam(1);
+        this.TeamB = CreateTeam(2);
         this.LoadAssets();
         this.GetStage().Setup(stage);
     }
     Match.prototype.GetPhysics = function() { return physics_; }
-    Match.prototype.GetTeamA = function() { return teamA_; }
-    Match.prototype.GetTeamB = function() { return teamB_; }
+    Match.prototype.GetTeamA = function() { return this.TeamA; }
+    Match.prototype.GetTeamB = function() { return this.TeamB; }
     Match.prototype.GetDefeatedTeam = function() { return defeatedTeam_; }
     Match.prototype.SetDefeatedTeam = function(value) { defeatedTeam_ = value; }
     Match.prototype.IsRoundOver = function() { return isRoundOver_; }
@@ -47,15 +47,15 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.GetStage = function() { return stage_; }
     Match.prototype.ResetKeys = function()
     {
-        for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-            this.GetTeamA().GetPlayer(i).ClearInput();
-        for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-            this.GetTeamB().GetPlayer(i).ClearInput();
+        for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+            this.TeamA.GetPlayer(i).ClearInput();
+        for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+            this.TeamB.GetPlayer(i).ClearInput();
     }
     Match.prototype.PlayerCount = function()
     {
         if(this.GetPlayerCount())
-            this.SetPlayerCount(this.GetTeamA().GetPlayers().length + this.GetTeamB().GetPlayers().length);
+            this.SetPlayerCount(this.TeamA.GetPlayers().length + this.TeamB.GetPlayers().length);
 
         return this.GetPlayerCount();
         
@@ -65,10 +65,10 @@ var CreateMatch = function(team1,team2,stage)
 
     Match.prototype.InitText = function()
     {
-        this.GetTeamA().InitText();
-        this.GetTeamB().InitText();
+        this.TeamA.InitText();
+        this.TeamB.InitText();
 
-        this.GetTeamB().GetComboText().ChangeDirection();
+        this.TeamB.GetComboText().ChangeDirection();
     }
 
 
@@ -94,8 +94,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {this.GetTeamA().GetHealthbar().Change(changeAmount); break; }
-            case CONSTANTS.TEAM2: {this.GetTeamB().GetHealthbar().Change(changeAmount); break; }
+            case CONSTANTS.TEAM1: {this.TeamA.GetHealthbar().Change(changeAmount); break; }
+            case CONSTANTS.TEAM2: {this.TeamB.GetHealthbar().Change(changeAmount); break; }
         };
     }
     /*Changes the energy value for a team*/
@@ -103,8 +103,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {this.GetTeamA().GetEnergybar().Change(changeAmount); break; }
-            case CONSTANTS.TEAM2: {this.GetTeamB().GetEnergybar().Change(changeAmount); break; }
+            case CONSTANTS.TEAM1: {this.TeamA.GetEnergybar().Change(changeAmount); break; }
+            case CONSTANTS.TEAM2: {this.TeamB.GetEnergybar().Change(changeAmount); break; }
         };
     }
     /*Returns the health for a team*/
@@ -112,8 +112,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {return this.GetTeamA().GetHealthbar().GetAmount();}
-            case CONSTANTS.TEAM2: {return this.GetTeamB().GetHealthbar().GetAmount();}
+            case CONSTANTS.TEAM1: {return this.TeamA.GetHealthbar().GetAmount();}
+            case CONSTANTS.TEAM2: {return this.TeamB.GetHealthbar().GetAmount();}
         }
     }
     /*Returns the energy for a team*/
@@ -121,8 +121,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {return this.GetTeamA().GetEnergybar().GetAmount();}
-            case CONSTANTS.TEAM2: {return this.GetTeamB().GetEnergybar().GetAmount();}
+            case CONSTANTS.TEAM1: {return this.TeamA.GetEnergybar().GetAmount();}
+            case CONSTANTS.TEAM2: {return this.TeamB.GetEnergybar().GetAmount();}
         }
     }
     /*Gets the current frame*/
@@ -144,20 +144,20 @@ var CreateMatch = function(team1,team2,stage)
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-                    if(this.GetTeamA().GetPlayer(i).id_ != loseIgnoreId)
-                        this.GetTeamA().GetPlayer(i).ForceLose(attackDirection);
-                for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-                    this.GetTeamB().GetPlayer(i).JustWon(frame);
+                for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+                    if(this.TeamA.GetPlayer(i).id_ != loseIgnoreId)
+                        this.TeamA.GetPlayer(i).ForceLose(attackDirection);
+                for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+                    this.TeamB.GetPlayer(i).JustWon(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-                    if(this.GetTeamB().GetPlayer(i).id_ != loseIgnoreId)
-                        this.GetTeamB().GetPlayer(i).ForceLose(attackDirection);
-                for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-                    this.GetTeamA().GetPlayer(i).JustWon(frame);
+                for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+                    if(this.TeamB.GetPlayer(i).id_ != loseIgnoreId)
+                        this.TeamB.GetPlayer(i).ForceLose(attackDirection);
+                for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+                    this.TeamA.GetPlayer(i).JustWon(frame);
                 break;
             }
         }
@@ -193,41 +193,41 @@ var CreateMatch = function(team1,team2,stage)
             this.SetRound(this.GetRound() + 1);
             this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
             this.SetGotoNewRoundFrame(CONSTANTS.NO_FRAME);
-            this.GetTeamA().SetCursor(0);
-            this.GetTeamB().SetCursor(0);
+            this.TeamA.SetCursor(0);
+            this.TeamB.SetCursor(0);
             this.SetSuperMoveActive(false);
 
 
             this.GetGame().ResetFrame();
 
-            this.GetTeamA().GetEnergybar().Change(0,0);
-            this.GetTeamB().GetEnergybar().Change(0,0);
+            this.TeamA.GetEnergybar().Change(0,0);
+            this.TeamB.GetEnergybar().Change(0,0);
 
-            if(!!this.GetTeamA().GetPlayer(0))
-                this.GetTeamA().GetPlayer(0).SetX(STAGE.START_X);
-            if(!!this.GetTeamB().GetPlayer(0))
-                this.GetTeamB().GetPlayer(0).SetX(STAGE.START_X);
+            if(!!this.TeamA.GetPlayer(0))
+                this.TeamA.GetPlayer(0).SetX(STAGE.START_X);
+            if(!!this.TeamB.GetPlayer(0))
+                this.TeamB.GetPlayer(0).SetX(STAGE.START_X);
 
             /*set the starting locations for each player*/
-            for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
+            for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
             {
-                this.GetTeamA().GetPlayer(i).Reset(true);
-                this.GetTeamA().GetPlayer(i).SetDirection(-1);
-                this.GetTeamA().GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                this.TeamA.GetPlayer(i).Reset(true);
+                this.TeamA.GetPlayer(i).SetDirection(-1);
+                this.TeamA.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
-            for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
+            for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
             {
-                this.GetTeamB().GetPlayer(i).Reset(true);
-                this.GetTeamB().GetPlayer(i).SetDirection(1);
-                this.GetTeamB().GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                this.TeamB.GetPlayer(i).Reset(true);
+                this.TeamB.GetPlayer(i).SetDirection(1);
+                this.TeamB.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
 
             this.SetRoundOver(false);
             this.GetStage().Init();
             this.GetGame().ReleaseText();
 
-            this.GetTeamA().GetHealthbar().Reset();
-            this.GetTeamB().GetHealthbar().Reset();
+            this.TeamA.GetHealthbar().Reset();
+            this.TeamB.GetHealthbar().Reset();
         }
     }
 
@@ -235,36 +235,37 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.Pause = function()
     {
         this.GetStage().Pause();
-        this.GetTeamA().Pause();
-        this.GetTeamB().Pause();
+        this.TeamA.Pause();
+        this.TeamB.Pause();
     }
 
     /**/
     Match.prototype.Resume = function()
     {
         this.GetStage().Resume();
-        this.GetTeamA().Resume();
-        this.GetTeamB().Resume();
+        this.TeamA.Resume();
+        this.TeamB.Resume();
     }
 
-    /*Initializes a new match*/
-    Match.prototype.Start = function(ignoreMusic)
+    Match.prototype.PlayerIndex = 0;
+
+    /*sets up the player to take part in the match*/
+    Match.prototype.SetupPlayer = function(player,team)
     {
-        this.GetStage().Start();
-        var moveStageX          = function(thisValue,players) { return function(amount,dontOverrideSign) { for(var i = 0; i < players.length;++i) {amount = thisValue.GetStage().ScrollX(amount,this,players[i],thisValue,dontOverrideSign);}; return amount; } };
-        var fixX                = function(thisValue,players) { return function(amount) {thisValue.GetPhysics().FixX(amount,this,false,true);  return 0; } };
-        var moveX               = function(thisValue,players) { return function(amount) {amount = thisValue.GetStage().ScrollX(amount,this,null,thisValue); thisValue.GetPhysics().MoveX(amount,this,false,true); return 0; } };
-        var moveY               = function(thisValue,players) { return function(amount) {amount = thisValue.GetPhysics().MoveY(amount,this); return 0; } };
-        var moveToBack          = function(thisValue,players) { return function() { for(var i = 0; i < players.length;++i) {players[i].MoveToBack(true);} } }
-        var moveToFront         = function(thisValue,players) { return function() { for(var i = 0; i < players.length;++i) {players[i].MoveToFront(true);} } }
-        var projectileMoved     = function(thisValue,players) { return function(id,x,y) { for(var i = 0; i < players.length;++i) { players[i].SetAllowBlockFromProjectile(thisValue.GetGame().GetCurrentFrame(),true,id,x,y); } } }
-        var projectileGone      = function(thisValue,players) { return function(id)     { for(var i = 0; i < players.length;++i) { players[i].SetAllowBlockFromProjectile(thisValue.GetGame().GetCurrentFrame(),false,id); } } }
-        var startAttack         = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { players[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
-        var endAttack           = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { this.Flags.Combat.Remove(COMBAT_FLAGS.CAN_BE_BLOCKED); players[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
-        var startAirAttack      = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { players[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
-        var endAirAttack        = function(thisValue,players) { return function(id) { for(var i = 0; i < players.length;++i) { this.Flags.Combat.Remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); players[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
-        var attack              = function(thisValue,players) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound) { for(var i = 0; i < players.length;++i) { thisValue.GetPhysics().TryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,players[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound); } } }
-        var projectileAttack    = function(thisValue,players) { return function(frame,projectile) { for(var i = 0; i < players.length;++i) { thisValue.GetPhysics().TryProjectileAttack(frame,projectile,this,players[i]); } } }
+        var moveStageX          = function(thisValue,otherTeam) { return function(amount,dontOverrideSign) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) {amount = thisValue.GetStage().ScrollX(amount,this,otherTeam.GetPlayers()[i],thisValue,dontOverrideSign);}; return amount; } };
+        var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.GetPhysics().FixX(amount,this,false,true);  return 0; } };
+        var moveX               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.GetStage().ScrollX(amount,this,null,thisValue); thisValue.GetPhysics().MoveX(amount,this,false,true); return 0; } };
+        var moveY               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.GetPhysics().MoveY(amount,this); return 0; } };
+        var moveToBack          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.GetPlayers().length;++i) {otherTeam.GetPlayers()[i].MoveToBack(true);} } }
+        var moveToFront         = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.GetPlayers().length;++i) {otherTeam.GetPlayers()[i].MoveToFront(true);} } }
+        var projectileMoved     = function(thisValue,otherTeam) { return function(id,x,y) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowBlockFromProjectile(thisValue.GetGame().GetCurrentFrame(),true,id,x,y); } } }
+        var projectileGone      = function(thisValue,otherTeam) { return function(id)     { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowBlockFromProjectile(thisValue.GetGame().GetCurrentFrame(),false,id); } } }
+        var startAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
+        var endAttack           = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { this.Flags.Combat.Remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.GetPlayers()[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
+        var startAirAttack      = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
+        var endAirAttack        = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { this.Flags.Combat.Remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.GetPlayers()[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
+        var attack              = function(thisValue,otherTeam) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { thisValue.GetPhysics().TryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,otherTeam.GetPlayers()[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound); } } }
+        var projectileAttack    = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { thisValue.GetPhysics().TryProjectileAttack(frame,projectile,this,otherTeam.GetPlayers()[i]); } } }
         var changeHealth        = function(thisValue)         { return function(amount) { thisValue.ChangeHealth(this.team_,amount); } }
         var getHealth           = function(thisValue)         { return function() { return thisValue.GetHealth(this.team_); } }
         var changeEnergy        = function(thisValue)         { return function(amount) { thisValue.ChangeEnergy(this.team_,amount); } }
@@ -274,86 +275,82 @@ var CreateMatch = function(team1,team2,stage)
         var decComboRefCount    = function(thisValue,team)    { return function() { return team.DecComboRefCount(); } }
         var getCurrentComboCount= function(thisValue,team)    { return function() { return team.GetCurrentCombo(); } }
 
+        var otherTeam = null;
+        var myTeam = null;
+        var dir = "";
 
-        this.GetTeamA().SetPlayers(team1);
-        this.GetTeamB().SetPlayers(team2);
+        switch(team)
+        {
+            case 1: {dir = "l"; myTeam = this.TeamA; otherTeam = this.TeamB; break;}
+            case 2: {dir = "r"; myTeam = this.TeamB; otherTeam = this.TeamA; break;}
+        }
+
+        var index = Match.prototype.PlayerIndex++;
+
+        player.id_ = "t" + team + "p" + index;
+        player.moveStageXFn_ = moveStageX(this,otherTeam);
+        player.fixXFn_ = fixX(this,otherTeam);
+        player.moveXFn_ = moveX(this,otherTeam);
+        player.moveYFn_ = moveY(this,otherTeam);
+        player.moveOtherPlayersToBackFn_ = moveToBack(this,otherTeam);
+        player.moveOtherPlayersToFrontFn_ = moveToFront(this,otherTeam);
+        player.takeDamageFn_ = changeHealth(this);
+        player.changeEnergyFn_ = changeEnergy(this);
+        player.attackFn_ = attack(this,otherTeam);
+        player.projectileAttackFn_ = projectileAttack(this,otherTeam);
+        player.SetupInfo(team,dir);
+        player.getHealthFn_ = getHealth(this);
+        player.getEnergyFn_ = getEnergy(this);
+        player.onStartAttackFn_ = startAttack(this,otherTeam);
+        player.onEndAttackFn_ = endAttack(this,otherTeam);
+        player.onStartAirAttackFn_ = startAirAttack(this,otherTeam);
+        player.onEndAirAttackFn_ = endAirAttack(this,otherTeam);
+        player.onProjectileMovedFn_ = projectileMoved(this,otherTeam);
+        player.onProjectileGoneFn_ = projectileGone(this,otherTeam);
+        player.onIncComboFn_ = incCombo(this,myTeam);
+        player.onIncComboRefCountFn_ = incComboRefCount(this,myTeam);
+        player.onDecComboRefCountFn_ = decComboRefCount(this,myTeam);
+        player.getCurrentComboCountFn_ = getCurrentComboCount(this,myTeam);
+        player.InitSprite();
+        if(team == 1)
+            player.ChangeDirection(true);
+
+    }
+
+    /*Initializes a new match*/
+    Match.prototype.Start = function(ignoreMusic)
+    {
+        this.GetStage().Start();
+
+
+        this.TeamA.SetPlayers(team1);
+        this.TeamB.SetPlayers(team2);
         this.InitText();
         /*init team 1*/
-        for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
+        for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
         {
-            this.GetTeamA().GetPlayer(i).id_ = "t1p" + i;
-            this.GetTeamA().GetPlayer(i).SetIndex(i);
-            this.GetTeamA().GetPlayer(i).moveStageXFn_ = moveStageX(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).fixXFn_ = fixX(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).moveXFn_ = moveX(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).moveYFn_ = moveY(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).moveOtherPlayersToBackFn_ = moveToBack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).moveOtherPlayersToFrontFn_ = moveToFront(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).takeDamageFn_ = changeHealth(this);
-            this.GetTeamA().GetPlayer(i).changeEnergyFn_ = changeEnergy(this);
-            this.GetTeamA().GetPlayer(i).attackFn_ = attack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).projectileAttackFn_ = projectileAttack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).SetupInfo(1,"l");
-            this.GetTeamA().GetPlayer(i).getHealthFn_ = getHealth(this);
-            this.GetTeamA().GetPlayer(i).getEnergyFn_ = getEnergy(this);
-            this.GetTeamA().GetPlayer(i).onStartAttackFn_ = startAttack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).onEndAttackFn_ = endAttack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).onStartAirAttackFn_ = startAirAttack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).onEndAirAttackFn_ = endAirAttack(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).onProjectileMovedFn_ = projectileMoved(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).onProjectileGoneFn_ = projectileGone(this,this.GetTeamB().GetPlayers());
-            this.GetTeamA().GetPlayer(i).onIncComboFn_ = incCombo(this,this.GetTeamA());
-            this.GetTeamA().GetPlayer(i).onIncComboRefCountFn_ = incComboRefCount(this,this.GetTeamA());
-            this.GetTeamA().GetPlayer(i).onDecComboRefCountFn_ = decComboRefCount(this,this.GetTeamA());
-            this.GetTeamA().GetPlayer(i).getCurrentComboCountFn_ = getCurrentComboCount(this,this.GetTeamA());
-            this.GetTeamA().GetPlayer(i).InitSprite();
-            this.GetTeamA().GetPlayer(i).ChangeDirection(true);
+            this.SetupPlayer(this.TeamA.GetPlayers()[i],CONSTANTS.TEAM1);
         }
-        if(!!this.GetTeamA().GetPlayer(0))
-            this.GetTeamA().GetPlayer(0).SetX(STAGE.START_X);
+        if(!!this.TeamA.GetPlayer(0))
+            this.TeamA.GetPlayer(0).SetX(STAGE.START_X);
 
         /*init team 2*/
-        for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
+        for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
         {
-            this.GetTeamB().GetPlayer(i).id_ = "t2p" + i;
-            this.GetTeamB().GetPlayer(i).SetIndex(i);
-            this.GetTeamB().GetPlayer(i).moveStageXFn_ = moveStageX(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).fixXFn_ = fixX(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).moveXFn_ = moveX(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).moveYFn_ = moveY(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).moveOtherPlayersToBackFn_ = moveToBack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).moveOtherPlayersToFrontFn_ = moveToFront(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).takeDamageFn_ = changeHealth(this);
-            this.GetTeamB().GetPlayer(i).changeEnergyFn_ = changeEnergy(this);
-            this.GetTeamB().GetPlayer(i).attackFn_ = attack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).projectileAttackFn_ = projectileAttack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).SetupInfo(2,"r");
-            this.GetTeamB().GetPlayer(i).getHealthFn_ = getHealth(this);
-            this.GetTeamB().GetPlayer(i).getEnergyFn_ = getEnergy(this);
-            this.GetTeamB().GetPlayer(i).onStartAttackFn_ = startAttack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).onEndAttackFn_ = endAttack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).onStartAirAttackFn_ = startAirAttack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).onEndAirAttackFn_ = endAirAttack(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).onProjectileMovedFn_ = projectileMoved(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).onProjectileGoneFn_ = projectileGone(this,this.GetTeamA().GetPlayers());
-            this.GetTeamB().GetPlayer(i).onIncComboFn_ = incCombo(this,this.GetTeamB());
-            this.GetTeamB().GetPlayer(i).onIncComboRefCountFn_ = incComboRefCount(this,this.GetTeamB());
-            this.GetTeamB().GetPlayer(i).onDecComboRefCountFn_ = decComboRefCount(this,this.GetTeamB());
-            this.GetTeamB().GetPlayer(i).getCurrentComboCountFn_ = getCurrentComboCount(this,this.GetTeamB());
-            this.GetTeamB().GetPlayer(i).InitSprite();
+            this.SetupPlayer(this.TeamB.GetPlayers()[i],CONSTANTS.TEAM2);
         }
-        if(!!this.GetTeamB().GetPlayer(0))
-            this.GetTeamB().GetPlayer(0).SetX(STAGE.START_X);
+        if(!!this.TeamB.GetPlayer(0))
+            this.TeamB.GetPlayer(0).SetX(STAGE.START_X);
 
         /*set the starting locations for each player*/
-        for(var i = 1; i < this.GetTeamA().GetPlayers().length; ++i)
-            this.GetTeamA().GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
-        for(var i = 1; i < this.GetTeamB().GetPlayers().length; ++i)
-            this.GetTeamB().GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+        for(var i = 1, length = this.TeamA.GetPlayers().length; i < length; ++i)
+            this.TeamA.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+        for(var i = 1, length = this.TeamB.GetPlayers().length; i < length; ++i)
+            this.TeamB.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
         this.GetStage().Init();
-        this.GetTeamA().Init();
-        this.GetTeamB().Init();
+        this.TeamA.Init();
+        this.TeamB.Init();
 
         if(!ignoreMusic)
             this.GetStage().PlayMusic();
@@ -363,10 +360,10 @@ var CreateMatch = function(team1,team2,stage)
     {
         if(this.GetAllowInput())
         {
-            for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-                this.GetTeamA().GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
-            for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-                this.GetTeamB().GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
+            for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+                this.TeamA.GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
+            for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+                this.TeamB.GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
         }
     }
     /*Dims the background when a player is starting a super move*/
@@ -387,12 +384,12 @@ var CreateMatch = function(team1,team2,stage)
         {
             this.SetBackgroundTransparent(player);
             this.SetSuperMoveActive(true);
-            for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-                if(this.GetTeamA().GetPlayer(i).id_ != player.id_)
-                    this.GetTeamA().GetPlayer(i).OnSuperMoveStarted();
-            for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-                if(this.GetTeamB().GetPlayer(i).id_ != player.id_)
-                    this.GetTeamB().GetPlayer(i).OnSuperMoveStarted();
+            for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+                if(this.TeamA.GetPlayer(i).id_ != player.id_)
+                    this.TeamA.GetPlayer(i).OnSuperMoveStarted();
+            for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+                if(this.TeamB.GetPlayer(i).id_ != player.id_)
+                    this.TeamB.GetPlayer(i).OnSuperMoveStarted();
         }
     }
     Match.prototype.OnSuperMoveCompleted = function(player)
@@ -400,28 +397,28 @@ var CreateMatch = function(team1,team2,stage)
         if(this.IsSuperMoveActive())
         {
             this.SetBackgroundTransparent();
-            for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-                if(this.GetTeamA().GetPlayer(i).id_ != player.id_)
-                    this.GetTeamA().GetPlayer(i).OnSuperMoveCompleted();
-            for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-                if(this.GetTeamB().GetPlayer(i).id_ != player.id_)
-                    this.GetTeamB().GetPlayer(i).OnSuperMoveCompleted();
+            for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+                if(this.TeamA.GetPlayer(i).id_ != player.id_)
+                    this.TeamA.GetPlayer(i).OnSuperMoveCompleted();
+            for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+                if(this.TeamB.GetPlayer(i).id_ != player.id_)
+                    this.TeamB.GetPlayer(i).OnSuperMoveCompleted();
             this.SetSuperMoveActive(false);
         }
     }
     Match.prototype.PreFrameMove = function(frame)
     {
-        for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-            this.GetTeamA().GetPlayer(i).OnPreFrameMove(frame);
-        for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-            this.GetTeamB().GetPlayer(i).OnPreFrameMove(frame);
+        for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+            this.TeamA.GetPlayer(i).OnPreFrameMove(frame);
+        for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+            this.TeamB.GetPlayer(i).OnPreFrameMove(frame);
     }
     Match.prototype.RenderComplete = function(frame)
     {
-        for(var i = 0; i < this.GetTeamA().GetPlayers().length; ++i)
-            this.GetTeamA().GetPlayer(i).OnRenderComplete(frame);
-        for(var i = 0; i < this.GetTeamB().GetPlayers().length; ++i)
-            this.GetTeamB().GetPlayer(i).OnRenderComplete(frame);
+        for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
+            this.TeamA.GetPlayer(i).OnRenderComplete(frame);
+        for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
+            this.TeamB.GetPlayer(i).OnRenderComplete(frame);
     }
 
     /**/
@@ -443,8 +440,8 @@ var CreateMatch = function(team1,team2,stage)
         this.GetStage().FrameMove(frame);
         this.GetHitSystem().FrameMove(frame);
 
-        this.GetTeamA().FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
-        this.GetTeamB().FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
+        this.TeamA.FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
+        this.TeamB.FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
 
         if((this.GetGotoNewRoundFrame() != CONSTANTS.NO_FRAME) && (frame > (this.GetGotoNewRoundFrame() + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
             this.Reset();
@@ -458,8 +455,8 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.Render = function(frame)
     {
 
-        this.GetTeamA().Render(frame,this.GetStage().x_ - this.GetStage().lastX_);
-        this.GetTeamB().Render(frame,this.GetStage().x_ - this.GetStage().lastX_);
+        this.TeamA.Render(frame,this.GetStage().x_ - this.GetStage().lastX_);
+        this.TeamB.Render(frame,this.GetStage().x_ - this.GetStage().lastX_);
 
         this.GetStage().Render();
 
@@ -474,8 +471,8 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.Release = function()
     {
         this.GetStage().Release();
-        this.GetTeamA().Release();
-        this.GetTeamB().Release();
+        this.TeamA.Release();
+        this.TeamB.Release();
     }
 
 
