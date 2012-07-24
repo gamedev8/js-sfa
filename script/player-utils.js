@@ -182,6 +182,12 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
             this.Animations[i].TryRender(frame, {StartFrame:startFrame,ZIndex:zIndex,X:x,Y:y}, direction);
     }
 
+    Animation.prototype.HideChildren = function()
+    {
+        for(var i = 0, length = this.Animations.length; i < length; ++i)
+            this.Animations[i].Hide();
+    }
+
     return new Animation();
 }
 /************************************************************************/
@@ -382,6 +388,12 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         this.BaseAnimation.AddFrame.apply(this.BaseAnimation,arguments);
     }
 
+    BasicAnimation.prototype.Hide = function()
+    {
+        if(!!this.element_)
+            this.element_.style.display = "none";
+    }
+
     BasicAnimation.prototype.TryRender = function(frame,object,direction)
     {
         direction = direction || this.direction_;
@@ -463,6 +475,7 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
 var CreateFrameImageLookup = function()
 {
     var images_ = {};
+    var data_ = {};
     var nbImages_ = 0;
     var nbImagesLoading_ = 0;
     var element_ = window.document.getElementById("spnImagesLoading");
@@ -474,6 +487,17 @@ var CreateFrameImageLookup = function()
     FrameImageLookup.prototype.GetNbImages = function() { return nbImages_; }
     FrameImageLookup.prototype.GetNbImagesLoading = function() { return nbImagesLoading_; }
     FrameImageLookup.prototype.GetElement = function() { return element_; }
+    FrameImageLookup.prototype.LoadBase64Audio = function(key,value)
+    {
+        if(!data_[key])
+        {
+            data_[key] = value;
+        }
+        else
+        {
+            return null;
+        }
+    }
     
     /*Image only loaded once*/
     FrameImageLookup.prototype.Load = function(src)
@@ -510,7 +534,7 @@ var CreateFrameImageLookup = function()
     }
     return new FrameImageLookup();
 }
-var frameImages_ = CreateFrameImageLookup();
+var imageLookup_ = CreateFrameImageLookup();
 /************************************************************************/
 /************************************************************************/
 var CreateSpriteLookup = function()

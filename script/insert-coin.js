@@ -37,8 +37,6 @@
         stuffLoader_.Queue("images/misc/font1/insert.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font1/credits.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font1/cap.png",RESOURCE_TYPES.IMAGE);
-        for(var i = 49; i < 58; ++i)
-            stuffLoader_.Queue("images/misc/font1/" + i + ".png",RESOURCE_TYPES.IMAGE);
 
     }
 

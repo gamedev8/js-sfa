@@ -460,8 +460,9 @@ var LOADING_STATES =
 var RESOURCE_TYPES = 
 {
     IMAGE:1
-    ,BASE64AUDIO:2
-    ,SCRIPT:3
+    ,BASE64IMAGE:2
+    ,BASE64AUDIO:3
+    ,SCRIPT:4
 };
 
 var KEYS = 

@@ -12,6 +12,11 @@
         return this.AddScript(src,callbackFn,context);
     }
 
+    Utils.prototype.AddBase64Image = function(src, callbackFn, context)
+    {
+        return this.AddScript(src,callbackFn,context);
+    }
+
     Utils.prototype.AddScript = function(src, callbackFn, context)
     {
         if(!window.document.getElementById(src))
@@ -137,6 +142,12 @@ var CreateStuffLoader = function()
         }
     }
 
+    var DownloadBase64Image_ = function(index)
+    {
+        if(!utils_.AddBase64Image(stuff_[index].Src, CreateOnDoneCallback_(index)))
+            OnDone_();
+    }
+
 
     var DownloadBase64Audio_ = function(index)
     {
@@ -180,6 +191,7 @@ var CreateStuffLoader = function()
             {
                 case RESOURCE_TYPES.IMAGE: { DownloadImage_(i); break; }
                 case RESOURCE_TYPES.BASE64AUDIO: { DownloadBase64Audio_(i); break; }
+                case RESOURCE_TYPES.BASE64IMAGE: { DownloadBase64Image_(i); break; }
                 case RESOURCE_TYPES.SCRIPT: { DownloadScript_(i); break; }
             };
         }

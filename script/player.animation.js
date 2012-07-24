@@ -453,6 +453,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
     ++this.moveCount_;
     if(!!this.currentAnimation_ && this.currentAnimation_.Animation)
     {
+        this.currentAnimation_.Animation.HideChildren();
         if(!!newAnimation && !!this.currentAnimation_.Animation.ChainAnimation)
         {
             if(!!(this.currentAnimation_.Animation.ChainAnimation.Flags.Player & PLAYER_FLAGS.USE_CURRENT_VX))

@@ -66,7 +66,12 @@ ManagedText.prototype.Init = function()
 ManagedText.prototype.GetSrc = function(letter)
 {
     var value = letter.charCodeAt(0);
-    return CONSTANTS.DEFAULT_BASE_IMAGES_PATH + this.FontsPath + "/" + value + ".png";
+    switch(this.FontsPath)
+    {
+        case "font1": return font1_[value];
+        case "font2": return font2_[value];
+    }
+    //return CONSTANTS.DEFAULT_BASE_IMAGES_PATH + this.FontsPath + "/" + value + ".png";
 }
 
 /*Changes the managed text*/
@@ -84,11 +89,11 @@ ManagedText.prototype.Change = function(newText,x,hideFrame)
     for(var i = 0,length = this.Text.length; i < length;++i)
     {
         this.Element.children[i].style.marginRight = this.FontSpacing + "px";
-        var src = this.GetSrc(this.Text.charAt(i));
-        var currentSrc = ((this.Element.children[i].src || "").match(/.\.png$/) || []).join();
+        //var src = this.GetSrc(this.Text.charAt(i));
+        //var currentSrc = ((this.Element.children[i].src || "").match(/.\.png$/) || []).join();
 
-        if(currentSrc != src)
-        {
+        //if(currentSrc != src)
+        //{
             this.Element.children[i].onload = (function(thisValue,fontSpacing)
             {
                 return function()
@@ -97,7 +102,7 @@ ManagedText.prototype.Change = function(newText,x,hideFrame)
                 }
             })(this,this.FontSpacing);
             this.Element.children[i].src = this.GetSrc(this.Text.charAt(i));
-        }
+        //}
     }
 
     if(!!hideFrame)
@@ -202,38 +207,6 @@ var CreateFontSystem = function()
 
     FontSystem.prototype.Preload = function()
     {
-    
-        /*preload some default text*/
-        for(var i = 48; i < 57; ++i)
-            frameImages_.Load("images/misc/font2/" + i + ".png");
-        frameImages_.Load("images/misc/font2/66.png");
-        frameImages_.Load("images/misc/font2/67.png");
-        frameImages_.Load("images/misc/font2/72.png");
-        frameImages_.Load("images/misc/font2/73.png");
-        frameImages_.Load("images/misc/font2/77.png");
-        frameImages_.Load("images/misc/font2/79.png");
-        frameImages_.Load("images/misc/font2/84.png");
-
-        /*
-	    spriteLookup_.Load("images/misc/font2/32.png","|images/misc/font2/font-sprites.png", "0px", "0px", "16px", "41px");
-	    spriteLookup_.Load("images/misc/font2/48.png","|images/misc/font2/font-sprites.png", "-16px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/49.png","|images/misc/font2/font-sprites.png", "-48px", "0px", "26px", "41px");
-	    spriteLookup_.Load("images/misc/font2/50.png","|images/misc/font2/font-sprites.png", "-74px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/51.png","|images/misc/font2/font-sprites.png", "-106px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/52.png","|images/misc/font2/font-sprites.png", "-138px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/53.png","|images/misc/font2/font-sprites.png", "-170px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/54.png","|images/misc/font2/font-sprites.png", "-202px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/55.png","|images/misc/font2/font-sprites.png", "-234px", "0px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/56.png","|images/misc/font2/font-sprites.png", "0px", "-41px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/57.png","|images/misc/font2/font-sprites.png", "-32px", "-41px", "32px", "41px");
-	    spriteLookup_.Load("images/misc/font2/66.png","|images/misc/font2/font-sprites.png", "-64px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/67.png","|images/misc/font2/font-sprites.png", "-80px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/72.png","|images/misc/font2/font-sprites.png", "-96px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/73.png","|images/misc/font2/font-sprites.png", "-112px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/77.png","|images/misc/font2/font-sprites.png", "-128px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/79.png","|images/misc/font2/font-sprites.png", "-144px", "-51px", "16px", "31px");
-	    spriteLookup_.Load("images/misc/font2/84.png","|images/misc/font2/font-sprites.png", "-160px", "-51px", "16px", "31px");
-        */
     }
 
     FontSystem.prototype.Reset = function(frame)
