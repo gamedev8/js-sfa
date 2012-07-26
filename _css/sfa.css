@@ -25,7 +25,8 @@ div.stance-container-p2 {right:32px;}
 div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
 div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.loadingBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;text-align:center;}
-span.loading {font-weight:bold;color:#aaaaff;}
+span.loading {background-color:#222;color:#aaaaff;}
+div.loading {font-size:24px; margin-top:50px;}
 span.done-loading {font-weight:normal;color:#00aa00;}
 div.stage .bg0{position:absolute;}
 div.stage .bg1{position:absolute;}
