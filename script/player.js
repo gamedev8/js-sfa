@@ -461,12 +461,24 @@ Player.prototype.CheckForInterupt = function(frame)
 {
     if(!!this.interuptAnimation_)
     {
-        if((--this.interuptAnimation_.Delay <= 0))// && !!this.canInterrupt_)
+        if((--this.interuptAnimation_.Delay <= 0))
         {
             var temp = this.interuptAnimation_;
             temp.StartFrame = frame;
             this.interuptAnimation_ = null;
             this.SetCurrentAnimation(temp);
+        }
+    }
+    else if(!!this.currentAnimation_ && !!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.InteruptAnimation)
+    {
+        var poseFlags = this.currentAnimation_.Animation.InteruptAnimationFlags.Pose
+        if(!!(poseFlags & this.Flags.Pose.Value))
+        {
+            var key = this.currentAnimation_.Animation.InteruptAnimation.GetKey(this.currentAnimation_.Animation.InteruptAnimation.GetKeySequenceLength() - 1);
+            if(this.IsKeyDown(key))
+            {
+                this.ChainToAnimation(frame, this.currentAnimation_.Animation.InteruptAnimation);
+            }
         }
     }
 }

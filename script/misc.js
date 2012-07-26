@@ -76,15 +76,15 @@ function StartDramaticBattle()
     game_.StartMatch(false,[u2_],[u1_,u3_], stages_["mbison"], StartDramaticBattleAI);
 }
 
+function StartBattle()
+{
+    StartDramaticBattle();
+}
+
 function StartDramaticBattleAI()
 {
     debug_.T2TestAI(0);
     debug_.T2TestAI(1);
-}
-
-function StartBattle()
-{
-    StartDramaticBattle();
 }
 
 /*Goes to the character selection screen*/

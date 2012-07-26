@@ -294,6 +294,7 @@ Player.prototype.CreateKen = function(user)
     block.AddFrame(player, "", folder + "/x-block-1.png", 4, { Player: PLAYER_FLAGS.BLOCKING | PLAYER_FLAGS.MUST_HOLD_KEY });
     block.AddFrame(player, "", folder + "/x-block-1.png", 4, { Player: PLAYER_FLAGS.BLOCKING | PLAYER_FLAGS.HOLD_FRAME });
     block.Chain(blockRelease);
+    blockRelease.AllowInterupt(block,1,{Pose: POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_BLOCK});
 
     var cblock = player.AddAnimation(POSE_FLAGS.CROUCHING | POSE_FLAGS.ALLOW_BLOCK, "crouch block", 0, [BUTTONS.CROUCH | BUTTONS.BACK], -1, false);
     cblock.Flags = ({ Player: PLAYER_FLAGS.BLOCKING, Pose: POSE_FLAGS.CROUCHING });

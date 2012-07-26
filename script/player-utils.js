@@ -66,6 +66,8 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.VyFnArgs = {};
 
         this.UserData = null;
+        this.InteruptAnimation = null;
+        this.InteruptAnimationFlags = null;
     }
 
     Animation.prototype.GetAlternateKeySequencesLength = function() { return this.AlternateKeySequences.length; }
@@ -102,6 +104,13 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     {
         this.ChainAnimation = (move);
         this.ChainAnimationFrame = (frameOffset || 0);
+    }
+    
+    Animation.prototype.AllowInterupt = function(move,frameOffset,flags)
+    {
+        this.InteruptAnimation = move;
+        this.ChainAnimationFrame = (frameOffset || 0);
+        this.InteruptAnimationFlags = flags;
     }
 
     Animation.prototype.AddAnimation = function(animation)

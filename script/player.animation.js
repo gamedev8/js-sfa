@@ -434,17 +434,22 @@ Player.prototype.TryChainAnimation = function(frame,stageX,stageY)
         if(chained.BaseAnimation.name_ == "bounce" && this.IsDead())
             chained = this.moves_._0_hr_deadbounce;
         var move = chained;
-        var newFrame = move.BaseAnimation.frames_[this.currentAnimation_.Animation.ChainAnimationFrame];
-        var attackDirection = this.currentAnimation_.AttackDirection;
-
-        var tmp = {Animation:move,StartFrame:frame - newFrame.FrameOffset,Direction:this.direction_,AttackDirection:attackDirection};
-        this.SetCurrentAnimation(tmp);
-        this.SetCurrentFrame(newFrame,frame,stageX,stageY);
+        this.ChainToAnimation(frame, move);
     }
     else
     {
         this.GoToStance(frame);
     }
+}
+
+Player.prototype.ChainToAnimation = function(frame,move,stageX,stageY)
+{
+    var newFrame = move.BaseAnimation.frames_[this.currentAnimation_.Animation.ChainAnimationFrame];
+    var attackDirection = this.currentAnimation_.AttackDirection;
+
+    var tmp = {Animation:move,StartFrame:frame - newFrame.FrameOffset,Direction:this.direction_,AttackDirection:attackDirection};
+    this.SetCurrentAnimation(tmp);
+    this.SetCurrentFrame(newFrame,frame,stageX,stageY);
 }
 
 /*Sets the current move*/
