@@ -105,8 +105,8 @@ var CreateGame = function()
 
     Game.prototype.OnStageImagesLoaded = function()
     {
-        //if(!!match_)
-        //    match_.GetStage().Init();
+        if(!!match_)
+            match_.GetStage().Init();
     }
 
     Game.prototype.ReleaseText = function()
