@@ -90,8 +90,14 @@ Player.prototype.SetAllowBlock = function(attackId,frame,isAllowed,x,y)
     if(!!isAllowed)
     {
         /*the attack must be within a certain distance for the block animation to be allowed*/
-        if(this.GetDistanceFromSq(x,y) > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
-            return this.SetAllowBlock(attackId,frame,false,x,y);
+        var dist = this.GetDistanceFromSq(x,y);
+        if(dist > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
+        {
+            if(!this.IsBlocking())
+                return this.SetAllowBlock(attackId,frame,false,x,y);
+            else if(dist > (CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
+                return this.SetAllowBlock(attackId,frame,false,x,y);
+        }
 
         /*Check if the move is already blockable*/
         if(!this.AddBlockableAttack(attackId))
@@ -122,8 +128,14 @@ Player.prototype.SetAllowAirBlock = function(attackId,frame,isAllowed,x,y)
     if(!!isAllowed)
     {
         /*the attack must be within a certain distance for the block animation to be allowed*/
-        if(this.GetDistanceFromSq(x,y) > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
-            return this.SetAllowAirBlock(attackId,frame,false,x,y);
+        var dist = this.GetDistanceFromSq(x,y);
+        if(dist > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
+        {
+            if(!this.IsBlocking())
+                return this.SetAllowAirBlock(attackId,frame,false,x,y);
+            else if(dist > (CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
+                return this.SetAllowAirBlock(attackId,frame,false,x,y);
+        }
 
         /*Check if the move is already blockable*/
         if(!this.AddBlockableAirAttack(attackId))

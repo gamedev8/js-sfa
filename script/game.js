@@ -105,8 +105,8 @@ var CreateGame = function()
 
     Game.prototype.OnStageImagesLoaded = function()
     {
-        if(!!match_)
-            match_.GetStage().Init();
+        //if(!!match_)
+        //    match_.GetStage().Init();
     }
 
     Game.prototype.ReleaseText = function()
@@ -215,14 +215,14 @@ var CreateGame = function()
     {
         if(!!charSelect_)
         {
-            goodGuys = charSelect_.GetPlayers(teamA);
-            badGuys = charSelect_.GetPlayers(teamB);
-            stage = charSelect_.GetStage();
+            a = charSelect_.GetPlayers(teamA);
+            b = charSelect_.GetPlayers(teamB);
+            stage = stage || charSelect_.GetStage();
 
             charSelect_.Release();
         }
 
-        match_ = CreateMatch(goodGuys,badGuys,stage);
+        match_ = CreateMatch(a,b,stage);
         managed_ = match_;
         announcer_.SetMatch(match_);
         this.ShowElements();

@@ -457,7 +457,7 @@ var CreateCharSelect = function(user1,user2)
         this.playerSelectImg_ = null;
         this.music_ = "audio/misc/player-select.zzz";
         this.sounds_ = [];
-
+        this.lastPicked_ = "";
         this.LoadAssets();
     }
 
@@ -480,7 +480,7 @@ var CreateCharSelect = function(user1,user2)
     /*For now - only Ken's stage is implemented*/
     CharSelect.prototype.GetStage = function()
     {
-        return kensStage_;
+        return stages_[this.lastPicked_];
     }
 
 
@@ -661,7 +661,7 @@ var CreateCharSelect = function(user1,user2)
             u1_.direction_ = -1;
             u1_.Init(true);
             u1_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
-            u1_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser1ChooseSound(); } })(this);
+            u1_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser1ChooseSound(); thisValue.lastPicked_ = this.GetName(); } })(this);
             u1_.getOtherCharacterFn_ = (function(thisValue) { return function(direction) { return thisValue.selected_; } })(u2_);
             u1_.getOtherIsAlternateFn_ = (function(thisValue) { return function(direction) { return thisValue.isAlternateChar_; } })(u2_);
 
@@ -678,7 +678,7 @@ var CreateCharSelect = function(user1,user2)
             u2_.direction_ = 1;
             u2_.Init(false);
             u2_.changeCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.TryChangeCharacter(this,direction); } })(this);
-            u2_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser2ChooseSound(); } })(this);
+            u2_.chooseCharacterFn_ = (function(thisValue) { return function(direction) { thisValue.QueueUser2ChooseSound();  thisValue.lastPicked_ = this.GetName();} })(this);
             u2_.getOtherCharacterFn_ = (function(thisValue) { return function(direction) { return thisValue.selected_; } })(u1_);
             u2_.getOtherIsAlternateFn_ = (function(thisValue) { return function(direction) { return thisValue.isAlternateChar_; } })(u1_);
 

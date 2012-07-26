@@ -157,7 +157,7 @@ Player.prototype.FindAnimation = function(value,frame)
 
     var matches = [];
     var retVal = null;
-    var priority = -1;
+    var priority = -99999;
     var currentEnergy = this.getEnergyFn_();
     for(var i in this.moves_)
     {

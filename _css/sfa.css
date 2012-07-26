@@ -27,8 +27,12 @@ div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;dis
 div.loadingBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;text-align:center;}
 span.loading {font-weight:bold;color:#aaaaff;}
 span.done-loading {font-weight:normal;color:#00aa00;}
-div.stage .ken-bg0{position:absolute;top:-20px;left:0px;}
-div.stage .ken-bg1{position:absolute;bottom:0px;left:0px;}
+div.stage .bg0{position:absolute;}
+div.stage .bg1{position:absolute;}
+
+div.stage .ken-bg0{top:-20px;}
+div.stage .chunli-bg0{top:0px;}
+div.stage .mbison-bg0{top:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
 div.shadow .shadow{position:absolute;bottom:0px;background-image:url(../images/misc/misc/shadow-sprites.png);}
 div.player-dizzy{position:absolute;bottom:0px;background-image:url(../images/misc/misc/misc-sprites.png);background-color:Transparent;z-index:14;}

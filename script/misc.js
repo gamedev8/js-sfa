@@ -10,7 +10,10 @@ var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0I
     this.bg1Img_ = bg1Img;
 }
 
-var kensStage_ = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ken1.25.bg.jpg", "images/misc/stage/ken.bg.png");
+var stages_ = {};
+stages_["ken"] = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ken.back.png", "images/misc/stage/ken.front.png");
+stages_["ryu"] = new StageParams("chunli", -192, -382, -2, "images/misc/stage/chunli.back.png", "images/misc/stage/chunli.front.png");
+stages_["mbison"] = new StageParams("mbison", -192, -382, -2, "images/misc/stage/mbison.back.png", "images/misc/stage/mbison.front.png");
 
 
 /*******************************************************************************************************************************/
@@ -57,10 +60,10 @@ u4_.isAlternateChar_ = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    u2_.SetChar(CHARACTERS.KEN);
-    //u2_.SetChar(CHARACTERS.KEN);
+    u1_.SetChar(CHARACTERS.KEN);
+    u2_.SetChar(CHARACTERS.RYU);
 
-    game_.StartMatch(false,[u2_],[], kensStage_);
+    game_.StartMatch(false,[u1_],[u2_], stages_["ryu"]);
 }
 
 /* multi player battle */
@@ -70,13 +73,18 @@ function StartDramaticBattle()
     u1_.SetChar(CHARACTERS.RYU,true);
     u3_.SetChar(CHARACTERS.KEN,true);
 
-    game_.StartMatch(false,[u2_],[u1_,u3_], kensStage_, StartDramaticBattleAI);
+    game_.StartMatch(false,[u2_],[u1_,u3_], stages_["mbison"], StartDramaticBattleAI);
 }
 
 function StartDramaticBattleAI()
 {
     debug_.T2TestAI(0);
     debug_.T2TestAI(1);
+}
+
+function StartBattle()
+{
+    StartDramaticBattle();
 }
 
 /*Goes to the character selection screen*/

@@ -43,8 +43,8 @@ Stage.prototype.Start = function()
     this.bgImg0_.xOffset = this.params_.bg0XOffset_;
     this.bgImg0_.element.src = this.params_.bg0Img_;
     this.bgImg1_.element.src = this.params_.bg1Img_;
-    this.bgImg0_.element.className = this.params_.name_ + "-bg0";
-    this.bgImg1_.element.className = this.params_.name_ + "-bg1";
+    this.bgImg0_.element.className = "bg0 " + this.params_.name_ + "-bg0";
+    this.bgImg1_.element.className = "bg1 " + this.params_.name_ + "-bg1";
     this.maxLeftScroll_  = this.params_.maxLeftScroll_; 
     this.maxRightScroll_ = this.params_.maxRightScroll_;
 
@@ -405,11 +405,13 @@ Stage.prototype.Init = function()
     
     var diff0 = (screenWidth - parseFloat(this.bgImg0_.element.width)) / 2;
     var diff1 = (screenWidth - parseFloat(this.bgImg1_.element.width)) / 2;
+    var img1Left = diff1 - diff;
 
     this.bgImg0_.element.style.left = this.bgImg0_.xOffset + "px";
-    this.bgImg1_.element.style.left = (diff1 - diff) + "px";
+    this.bgImg1_.element.style.left = img1Left + "px";
     this.x_ = Math.abs(diff1 - diff);
     var elementWidth = parseFloat(this.bg_.element.style.width);
+    this.maxRight_ = img1Left - (this.bgImg1_.element.width - STAGE.MAX_STAGEX) - img1Left;
 
     /*If the browser doesn't allow decimal places in pixel values, then we have to set the bgRate_ to 0.
     The far background will not scroll with the screen. You won't notice unless you know it's happening.*/
@@ -487,12 +489,12 @@ Stage.prototype._MoveHoriz = function(amount,px)
         this.x1 = 0;
         this.x_ = STAGE.MAX_STAGEX;
     }
-    if(this.x1 < STAGE.MAX_BG1_SCROLL)
+    if(this.x1 < this.maxRight_)
     {
         //floating point error will cause them to be off a little, this will fix
         this.deltaX_ = 0;
         this.x0 = this.maxRightScroll_;
-        this.x1 = STAGE.MAX_BG1_SCROLL;
+        this.x1 = this.maxRight_;
         this.x_ = 0;
     }
     this.AlignPlayersX();
@@ -528,11 +530,11 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
             : this.deltaX_ = this.x_ - STAGE.MAX_STAGEX;
         this.x_ = STAGE.MAX_STAGEX;
     }
-    if(this.x1 < STAGE.MAX_BG1_SCROLL)
+    if(this.x1 < this.maxRight_)
     {
         //floating point error will cause them to be off a little, this will fix
         this.x0 = this.maxLeftScroll_;
-        this.x1 = STAGE.MAX_BG1_SCROLL;
+        this.x1 = this.maxRight_;
         !dontAlignPlayers
             ? this.deltaX_ = 0
             : this.deltaX_ = 0 - this.x_;
