@@ -186,6 +186,8 @@ Player.prototype.AllowInterupt = function()
 /*Check the current key sequence for a move to execute*/
 Player.prototype.CheckForAnimation = function(frame)
 {
+    if(!this.GetMatch().GetAllowInput())
+        return;
     if(!!this.checkedForAnimation_)
         return;
     this.checkedForAnimation_ = true;

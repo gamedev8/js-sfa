@@ -358,13 +358,13 @@ var CreateMatch = function(team1,team2,stage)
     /*Handles key state changes*/
     Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
     {
-        if(this.GetAllowInput())
-        {
+        //if(this.GetAllowInput())
+        //{
             for(var i = 0; i < this.TeamA.GetPlayers().length; ++i)
                 this.TeamA.GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
             for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
                 this.TeamB.GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
-        }
+        //}
     }
     /*Dims the background when a player is starting a super move*/
     Match.prototype.SetBackgroundTransparent = function(player)
