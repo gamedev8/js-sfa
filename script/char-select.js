@@ -1,4 +1,4 @@
-﻿var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat"];
+﻿var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat","mbison"];
 
 var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
 {
@@ -48,6 +48,7 @@ User.prototype.SetChar = function(char, isAlternate)
     {
         case CHARACTERS.KEN: { name = "ken"; break;}
         case CHARACTERS.RYU: { name = "ryu"; break;}
+        case CHARACTERS.MBISON: { name = "mbison"; break;}
 
         case CHARACTERS.RANDOM1:
         case CHARACTERS.RANDOM2:
@@ -56,6 +57,7 @@ User.prototype.SetChar = function(char, isAlternate)
             {
                 case "ryu": { return this.SetChar(CHARACTERS.RYU, isAlternate); }
                 case "ken": { return this.SetChar(CHARACTERS.KEN, isAlternate); }
+                case "mbison": { return this.SetChar(CHARACTERS.MBISON, isAlternate); }
             };
         }
     }
@@ -91,6 +93,22 @@ User.prototype.AddStanceAnimations = function()
         this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-0.png",5);
         this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-1.png",5);
         this.animations_["ken_selected"].AddFrame(this,"|ken-x-win-2-2.png",CONSTANTS.MAX_FRAME);
+
+        this.animations_["mbison"] = CreateBasicAnimation("ken_stance",[],true);
+        this.animations_["mbison"].AddFrame(this,"|mbison-x-stance-0.png",5);
+        this.animations_["mbison"].AddFrame(this,"|mbison-x-stance-1.png",5);
+        this.animations_["mbison"].AddFrame(this,"|mbison-x-stance-2.png",5);
+        this.animations_["mbison"].AddFrame(this,"|mbison-x-stance-3.png",5);
+        this.animations_["mbison"].AddFrame(this,"|mbison-x-stance-2.png",5);    
+        this.animations_["mbison"].AddFrame(this,"|mbison-x-stance-1.png",5);
+        this.animations_["mbison_selected"] = CreateBasicAnimation("mbison_selected",[],true);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-0.png",5);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-1.png",5);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-2.png",5);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-3.png",5);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-4.png",5);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-5.png",5);
+        this.animations_["mbison_selected"].AddFrame(this,"|mbison-x-win-0-6.png",CONSTANTS.MAX_FRAME);
 
         this.animations_["sagat"] = CreateBasicAnimation("sagat_stance",[],true);
         this.animations_["sagat"].AddFrame(this,"|sagat-x-stance-0.png",5);
@@ -251,7 +269,8 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
                     || this.selected_ == CHARACTERS.MBISON)
                 */
                 if(this.currentStance_ == "ken"
-                    || this.currentStance_ == "ryu")
+                    || this.currentStance_ == "ryu"
+                    || this.currentStance_ == "mbison")
                 {
                     this.isCharSelected_ = true;
                     this.chooseCharacterFn_(this);
@@ -282,34 +301,59 @@ User.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
                 {
                     case "ken_selected": this.selected_ = CHARACTERS.KEN; break;
                     case "ryu_selected": this.selected_ = CHARACTERS.RYU; break;
+                    case "mbison_selected": this.selected_ = CHARACTERS.MBISON; break;
                 };
             }
        }
     }
 }
 
+User.prototype.SetPositions = function()
+{
+    switch(this.currentStance_)
+    {
+        case "ryu": { this.SetPositionValues ("7px","17px","27px","0px",10,32); break; }
+        case "chunli": { this.SetPositionValues ("7px","17px","27px","0px",12,28); break; }
+        case "charlie": { this.SetPositionValues ("7px","17px","10px","0px",10,41); break; }
+        case "ken": { this.SetPositionValues ("7px","17px","27px","0px",10,32); break; }
+        case "guy": { this.SetPositionValues ("7px","17px","27px","0px",0,32); break; }
+        case "birdie": { this.SetPositionValues ("7px","17px","27px","0px",16,28); break; }
+        case "sodom": { this.SetPositionValues ("7px","17px","10px","0px",10,24); break; }
+        case "adon": { this.SetPositionValues ("7px","17px","27px","0px",10,32); break; }
+        case "rose": { this.SetPositionValues ("-3px","17px","2px","0px",-32,32); break; }
+        case "sagat": { this.SetPositionValues ("7px","17px","10px","0px",16,28); break; }
+        case "mbison": { this.SetPositionValues ("7px","17px","10px","0px",-36,17); break; }
+        /*
+        case "akuma": { break; }
+        case "dan": { break; }
+        */
+    };
+}
+
 User.prototype.ShowCharacter = function()
 {
     switch(this.selected_)
     {
-        case CHARACTERS.RYU: { this.currentStance_ = "ryu"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
-        case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; this.SetPositions("7px","17px","27px","0px",12,28); break; }
-        case CHARACTERS.CHARLIE: { this.currentStance_ = "charlie"; this.SetPositions("7px","17px","10px","0px",10,41); break; }
-        case CHARACTERS.KEN: { this.currentStance_ = "ken"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
-        case CHARACTERS.GUY: { this.currentStance_ = "guy"; this.SetPositions("7px","17px","27px","0px",0,32); break; }
-        case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; this.SetPositions("7px","17px","27px","0px",16,28); break; }
-        case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; this.SetPositions("7px","17px","10px","0px",10,24); break; }
-        case CHARACTERS.ADON: { this.currentStance_ = "adon"; this.SetPositions("7px","17px","27px","0px",10,32); break; }
+        case CHARACTERS.RYU: { this.currentStance_ = "ryu"; break; }
+        case CHARACTERS.CHUNLI: { this.currentStance_ = "chunli"; break; }
+        case CHARACTERS.CHARLIE: { this.currentStance_ = "charlie"; break; }
+        case CHARACTERS.KEN: { this.currentStance_ = "ken"; break; }
+        case CHARACTERS.GUY: { this.currentStance_ = "guy"; break; }
+        case CHARACTERS.BIRDIE: { this.currentStance_ = "birdie"; break; }
+        case CHARACTERS.SODOM: { this.currentStance_ = "sodom"; break; }
+        case CHARACTERS.ADON: { this.currentStance_ = "adon"; break; }
         case CHARACTERS.RANDOM1: { this.randomSelect_ = this.randomSelect_ || 1; break; }
-        case CHARACTERS.ROSE: { this.currentStance_ = "rose"; this.SetPositions("-3px","17px","2px","0px",-32,32); break; }
-        case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; this.SetPositions("7px","17px","10px","0px",16,28); break; }
+        case CHARACTERS.ROSE: { this.currentStance_ = "rose"; break; }
+        case CHARACTERS.SAGAT: { this.currentStance_ = "sagat"; break; }
         case CHARACTERS.RANDOM2: { this.randomSelect_ = this.randomSelect_ || 1; break; }
+        case CHARACTERS.MBISON: { this.currentStance_ = "mbison"; break; }
         /*
-        case CHARACTERS.AKUMA: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
-        case CHARACTERS.MBISON: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
-        case CHARACTERS.DAN: { this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-portriat.png" : "images/misc/misc/p2-select-portriat.png"); break; }
+        case CHARACTERS.AKUMA: { break; }
+        case CHARACTERS.DAN: { break; }
         */
     };
+
+    this.SetPositions();
 
     spriteLookup_.Set(this.portriatElement_, (this.player_ == 1 ? "images/misc/misc/p1-select-" + this.currentStance_ + ".png" : "images/misc/misc/p2-select-" + this.currentStance_ + ".png"));
     //this.portriatElement_.src = (this.player_ == 1 ? "images/misc/misc/p1-select-" + this.currentStance_ + ".png" : "images/misc/misc/p2-select-" + this.currentStance_ + ".png");
@@ -345,6 +389,7 @@ User.prototype.GetPlayer = function()
     {
         case CHARACTERS.RYU: { retVal = Player.prototype.CreateRyu(this); break; }
         case CHARACTERS.KEN: { retVal = Player.prototype.CreateKen(this); break; }
+        case CHARACTERS.MBISON: { retVal = Player.prototype.CreateMBison(this); break; }
         /*
         case CHARACTERS.CHUNLI: { retVal = Player.prototype.CreateChunLi(this); break; }
         case CHARACTERS.CHARLIE: { retVal = Player.prototype.CreateCharlie(this); break; }
@@ -357,7 +402,6 @@ User.prototype.GetPlayer = function()
         case CHARACTERS.SAGAT: { retVal = Player.prototype.CreateSagat(this); break; }
         case CHARACTERS.RANDOM2: { break; }
         case CHARACTERS.AKUMA: { retVal = Player.prototype.CreateAkuma(this); break; }
-        case CHARACTERS.MBISON: { retVal = Player.prototype.CreateMBison(this); break; }
         case CHARACTERS.DAN: { retVal = Player.prototype.CreateDan(this); break; }
         */
     };
@@ -365,27 +409,15 @@ User.prototype.GetPlayer = function()
     return retVal;
 }
 
-User.prototype.SetPositions = function(shadowX,shadowY,nameX,nameY,stanceX,stanceY)
+User.prototype.SetPositionValues = function(shadowX,shadowY,nameX,nameY,stanceX,stanceY)
 {
     this.Show();
-    if(this.player_ == 1)
-    {
-        this.shadowElement_.X = shadowX;
-        this.shadowElement_.Y = shadowY;
-        this.nameElement_.X = nameX;
-        this.nameElement_.Y = nameY;
-        this.selectedCharStance_.X = stanceX;
-        this.selectedCharStance_.Y = stanceY;
-    }
-    else
-    {
-        this.shadowElement_.X = shadowX;
-        this.shadowElement_.Y = shadowY;
-        this.nameElement_.X = nameX;
-        this.nameElement_.Y = nameY;
-        this.selectedCharStance_.X = stanceX;
-        this.selectedCharStance_.Y = stanceY;
-    }
+    this.shadowElement_.X = shadowX;
+    this.shadowElement_.Y = shadowY;
+    this.nameElement_.X = nameX;
+    this.nameElement_.Y = nameY;
+    this.selectedCharStance_.X = stanceX;
+    this.selectedCharStance_.Y = stanceY;
 }
 
 /*this is just used to hide elements for players that arent implemented*/
@@ -431,7 +463,10 @@ User.prototype.Render = function(frame)
         this.animations_["select_icon"].TryRender(frame, this.selectIcon_);
 
     if(!!this.animations_[this.currentStance_])
+    {
+        this.SetPositions();
         this.animations_[this.currentStance_].TryRender(frame, this.selectedCharStance_, this.direction_);
+    }
 }
 
 
@@ -748,153 +783,178 @@ var CreateCharSelect = function(user1,user2)
 
     var LoadCharSelectSpriteData = function()
     {
-	    spriteLookup_.Load("adon-l-stance-0.png","|images/misc/misc/stance-sprites.png", "0px", "-33px", "148px", "270px");
-	    spriteLookup_.Load("adon-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-148px", "-30px", "150px", "273px");
-	    spriteLookup_.Load("adon-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-298px", "-28px", "154px", "275px");
-	    spriteLookup_.Load("adon-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-452px", "-30px", "154px", "273px");
-	    spriteLookup_.Load("adon-l-stance-4.png","|images/misc/misc/stance-sprites.png", "-606px", "-28px", "152px", "275px");
-	    spriteLookup_.Load("adon-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-758px", "-33px", "148px", "270px");
-	    spriteLookup_.Load("adon-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-906px", "-30px", "150px", "273px");
-	    spriteLookup_.Load("adon-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-1056px", "-28px", "154px", "275px");
-	    spriteLookup_.Load("adon-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-1210px", "-30px", "154px", "273px");
-	    spriteLookup_.Load("adon-r-stance-4.png","|images/misc/misc/stance-sprites.png", "-1364px", "-28px", "152px", "275px");
-	    spriteLookup_.Load("birdie-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-1516px", "-20px", "196px", "283px");
-	    spriteLookup_.Load("birdie-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-1712px", "-25px", "200px", "278px");
-	    spriteLookup_.Load("birdie-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-1912px", "-25px", "200px", "278px");
-	    spriteLookup_.Load("birdie-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-2112px", "-23px", "196px", "280px");
-	    spriteLookup_.Load("birdie-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-2308px", "-20px", "196px", "283px");
-	    spriteLookup_.Load("birdie-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-2504px", "-25px", "200px", "278px");
-	    spriteLookup_.Load("birdie-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-2704px", "-25px", "200px", "278px");
-	    spriteLookup_.Load("birdie-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-2904px", "-23px", "196px", "280px");
-	    spriteLookup_.Load("charlie-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-3100px", "-56px", "176px", "247px");
-	    spriteLookup_.Load("charlie-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-3276px", "-53px", "176px", "250px");
-	    spriteLookup_.Load("charlie-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-3452px", "-51px", "178px", "252px");
-	    spriteLookup_.Load("charlie-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-3630px", "-51px", "178px", "252px");
-	    spriteLookup_.Load("charlie-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-3808px", "-56px", "176px", "247px");
-	    spriteLookup_.Load("charlie-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-3984px", "-53px", "176px", "250px");
-	    spriteLookup_.Load("charlie-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-4160px", "-51px", "178px", "252px");
-	    spriteLookup_.Load("charlie-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-4338px", "-51px", "178px", "252px");
-	    spriteLookup_.Load("chunli-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-4516px", "-82px", "180px", "221px");
-	    spriteLookup_.Load("chunli-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-4696px", "-79px", "180px", "224px");
-	    spriteLookup_.Load("chunli-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-4876px", "-77px", "180px", "226px");
-	    spriteLookup_.Load("chunli-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-5056px", "-79px", "180px", "224px");
-	    spriteLookup_.Load("chunli-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-5236px", "-82px", "180px", "221px");
-	    spriteLookup_.Load("chunli-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-5416px", "-79px", "180px", "224px");
-	    spriteLookup_.Load("chunli-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-5596px", "-77px", "180px", "226px");
-	    spriteLookup_.Load("chunli-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-5776px", "-79px", "180px", "224px");
-	    spriteLookup_.Load("guy-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-5956px", "-56px", "148px", "247px");
-	    spriteLookup_.Load("guy-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-6104px", "-56px", "146px", "247px");
-	    spriteLookup_.Load("guy-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-6250px", "-56px", "148px", "247px");
-	    spriteLookup_.Load("guy-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-6398px", "-56px", "148px", "247px");
-	    spriteLookup_.Load("guy-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-6546px", "-56px", "148px", "247px");
-	    spriteLookup_.Load("guy-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-6694px", "-56px", "146px", "247px");
-	    spriteLookup_.Load("guy-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-6840px", "-56px", "148px", "247px");
-	    spriteLookup_.Load("guy-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-6988px", "-56px", "148px", "247px");
-	    spriteLookup_.Load("ken-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-7136px", "-63px", "132px", "240px");
-	    spriteLookup_.Load("ken-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-7268px", "-61px", "132px", "242px");
-	    spriteLookup_.Load("ken-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-7400px", "-56px", "132px", "247px");
-	    spriteLookup_.Load("ken-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-7532px", "-50px", "129px", "253px");
-	    spriteLookup_.Load("ken-l-win-2-0.png","|images/misc/misc/stance-sprites.png", "-7661px", "-66px", "120px", "237px");
-	    spriteLookup_.Load("ken-l-win-2-1.png","|images/misc/misc/stance-sprites.png", "-7781px", "-48px", "124px", "255px");
-	    spriteLookup_.Load("ken-l-win-2-2.png","|images/misc/misc/stance-sprites.png", "-7905px", "0px", "124px", "303px");
-	    spriteLookup_.Load("ken-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-8029px", "-63px", "132px", "240px");
-	    spriteLookup_.Load("ken-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-8161px", "-61px", "132px", "242px");
-	    spriteLookup_.Load("ken-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-8293px", "-56px", "132px", "247px");
-	    spriteLookup_.Load("ken-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-8425px", "-50px", "129px", "253px");
-	    spriteLookup_.Load("ken-r-win-2-0.png","|images/misc/misc/stance-sprites.png", "-8554px", "-66px", "120px", "237px");
-	    spriteLookup_.Load("ken-r-win-2-1.png","|images/misc/misc/stance-sprites.png", "-8674px", "-48px", "124px", "255px");
-	    spriteLookup_.Load("ken-r-win-2-2.png","|images/misc/misc/stance-sprites.png", "0px", "-314px", "124px", "303px");
-	    spriteLookup_.Load("mbison-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-124px", "-376px", "234px", "241px");
-	    spriteLookup_.Load("mbison-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-358px", "-371px", "242px", "246px");
-	    spriteLookup_.Load("mbison-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-600px", "-367px", "242px", "250px");
-	    spriteLookup_.Load("mbison-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-842px", "-365px", "242px", "252px");
-	    spriteLookup_.Load("mbison-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-1084px", "-376px", "234px", "241px");
-	    spriteLookup_.Load("mbison-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-1318px", "-371px", "242px", "246px");
-	    spriteLookup_.Load("mbison-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-1560px", "-367px", "242px", "250px");
-	    spriteLookup_.Load("mbison-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-1802px", "-365px", "242px", "252px");
-	    spriteLookup_.Load("rose-l-c-stance-0.png","|images/misc/misc/stance-sprites.png", "-2044px", "-337px", "190px", "280px");
-	    spriteLookup_.Load("rose-l-c-stance-1.png","|images/misc/misc/stance-sprites.png", "-2234px", "-339px", "188px", "278px");
-	    spriteLookup_.Load("rose-l-c-stance-2.png","|images/misc/misc/stance-sprites.png", "-2422px", "-342px", "186px", "275px");
-	    spriteLookup_.Load("rose-l-c-stance-3.png","|images/misc/misc/stance-sprites.png", "-2608px", "-347px", "188px", "270px");
-	    spriteLookup_.Load("rose-l-c-stance-4.png","|images/misc/misc/stance-sprites.png", "-2796px", "-344px", "190px", "273px");
-	    spriteLookup_.Load("rose-l-c-stance-5.png","|images/misc/misc/stance-sprites.png", "-2986px", "-342px", "190px", "275px");
-	    spriteLookup_.Load("rose-r-c-stance-0.png","|images/misc/misc/stance-sprites.png", "-3176px", "-337px", "190px", "280px");
-	    spriteLookup_.Load("rose-r-c-stance-1.png","|images/misc/misc/stance-sprites.png", "-3366px", "-339px", "188px", "278px");
-	    spriteLookup_.Load("rose-r-c-stance-2.png","|images/misc/misc/stance-sprites.png", "-3554px", "-342px", "186px", "275px");
-	    spriteLookup_.Load("rose-r-c-stance-3.png","|images/misc/misc/stance-sprites.png", "-3740px", "-347px", "188px", "270px");
-	    spriteLookup_.Load("rose-r-c-stance-4.png","|images/misc/misc/stance-sprites.png", "-3928px", "-344px", "190px", "273px");
-	    spriteLookup_.Load("rose-r-c-stance-5.png","|images/misc/misc/stance-sprites.png", "-4118px", "-342px", "190px", "275px");
-	    spriteLookup_.Load("ryu-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-4308px", "-378px", "132px", "239px");
-	    spriteLookup_.Load("ryu-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-4440px", "-375px", "132px", "242px");
-	    spriteLookup_.Load("ryu-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-4572px", "-370px", "132px", "247px");
-	    spriteLookup_.Load("ryu-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-4704px", "-365px", "129px", "252px");
-	    spriteLookup_.Load("ryu-l-win-2-0.png","|images/misc/misc/stance-sprites.png", "-4833px", "-380px", "120px", "237px");
-	    spriteLookup_.Load("ryu-l-win-2-1.png","|images/misc/misc/stance-sprites.png", "-4953px", "-362px", "124px", "255px");
-	    spriteLookup_.Load("ryu-l-win-2-2.png","|images/misc/misc/stance-sprites.png", "-5077px", "-314px", "124px", "303px");
-	    spriteLookup_.Load("ryu-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-5201px", "-378px", "132px", "239px");
-	    spriteLookup_.Load("ryu-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-5333px", "-375px", "132px", "242px");
-	    spriteLookup_.Load("ryu-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-5465px", "-370px", "132px", "247px");
-	    spriteLookup_.Load("ryu-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-5597px", "-365px", "129px", "252px");
-	    spriteLookup_.Load("ryu-r-win-2-0.png","|images/misc/misc/stance-sprites.png", "-5726px", "-380px", "120px", "237px");
-	    spriteLookup_.Load("ryu-r-win-2-1.png","|images/misc/misc/stance-sprites.png", "-5846px", "-362px", "124px", "255px");
-	    spriteLookup_.Load("ryu-r-win-2-2.png","|images/misc/misc/stance-sprites.png", "-5970px", "-314px", "124px", "303px");
-	    spriteLookup_.Load("sagat-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-6094px", "-303px", "164px", "314px");
-	    spriteLookup_.Load("sagat-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-6258px", "-316px", "162px", "301px");
-	    spriteLookup_.Load("sagat-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-6420px", "-313px", "162px", "304px");
-	    spriteLookup_.Load("sagat-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-6582px", "-308px", "164px", "309px");
-	    spriteLookup_.Load("sagat-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-6746px", "-303px", "164px", "314px");
-	    spriteLookup_.Load("sagat-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-6910px", "-316px", "162px", "301px");
-	    spriteLookup_.Load("sagat-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-7072px", "-313px", "162px", "304px");
-	    spriteLookup_.Load("sagat-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-7234px", "-308px", "164px", "309px");
-	    spriteLookup_.Load("sodom-l-stance-0.png","|images/misc/misc/stance-sprites.png", "-7398px", "-316px", "176px", "301px");
-	    spriteLookup_.Load("sodom-l-stance-1.png","|images/misc/misc/stance-sprites.png", "-7574px", "-314px", "178px", "303px");
-	    spriteLookup_.Load("sodom-l-stance-2.png","|images/misc/misc/stance-sprites.png", "-7752px", "-309px", "174px", "308px");
-	    spriteLookup_.Load("sodom-l-stance-3.png","|images/misc/misc/stance-sprites.png", "-7926px", "-306px", "172px", "311px");
-	    spriteLookup_.Load("sodom-l-stance-4.png","|images/misc/misc/stance-sprites.png", "-8098px", "-309px", "174px", "308px");
-	    spriteLookup_.Load("sodom-l-stance-5.png","|images/misc/misc/stance-sprites.png", "-8272px", "-314px", "178px", "303px");
-	    spriteLookup_.Load("sodom-r-stance-0.png","|images/misc/misc/stance-sprites.png", "-8450px", "-316px", "176px", "301px");
-	    spriteLookup_.Load("sodom-r-stance-1.png","|images/misc/misc/stance-sprites.png", "-8626px", "-314px", "178px", "303px");
-	    spriteLookup_.Load("sodom-r-stance-2.png","|images/misc/misc/stance-sprites.png", "-8804px", "-309px", "174px", "308px");
-	    spriteLookup_.Load("sodom-r-stance-3.png","|images/misc/misc/stance-sprites.png", "-8978px", "-306px", "172px", "311px");
-	    spriteLookup_.Load("sodom-r-stance-4.png","|images/misc/misc/stance-sprites.png", "-9150px", "-309px", "174px", "308px");
-	    spriteLookup_.Load("sodom-r-stance-5.png","|images/misc/misc/stance-sprites.png", "-9324px", "-314px", "178px", "303px");
+		spriteLookup_.Load("adon-l-stance-0.png","images/misc/char-select/stance-sprites.png", "0px", "-33px", "148px", "270px");
+		spriteLookup_.Load("adon-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-148px", "-30px", "150px", "273px");
+		spriteLookup_.Load("adon-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-298px", "-28px", "154px", "275px");
+		spriteLookup_.Load("adon-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-452px", "-30px", "154px", "273px");
+		spriteLookup_.Load("adon-l-stance-4.png","images/misc/char-select/stance-sprites.png", "-606px", "-28px", "152px", "275px");
+		spriteLookup_.Load("adon-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-758px", "-33px", "148px", "270px");
+		spriteLookup_.Load("adon-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-906px", "-30px", "150px", "273px");
+		spriteLookup_.Load("adon-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-1056px", "-28px", "154px", "275px");
+		spriteLookup_.Load("adon-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-1210px", "-30px", "154px", "273px");
+		spriteLookup_.Load("adon-r-stance-4.png","images/misc/char-select/stance-sprites.png", "-1364px", "-28px", "152px", "275px");
+		spriteLookup_.Load("birdie-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-1516px", "-20px", "196px", "283px");
+		spriteLookup_.Load("birdie-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-1712px", "-25px", "200px", "278px");
+		spriteLookup_.Load("birdie-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-1912px", "-25px", "200px", "278px");
+		spriteLookup_.Load("birdie-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-2112px", "-23px", "196px", "280px");
+		spriteLookup_.Load("birdie-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-2308px", "-20px", "196px", "283px");
+		spriteLookup_.Load("birdie-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-2504px", "-25px", "200px", "278px");
+		spriteLookup_.Load("birdie-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-2704px", "-25px", "200px", "278px");
+		spriteLookup_.Load("birdie-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-2904px", "-23px", "196px", "280px");
+		spriteLookup_.Load("charlie-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-3100px", "-56px", "176px", "247px");
+		spriteLookup_.Load("charlie-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-3276px", "-53px", "176px", "250px");
+		spriteLookup_.Load("charlie-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-3452px", "-51px", "178px", "252px");
+		spriteLookup_.Load("charlie-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-3630px", "-51px", "178px", "252px");
+		spriteLookup_.Load("charlie-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-3808px", "-56px", "176px", "247px");
+		spriteLookup_.Load("charlie-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-3984px", "-53px", "176px", "250px");
+		spriteLookup_.Load("charlie-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-4160px", "-51px", "178px", "252px");
+		spriteLookup_.Load("charlie-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-4338px", "-51px", "178px", "252px");
+		spriteLookup_.Load("chunli-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-4516px", "-82px", "180px", "221px");
+		spriteLookup_.Load("chunli-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-4696px", "-79px", "180px", "224px");
+		spriteLookup_.Load("chunli-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-4876px", "-77px", "180px", "226px");
+		spriteLookup_.Load("chunli-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-5056px", "-79px", "180px", "224px");
+		spriteLookup_.Load("chunli-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-5236px", "-82px", "180px", "221px");
+		spriteLookup_.Load("chunli-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-5416px", "-79px", "180px", "224px");
+		spriteLookup_.Load("chunli-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-5596px", "-77px", "180px", "226px");
+		spriteLookup_.Load("chunli-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-5776px", "-79px", "180px", "224px");
+		spriteLookup_.Load("guy-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-5956px", "-56px", "148px", "247px");
+		spriteLookup_.Load("guy-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-6104px", "-56px", "146px", "247px");
+		spriteLookup_.Load("guy-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-6250px", "-56px", "148px", "247px");
+		spriteLookup_.Load("guy-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-6398px", "-56px", "148px", "247px");
+		spriteLookup_.Load("guy-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-6546px", "-56px", "148px", "247px");
+		spriteLookup_.Load("guy-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-6694px", "-56px", "146px", "247px");
+		spriteLookup_.Load("guy-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-6840px", "-56px", "148px", "247px");
+		spriteLookup_.Load("guy-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-6988px", "-56px", "148px", "247px");
+		spriteLookup_.Load("ken-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-7136px", "-63px", "132px", "240px");
+		spriteLookup_.Load("ken-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-7268px", "-61px", "132px", "242px");
+		spriteLookup_.Load("ken-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-7400px", "-56px", "132px", "247px");
+		spriteLookup_.Load("ken-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-7532px", "-50px", "129px", "253px");
+		spriteLookup_.Load("ken-l-win-2-0.png","images/misc/char-select/stance-sprites.png", "-7661px", "-66px", "120px", "237px");
+		spriteLookup_.Load("ken-l-win-2-1.png","images/misc/char-select/stance-sprites.png", "-7781px", "-48px", "124px", "255px");
+		spriteLookup_.Load("ken-l-win-2-2.png","images/misc/char-select/stance-sprites.png", "-7905px", "0px", "124px", "303px");
+		spriteLookup_.Load("ken-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-8029px", "-63px", "132px", "240px");
+		spriteLookup_.Load("ken-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-8161px", "-61px", "132px", "242px");
+		spriteLookup_.Load("ken-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-8293px", "-56px", "132px", "247px");
+		spriteLookup_.Load("ken-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-8425px", "-50px", "129px", "253px");
+		spriteLookup_.Load("ken-r-win-2-0.png","images/misc/char-select/stance-sprites.png", "-8554px", "-66px", "120px", "237px");
+		spriteLookup_.Load("ken-r-win-2-1.png","images/misc/char-select/stance-sprites.png", "-8674px", "-48px", "124px", "255px");
+		spriteLookup_.Load("ken-r-win-2-2.png","images/misc/char-select/stance-sprites.png", "-8798px", "0px", "124px", "303px");
+		spriteLookup_.Load("mbison-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-8922px", "-62px", "234px", "241px");
+		spriteLookup_.Load("mbison-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-9156px", "-57px", "242px", "246px");
+		spriteLookup_.Load("mbison-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-9398px", "-53px", "242px", "250px");
+		spriteLookup_.Load("mbison-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-9640px", "-51px", "242px", "252px");
+		spriteLookup_.Load("mbison-l-win-0-0.png","images/misc/char-select/stance-sprites.png", "-9882px", "-43px", "272px", "260px");
+		spriteLookup_.Load("mbison-l-win-0-1.png","images/misc/char-select/stance-sprites.png", "-10154px", "-48px", "224px", "255px");
+		spriteLookup_.Load("mbison-l-win-0-2.png","images/misc/char-select/stance-sprites.png", "0px", "-365px", "224px", "252px");
+		spriteLookup_.Load("mbison-l-win-0-3.png","images/misc/char-select/stance-sprites.png", "-224px", "-365px", "224px", "252px");
+		spriteLookup_.Load("mbison-l-win-0-4.png","images/misc/char-select/stance-sprites.png", "-448px", "-365px", "224px", "252px");
+		spriteLookup_.Load("mbison-l-win-0-5.png","images/misc/char-select/stance-sprites.png", "-672px", "-362px", "224px", "255px");
+		spriteLookup_.Load("mbison-l-win-0-6.png","images/misc/char-select/stance-sprites.png", "-896px", "-362px", "224px", "255px");
+		spriteLookup_.Load("mbison-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-1120px", "-376px", "234px", "241px");
+		spriteLookup_.Load("mbison-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-1354px", "-371px", "242px", "246px");
+		spriteLookup_.Load("mbison-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-1596px", "-367px", "242px", "250px");
+		spriteLookup_.Load("mbison-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-1838px", "-365px", "242px", "252px");
+		spriteLookup_.Load("mbison-r-win-0-0.png","images/misc/char-select/stance-sprites.png", "-2080px", "-357px", "272px", "260px");
+		spriteLookup_.Load("mbison-r-win-0-1.png","images/misc/char-select/stance-sprites.png", "-2352px", "-362px", "224px", "255px");
+		spriteLookup_.Load("mbison-r-win-0-2.png","images/misc/char-select/stance-sprites.png", "-2576px", "-365px", "224px", "252px");
+		spriteLookup_.Load("mbison-r-win-0-3.png","images/misc/char-select/stance-sprites.png", "-2800px", "-365px", "224px", "252px");
+		spriteLookup_.Load("mbison-r-win-0-4.png","images/misc/char-select/stance-sprites.png", "-3024px", "-365px", "224px", "252px");
+		spriteLookup_.Load("mbison-r-win-0-5.png","images/misc/char-select/stance-sprites.png", "-3248px", "-362px", "224px", "255px");
+		spriteLookup_.Load("mbison-r-win-0-6.png","images/misc/char-select/stance-sprites.png", "-3472px", "-362px", "224px", "255px");
+		spriteLookup_.Load("rose-l-c-stance-0.png","images/misc/char-select/stance-sprites.png", "-3696px", "-337px", "190px", "280px");
+		spriteLookup_.Load("rose-l-c-stance-1.png","images/misc/char-select/stance-sprites.png", "-3886px", "-339px", "188px", "278px");
+		spriteLookup_.Load("rose-l-c-stance-2.png","images/misc/char-select/stance-sprites.png", "-4074px", "-342px", "186px", "275px");
+		spriteLookup_.Load("rose-l-c-stance-3.png","images/misc/char-select/stance-sprites.png", "-4260px", "-347px", "188px", "270px");
+		spriteLookup_.Load("rose-l-c-stance-4.png","images/misc/char-select/stance-sprites.png", "-4448px", "-344px", "190px", "273px");
+		spriteLookup_.Load("rose-l-c-stance-5.png","images/misc/char-select/stance-sprites.png", "-4638px", "-342px", "190px", "275px");
+		spriteLookup_.Load("rose-r-c-stance-0.png","images/misc/char-select/stance-sprites.png", "-4828px", "-337px", "190px", "280px");
+		spriteLookup_.Load("rose-r-c-stance-1.png","images/misc/char-select/stance-sprites.png", "-5018px", "-339px", "188px", "278px");
+		spriteLookup_.Load("rose-r-c-stance-2.png","images/misc/char-select/stance-sprites.png", "-5206px", "-342px", "186px", "275px");
+		spriteLookup_.Load("rose-r-c-stance-3.png","images/misc/char-select/stance-sprites.png", "-5392px", "-347px", "188px", "270px");
+		spriteLookup_.Load("rose-r-c-stance-4.png","images/misc/char-select/stance-sprites.png", "-5580px", "-344px", "190px", "273px");
+		spriteLookup_.Load("rose-r-c-stance-5.png","images/misc/char-select/stance-sprites.png", "-5770px", "-342px", "190px", "275px");
+		spriteLookup_.Load("ryu-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-5960px", "-378px", "132px", "239px");
+		spriteLookup_.Load("ryu-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-6092px", "-375px", "132px", "242px");
+		spriteLookup_.Load("ryu-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-6224px", "-370px", "132px", "247px");
+		spriteLookup_.Load("ryu-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-6356px", "-365px", "129px", "252px");
+		spriteLookup_.Load("ryu-l-win-2-0.png","images/misc/char-select/stance-sprites.png", "-6485px", "-380px", "120px", "237px");
+		spriteLookup_.Load("ryu-l-win-2-1.png","images/misc/char-select/stance-sprites.png", "-6605px", "-362px", "124px", "255px");
+		spriteLookup_.Load("ryu-l-win-2-2.png","images/misc/char-select/stance-sprites.png", "-6729px", "-314px", "124px", "303px");
+		spriteLookup_.Load("ryu-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-6853px", "-378px", "132px", "239px");
+		spriteLookup_.Load("ryu-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-6985px", "-375px", "132px", "242px");
+		spriteLookup_.Load("ryu-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-7117px", "-370px", "132px", "247px");
+		spriteLookup_.Load("ryu-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-7249px", "-365px", "129px", "252px");
+		spriteLookup_.Load("ryu-r-win-2-0.png","images/misc/char-select/stance-sprites.png", "-7378px", "-380px", "120px", "237px");
+		spriteLookup_.Load("ryu-r-win-2-1.png","images/misc/char-select/stance-sprites.png", "-7498px", "-362px", "124px", "255px");
+		spriteLookup_.Load("ryu-r-win-2-2.png","images/misc/char-select/stance-sprites.png", "-7622px", "-314px", "124px", "303px");
+		spriteLookup_.Load("sagat-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-7746px", "-303px", "164px", "314px");
+		spriteLookup_.Load("sagat-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-7910px", "-316px", "162px", "301px");
+		spriteLookup_.Load("sagat-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-8072px", "-313px", "162px", "304px");
+		spriteLookup_.Load("sagat-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-8234px", "-308px", "164px", "309px");
+		spriteLookup_.Load("sagat-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-8398px", "-303px", "164px", "314px");
+		spriteLookup_.Load("sagat-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-8562px", "-316px", "162px", "301px");
+		spriteLookup_.Load("sagat-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-8724px", "-313px", "162px", "304px");
+		spriteLookup_.Load("sagat-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-8886px", "-308px", "164px", "309px");
+		spriteLookup_.Load("sodom-l-stance-0.png","images/misc/char-select/stance-sprites.png", "-9050px", "-316px", "176px", "301px");
+		spriteLookup_.Load("sodom-l-stance-1.png","images/misc/char-select/stance-sprites.png", "-9226px", "-314px", "178px", "303px");
+		spriteLookup_.Load("sodom-l-stance-2.png","images/misc/char-select/stance-sprites.png", "-9404px", "-309px", "174px", "308px");
+		spriteLookup_.Load("sodom-l-stance-3.png","images/misc/char-select/stance-sprites.png", "-9578px", "-306px", "172px", "311px");
+		spriteLookup_.Load("sodom-l-stance-4.png","images/misc/char-select/stance-sprites.png", "-9750px", "-309px", "174px", "308px");
+		spriteLookup_.Load("sodom-l-stance-5.png","images/misc/char-select/stance-sprites.png", "-9924px", "-314px", "178px", "303px");
+		spriteLookup_.Load("sodom-r-stance-0.png","images/misc/char-select/stance-sprites.png", "-10102px", "-316px", "176px", "301px");
+		spriteLookup_.Load("sodom-r-stance-1.png","images/misc/char-select/stance-sprites.png", "-10278px", "-314px", "178px", "303px");
+		spriteLookup_.Load("sodom-r-stance-2.png","images/misc/char-select/stance-sprites.png", "-10456px", "-309px", "174px", "308px");
+		spriteLookup_.Load("sodom-r-stance-3.png","images/misc/char-select/stance-sprites.png", "-10630px", "-306px", "172px", "311px");
+		spriteLookup_.Load("sodom-r-stance-4.png","images/misc/char-select/stance-sprites.png", "-10802px", "-309px", "174px", "308px");
+		spriteLookup_.Load("sodom-r-stance-5.png","images/misc/char-select/stance-sprites.png", "-10976px", "-314px", "178px", "303px");
 
 	    spriteLookup_.Load("images/misc/misc/p1-select-0.png","|images/misc/misc/char-misc-sprites.png", "0px", "0px", "64px", "82px");
 	    spriteLookup_.Load("images/misc/misc/p1-select-1.png","|images/misc/misc/char-misc-sprites.png", "-64px", "0px", "64px", "82px");
 	    spriteLookup_.Load("images/misc/misc/p2-select-0.png","|images/misc/misc/char-misc-sprites.png", "0px", "-82px", "64px", "82px");
 	    spriteLookup_.Load("images/misc/misc/p2-select-1.png","|images/misc/misc/char-misc-sprites.png", "-64px", "-82px", "64px", "82px");
 
-	    spriteLookup_.Load("images/misc/font3/name-adon.png","|images/misc/font3/name-sprites.png", "0px", "0px", "129px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-birdie.png","|images/misc/font3/name-sprites.png", "-129px", "-9px", "160px", "32px");
-	    spriteLookup_.Load("images/misc/font3/name-charlie.png","|images/misc/font3/name-sprites.png", "-289px", "0px", "160px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-chunli.png","|images/misc/font3/name-sprites.png", "-449px", "0px", "160px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-guy.png","|images/misc/font3/name-sprites.png", "-609px", "-9px", "96px", "32px");
-	    spriteLookup_.Load("images/misc/font3/name-ken.png","|images/misc/font3/name-sprites.png", "0px", "-41px", "96px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-rose.png","|images/misc/font3/name-sprites.png", "-96px", "-41px", "128px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-ryu.png","|images/misc/font3/name-sprites.png", "-224px", "-41px", "96px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-sagat.png","|images/misc/font3/name-sprites.png", "-320px", "-41px", "160px", "41px");
-	    spriteLookup_.Load("images/misc/font3/name-sodom.png","|images/misc/font3/name-sprites.png", "-480px", "-41px", "161px", "41px");
 
-	    spriteLookup_.Load("images/misc/misc/p1-select-adon.png","|images/misc/misc/head-sprites.png", "0px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-birdie.png","|images/misc/misc/head-sprites.png", "-256px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-charlie.png","|images/misc/misc/head-sprites.png", "-512px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-chunli.png","|images/misc/misc/head-sprites.png", "-768px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-guy.png","|images/misc/misc/head-sprites.png", "-1024px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-ken.png","|images/misc/misc/head-sprites.png", "-1280px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-rose.png","|images/misc/misc/head-sprites.png", "-1536px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-ryu.png","|images/misc/misc/head-sprites.png", "-1792px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-sagat.png","|images/misc/misc/head-sprites.png", "-2048px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p1-select-sodom.png","|images/misc/misc/head-sprites.png", "-2304px", "0px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-adon.png","|images/misc/misc/head-sprites.png", "0px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-birdie.png","|images/misc/misc/head-sprites.png", "-256px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-charlie.png","|images/misc/misc/head-sprites.png", "-512px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-chunli.png","|images/misc/misc/head-sprites.png", "-768px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-guy.png","|images/misc/misc/head-sprites.png", "-1024px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-ken.png","|images/misc/misc/head-sprites.png", "-1280px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-rose.png","|images/misc/misc/head-sprites.png", "-1536px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-ryu.png","|images/misc/misc/head-sprites.png", "-1792px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-sagat.png","|images/misc/misc/head-sprites.png", "-2048px", "-288px", "256px", "288px");
-	    spriteLookup_.Load("images/misc/misc/p2-select-sodom.png","|images/misc/misc/head-sprites.png", "-2304px", "-288px", "256px", "288px");
+	    spriteLookup_.Load("images/misc/font3/name-adon.png","images/misc/font3/name-sprites.png", "0px", "0px", "129px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-akuma.png","images/misc/font3/name-sprites.png", "-129px", "0px", "160px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-birdie.png","images/misc/font3/name-sprites.png", "-289px", "-9px", "160px", "32px");
+	    spriteLookup_.Load("images/misc/font3/name-charlie.png","images/misc/font3/name-sprites.png", "-449px", "0px", "160px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-chunli.png","images/misc/font3/name-sprites.png", "-609px", "0px", "160px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-dan.png","images/misc/font3/name-sprites.png", "-769px", "0px", "94px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-guy.png","images/misc/font3/name-sprites.png", "0px", "-50px", "96px", "32px");
+	    spriteLookup_.Load("images/misc/font3/name-ken.png","images/misc/font3/name-sprites.png", "-96px", "-41px", "96px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-mbison.png","images/misc/font3/name-sprites.png", "-192px", "-41px", "160px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-rose.png","images/misc/font3/name-sprites.png", "-352px", "-41px", "128px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-ryu.png","images/misc/font3/name-sprites.png", "-480px", "-41px", "96px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-sagat.png","images/misc/font3/name-sprites.png", "-576px", "-41px", "160px", "41px");
+	    spriteLookup_.Load("images/misc/font3/name-sodom.png","images/misc/font3/name-sprites.png", "-736px", "-41px", "161px", "41px");
+
+
+		spriteLookup_.Load("images/misc/misc/p1-select-adon.png","images/misc/misc/head-sprites.png", "0px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-akuma.png","images/misc/misc/head-sprites.png", "-256px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-birdie.png","images/misc/misc/head-sprites.png", "-512px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-charlie.png","images/misc/misc/head-sprites.png", "-768px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-chunli.png","images/misc/misc/head-sprites.png", "-1024px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-dan.png","images/misc/misc/head-sprites.png", "-1280px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-guy.png","images/misc/misc/head-sprites.png", "-1536px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-ken.png","images/misc/misc/head-sprites.png", "-1792px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-mbison.png","images/misc/misc/head-sprites.png", "-2048px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-rose.png","images/misc/misc/head-sprites.png", "-2304px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-ryu.png","images/misc/misc/head-sprites.png", "-2560px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-sagat.png","images/misc/misc/head-sprites.png", "-2816px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p1-select-sodom.png","images/misc/misc/head-sprites.png", "-3072px", "0px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-adon.png","images/misc/misc/head-sprites.png", "0px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-akuma.png","images/misc/misc/head-sprites.png", "-256px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-birdie.png","images/misc/misc/head-sprites.png", "-512px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-charlie.png","images/misc/misc/head-sprites.png", "-768px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-chunli.png","images/misc/misc/head-sprites.png", "-1024px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-dan.png","images/misc/misc/head-sprites.png", "-1280px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-guy.png","images/misc/misc/head-sprites.png", "-1536px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-ken.png","images/misc/misc/head-sprites.png", "-1792px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-mbison.png","images/misc/misc/head-sprites.png", "-2048px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-rose.png","images/misc/misc/head-sprites.png", "-2304px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-ryu.png","images/misc/misc/head-sprites.png", "-2560px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-sagat.png","images/misc/misc/head-sprites.png", "-2816px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-sodom.png","images/misc/misc/head-sprites.png", "-3072px", "-288px", "256px", "288px");
     }
 
     CharSelect.prototype.LoadUserAssets = function(users)

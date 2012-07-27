@@ -6,14 +6,16 @@ var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0I
     this.bg0XOffset_ = bg0XOffset;
     this.maxLeftScroll_ = maxLeftScroll;
     this.maxRightScroll_ = maxRightScroll;
-    this.bg0Img_ = bg0Img;
-    this.bg1Img_ = bg1Img;
+    this.bg0Img_ = "images/misc/stage/" + name + ".back.png";
+    this.bg1Img_ = "images/misc/stage/" + name + ".front.png";
 }
 
 var stages_ = {};
-stages_["ken"] = new StageParams("ken", 129, -62.5, 322.5, "images/misc/stage/ken.back.png", "images/misc/stage/ken.front.png");
-stages_["ryu"] = new StageParams("chunli", -192, -382, -2, "images/misc/stage/chunli.back.png", "images/misc/stage/chunli.front.png");
-stages_["mbison"] = new StageParams("mbison", -192, -382, -2, "images/misc/stage/mbison.back.png", "images/misc/stage/mbison.front.png");
+stages_["ken"] = new StageParams("ken", 129, -62.5, 322.5);
+stages_["ryu"] = new StageParams("chunli", -192, -382, -2);
+stages_["mbison"] = new StageParams("mbison", -192, -382, -2);
+stages_["akuma"] = new StageParams("akuma", -192, -382, -2);
+stages_["sodom"] = new StageParams("sodom", -192, -382, -2);
 
 
 /*******************************************************************************************************************************/
@@ -50,8 +52,9 @@ function OnStageImagesLoaded()
 /*Human users*/
 var u1_ = game_.AddUser1(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
 var u2_ = game_.AddUser2(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q);
-var u3_ = game_.AddUser(1,2,3,4,5,6,7,8,9,10,11);
-var u4_ = game_.AddUser(11,12,13,14,15,16,17,18,19,20,21);
+var val = 10000000;
+var u3_ = game_.AddUser(val+1,val+2,val+3,val+4,val+5,val+6,val+7,val+8,val+9,val+10,val+11);
+var u4_ = game_.AddUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
 
 //u3_.isAlternateChar_ = true;
 u4_.isAlternateChar_ = true;
@@ -63,7 +66,7 @@ function StartQuickMatch()
     u1_.SetChar(CHARACTERS.KEN);
     u2_.SetChar(CHARACTERS.RYU);
 
-    game_.StartMatch(false,[u1_],[u2_], stages_["ryu"]);
+    game_.StartMatch(false,[u1_],[u2_], stages_["sodom"]);
 }
 
 /* multi player battle */
