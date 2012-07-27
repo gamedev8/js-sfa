@@ -602,7 +602,7 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     
     if(!!newFrame && !!this.currentFrame_ && newFrame.ID != this.currentFrame_.ID)
     {
-        if(!!newFrame.LeftSrc && !!this.currentFrame_.LeftSrc && spriteLookup_.GetLeft(newFrame.LeftSrc) != spriteLookup_.GetLeft(this.currentFrame_.LeftSrc))
+        if(!!newFrame.RightSrc && !!this.currentFrame_.RightSrc && spriteLookup_.GetLeft(newFrame.RightSrc) != spriteLookup_.GetLeft(this.currentFrame_.RightSrc))
         {
             isNewFrame = true;
         }
@@ -736,6 +736,20 @@ Player.prototype.SetSprite = function(frame)
         this.spriteElement_.style.width = data.Width;
         this.spriteElement_.style.height = data.Height;
         this.element_.style.width = data.Width;
+    }
+    if(!!this.currentFrame_.IsFlipped)
+    {
+        if(this.direction_ == -1 && !!this.isFlipped_)
+            this.Flip(false);
+        else if(this.direction_ == 1 && !this.isFlipped_)
+            this.Flip(true);
+    }
+    else
+    {
+        if(this.direction_ == -1 && !this.isFlipped_)
+            this.Flip(true);
+        else if(this.direction_ == 1 && !!this.isFlipped_)
+            this.Flip(false);
     }
     if(this.currentFrame_.ImageOffsetX != undefined)
         this.OffsetImageX(this.currentFrame_.ImageOffsetX);

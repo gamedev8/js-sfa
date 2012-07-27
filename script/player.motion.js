@@ -536,5 +536,6 @@ Player.prototype.ClearVxFn = function() { this.VxFn = null; }
 
 Player.prototype.Flip = function(isFlipped)
 {
+    this.isFlipped_ = isFlipped;
     ApplyFlip(this.spriteElement_,isFlipped);
 }

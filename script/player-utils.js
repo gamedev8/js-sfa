@@ -148,7 +148,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     {
         if(!!this.ControllerAnimation && !!this.ControllerAnimation.Animation)
         {
-            var index = this.ControllerAnimation.FrameIndex-1;
+            var index = this.ControllerAnimation.FrameIndex;
             if(index > -1)
                 return this.BaseAnimation.frames_[index];
         }
@@ -613,8 +613,9 @@ var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsT
         this.HitID = hitID || 0;
         this.HitDelayFactor = hitDelayFactor || 1;
         this.ShadowImageSrc = !!shadowImage ? "images/misc/misc/shadow-" + shadowImage + ".png" : null;
-        this.RightSrc = !!image ? image.replace("#-","l-").replace("x-","r-") : "";
-        this.LeftSrc =  !!image ? image.replace("#-","r-").replace("x-","l-") : "";
+        this.IsFlipped = image.indexOf("#") > -1;
+        this.RightSrc = !!image ? image.replace("#-","r-").replace("x-","r-") : "";
+        this.LeftSrc =  !!image ? image.replace("#-","l-").replace("x-","l-") : "";
         this.AttackFlags = attackFlags || 0;
         this.HitPoints = hitPoints || [];
 
