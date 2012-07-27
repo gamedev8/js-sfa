@@ -29,18 +29,24 @@ function ApplyFlip(element,applied)
     if(!!applied)
     {
         element.style["transform"] = "rotateY(180deg)";
-        element.style["-ms-transform"] = "rotateY(180deg)";
+        element.style["MozTransform"] = "rotateY(180deg)";
         element.style["-moz-transform"] = "rotateY(180deg)";
         element.style["-webkit-transform"] = "rotateY(180deg)";
-        element.style["-o-transform"] = "rotateY(180deg)";
+        element.style["-o-transform"] = "scale(-1,1)";
+        element.style["OTransform"] = "scale(-1,1)";
+        element.style["-ms-transform"] = "rotateY(180deg)";
+        element.style["filter"] = "progid:DXImageTransform.Microsoft.BasicImage(mirror=1)";
     }
     else
     {
         element.style["transform"] = "";
         element.style["-ms-transform"] = "";
+        element.style["MozTransform"] = "";
         element.style["-moz-transform"] = "";
         element.style["-webkit-transform"] = "";
         element.style["-o-transform"] = "";
+        element.style["OTransform"] = "";
+        element.style["filter"] = "";
     }
 }
 

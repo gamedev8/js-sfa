@@ -105,7 +105,7 @@
             soundManager_.QueueSound("audio/misc/credit.zzz");
 
         }
-        else if(!!isDown && (keyCode == KEYS.SPACE) && !!nbCredits_)
+        else if(!!isDown && (keyCode == KEYS.ENTER) && !!nbCredits_)
         {
             StartCharacterSelection();
         }

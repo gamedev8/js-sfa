@@ -518,6 +518,7 @@ var KEYS =
 
     ,SPACE:32
     ,CNTRL:17
+    ,ENTER:13
 };
 
 var GAME_STATES = 
