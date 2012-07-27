@@ -136,6 +136,7 @@ Player.prototype.ChangeDirection = function(quick)
         /*swap the left and right buttons*/
         this.buttons_[this.leftKey_].Bit = 2;
         this.buttons_[this.rightKey_].Bit = 1;
+        this.Flip(true);
     }
     else
     {
@@ -159,6 +160,7 @@ Player.prototype.ChangeDirection = function(quick)
         /*swap the left and right buttons*/
         this.buttons_[this.leftKey_].Bit = 1;
         this.buttons_[this.rightKey_].Bit = 2;
+        this.Flip(false);
     }
     if(!quick)
     {
@@ -532,3 +534,7 @@ Player.prototype.ResetVxFn = function(fn) { this.VxFn = function(b) { return b;}
 Player.prototype.ClearVyFn = function() { this.VyFn = null; }
 Player.prototype.ClearVxFn = function() { this.VxFn = null; }
 
+Player.prototype.Flip = function(isFlipped)
+{
+    ApplyFlip(this.spriteElement_,isFlipped);
+}

@@ -23,6 +23,27 @@ stages_["sodom"] = new StageParams("sodom", -192, -382, -2);
 /*******************************************************************************************************************************/
 /*******************************************************************************************************************************/
 /*******************************************************************************************************************************/
+
+function ApplyFlip(element,applied)
+{
+    if(!!applied)
+    {
+        element.style["transform"] = "rotateY(180deg)";
+        element.style["-ms-transform"] = "rotateY(180deg)";
+        element.style["-moz-transform"] = "rotateY(180deg)";
+        element.style["-webkit-transform"] = "rotateY(180deg)";
+        element.style["-o-transform"] = "rotateY(180deg)";
+    }
+    else
+    {
+        element.style["transform"] = "";
+        element.style["-ms-transform"] = "";
+        element.style["-moz-transform"] = "";
+        element.style["-webkit-transform"] = "";
+        element.style["-o-transform"] = "";
+    }
+}
+
 function Alert(text)
 {    /*
     if(!!console && !!console.log)
