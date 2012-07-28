@@ -7,6 +7,10 @@ Street Fighter Alpha
 
 
 Keys:
+
+Coin: Control
+Start: Enter
+
 Jump: Up arrow
 Crouch: Down arrow
 Left: Left arrow
@@ -20,6 +24,3 @@ Medium kick: X
 Hard kick: C
 
 Turn around: Q
-
-Coin: Control
-Start: Spacebar
