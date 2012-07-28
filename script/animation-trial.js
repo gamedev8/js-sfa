@@ -64,7 +64,7 @@
     }
 
 
-    AnimationTrail.prototype.Enable = function(frame,followElement)
+    AnimationTrail.prototype.Enable = function(frame,followElement,direction)
     {
         if(!this.Enabled)
         {
@@ -75,6 +75,7 @@
             var container = this.FollowElement.parentNode;
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
+                AutoApplyFlip(this.Trail[i].Element,direction == -1);
                 this.Trail[i].Animation.ClearAllFrameUserData();
                 /*
                 if(container.children.length == 0)
@@ -187,7 +188,7 @@
                     var frameToRender = this.GetCurrentFrame(i);
                     if(!!frameToRender)
                     {
-                        spriteLookup_.Set(currentItem.Element,frameToRender.GetImageSrc(this.direction_));
+                        spriteLookup_.Set(currentItem.Element,frameToRender.RightSrc);
                     }
                 }
             }

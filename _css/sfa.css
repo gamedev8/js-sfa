@@ -86,6 +86,18 @@ div.team1 div.health-bar .life{right:-292px;}
 div.team1 .name{left:0px;}
 div.team1 .portriat{left:0px;}
 
+div.team1 .portriat,.flipped
+{
+	transform:rotateY(180deg);
+	MozTransform:rotateY(180deg);
+	-moz-transform:rotateY(180deg);
+	-webkit-transform:rotateY(180deg);
+	-o-transform:scale(-1,1);
+	OTransform:scale(-1,1);
+	-ms-transform:rotateY(180deg);
+	filter:progid:DXImageTransform.Microsoft.BasicImage(mirror=1);
+}	
+
 div.team2{right:0px;}
 div.team2 div.health-bar{right:59px;}
 div.team2 div.health-bar .health-bar-item{right:0px;}

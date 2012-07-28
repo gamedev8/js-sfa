@@ -544,7 +544,8 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
             this.ChangeEnergy(newAnimation.Animation.EnergyToAdd);
 
         if(!!newAnimation.Animation.Trail)
-            this.currentAnimation_.Animation.Trail.Enable(newAnimation.StartFrame,this.element_);
+            this.currentAnimation_.Animation.Trail.Enable(newAnimation.StartFrame,this.element_,this.direction_);
+
         this.ShowFirstAnimationFrame();
     }
 }

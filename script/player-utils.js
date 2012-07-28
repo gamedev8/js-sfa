@@ -290,30 +290,22 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
             if(!!this.topOffset_)
                 offsetY = this.topOffset_;
 
+            var data = spriteLookup_.Get(newFrame.RightSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
+            AutoApplyFlip(element,this.direction_ == -1);
             if(this.direction_ > 0)
             {
-                var data = spriteLookup_.Get(newFrame.RightSrc)
-                if(!!data && (element.style.backgroundPositionX != data.Left))
-                {
-                    element.style.backgroundPosition = data.Left + " " + data.Bottom;
-                    element.style.width = data.Width;
-                    element.style.height = data.Height;
-                }
                 /*move the image to the middle of the point*/
                 offsetX -= (parseInt(element.style.width)/2);
                 offsetY -= (parseInt(element.style.height)/2);
             }
             else
             {
-                var data = spriteLookup_.Get(newFrame.LeftSrc)
-                if(!!data && (element.style.backgroundPositionX != data.Left))
-                {
-                    element.style.backgroundPosition = data.Left + " " + data.Bottom;
-                    element.style.width = data.Width;
-                    element.style.height = data.Height;
-                }
-
-
                 /*move the image to the middle of the point*/
                 offsetX -= (parseInt(element.style.width)/2);
                 offsetY -= (parseInt(element.style.height)/2);
@@ -408,6 +400,7 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         direction = direction || this.direction_;
         var element = this.element_ || object.Element;
         var startFrame = object.StartFrame;
+        AutoApplyFlip(element,direction == -1);
 
         var offsetX = object.X || 0;
         var offsetY = object.Y || 0;
@@ -434,18 +427,16 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         {
             offsetX += newFrame.X;
             offsetY += newFrame.Y;
+            var data = spriteLookup_.Get(newFrame.RightSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                /*element.style.backgroundImage = "url(" + data.Sprite + ")";*/
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
             if(direction > 0)
             {
-                var data = spriteLookup_.Get(newFrame.RightSrc)
-                if(!!data && (element.style.backgroundPositionX != data.Left))
-                {
-                    element.style.backgroundPosition = data.Left + " " + data.Bottom;
-                    /*element.style.backgroundImage = "url(" + data.Sprite + ")";*/
-                    element.style.width = data.Width;
-                    element.style.height = data.Height;
-                }
-
-
                 if(offsetX != undefined)
                 {
                     element.style.left = "";
@@ -454,15 +445,6 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
             }
             else
             {
-                var data = spriteLookup_.Get(newFrame.LeftSrc)
-                if(!!data && (element.style.backgroundPositionX != data.Left))
-                {
-                    element.style.backgroundPosition = data.Left + " " + data.Bottom;
-                    /*element.style.backgroundImage = "url(" + data.Sprite + ")";*/
-                    element.style.width = data.Width;
-                    element.style.height = data.Height;
-                }
-
                 if(offsetX != undefined)
                 {
                     element.style.right = "";
@@ -658,7 +640,7 @@ var CreateFrame = function(index,id,shadowImage,image,nbFrames,flagsToSet,flagsT
 
     }
     Frame.prototype.GetEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
-    Frame.prototype.GetImageSrc = function(direction){if(direction > 0) { return this.RightSrc; } else { return this.LeftSrc; } }
+    Frame.prototype.GetImageSrc = function(direction){ return this.RightSrc; }
     return new Frame();
 }
 /************************************************************************/
@@ -742,6 +724,11 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
         this.t_ = 0;
         this.element_.style.display="none";
         this.direction_ = this.owner_.direction_;
+        if(this.direction_ == -1)
+            this.element_.className="projectile flipped";
+        else
+            this.element_.className="projectile";
+
         this.x_ += this.owner_.GetX();
         this.y_ += this.owner_.GetY();
         this.stageX_ = stageX;
@@ -910,28 +897,12 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
             offsetX = newFrame.X;
             offsetY = newFrame.Y;
 
-            if(this.direction_ > 0)
+            var data = spriteLookup_.Get(newFrame.RightSrc)
+            if(!!data && (this.element_.style.backgroundPositionX != data.Left))
             {
-                var data = spriteLookup_.Get(newFrame.RightSrc)
-                if(!!data && (this.element_.style.backgroundPositionX != data.Left))
-                {
-                    this.element_.style.width = data.Width;
-                    this.element_.style.height = data.Height;
-                    this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
-                }
-
-            }
-            else
-            {
-
-                var data = spriteLookup_.Get(newFrame.LeftSrc)
-                if(!!data && (this.element_.style.backgroundPositionX != data.Left))
-                {
-                    this.element_.style.width = data.Width;
-                    this.element_.style.height = data.Height;
-                    this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
-                }
-
+                this.element_.style.width = data.Width;
+                this.element_.style.height = data.Height;
+                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
             }
         }
 

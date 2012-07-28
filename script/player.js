@@ -6,7 +6,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.name_ = name;
     this.folder_ = user.folder_;
     this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + this.name_.toLowerCase() +"-name-1.png";
-    this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + this.folder_.toLowerCase() + "-x-portriat-1.png";
+    this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + this.folder_.toLowerCase() + "-r-portriat-1.png";
 
     /*these 2 are used so we can easily swap left and right when the player changes directions*/
     this.leftKey_ = user.Left;

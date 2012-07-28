@@ -157,7 +157,7 @@ Player.prototype.CreateKen = function(user)
     hitReact_dizzyBounce.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX | PLAYER_FLAGS.USE_CURRENT_VX });
     hitReact_dizzyBounce.ChainVxFunc = (function(v){ return v * 0.75; });
     hitReact_dizzyBounce.Vy = (80);
-    hitReact_dizzyBounce.AddFrameWithSound(player,1,"audio/misc/floored-2.zzz", "200", folder + "/x-hit-air-2.png", 4, { Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_COLLISIONS, Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT }, { Player: PLAYER_FLAGS.MOBILE }, 0, 1);
+    hitReact_dizzyBounce.AddFrameWithSound(player,1,"audio/misc/floored-2.zzz", "200", folder + "/x-hit-air-2.png", 4, { Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS, Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT }, { Player: PLAYER_FLAGS.MOBILE }, 0, 1);
     hitReact_dizzyBounce.AddFrame(player, "200", folder + "/x-hit-air-3.png", CONSTANTS.FRAME_MAX, { Pose: POSE_FLAGS.AIRBORNE, Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS | PLAYER_FLAGS.IGNORE_COLLISIONS });
     hitReact_dizzyBounce.Chain(getup_dizzy);
 
