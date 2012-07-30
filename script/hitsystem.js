@@ -99,6 +99,25 @@ HitSystem.prototype.CanOverride = function(key,index)
     return retVal;
 }
 
+HitSystem.prototype.ClearPendingHit = function(id)
+{
+    for(var i in this.Actions)
+    {
+        for(var index in this.Actions[i])
+        {
+            if(this.Actions[i][index].PlayerID == id)
+            {
+                this.Actions[i][index] = null;
+                delete this.Actions[i][index];
+            }
+        }
+        if(!this.Actions[i][0] && !this.Actions[i][1])
+        {
+            this.Actions[i] = null;
+            delete this.Actions[i];
+        }
+    }
+}
 
 HitSystem.prototype.FrameMove = function(frame)
 {

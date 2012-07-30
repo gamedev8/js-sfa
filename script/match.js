@@ -15,6 +15,7 @@ var CreateMatch = function(team1,team2,stage)
     var dimBackground_ = window.document.getElementById("pnlDimBackground");
     var round_ = 1;
     var allowInput_ = false;
+    var isPresented_ = false;
 
     var Match = function()
     {
@@ -189,6 +190,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         if(this.GetGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
         {
+            this.GetGame().ShowLoading(true);
+            isPresented_ = false;
             this.SetAllowInput(false);
             this.SetRound(this.GetRound() + 1);
             this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
@@ -228,6 +231,7 @@ var CreateMatch = function(team1,team2,stage)
 
             this.TeamA.GetHealthbar().Reset();
             this.TeamB.GetHealthbar().Reset();
+
         }
     }
 
@@ -433,6 +437,13 @@ var CreateMatch = function(team1,team2,stage)
         this.SetAllowInput(true);
     }
 
+    /**/
+    Match.prototype.Present = function()
+    {
+        isPresented_ = true;
+        this.GetGame().ShowLoading(false);
+    }
+
     /*pre-render calculations to be performed here*/
     Match.prototype.FrameMove = function(frame,keyboardState)
     {
@@ -460,6 +471,8 @@ var CreateMatch = function(team1,team2,stage)
 
         this.GetStage().Render();
 
+        if(frame > CONSTANTS.PRESENT_DELAY && !isPresented_)
+            this.Present();
     }
 
     Match.prototype.Kill = function()
@@ -479,17 +492,6 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.LoadAssets = function()
     {
         stuffLoader_.Queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
-        stuffLoader_.Queue("images/misc/misc/shadow-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/dirt-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/blast-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/bars-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl0.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl1.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl2.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/health-bar-life.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/health-bar-damage.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
     }
 
     return new Match();

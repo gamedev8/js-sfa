@@ -424,6 +424,7 @@ var CONSTANTS =
     ,COL4:3
 
     ,MAX_CREDITS:9
+    ,PRESENT_DELAY:5
 };
 var CHARACTERS = 
 {

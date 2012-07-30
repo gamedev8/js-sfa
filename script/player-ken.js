@@ -802,7 +802,7 @@ Player.prototype.CreateKen = function(user)
         spinkick.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING, OVERRIDE_FLAGS.NULL);
         spinkick.AdjustShadowPosition = (false);
         spinkick.IsSpecialMove = true;
-        spinkick.UserData = { Type: USER_DATA_TYPES.OFFSET, topOffset: 0, bottomOffset: 80 };
+        spinkick.UserData = { Type: USER_DATA_TYPES.OFFSET, topOffset: 0, bottomOffset: 120 };
         spinkick.Vy = (100);
         spinkick.Vx = (15);
 

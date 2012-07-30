@@ -825,7 +825,7 @@
         spinkick.EnergyToAdd = (5);
         spinkick.IsSpecialMove = true;
         spinkick.AdjustShadowPosition = (false);
-        spinkick.UserData = { Type: USER_DATA_TYPES.OFFSET, topOffset: 0, bottomOffset: 80 };
+        spinkick.UserData = { Type: USER_DATA_TYPES.OFFSET, topOffset: 0, bottomOffset: 120 };
         spinkick.Vy = (100);
         spinkick.Vx = (20);
 

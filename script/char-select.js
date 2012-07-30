@@ -227,8 +227,8 @@ User.prototype.Init = function(isUser1)
     {
         this.selected_ = CHARACTERS.RYU;
         this.animations_["select_icon"] = CreateBasicAnimation("select_icon",[],true);
-        this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p2-select-0.png",1);
-        this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p2-select-1.png",1);
+        this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p1-select-0.png",1);
+        this.animations_["select_icon"].AddFrame(this,"|images/misc/misc/p1-select-1.png",1);
 
         this.element_.Element.className = "stance-container-p1";
         this.portriatElement_.className = "select-portriat-p1";
@@ -550,6 +550,7 @@ var CreateCharSelect = function(user1,user2)
     /**/
     CharSelect.prototype.Start = function()
     {
+        game_.ShowLoading(false);
         this.Init();
         this.PlayMusic();
     }
@@ -900,22 +901,7 @@ var CreateCharSelect = function(user1,user2)
 
     CharSelect.prototype.LoadAssets = function()
     {
-        /*
-        soundManager_.Load("audio/misc/p-select-move-0.zzz",3);
-        soundManager_.Load("audio/misc/p-select-move-1.zzz",3);
-        soundManager_.Load("audio/misc/p-select-choose-0.zzz",3);
-        soundManager_.Load("audio/misc/p-select-choose-1.zzz",3);
-        */
-        /*utils_.AddBase64Audio("char-select.js");*/
         stuffLoader_.Queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
-        stuffLoader_.Queue("images/misc/misc/player-select.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/font3/name-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/char-misc-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/head-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/player-select-back-bg.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/player-select-bg.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/stance-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.Queue("images/misc/misc/char-sprites.png",RESOURCE_TYPES.IMAGE);
     }
 
     return new CharSelect();

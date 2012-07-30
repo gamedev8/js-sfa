@@ -29,8 +29,7 @@
     InsertCoinScreen.prototype.Init = function() { }
     InsertCoinScreen.prototype.LoadAssets = function()
     {
-        /*soundManager_.Load("audio/misc/credit.zzz",3);*/
-        /*utils_.AddBase64Audio("insert-coin.js");*/
+        /*insert coin*/
         stuffLoader_.Queue("insert-coin.js",RESOURCE_TYPES.BASE64AUDIO);
         stuffLoader_.Queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/announcer-sprites.png",RESOURCE_TYPES.IMAGE);
@@ -38,7 +37,29 @@
         stuffLoader_.Queue("images/misc/font1/credits.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font1/cap.png",RESOURCE_TYPES.IMAGE);
 
-    }
+        /*match*/
+        stuffLoader_.Queue("images/misc/misc/shadow-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/dirt-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/blast-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/bars-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl0.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl1.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/energy-bar-lvl2.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/health-bar-life.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/health-bar-damage.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+
+        /*character select*/
+        stuffLoader_.Queue("images/misc/misc/player-select.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/font3/name-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/char-misc-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/head-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/player-select-back-bg.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/player-select-bg.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/stance-sprites.png",RESOURCE_TYPES.IMAGE);
+        stuffLoader_.Queue("images/misc/misc/char-sprites.png",RESOURCE_TYPES.IMAGE);
+}
 
 
     InsertCoinScreen.prototype.IsDone = function() { return isDone_; }
@@ -47,6 +68,7 @@
 
     InsertCoinScreen.prototype.Start = function()
     {
+        game_.ShowLoading(false);
         this.isDone_ = false;
         capElement_ = window.document.createElement("div");
         capElement_.className = "capcom";

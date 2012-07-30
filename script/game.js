@@ -283,7 +283,6 @@ var CreateGame = function()
     /*executed when the assets are done loading*/
     Game.prototype.OnDoneLoading = function(runLoopFn, callback)
     {
-        this.ShowLoading(false);
         if(!!runLoopFn)
         {
             managed_.Start(!!this.startPaused_);
