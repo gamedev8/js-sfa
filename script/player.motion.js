@@ -69,6 +69,21 @@ Player.prototype.SetX = function(value)
     this.x_ = value;
     this.MoveCircle();
 }
+Player.prototype.Show = function() { this.SetDisplay(true); }
+Player.prototype.Hide = function() { this.SetDisplay(false); }
+Player.prototype.SetDisplay = function(isVisible)
+{
+    if(!!isVisible)
+    {
+        this.element_.style.display = "";
+        this.shadowContainer_.style.display = "";
+    }
+    else
+    {
+        this.element_.style.display = "none";
+        this.shadowContainer_.style.display = "none";
+    }
+}
 Player.prototype.AlignX = function(deltaX) { this.x_ += (deltaX * -this.direction_); }
 
 Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.spriteElement_.style.right = value+"px"; } else {this.spriteElement_.style.left = value+"px";}}

@@ -16,6 +16,11 @@ var CreateMatch = function(team1,team2,stage)
     var round_ = 1;
     var allowInput_ = false;
     var isPresented_ = false;
+    var announcedNewRound_ = false;
+    var startedRound_ = false;
+    var showedFaceoff_ = false;
+    var teamsVisible_ = false;
+    var startedTheme_ = false;
 
     var Match = function()
     {
@@ -192,6 +197,9 @@ var CreateMatch = function(team1,team2,stage)
         {
             this.GetGame().ShowLoading(true);
             isPresented_ = false;
+            announcedNewRound_ = false;
+            startedRound_ = false;
+            showedFaceoff_ = false;
             this.SetAllowInput(false);
             this.SetRound(this.GetRound() + 1);
             this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
@@ -355,9 +363,6 @@ var CreateMatch = function(team1,team2,stage)
         this.GetStage().Init();
         this.TeamA.Init();
         this.TeamB.Init();
-
-        if(!ignoreMusic)
-            this.GetStage().PlayMusic();
     }
     /*Handles key state changes*/
     Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
@@ -428,12 +433,14 @@ var CreateMatch = function(team1,team2,stage)
     /**/
     Match.prototype.StartNewRound = function(frame)
     {
+        announcedNewRound_ = true;
         announcer_.StartRound();
     }
 
     /**/
     Match.prototype.EndNewRound = function(frame)
     {
+        startedRound_ = true;
         this.SetAllowInput(true);
     }
 
@@ -442,6 +449,49 @@ var CreateMatch = function(team1,team2,stage)
     {
         isPresented_ = true;
         this.GetGame().ShowLoading(false);
+    }
+
+
+    Match.prototype.ShowFaceoff = function(frame)
+    {
+        showedFaceoff_ = true;
+        soundManager_.QueueSound("audio/misc/faceoff.zzz");
+    }
+
+    Match.prototype.HandleRound1 = function(frame)
+    {
+        if(!showedFaceoff_ && (frame > CONSTANTS.SHOW_FACEOFF_DELAY))
+            this.ShowFaceoff(frame);
+        if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_FIRST_ROUND_DELAY))
+            this.StartNewRound(frame);
+        if(!startedRound_ && (frame > CONSTANTS.START_FIRST_ROUND_DELAY))
+            this.EndNewRound(frame);
+        if(!startedTheme_ && (frame > CONSTANTS.START_THEME_DELAY))
+        {
+            stage_.PlayMusic();
+            startedTheme_ = true;
+        }
+        if(!teamsVisible_ && (frame > CONSTANTS.SHOW_TEAMS_DELAY))
+        {
+            this.TeamA.Show();
+            this.TeamB.Show();
+            teamsVisible_ = true;
+        }
+        if((gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
+            this.Reset();
+    }
+
+    Match.prototype.HandleOtherRounds = function(frame)
+    {
+        if((gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
+        {
+            this.Reset();
+            frame = game_.GetCurrentFrame();
+        }
+        if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY))
+            this.StartNewRound(frame);
+        if(!startedRound_ && (frame > CONSTANTS.START_NEW_ROUND_DELAY))
+            this.EndNewRound(frame);
     }
 
     /*pre-render calculations to be performed here*/
@@ -454,12 +504,10 @@ var CreateMatch = function(team1,team2,stage)
         this.TeamA.FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
         this.TeamB.FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
 
-        if((this.GetGotoNewRoundFrame() != CONSTANTS.NO_FRAME) && (frame > (this.GetGotoNewRoundFrame() + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
-            this.Reset();
-        if(frame == CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY)
-            this.StartNewRound(frame);
-        if(frame == CONSTANTS.START_NEW_ROUND_DELAY)
-            this.EndNewRound(frame);
+        if(round_ != 1)
+            this.HandleOtherRounds(frame);
+        else
+            this.HandleRound1(frame);
     }
 
     /*All rendering and CSS manipulation to be done here*/
@@ -471,7 +519,7 @@ var CreateMatch = function(team1,team2,stage)
 
         this.GetStage().Render();
 
-        if(frame > CONSTANTS.PRESENT_DELAY && !isPresented_)
+        if(!isPresented_ && (frame > CONSTANTS.PRESENT_DELAY))
             this.Present();
     }
 

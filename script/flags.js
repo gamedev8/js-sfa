@@ -364,16 +364,6 @@ var CONSTANTS =
     ,DEFAULT_TAKE_HIT_DELAY:15
     ,DEFAULT_GIVE_HIT_DELAY:10
 
-    ,NO_FRAME:-1
-    ,DEFEATED_FRAME:100
-    ,DEFAULT_WIN_ANIMATION_NAME:"win 1"
-    /*how many frames after the winning hit will a player start its win animation*/
-    ,WIN_ANIMATION_DELAY:100
-    /*how many frames after the losing player hits the ground will the round end*/
-    ,GOTO_NEW_ROUND_DELAY:250
-    /*how many frames to wait before the round starts to accept input*/
-    ,START_NEW_ROUND_DELAY:130
-    ,ANNOUNCE_NEW_ROUND_DELAY:10
     ,MAX_ROUND:10
     ,DEFAULT_CROUCH_LIGHT_HRSLIDE:40
     ,DEFAULT_CROUCH_MEDIUM_HRSLIDE:60
@@ -424,7 +414,26 @@ var CONSTANTS =
     ,COL4:3
 
     ,MAX_CREDITS:9
+
     ,PRESENT_DELAY:5
+
+    ,NO_FRAME:-1
+    ,DEFEATED_FRAME:100
+    ,DEFAULT_WIN_ANIMATION_NAME:"win 1"
+    /*how many frames after the winning hit will a player start its win animation*/
+    ,WIN_ANIMATION_DELAY:100
+    /*how many frames after the losing player hits the ground will the round end*/
+    ,GOTO_NEW_ROUND_DELAY:250
+    /*how many frames to wait before the round starts to accept input*/
+    ,START_NEW_ROUND_DELAY:130
+    ,ANNOUNCE_NEW_ROUND_DELAY:10
+
+    ,SHOW_FACEOFF_DELAY:6
+    ,START_FIRST_ROUND_DELAY:530
+    ,ANNOUNCE_FIRST_ROUND_DELAY:410
+    ,SHOW_TEAMS_DELAY:150
+    ,START_THEME_DELAY:350
+
 };
 var CHARACTERS = 
 {

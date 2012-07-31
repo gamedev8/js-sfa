@@ -67,6 +67,8 @@
         this.GetNameImg().style.display = "";
         this.GetHealthbar().Init();
         this.GetEnergybar().Init();
+
+        this.Hide();
     }
 
 
@@ -125,6 +127,19 @@
         this.SetCursor(0);
     }
 
+    Team.prototype.Show = function()
+    {
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
+            players_[i].Show();
+        portriatImg_.parentNode.style.display = "";
+    }
+
+    Team.prototype.Hide = function()
+    {
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
+            players_[i].Hide();
+        portriatImg_.parentNode.style.display = "none";
+    }
 
     Team.prototype.Pause = function()
     {
