@@ -68,7 +68,7 @@
 		spriteLookup_.Load("images/misc/misc/p2-select-dan.png","images/misc/misc/head-sprites.png", "-1280px", "0px", "256px", "288px");
 		spriteLookup_.Load("images/misc/misc/p2-select-guy.png","images/misc/misc/head-sprites.png", "-1536px", "0px", "256px", "288px");
 		spriteLookup_.Load("images/misc/misc/p2-select-ken.png","images/misc/misc/head-sprites.png", "0px", "-288px", "256px", "288px");
-		spriteLookup_.Load("images/misc/misc/p2-select-msibon.png","images/misc/misc/head-sprites.png", "-256px", "-288px", "256px", "288px");
+		spriteLookup_.Load("images/misc/misc/p2-select-mbison.png","images/misc/misc/head-sprites.png", "-256px", "-288px", "256px", "288px");
 		spriteLookup_.Load("images/misc/misc/p2-select-rose.png","images/misc/misc/head-sprites.png", "-512px", "-288px", "256px", "288px");
 		spriteLookup_.Load("images/misc/misc/p2-select-ryu.png","images/misc/misc/head-sprites.png", "-768px", "-288px", "256px", "288px");
 		spriteLookup_.Load("images/misc/misc/p2-select-sagat.png","images/misc/misc/head-sprites.png", "-1024px", "-288px", "256px", "288px");
