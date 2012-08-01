@@ -525,7 +525,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
         this.canInterrupt_ = false;
         this.ClearVxFn();
         this.ClearVyFn();
-        this.currentAnimation_.ID = _c3(this.id_,this.currentAnimation_.Animation.BaseAnimation.name_,this.GetGame().GetCurrentFrame());
+        this.currentAnimation_.ID = _c3(this.id_,this.currentAnimation_.Animation.BaseAnimation.name_,game_.GetCurrentFrame());
         this.currentAnimation_.FrameIndex = 0;
         this.ignoreHoldFrame_ = false;
         this.ignoreCollisionsWith_ = "";
@@ -553,7 +553,7 @@ Player.prototype.SetCurrentAnimation = function(newAnimation)
 Player.prototype.ShowFirstAnimationFrame = function()
 {
     var firstFrame = this.currentAnimation_.Animation.GetFrame(0);
-    this.SetCurrentFrame(firstFrame,this.GetGame().GetCurrentFrame(),0,0,true);
+    this.SetCurrentFrame(firstFrame,game_.GetCurrentFrame(),0,0,true);
 }
 
 /*Sets the current frame*/

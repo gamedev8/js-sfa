@@ -762,7 +762,7 @@ Player.prototype.Drop = function()
         this.SetBeingGrappled(false);
         //attackDirection = this.GetRelativeDirection(attackDirection);
         var direction = this.GetAttackDirection(-this.direction_);
-        this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});
+        this.SetCurrentAnimation({Animation:move,StartFrame:game_.GetCurrentFrame(),Direction:this.direction_,AttackDirection:direction,Vx:0,Vy:0});
         this.Flags.Pose.Add(POSE_FLAGS.AIRBORNE);
         this.PerformJump(direction * move.Vx * 0,move.Vy * 0);
     }

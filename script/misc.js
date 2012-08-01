@@ -75,8 +75,8 @@ function OnStageImagesLoaded()
 }
 
 /*Human users*/
-var u1_ = game_.AddUser1(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
-var u2_ = game_.AddUser2(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q);
+var u1_ = game_.AddUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q);
+var u2_ = game_.AddUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
 var val = 10000000;
 var u3_ = game_.AddUser(val+1,val+2,val+3,val+4,val+5,val+6,val+7,val+8,val+9,val+10,val+11);
 var u4_ = game_.AddUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
@@ -97,16 +97,16 @@ function StartQuickMatch()
 /* multi player battle */
 function StartDramaticBattle()
 {
-    u2_.SetChar(CHARACTERS.KEN);
-    u1_.SetChar(CHARACTERS.RYU,true);
-    u3_.SetChar(CHARACTERS.KEN,true);
+    u1_.SetChar(CHARACTERS.KEN);
+    u3_.SetChar(CHARACTERS.RYU,true);
+    u4_.SetChar(CHARACTERS.KEN,true);
 
-    game_.StartMatch(false,[u2_],[u1_,u3_], stages_["mbison"], StartDramaticBattleAI);
+    game_.StartMatch(false,[u1_],[u3_,u4_], stages_["mbison"], StartDramaticBattleAI);
 }
 
 function StartBattle()
 {
-    StartDramaticBattle();
+    StartQuickMatch();
 }
 
 function StartDramaticBattleAI()

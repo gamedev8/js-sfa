@@ -21,13 +21,16 @@ var CreateMatch = function(team1,team2,stage)
     var showedFaceoff_ = false;
     var teamsVisible_ = false;
     var startedTheme_ = false;
+    var faceoff_ = null;
 
     var Match = function()
     {
         this.TeamA = CreateTeam(1);
         this.TeamB = CreateTeam(2);
         this.LoadAssets();
-        this.GetStage().Setup(stage);
+        stage_.Setup(stage);
+
+        faceoff_ = CreateFaceoff(this);
     }
     Match.prototype.GetPhysics = function() { return physics_; }
     Match.prototype.GetTeamA = function() { return this.TeamA; }
@@ -67,7 +70,7 @@ var CreateMatch = function(team1,team2,stage)
         
     }
     Match.prototype.GetGame = function() { return game_; }
-    Match.prototype.GetCurrentFrame = function() { return this.GetGame().GetCurrentFrame(); }
+    Match.prototype.GetCurrentFrame = function() { return game_.GetCurrentFrame(); }
 
     Match.prototype.InitText = function()
     {
@@ -134,7 +137,7 @@ var CreateMatch = function(team1,team2,stage)
     /*Gets the current frame*/
     Match.prototype.GetCurrentFrame = function()
     {
-        return this.GetGame().GetCurrentFrame();
+        return game_.GetCurrentFrame();
     }
     /*A team has just been defeated*/
     Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
@@ -143,8 +146,8 @@ var CreateMatch = function(team1,team2,stage)
         this.ReleaseAllInput();
 
         this.SetAllowInput(false);
-        var frame = this.GetGame().GetCurrentFrame();
-        this.GetGame().SetSpeed(CONSTANTS.SLOW_SPEED);
+        var frame = game_.GetCurrentFrame();
+        game_.SetSpeed(CONSTANTS.SLOW_SPEED);
         this.SetDefeatedTeam(team);
         switch(this.GetDefeatedTeam())
         {
@@ -174,7 +177,7 @@ var CreateMatch = function(team1,team2,stage)
         if(!this.IsRoundOver())
         {
             this.SetRoundOver(true);
-            this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
+            game_.SetSpeed(CONSTANTS.NORMAL_SPEED);
             this.SetGotoNewRoundFrame(frame);
 
             announcer_.EndRound();
@@ -188,28 +191,26 @@ var CreateMatch = function(team1,team2,stage)
     /**/
     Match.prototype.ReleaseAllInput = function()
     {
-        this.GetGame().ResetKeys();
+        game_.ResetKeys();
     }
     /*Restarts the match*/
     Match.prototype.Reset = function()
     {
         if(this.GetGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
         {
-            this.GetGame().ShowLoading(true);
+            game_.ShowLoading(true);
             isPresented_ = false;
-            announcedNewRound_ = false;
-            startedRound_ = false;
-            showedFaceoff_ = false;
+            faceoff_.Reset();
             this.SetAllowInput(false);
             this.SetRound(this.GetRound() + 1);
-            this.GetGame().SetSpeed(CONSTANTS.NORMAL_SPEED);
+            game_.SetSpeed(CONSTANTS.NORMAL_SPEED);
             this.SetGotoNewRoundFrame(CONSTANTS.NO_FRAME);
             this.TeamA.SetCursor(0);
             this.TeamB.SetCursor(0);
             this.SetSuperMoveActive(false);
 
 
-            this.GetGame().ResetFrame();
+            game_.ResetFrame();
 
             this.TeamA.GetEnergybar().Change(0,0);
             this.TeamB.GetEnergybar().Change(0,0);
@@ -234,8 +235,8 @@ var CreateMatch = function(team1,team2,stage)
             }
 
             this.SetRoundOver(false);
-            this.GetStage().Init();
-            this.GetGame().ReleaseText();
+            stage_.Init();
+            game_.ReleaseText();
 
             this.TeamA.GetHealthbar().Reset();
             this.TeamB.GetHealthbar().Reset();
@@ -246,17 +247,31 @@ var CreateMatch = function(team1,team2,stage)
     /**/
     Match.prototype.Pause = function()
     {
-        this.GetStage().Pause();
-        this.TeamA.Pause();
-        this.TeamB.Pause();
+        if(!faceoff_.IsActive())
+        {
+            stage_.Pause();
+            this.TeamA.Pause();
+            this.TeamB.Pause();
+        }
+        else
+        {
+            faceoff_.Pause();
+        }
     }
 
     /**/
     Match.prototype.Resume = function()
     {
-        this.GetStage().Resume();
-        this.TeamA.Resume();
-        this.TeamB.Resume();
+        if(!faceoff_.IsActive())
+        {
+            stage_.Resume();
+            this.TeamA.Resume();
+            this.TeamB.Resume();
+        }
+        else
+        {
+            faceoff_.Resume();
+        }
     }
 
     Match.prototype.PlayerIndex = 0;
@@ -332,8 +347,8 @@ var CreateMatch = function(team1,team2,stage)
     /*Initializes a new match*/
     Match.prototype.Start = function(ignoreMusic)
     {
-        this.GetStage().Start();
-
+        stage_.Start();
+        faceoff_.Init();
 
         this.TeamA.SetPlayers(team1);
         this.TeamB.SetPlayers(team2);
@@ -344,7 +359,10 @@ var CreateMatch = function(team1,team2,stage)
             this.SetupPlayer(this.TeamA.GetPlayers()[i],CONSTANTS.TEAM1);
         }
         if(!!this.TeamA.GetPlayer(0))
+        {
+            faceoff_.SetTeamA(this.TeamA.GetPlayer(0).name_);
             this.TeamA.GetPlayer(0).SetX(STAGE.START_X);
+        }
 
         /*init team 2*/
         for(var i = 0; i < this.TeamB.GetPlayers().length; ++i)
@@ -352,7 +370,10 @@ var CreateMatch = function(team1,team2,stage)
             this.SetupPlayer(this.TeamB.GetPlayers()[i],CONSTANTS.TEAM2);
         }
         if(!!this.TeamB.GetPlayer(0))
+        {
+            faceoff_.SetTeamB(this.TeamB.GetPlayer(0).name_);
             this.TeamB.GetPlayer(0).SetX(STAGE.START_X);
+        }
 
         /*set the starting locations for each player*/
         for(var i = 1, length = this.TeamA.GetPlayers().length; i < length; ++i)
@@ -360,7 +381,7 @@ var CreateMatch = function(team1,team2,stage)
         for(var i = 1, length = this.TeamB.GetPlayers().length; i < length; ++i)
             this.TeamB.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
-        this.GetStage().Init();
+        stage_.Init();
         this.TeamA.Init();
         this.TeamB.Init();
     }
@@ -433,14 +454,12 @@ var CreateMatch = function(team1,team2,stage)
     /**/
     Match.prototype.StartNewRound = function(frame)
     {
-        announcedNewRound_ = true;
         announcer_.StartRound();
     }
 
     /**/
     Match.prototype.EndNewRound = function(frame)
     {
-        startedRound_ = true;
         this.SetAllowInput(true);
     }
 
@@ -448,24 +467,13 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.Present = function()
     {
         isPresented_ = true;
-        this.GetGame().ShowLoading(false);
+        game_.ShowLoading(false);
     }
 
-
-    Match.prototype.ShowFaceoff = function(frame)
-    {
-        showedFaceoff_ = true;
-        soundManager_.QueueSound("audio/misc/faceoff.zzz");
-    }
 
     Match.prototype.HandleRound1 = function(frame)
     {
-        if(!showedFaceoff_ && (frame > CONSTANTS.SHOW_FACEOFF_DELAY))
-            this.ShowFaceoff(frame);
-        if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_FIRST_ROUND_DELAY))
-            this.StartNewRound(frame);
-        if(!startedRound_ && (frame > CONSTANTS.START_FIRST_ROUND_DELAY))
-            this.EndNewRound(frame);
+        faceoff_.HandleRound1(frame);
         if(!startedTheme_ && (frame > CONSTANTS.START_THEME_DELAY))
         {
             stage_.PlayMusic();
@@ -473,6 +481,7 @@ var CreateMatch = function(team1,team2,stage)
         }
         if(!teamsVisible_ && (frame > CONSTANTS.SHOW_TEAMS_DELAY))
         {
+            faceoff_.Hide(frame);
             this.TeamA.Show();
             this.TeamB.Show();
             teamsVisible_ = true;
@@ -488,39 +497,40 @@ var CreateMatch = function(team1,team2,stage)
             this.Reset();
             frame = game_.GetCurrentFrame();
         }
-        if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY))
-            this.StartNewRound(frame);
-        if(!startedRound_ && (frame > CONSTANTS.START_NEW_ROUND_DELAY))
-            this.EndNewRound(frame);
+        faceoff_.HandleOtherRounds(frame);
     }
 
     /*pre-render calculations to be performed here*/
     Match.prototype.FrameMove = function(frame,keyboardState)
     {
-
-        this.GetStage().FrameMove(frame);
+        stage_.FrameMove(frame);
         this.GetHitSystem().FrameMove(frame);
 
-        this.TeamA.FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
-        this.TeamB.FrameMove(frame,keyboardState,this.GetStage().x_, this.GetStage().y_);
+        this.TeamA.FrameMove(frame,keyboardState,stage_.x_, stage_.y_);
+        this.TeamB.FrameMove(frame,keyboardState,stage_.x_, stage_.y_);
 
         if(round_ != 1)
             this.HandleOtherRounds(frame);
         else
+        {
             this.HandleRound1(frame);
+            faceoff_.FrameMove(frame);
+        }
     }
 
     /*All rendering and CSS manipulation to be done here*/
     Match.prototype.Render = function(frame)
     {
 
-        this.TeamA.Render(frame,this.GetStage().x_ - this.GetStage().lastX_);
-        this.TeamB.Render(frame,this.GetStage().x_ - this.GetStage().lastX_);
+        this.TeamA.Render(frame,stage_.x_ - stage_.lastX_);
+        this.TeamB.Render(frame,stage_.x_ - stage_.lastX_);
 
-        this.GetStage().Render();
+        stage_.Render();
 
         if(!isPresented_ && (frame > CONSTANTS.PRESENT_DELAY))
             this.Present();
+        if(round_ == 1)
+            faceoff_.Render(frame);
     }
 
     Match.prototype.Kill = function()
@@ -531,9 +541,10 @@ var CreateMatch = function(team1,team2,stage)
     /*Remove elements from the DOM and remove any custom CSS*/
     Match.prototype.Release = function()
     {
-        this.GetStage().Release();
+        stage_.Release();
         this.TeamA.Release();
         this.TeamB.Release();
+        faceoff_.Release();
     }
 
 
@@ -542,5 +553,223 @@ var CreateMatch = function(team1,team2,stage)
         stuffLoader_.Queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
     }
 
+    /**********************************************************************************/
+    /*This prototype together with the Match prototype handles the announcing of round*/
+    /**********************************************************************************/
+    var CreateFaceoff = function(match)
+    {
+        var match_ = match;
+        var showedFaceoff_ = false;
+        var announcedNewRound_ = false;
+        var startedRound_ = false;
+        var areNamesHidden_ = true;
+        var faceoffSound_ = "audio/misc/faceoff.zzz";
+
+        var Faceoff = function()
+        {
+            this.faceoffElement_ = null;
+            this.teamAFaceoffElement_ = null;
+            this.teamBFaceoffElement_ = null;
+            this.teamANameElement_ = null;
+            this.teamBNameElement_ = null;
+            this.vsElement_ = null;
+
+            this.maxAngle_ = 360;
+            this.maxScale_ = 1;
+
+            this.angle_ = 0;
+            this.scale_ = 0;
+
+            var nbFrames = 20;
+
+            this.rotateUpFn_ = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.maxAngle_);
+            this.rotateDownFn_ = (function(max,inc) { return function(t,value) { return Math.max(value + (max/nbFrames), 0); } })(this.maxAngle_);
+            this.scaleUpFn_ = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.maxScale_);
+            this.scaleDownFn_ = (function(max,inc) { return function(t,value) { return Math.max(value - (max/nbFrames), 0); } })(this.maxScale_);
+        }
+
+        Faceoff.prototype.SetTeamA = function(name)
+        {
+            spriteLookup_.Set(this.teamAFaceoffElement_,"images/misc/misc/p2-select-" + name + ".png");
+            spriteLookup_.Set(this.teamANameElement_,"images/misc/font3/name-" + name + ".png",false,true);
+        }
+        Faceoff.prototype.SetTeamB = function(name)
+        {
+            spriteLookup_.Set(this.teamBFaceoffElement_,"images/misc/misc/p2-select-" + name + ".png");
+            spriteLookup_.Set(this.teamBNameElement_,"images/misc/font3/name-" + name + ".png",false,true);
+        }
+
+        Faceoff.prototype.Init = function()
+        {
+            this.faceoffElement_ = window.document.createElement("div");
+            this.faceoffElement_.style.display = "none";
+            this.faceoffElement_.className = "faceoff";
+
+            this.teamAFaceoffElement_ = window.document.createElement("div");
+            this.teamAFaceoffElement_.className = "team1-faceoff";
+
+            this.teamBFaceoffElement_ = window.document.createElement("div");
+            this.teamBFaceoffElement_.className = "team2-faceoff";
+
+            this.faceoffElement_.appendChild(this.teamAFaceoffElement_);
+            this.faceoffElement_.appendChild(this.teamBFaceoffElement_);
+
+            this.teamANameElement_ = window.document.createElement("div");
+            this.teamANameElement_.className = "faceoff-name flipped";
+            this.teamAFaceoffElement_.appendChild(this.teamANameElement_);
+
+            this.teamBNameElement_ = window.document.createElement("div");
+            this.teamBNameElement_.className = "faceoff-name";
+            this.teamBFaceoffElement_.appendChild(this.teamBNameElement_);
+
+            this.vsElement_ = window.document.createElement("div");
+            this.vsElement_.className = "vs";
+            spriteLookup_.Set(this.vsElement_,"images/misc/misc/vs-0.png");
+            this.faceoffElement_.appendChild(this.vsElement_);
+
+            this.Reset();
+            window.document.getElementById("pnlStage").appendChild(this.faceoffElement_);
+        }
+
+        Faceoff.prototype.IsActive = function()
+        {
+            return !startedRound_;
+        }
+
+        Faceoff.prototype.Reset = function()
+        {
+            showedFaceoff_ = false;
+            announcedNewRound_ = false;
+            startedRound_ = false;
+            this.scale_ = 0;
+            this.angle_ = 0;
+
+            this.RotateScale();
+
+            this.teamANameElement_.style.display = "none";
+            this.teamBNameElement_.style.display = "none";
+            this.vsElement_.style.display = "none";
+            areNamesHidden_ = true;
+        }
+
+        Faceoff.prototype.Pause = function()
+        {
+            soundManager_.Pause(faceoffSound_);
+        }
+
+        Faceoff.prototype.Resume = function()
+        {
+            if(!startedRound_)
+                soundManager_.Resume(faceoffSound_);
+        }
+
+        Faceoff.prototype.Release = function()
+        {
+            utils_.RemoveFromDOM(this.faceoffElement_);
+        }
+
+        Faceoff.prototype.Show = function(frame)
+        {
+            showedFaceoff_ = true;
+            soundManager_.QueueSound(faceoffSound_);
+            this.faceoffElement_.style.display = "";
+        }
+
+
+        Faceoff.prototype.Hide = function(frame)
+        {
+            this.faceoffElement_.style.display = "none";
+        }
+
+        Faceoff.prototype.StartNewRound = function(frame)
+        {
+            announcedNewRound_ = true;
+            match_.StartNewRound(frame);
+        }
+
+        Faceoff.prototype.EndNewRound = function(frame)
+        {
+            startedRound_ = true;
+            match_.EndNewRound(frame);
+        }
+
+        Faceoff.prototype.HandleRound1 = function(frame)
+        {
+            if(!showedFaceoff_ && (frame > CONSTANTS.SHOW_FACEOFF_DELAY))
+                this.Show(frame);
+            if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_FIRST_ROUND_DELAY))
+                this.StartNewRound(frame);
+            if(!startedRound_ && (frame > CONSTANTS.START_FIRST_ROUND_DELAY))
+                this.EndNewRound(frame);
+        }
+
+        Faceoff.prototype.HandleOtherRounds = function(frame)
+        {
+            if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY))
+                this.StartNewRound(frame);
+            if(!startedRound_ && (frame > CONSTANTS.START_NEW_ROUND_DELAY))
+                this.EndNewRound(frame);
+        }
+
+        Faceoff.prototype.FrameMove = function(frame)
+        {
+            if((frame > CONSTANTS.SHOW_FACEOFF_PICS_DELAY) && (frame < CONSTANTS.REMOVE_FACEOFF_PICS_DELAY))
+            {
+                if(this.scale_ < this.maxScale_)
+                {
+                    this.scale_ = this.scaleUpFn_(frame, this.scale_);
+                    this.angle_ = this.rotateUpFn_(frame, this.angle_);
+                    this.RotateScale();
+                }
+                else if(!!areNamesHidden_)
+                {
+                    this.teamANameElement_.style.display = "";
+                    this.teamBNameElement_.style.display = "";
+                    this.vsElement_.style.display = "";
+                    areNamesHidden_ = false;
+                }
+            }
+            else if(frame > CONSTANTS.REMOVE_FACEOFF_PICS_DELAY)
+            {
+                if(!areNamesHidden_)
+                {                
+                    this.teamANameElement_.style.display = "none";
+                    this.teamBNameElement_.style.display = "none";
+                    this.vsElement_.style.display = "none";
+                    areNamesHidden_ = true;
+                }
+                if(this.scale_ > 0)
+                {
+                    this.scale_ = this.scaleDownFn_(frame, this.scale_);
+                    this.angle_ = this.rotateDownFn_(frame, this.angle_);
+                    this.RotateScale();
+                }
+            }
+        }
+
+        Faceoff.prototype.RotateScale = function()
+        {
+            this.teamAFaceoffElement_.style["-webkit-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.teamAFaceoffElement_.style["-moz-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.teamAFaceoffElement_.style["MozTransform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.teamAFaceoffElement_.style["-o-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
+            this.teamAFaceoffElement_.style["OTransform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
+            this.teamAFaceoffElement_.style["-ms-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+
+            this.teamBFaceoffElement_.style["-webkit-transform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.teamBFaceoffElement_.style["-moz-transform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.teamBFaceoffElement_.style["MozTransform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
+            this.teamBFaceoffElement_.style["OTransform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
+            this.teamBFaceoffElement_.style["-ms-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+        }
+
+        Faceoff.prototype.Render = function(frame)
+        {
+        }
+
+        return new Faceoff();
+    }
+
     return new Match();
 }
+

@@ -98,19 +98,19 @@
 
     Team.prototype.InitText = function()
     {
-        this.SetComboText(this.GetGame().AddManagedText("pnlTeam" + this.GetTeamNum() + "ComboText",0,170,"font2"));
+        this.SetComboText(game_.AddManagedText("pnlTeam" + this.GetTeamNum() + "ComboText",0,170,"font2"));
     }
 
 
     Team.prototype.WriteCombo = function(nbHits)
     {
-        this.GetComboText().Change(nbHits + TEXT.HIT_COMBO,10,this.GetGame().GetCurrentFrame() + CONSTANTS.DEFAULT_COMBO_TEXT_LIFE);
+        this.GetComboText().Change(nbHits + TEXT.HIT_COMBO,10,game_.GetCurrentFrame() + CONSTANTS.DEFAULT_COMBO_TEXT_LIFE);
     }
 
 
     Team.prototype.WriteText = function(text)
     {
-        this.GetComboText().Change(text,10,this.GetGame().GetCurrentFrame() + CONSTANTS.DEFAULT_COMBO_TEXT_LIFE);
+        this.GetComboText().Change(text,10,game_.GetCurrentFrame() + CONSTANTS.DEFAULT_COMBO_TEXT_LIFE);
     }
 
 

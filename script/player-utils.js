@@ -559,12 +559,12 @@ var CreateSpriteLookup = function()
     {
         return (data_[key] || {}).Left || "";
     }
-    SpriteLookup.prototype.Set = function(element, key, loadImage)
+    SpriteLookup.prototype.Set = function(element, key, setBackgroundImage,displayNone)
     {
         var data = this.Get(key);
         if(!!data)
         {
-            if(!!loadImage)
+            if(!!setBackgroundImage)
             {
                 if(!element.style.backgroundImage)
                     element.style.backgroundImage = "url(" + data.Sprite + ")";
@@ -574,7 +574,7 @@ var CreateSpriteLookup = function()
                 element.style.backgroundPosition = data.Left + " " + data.Bottom;
                 element.style.width = data.Width;
                 element.style.height = data.Height;
-                if(element.style.display != "")
+                if(!displayNone && (element.style.display != ""))
                     element.style.display = "";
             }
         }

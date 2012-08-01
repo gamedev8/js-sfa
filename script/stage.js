@@ -20,7 +20,7 @@
 }
 
 Stage.prototype.GetGame = function() { return game_; }
-Stage.prototype.GetMatch = function() { return this.GetGame().GetMatch(); }
+Stage.prototype.GetMatch = function() { return game_.GetMatch(); }
 Stage.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
 Stage.prototype.OnAudioLoaded = function()
 {

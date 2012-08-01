@@ -182,12 +182,12 @@ Player.prototype.ChangeDirection = function(quick)
         if(this.Flags.Pose.Has(POSE_FLAGS.CROUCHING))
         {
             var move = this.moves_[_c3("_",POSE_FLAGS.CROUCHING,"_turn")];
-            this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_});
+            this.SetCurrentAnimation({Animation:move,StartFrame:game_.GetCurrentFrame(),Direction:this.direction_});
         }
         else
         {
             var move = this.moves_[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
-            this.SetCurrentAnimation({Animation:move,StartFrame:this.GetGame().GetCurrentFrame(),Direction:this.direction_});
+            this.SetCurrentAnimation({Animation:move,StartFrame:game_.GetCurrentFrame(),Direction:this.direction_});
         }
     }
 
