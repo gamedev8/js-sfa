@@ -106,7 +106,7 @@ function StartDramaticBattle()
 
 function StartBattle()
 {
-    StartQuickMatch();
+    StartDramaticBattle();
 }
 
 function StartDramaticBattleAI()
