@@ -251,6 +251,15 @@ User.prototype.Init = function(isUser1)
         this.selectedCharStance_.Element.className = "select-stance-p2";
         this.randomCharFace_.Element.className = "select-random-p2";
     }
+
+    /*
+    imageLookup_.GetBgB64(this.selectIcon_.Element,"images/misc/char-misc-sprites.png");
+    imageLookup_.GetBgB64(this.nameElement_.Element,"images/misc/name-sprites.png");
+    imageLookup_.GetBgB64(this.portriatElement_,"images/misc/head-sprites.png");
+    imageLookup_.GetBgB64(this.selectedCharStance_.Element,"images/misc/stance-sprites.png");
+    imageLookup_.GetBgB64(this.randomCharFace_.Element,"images/misc/char-sprites.png");
+    imageLookup_.GetBgB64(this.shadowElement_.Element,"images/misc/char-sprites.png");
+    */
 }
 
 /*input handler*/
@@ -687,6 +696,12 @@ var CreateCharSelect = function(user1,user2)
         parentElement.appendChild(this.element_);
         parentElement.style.backgroundImage = "url(images/misc/misc/player-select-back-bg.png)";
         parentElement.style.backgroundRepeat = "no-repeat";
+
+        /*
+        this.playerSelectImg_.src = imageLookup_.GetB64("images/misc/player-select.png");
+        imageLookup_.GetBgB64(parentElement,"images/misc/player-select-back-bg.png");
+        imageLookup_.GetBgB64(this.element_,"images/misc/player-select-bg.png");
+        */
 
         /*init music*/
         //soundManager_.Load(this.music_);

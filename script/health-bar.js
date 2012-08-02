@@ -43,7 +43,7 @@ var CreateHealthBar = function(pnlHealthbarID,team)
     /**/
     HealthBar.prototype.Release = function()
     {
-        utils_.RemoveChildrenFromDOM(this.GetHealthbarElement(), true);
+        utils_.RemoveChildrenFromDOM(this.healthbarElement_, true);
     }
 
 
@@ -54,17 +54,23 @@ var CreateHealthBar = function(pnlHealthbarID,team)
         spriteLookup_.Set(img,"images/misc/misc/health-bar.png");
 
         this.SetDamageElement(window.document.createElement("div"));
-        this.GetDamageElement().className = "damage";
-        this.GetDamageElement().style.width = "0px";
-        this.GetDamageElement().style.display = "none";
+        this.damageElement_.className = "damage";
+        this.damageElement_.style.width = "0px";
+        this.damageElement_.style.display = "none";
         this.SetLifeElement(window.document.createElement("div"));
-        this.GetLifeElement().className = "life";
-        this.GetLifeElement().style.width = this.GetAmount() + "px";
+        this.lifeElement_.className = "life";
+        this.lifeElement_.style.width = this.amount_ + "px";
 
-        this.GetHealthbarElement().appendChild(img);
-        this.GetHealthbarElement().appendChild(this.GetLifeElement());
-        this.GetHealthbarElement().appendChild(this.GetDamageElement());
+        this.healthbarElement_.appendChild(img);
+        this.healthbarElement_.appendChild(this.lifeElement_);
+        this.healthbarElement_.appendChild(this.damageElement_);
 
+        /*
+        imageLookup_.GetBgB64(img,"images/misc/bars-sprites.png");
+        imageLookup_.GetBgB64(this.damageElement_,"images/misc/health-bar-damage.png");
+        imageLookup_.GetBgB64(this.lifeElement_,"images/misc/health-bar-life.png");
+        imageLookup_.GetBgB64(this.healthbarElement_,"images/misc/bars-sprites.png");
+        */
         this.isInitialized_ = true;
     }
 
@@ -72,37 +78,37 @@ var CreateHealthBar = function(pnlHealthbarID,team)
     {
         this.SetCurrentDamage(0);
         if(this.GetTeam() == 1)
-            this.GetDamageElement().style.right = "";
+            this.damageElement_.style.right = "";
         else if(this.GetTeam() == 2)
-            this.GetDamageElement().style.left = "";
+            this.damageElement_.style.left = "";
 
-        this.SetAmount(this.GetMax());
-        this.GetDamageElement().style.width = "0px";
-        this.GetLifeElement().style.width = this.GetAmount() + "px";
+        this.SetAmount(this.max_);
+        this.damageElement_.style.width = "0px";
+        this.lifeElement_.style.width = this.amount_ + "px";
     }
 
     /*changes healthbar*/
     HealthBar.prototype.Change = function(delta)
     {
-        /*return this.GetAmount();*/
+        /*return this.amount_;*/
 
-        var newAmount = Math.min(Math.max(this.GetAmount() - delta,0), this.GetMax());
-        var damage = this.GetAmount() - newAmount;
-        this.GetLifeElement().style.width = newAmount + "px";
+        var newAmount = Math.min(Math.max(this.amount_ - delta,0), this.max_);
+        var damage = this.amount_ - newAmount;
+        this.lifeElement_.style.width = newAmount + "px";
         if(!!damage)
         {
-            this.SetCurrentDamage(this.GetCurrentDamage() + damage);
+            this.SetCurrentDamage(this.currentDamage_ + damage);
             var offset = HEALTHBAR.LIFE_OFFSETX + newAmount;
             if(this.GetTeam() == 1)
-                this.GetDamageElement().style.right = offset + "px";
+                this.damageElement_.style.right = offset + "px";
             else if(this.GetTeam() == 2)
-                this.GetDamageElement().style.left = offset + "px";
-            this.GetDamageElement().style.width = this.GetCurrentDamage() + "px";
-            this.GetDamageElement().style.display = "";
+                this.damageElement_.style.left = offset + "px";
+            this.damageElement_.style.width = this.currentDamage_ + "px";
+            this.damageElement_.style.display = "";
         }
 
         this.SetAmount(newAmount);
-        return this.GetAmount();
+        return this.amount_;
     }
 
     HealthBar.prototype.FrameMove = function(frame)
@@ -111,10 +117,10 @@ var CreateHealthBar = function(pnlHealthbarID,team)
 
     HealthBar.prototype.Render = function(frame)
     {
-        if(!!this.GetCurrentDamage() && (frame % HEALTHBAR.ANIMATION_RATE == 0))
+        if(!!this.currentDamage_ && (frame % HEALTHBAR.ANIMATION_RATE == 0))
         {
-            this.SetCurrentDamage(this.GetCurrentDamage() - 1)
-            this.GetDamageElement().style.width = this.GetCurrentDamage() + "px";
+            this.SetCurrentDamage(this.currentDamage_ - 1)
+            this.damageElement_.style.width = this.currentDamage_ + "px";
         }
     }
     return new HealthBar(pnlHealthbarID,team);

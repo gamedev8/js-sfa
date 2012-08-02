@@ -39,6 +39,10 @@
                     }
                 }
             })(Date.now(),callbackFn,context);
+            script.onerror = function()
+            {
+                Alert("not found");
+            }
             window.document.body.appendChild(script);
             return true;
         }
@@ -180,6 +184,10 @@ var CreateStuffLoader = function()
     {
         for(var i in stuff_)
             ++nbElements_;
+
+        if(!nbElements_)
+            callback_.call(context_ || window);
+
         callback_ = callback;
         context_ = context;
         reportProgressCallback_ = reportProgressCallback;

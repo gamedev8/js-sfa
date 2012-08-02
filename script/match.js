@@ -247,31 +247,17 @@ var CreateMatch = function(team1,team2,stage)
     /**/
     Match.prototype.Pause = function()
     {
-        if(!faceoff_.IsActive())
-        {
-            stage_.Pause();
-            this.TeamA.Pause();
-            this.TeamB.Pause();
-        }
-        else
-        {
-            faceoff_.Pause();
-        }
+        stage_.Pause();
+        this.TeamA.Pause();
+        this.TeamB.Pause();
     }
 
     /**/
     Match.prototype.Resume = function()
     {
-        if(!faceoff_.IsActive())
-        {
-            stage_.Resume();
-            this.TeamA.Resume();
-            this.TeamB.Resume();
-        }
-        else
-        {
-            faceoff_.Resume();
-        }
+        stage_.Resume();
+        this.TeamA.Resume();
+        this.TeamB.Resume();
     }
 
     Match.prototype.PlayerIndex = 0;
@@ -339,6 +325,7 @@ var CreateMatch = function(team1,team2,stage)
         player.onDecComboRefCountFn_ = decComboRefCount(this,myTeam);
         player.getCurrentComboCountFn_ = getCurrentComboCount(this,myTeam);
         player.InitSprite();
+        player.SetBgBase64();
         if(team == 1)
             player.ChangeDirection(true);
 
@@ -349,6 +336,7 @@ var CreateMatch = function(team1,team2,stage)
     {
         stage_.Start();
         faceoff_.Init();
+        announcer_.Init();
 
         this.TeamA.SetPlayers(team1);
         this.TeamB.SetPlayers(team2);
@@ -628,6 +616,15 @@ var CreateMatch = function(team1,team2,stage)
             this.faceoffElement_.appendChild(this.vsElement_);
 
             this.Reset();
+
+            /*
+            imageLookup_.GetBgB64(this.teamAFaceoffElement_,"images/misc/head-sprites.png");
+            imageLookup_.GetBgB64(this.teamBFaceoffElement_,"images/misc/head-sprites.png");
+            imageLookup_.GetBgB64(this.teamANameElement_,"images/misc/name-sprites.png");
+            imageLookup_.GetBgB64(this.teamBNameElement_,"images/misc/name-sprites.png");
+            imageLookup_.GetBgB64(this.vsElement_,"images/misc/head-sprites.png");
+            */
+
             window.document.getElementById("pnlStage").appendChild(this.faceoffElement_);
         }
 

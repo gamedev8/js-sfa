@@ -28,10 +28,11 @@
 
         var div = window.document.createElement("div");
         div.className = "player";
+        /*this.B64Key = "images/misc/" + folder + "/trail-sprites.png";*/
         div.style.backgroundImage = "url(images/misc/" + folder + "/trail-sprites.png)";
         div.appendChild(img);
 
-        this.Trail[this.Trail.length] = {StartFrame:0,Element:div,Animation:animation,FrameIndex:0,LastImageSrc:"",Coords:[]};
+        this.Trail[this.Trail.length] = {StartFrame:0,Element:div,Animation:animation,FrameIndex:0,LastImageSrc:"",Coords:[],HasB64:false};
 
         this.FollowElement = this.FollowElement || followElement;
         if(!!this.FollowElement)
@@ -75,6 +76,13 @@
             var container = this.FollowElement.parentNode;
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
+                /*
+                if(!this.Trail[i].HasB64)
+                {
+                    imageLookup_.GetBgB64(this.Trail[i].Element, this.B64Key);
+                    this.Trail[i].HasB64 = true;
+                }
+                */
                 AutoApplyFlip(this.Trail[i].Element,direction == -1);
                 this.Trail[i].Animation.ClearAllFrameUserData();
                 /*

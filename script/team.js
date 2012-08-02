@@ -63,11 +63,15 @@
 
     Team.prototype.Init = function()
     {
-        this.GetPortriatImg().style.display = "";
-        this.GetNameImg().style.display = "";
-        this.GetHealthbar().Init();
-        this.GetEnergybar().Init();
+        portriatImg_.style.display = "";
+        nameImg_.style.display = "";
+        healthbar_.Init();
+        energybar_.Init();
 
+        /*
+        imageLookup_.GetBgB64(portriatImg_,"images/misc/char-sprites.png");
+        imageLookup_.GetBgB64(nameImg_,"images/misc/char-sprites.png");
+        */
         this.Hide();
     }
 
@@ -117,11 +121,11 @@
     /*remove any DOM element that was added by this instance*/
     Team.prototype.Release = function()
     {
-        this.GetPortriatImg().style.display = "none";
-        this.GetNameImg().style.display = "none";
+        portriatImg_.style.display = "none";
+        nameImg_.style.display = "none";
         this.GetComboText().HideNow();
-        this.GetHealthbar().Release();
-        this.GetEnergybar().Release();
+        healthbar_.Release();
+        energybar_.Release();
         for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).Release();
         this.SetCursor(0);
@@ -164,8 +168,8 @@
         for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).OnFrameMove(frame,x,y);
 
-        this.GetHealthbar().FrameMove(frame);
-        this.GetEnergybar().FrameMove(frame);
+        healthbar_.FrameMove(frame);
+        energybar_.FrameMove(frame);
     }
 
 
@@ -177,15 +181,15 @@
             this.SetLastCursor(this.GetCursor());
             if(!!this.GetPlayer(this.GetCursor()))
             {
-                spriteLookup_.Set(this.GetNameImg(), this.GetPlayer(this.GetCursor()).GetNameImageSrc());
-                spriteLookup_.Set(this.GetPortriatImg(), this.GetPlayer(this.GetCursor()).GetPortriatImageSrc());
+                spriteLookup_.Set(nameImg_, this.GetPlayer(this.GetCursor()).GetNameImageSrc());
+                spriteLookup_.Set(portriatImg_, this.GetPlayer(this.GetCursor()).GetPortriatImageSrc());
             }
         }
         for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.GetPlayer(i).Render(frame,deltaX);
 
-        this.GetEnergybar().Render(frame);
-        this.GetHealthbar().Render(frame);
+        energybar_.Render(frame);
+        healthbar_.Render(frame);
     }
 
     return new Team(num);

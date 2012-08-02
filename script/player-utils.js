@@ -466,13 +466,13 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
 var CreateFrameImageLookup = function()
 {
     var images_ = {};
-    var data_ = {};
     var nbImages_ = 0;
     var nbImagesLoading_ = 0;
     var element_ = window.document.getElementById("spnImagesLoading");
     
     var FrameImageLookup = function()
     {
+        this.data_ = {}
     }
     
     FrameImageLookup.prototype.GetNbImages = function() { return nbImages_; }
@@ -480,9 +480,9 @@ var CreateFrameImageLookup = function()
     FrameImageLookup.prototype.GetElement = function() { return element_; }
     FrameImageLookup.prototype.LoadBase64Audio = function(key,value)
     {
-        if(!data_[key])
+        if(!this.data_[key])
         {
-            data_[key] = value;
+            this.data_[key] = value;
         }
         else
         {
@@ -523,6 +523,17 @@ var CreateFrameImageLookup = function()
     {
         return images_[src];
     }
+    FrameImageLookup.prototype.GetBgB64 = function(element,src)
+    {
+        element.style.backgroundImage = this.GetB64(src,true);
+    }
+    FrameImageLookup.prototype.GetB64 = function(src,isBg)
+    {
+        if(!!isBg)
+            return "url('" + this.data_[src] + "')";
+        else
+            return this.data_[src];
+    }
     return new FrameImageLookup();
 }
 var imageLookup_ = CreateFrameImageLookup();
@@ -530,7 +541,6 @@ var imageLookup_ = CreateFrameImageLookup();
 /************************************************************************/
 var CreateSpriteLookup = function()
 {
-    var data_ = {};
     var nbImages_ = 0;
     var nbImagesLoading_ = 0;
     var element_ = window.document.getElementById("spnImagesLoading");
@@ -538,36 +548,45 @@ var CreateSpriteLookup = function()
     
     var SpriteLookup = function()
     {
+        this.data_ = {};
     }
     
     /*Image only loaded once*/
-    SpriteLookup.prototype.Load = function(key,spriteFilename,left,bottom,width,height)
+    SpriteLookup.prototype.Load = function(key,src,left,bottom,width,height)
     {
-        spriteFilename = spriteFilename.replace("|","");
+        src = src.replace("|","");
     
         if(!this.Get(key))
         {
-            data_[key] = {Key:key, Sprite:spriteFilename, Left:left, Bottom:bottom, Width:width, Height:height};
+            this.data_[key] = {Key:key, Sprite:src, Left:left, Bottom:bottom, Width:width, Height:height};
         }
-        return data_[key];
+        return this.data_[key];
     }
     SpriteLookup.prototype.Get = function(key)
     {
-        return data_[key];
+        return this.data_[key];
     }
     SpriteLookup.prototype.GetLeft = function(key)
     {
-        return (data_[key] || {}).Left || "";
+        return (this.data_[key] || {}).Left || "";
     }
-    SpriteLookup.prototype.Set = function(element, key, setBackgroundImage,displayNone)
+    SpriteLookup.prototype.Set = function(element, key, setBackgroundImage,displayNone,isBase64)
     {
         var data = this.Get(key);
         if(!!data)
         {
             if(!!setBackgroundImage)
             {
-                if(!element.style.backgroundImage)
-                    element.style.backgroundImage = "url(" + data.Sprite + ")";
+                if(!isBase64)
+                {
+                    if(!element.style.backgroundImage)
+                        element.style.backgroundImage = "url(" + data.Sprite + ")";
+                }
+                else
+                {
+                    if(!element.style.backgroundImage)
+                        element.style.backgroundImage = "url(" + imageLookup_.data_[data.Sprite] + ")";
+                }
             }
             if(element.style.backgroundPosition != data.Left + " " + data.Bottom)
             {
@@ -668,7 +687,6 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
         this.element_ = window.document.createElement("div");
         this.element_.className="projectile";
         this.element_.style.display="none";
-        this.element_.style.backgroundImage = "url(images/misc/" + player.folder_.toLowerCase() + "/projectiles.png)";
         window.document.getElementById("pnlStage").appendChild(this.element_);
         this.isActive_ = false;
         this.attackState_ = attackFlags || 0;
@@ -823,7 +841,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
             this.Cancel();
             return null;
         }
-        this.element_.style.display = "none";
+        //this.element_.style.display = "none";
         ++this.t_;
         this.isActive_ = true;
 
@@ -898,7 +916,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation, xOffse
             offsetY = newFrame.Y;
 
             var data = spriteLookup_.Get(newFrame.RightSrc)
-            if(!!data && (this.element_.style.backgroundPositionX != data.Left))
+            if(!!data && (this.element_.style.backgroundPosition != data.Left + " " + data.Bottom))
             {
                 this.element_.style.width = data.Width;
                 this.element_.style.height = data.Height;

@@ -31,13 +31,18 @@
     {
         /*insert coin*/
         stuffLoader_.Queue("insert-coin.js",RESOURCE_TYPES.BASE64AUDIO);
+        stuffLoader_.Queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
+        stuffLoader_.Queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
+
+        /*stuffLoader_.Queue("script/img/misc.png.js",RESOURCE_TYPES.SCRIPT);*/
+
         stuffLoader_.Queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/announcer-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font1/insert.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font1/credits.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font1/cap.png",RESOURCE_TYPES.IMAGE);
 
-        /*match*/
+        //match
         stuffLoader_.Queue("images/misc/misc/shadow-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/dirt-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/blast-sprites.png",RESOURCE_TYPES.IMAGE);
@@ -50,7 +55,7 @@
         stuffLoader_.Queue("images/misc/misc/health-bar-damage.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
 
-        /*character select*/
+        //character select
         stuffLoader_.Queue("images/misc/misc/player-select.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/font3/name-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.Queue("images/misc/misc/char-misc-sprites.png",RESOURCE_TYPES.IMAGE);
@@ -126,6 +131,13 @@
         text1_ = fontSystem_.AddText("pnlCredits","",432,555,0,"font1");
         //text1_.ShowNow(432);
         window.document.getElementById("pnlStage").style.backgroundImage = "url(images/misc/misc/insert-coin.png)";
+
+        /*
+        imageLookup_.GetBgB64(capElement_,"images/misc/cap.png");
+        imageLookup_.GetBgB64(insertCoinElement_,"images/misc/insert.png");
+        imageLookup_.GetBgB64(creditsTextElement_,"images/misc/credits.png");
+        imageLookup_.GetBgB64(window.document.getElementById("pnlStage"), "images/misc/insert-coin.png");
+        */
     }
 
 

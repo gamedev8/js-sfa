@@ -12,6 +12,14 @@
 
     var Init_ = function()
     {
+        /*
+        imageLookup_.GetBgB64(round_.Element,"images/misc/announcer-sprites.png");
+        imageLookup_.GetBgB64(roundNumber_.Element,"images/misc/announcer-sprites.png");
+        imageLookup_.GetBgB64(fight_.Element,"images/misc/announcer-sprites.png");
+        imageLookup_.GetBgB64(ko_.Element,"images/misc/announcer-sprites.png");
+        imageLookup_.GetBgB64(perfect_.Element,"images/misc/announcer-sprites.png");
+        */
+
         var y = 0;
         round_.Animation = CreateBasicAnimation("round",[]);
         round_.Animation.AddFrame(this,"|images/misc/misc/round-0.png",2,0,y);
@@ -105,9 +113,13 @@
     /**/
     var Announcer = function()
     {
-        Init_.call(this);
     }
 
+
+    Announcer.prototype.Init = function()
+    {
+        Init_.call(this);
+    }
 
     Announcer.prototype.Release = function()
     {

@@ -738,39 +738,41 @@ Player.prototype.CreateKen = function(user)
 
         projectile.fx_ = 0.5;
         projectile.fy_ = 0.5;
+
+
         projectile.EnergyToAdd = (10);
-        projectile.attackState_ = ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE_HARD;
+        projectile.attackState_ = ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE_HARD;
         projectile.hitState_ = HIT_FLAGS.FAR;
-        projectile.flagsToSend_ = ATTACK_FLAGS.HARD | ATTACK_FLAGS.REAR;
-        if (x == 0)
+        projectile.flagsToSend_ = ATTACK_FLAGS.HARD|ATTACK_FLAGS.REAR;
+        if(x == 0)
             projectile.flagsToSend_ |= ATTACK_FLAGS.SPECIAL1;
-        else if (x == 1)
+        else if(x == 1)
             projectile.flagsToSend_ |= ATTACK_FLAGS.SPECIAL2;
-        else if (x == 2)
+        else if(x == 2)
             projectile.flagsToSend_ |= ATTACK_FLAGS.SPECIAL3;
 
         projectile.baseDamage_ = 25;
 
         /*this formula is applied each frame to compute the X coordinate of the projectile*/
-        projectile.animation_.VxFn = (function(args) { return function(xSpeed, t) { return xSpeed; } });
+        projectile.animation_.VxFn = (function(args) { return function(xSpeed,t) { return xSpeed; } });
         /*this formula is applied each frame to compute the Y coordinate of the projectile*/
-        projectile.animation_.VyFn = (function(args) { return function(ySpeed, t) { return ySpeed; } });
+        projectile.animation_.VyFn = (function(args) { return function(ySpeed,t) { return ySpeed; } });
 
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-1.png", 1, 0, 0, 30);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-2.png", 2, 0, 0, 0);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-3.png", 1, 0, 0, 50);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-4.png", 2, 0, 0, 0);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-5.png", 1, 0, 0, 30);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-6.png", 2, 0, 0, 0);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-7.png", 1, 0, 0, 40);
-        projectile.animation_.AddFrame(player, "", folder + "/x-fb-projectile-8.png", 2, 0, 0, 0);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-1.png",1,0,0,30);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-2.png",2,0,0,0);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-3.png",1,0,0,50);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-4.png",2,0,0,0);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-5.png",1,0,0,30);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-6.png",2,0,0,0);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-7.png",1,0,0,40);
+        projectile.animation_.AddFrame(player,"",folder + "/x-fb-projectile-8.png",2,0,0,0);
 
-        projectile.disintegrationAnimation_.AddFrame(player, "", folder + "/x-fb-projectile-hit-0.png", 3, 0, 0, -32);
-        projectile.disintegrationAnimation_.AddFrame(player, "", folder + "/x-fb-projectile-hit-1.png", 3, 0, 0, -44);
-        projectile.disintegrationAnimation_.AddFrame(player, "", folder + "/x-fb-projectile-hit-2.png", 3, 0, 0, -20);
-        projectile.disintegrationAnimation_.AddFrame(player, "", folder + "/x-fb-projectile-hit-3.png", 3, 0, 0, -6);
-        projectile.disintegrationAnimation_.AddFrame(player, "", folder + "/x-fb-projectile-hit-4.png", 3, 0, 0, -2);
-        projectile.disintegrationAnimation_.AddFrame(player, "", folder + "/x-fb-projectile-hit-5.png", 3, 0, 0, 0);
+        projectile.disintegrationAnimation_.AddFrame(player,"",folder + "/x-fb-projectile-hit-0.png",3,0,0,-32);
+        projectile.disintegrationAnimation_.AddFrame(player,"",folder + "/x-fb-projectile-hit-1.png",3,0,0,-44);
+        projectile.disintegrationAnimation_.AddFrame(player,"",folder + "/x-fb-projectile-hit-2.png",3,0,0,-20);
+        projectile.disintegrationAnimation_.AddFrame(player,"",folder + "/x-fb-projectile-hit-3.png",3,0,0,-6);
+        projectile.disintegrationAnimation_.AddFrame(player,"",folder + "/x-fb-projectile-hit-4.png",3,0,0,-2);
+        projectile.disintegrationAnimation_.AddFrame(player,"",folder + "/x-fb-projectile-hit-5.png",3,0,0,0);
 
 
         var button = BUTTONS.LIGHT_PUNCH;

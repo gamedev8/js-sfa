@@ -697,11 +697,30 @@ Player.prototype.InitSprite = function()
 {
     var src = "images/misc/" + this.folder_.toLowerCase() + "/sprites.png";
     this.spriteElement_.style.backgroundImage = "url('" + src + "')";
+    for(var i = 0; i < this.projectiles_.length; ++i)
+        this.projectiles_[i].element_.style.backgroundImage = "url(images/misc/" + this.folder_.toLowerCase() + "/projectiles.png)";
 }
 
-Player.prototype.SetSpriteData = function(base64Data)
+Player.prototype.SetBgBase64 = function()
 {
-    this.spriteElement_.style.backgroundImage = "url(" + base64Data + ")";
+    /*
+    var src = "images/misc/" + this.folder_.toLowerCase() + "/sprites.png";
+    this.spriteElement_.style.backgroundImage = imageLookup_.GetB64(src,true);
+    this.shadow_.style.backgroundImage = imageLookup_.GetB64("images/misc/shadow-sprites.png",true);
+    for(var i = 0; i < this.projectiles_.length; ++i)
+        this.projectiles_[i].element_.style.backgroundImage = imageLookup_.GetB64("images/misc/" + this.folder_.toLowerCase() + "/projectiles.png",true);
+    this.SetBgBase64Helper(this.frontHitReportImages_,"", "images/misc/blast-sprites.png");
+    this.SetBgBase64Helper(this.rearHitReportImages_,"", "images/misc/blast-sprites.png");
+    this.SetBgBase64Helper(this.otherAnimations_.Dirt,"Element", "images/misc/dirt-sprites.png");
+    this.SetBgBase64Helper(this.otherAnimations_.BigDirt,"Element", "images/misc/dirt-sprites.png");
+    this.SetBgBase64Helper(this.otherAnimations_.Dizzy,"Element", "images/misc/misc-sprites.png");
+    */
+}
+
+Player.prototype.SetBgBase64Helper = function(arr,attrib,key)
+{
+    for(var i = 0, length = arr.length; i < length; ++i)
+        imageLookup_.GetBgB64((!!attrib ? arr[i][attrib] : arr[i]),key);
 }
 
 Player.prototype.SetSprite = function(frame)
@@ -825,6 +844,4 @@ Player.prototype.RenderShadow = function()
             this.shadow_.style.left = this.spriteElement_.style.left;
         }
     }
-
-
 }
