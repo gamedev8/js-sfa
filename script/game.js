@@ -21,6 +21,7 @@ var CreateGame = function()
 {
     var user1_ = null;
     var user2_ = null;
+    var users_ = [];
     var frame_ = 0;
     var keyboardState_ = {};
     var keyState_ = 0;
@@ -35,7 +36,6 @@ var CreateGame = function()
     var isInitialized_ = false;
     var managed_ = null;
     var nextTimeout_ = 0;
-    var match_ = null;
     var charSelect_ = null;
     var insertCoinScreen_ = null;
     var pnlLoadingProgress_ = window.document.getElementById("pnlLoadingProgress");
@@ -46,18 +46,20 @@ var CreateGame = function()
     {
         lastTime_ = this.GetCurrentTime();
         this.InitGame();
+        this.match_ = null;
+        this.usingGamepads_ = !!Gamepad.supported;
     }
 
-    Game.prototype.GetMatch = function() { return match_; }
+    Game.prototype.GetMatch = function() { return this.match_; }
 
     Game.prototype.IsGameOver = function()
     {
         return frame_ >= CONSTANTS.MAX_FRAME;
     }
 
-    Game.prototype.AddManagedText = function(elementId,x,y,fontPath)
+    Game.prototype.AddManagedText = function(elementId,x,y,fontPath,isLeft)
     {
-        return fontSystem_.AddText(elementId,"",x,y,0,fontPath);
+        return fontSystem_.AddText(elementId,"",x,y,0,fontPath,isLeft);
     }
 
     Game.prototype.SetSpeed = function(value)
@@ -105,8 +107,8 @@ var CreateGame = function()
 
     Game.prototype.OnStageImagesLoaded = function()
     {
-        if(!!match_)
-            match_.GetStage().Init();
+        if(!!this.match_)
+            this.match_.GetStage().Init();
     }
 
     Game.prototype.ReleaseText = function()
@@ -193,7 +195,6 @@ var CreateGame = function()
     {
         this.startPaused_ = startPaused;
         this.ResetGameData();
-        //  [load stage assets here]
 
         var fn = function(thisValue)
         {
@@ -222,9 +223,9 @@ var CreateGame = function()
             charSelect_.Release();
         }
 
-        match_ = CreateMatch(a,b,stage);
-        managed_ = match_;
-        announcer_.SetMatch(match_);
+        this.match_ = CreateMatch(a,b,stage);
+        managed_ = this.match_;
+        announcer_.SetMatch(this.match_);
         this.ShowElements();
 
 
@@ -311,8 +312,8 @@ var CreateGame = function()
         speed_ = CONSTANTS.NORMAL_SPEED;
         if(!!charSelect_)
             charSelect_.Release();
-        if(!!match_)
-            match_.Release();
+        if(!!this.match_)
+            this.match_.Release();
         if(!!insertCoinScreen_)
             insertCoinScreen_.Release();
     }
@@ -366,6 +367,48 @@ var CreateGame = function()
     {
         return (keyCode == key && !!keyboardState_["_" + key] && !isDown)
     }
+    /*Helper method - forwards the button press to the key press handler function*/
+    Game.prototype.HandleGamePadHelper = function(pad,key)
+    {
+        if(!!pad[key] != keyboardState_["_" + key])
+        {
+            if(!!managed_)
+            {
+                this.HandleKeyPress({which:key},!!pad[key]);
+            }
+        }
+    }
+    /*Handles gamepad button presses*/
+    Game.prototype.HandleGamePadButtonPresses = function()
+    {
+        if(!!this.usingGamepads_)
+        {
+            for(var i = 0, length = users_.length; i < length; ++i)
+            {
+                if(users_[i].GamepadIndex != undefined)
+                {
+                    var pad = Gamepad.getState([users_[i].GamepadIndex]);
+                    if(!!pad)
+                    {
+                        this.HandleGamePadHelper(pad,GAMEPAD.DOWN);
+                        this.HandleGamePadHelper(pad,GAMEPAD.LEFT);
+                        this.HandleGamePadHelper(pad,GAMEPAD.RIGHT);
+                        this.HandleGamePadHelper(pad,GAMEPAD.UP);
+                        this.HandleGamePadHelper(pad,GAMEPAD.B0);
+                        this.HandleGamePadHelper(pad,GAMEPAD.B1);
+                        this.HandleGamePadHelper(pad,GAMEPAD.B2);
+                        this.HandleGamePadHelper(pad,GAMEPAD.B3);
+                        this.HandleGamePadHelper(pad,GAMEPAD.LS0);
+                        this.HandleGamePadHelper(pad,GAMEPAD.LS1);
+                        this.HandleGamePadHelper(pad,GAMEPAD.RS0);
+                        this.HandleGamePadHelper(pad,GAMEPAD.RS1);
+                        this.HandleGamePadHelper(pad,GAMEPAD.START);
+                        this.HandleGamePadHelper(pad,GAMEPAD.SELECT);
+                    }
+                }
+            }
+        }
+    }
     /*Handle game wide key events, or pass the event on to the match*/
     Game.prototype.HandleKeyPress = function(e,isDown)
     {
@@ -393,7 +436,14 @@ var CreateGame = function()
 
         keyboardState_["_" + keyCode] = isDown;
         if(!!managed_)
+        {
             managed_.OnKeyStateChanged(isDown,keyCode,frame_);
+        }
+    }
+
+    Game.prototype.HandleInput = function()
+    {
+        this.HandleGamePadButtonPresses();
     }
 
     Game.prototype.End = function()
@@ -405,23 +455,30 @@ var CreateGame = function()
         announcer_.Release();
     }
 
-    Game.prototype.HandleInput = function()
+    Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
-    }
-
-    Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
-    {
-        user1_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        user1_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
         return user1_;
     }
-    Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
+    Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
-        user2_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        user2_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
         return user2_;
     }
-    Game.prototype.AddUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn)
+    Game.prototype.AddUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
-        return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+        var user = null;
+        if(gamepad != undefined)
+            user = this.AddGamepadUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+        else
+            user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+
+        users_.push(user);
+        return user;
+    }
+    Game.prototype.AddGamepadUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    {
+        return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
     }
 
 
@@ -452,31 +509,31 @@ var CreateGame = function()
         {
             this.RemoveState(GAME_STATES.STEP_FRAME);
             ++frame_;
-            //match_.PreFrameMove(frame_);
-            match_.FrameMove(frame_, keyboardState_);
+            //this.match_.PreFrameMove(frame_);
+            this.match_.FrameMove(frame_, keyboardState_);
             announcer_.FrameMove(frame_);
             soundManager_.FrameMove(frame_);
-            if(!match_.IsSuperMoveActive())
+            if(!this.match_.IsSuperMoveActive())
                 fontSystem_.FrameMove(frame_);
 
-            match_.Render(frame_);
-            if(!match_.IsSuperMoveActive())
+            this.match_.Render(frame_);
+            if(!this.match_.IsSuperMoveActive())
                 fontSystem_.Render(frame_);
             announcer_.Render(frame_);
             soundManager_.Render(frame_);
 
-            match_.RenderComplete(frame_);
+            this.match_.RenderComplete(frame_);
             this.ShowFPS();
         }
 
-        if(!match_.IsMatchOver(frame_))
+        if(!this.match_.IsMatchOver(frame_))
         {
             //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             nextTimeout_ = window.setTimeout(runGameLoop_,speed_);
         }
         else
         {
-            match_.HandleMatchOver(frame_);
+            this.match_.HandleMatchOver(frame_);
         }
     }
 
@@ -505,7 +562,7 @@ var CreateGame = function()
         }
         else
         {
-            match_.HandleMatchOver(frame_);
+            this.match_.HandleMatchOver(frame_);
         }
     }
 

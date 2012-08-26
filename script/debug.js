@@ -10,63 +10,63 @@
 
     Debug.prototype.P1 = function()
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamA().GetPlayer(0);
+        if(!!game_.match_)
+            return game_.match_.GetTeamA().GetPlayer(0);
         return null;
     }
 
     Debug.prototype.P2 = function()
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamB().GetPlayer(0);
+        if(!!game_.match_)
+            return game_.match_.GetTeamB().GetPlayer(0);
         return null;
     }
 
     Debug.prototype.T1 = function(index)
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamA().GetPlayer(index || 0);
+        if(!!game_.match_)
+            return game_.match_.GetTeamA().GetPlayer(index || 0);
         return null;
     }
 
     Debug.prototype.T2 = function(index)
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamB().GetPlayer(index || 0);
+        if(!!game_.match_)
+            return game_.match_.GetTeamB().GetPlayer(index || 0);
         return null;
     }
 
     Debug.prototype.P1SendInput = function(input)
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamA().GetPlayer(0).SendInput(input);
+        if(!!game_.match_)
+            return game_.match_.GetTeamA().GetPlayer(0).SendInput(input);
         return null;
     }
 
     Debug.prototype.P1ClearInput = function()
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamA().GetPlayer(0).ClearInput();
+        if(!!game_.match_)
+            return game_.match_.GetTeamA().GetPlayer(0).ClearInput();
         return null;
     }
 
     Debug.prototype.P2SendInput = function(input)
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamB().GetPlayer(0).SendInput(input);
+        if(!!game_.match_)
+            return game_.match_.GetTeamB().GetPlayer(0).SendInput(input);
         return null;
     }
 
     Debug.prototype.P2ClearInput = function()
     {
-        if(!!game_.GetMatch())
-            return game_.GetMatch().GetTeamB().GetPlayer(0).ClearInput();
+        if(!!game_.match_)
+            return game_.match_.GetTeamB().GetPlayer(0).ClearInput();
         return null;
     }
 
     Debug.prototype.P1TestAI = function()
     {
-        if(!!game_.GetMatch())
+        if(!!game_.match_)
         {
             this.P1().SetAI(CreateSimpleRyuAI);
         }
@@ -75,7 +75,7 @@
 
     Debug.prototype.P2TestAI = function()
     {
-        if(!!game_.GetMatch())
+        if(!!game_.match_)
         {
             this.P2().SetAI(CreateSimpleRyuAI);
         }
@@ -85,7 +85,7 @@
  
     Debug.prototype.T1TestAI = function(index)
     {
-        if(!!game_.GetMatch())
+        if(!!game_.match_)
         {
             this.T1(index || 0).SetAI(CreateSimpleRyuAI);
         }
@@ -94,7 +94,7 @@
  
     Debug.prototype.T2TestAI = function(index)
     {
-        if(!!game_.GetMatch())
+        if(!!game_.match_)
         {
             this.T2(index || 0).SetAI(CreateSimpleRyuAI);
         }
@@ -105,7 +105,7 @@
 
     Debug.prototype.InjectPlayer = function(playerId,team)
     {
-        if(!game_.GetMatch() || !game_.GetMatch().TeamA || !game_.GetMatch().TeamB)
+        if(!game_.match_ || !game_.match_.teamA_ || !game_.match_.teamB_)
         {
             AlertError("You can only inject a player during a match.");
             return;
@@ -138,10 +138,10 @@
                 {
                     var player = user.GetPlayer();
                     if(team == 1)
-                        game_.GetMatch().TeamA.AddPlayer(player);
+                        game_.match_.teamA_.AddPlayer(player);
                     else
-                        game_.GetMatch().TeamB.AddPlayer(player);
-                    game_.GetMatch().SetupPlayer(player,team);
+                        game_.match_.teamB_.AddPlayer(player);
+                    game_.match_.SetupPlayer(player,team);
                     player.SetAI(CreateSimpleRyuAI);
                 }
             })(user);

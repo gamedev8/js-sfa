@@ -3,14 +3,15 @@
 Player.prototype.LoadAssets = function()
 {
     stuffLoader_.Queue(this.name_.toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
-    stuffLoader_.Queue("script/img/" + this.folder_.toLowerCase() + ".png.js",RESOURCE_TYPES.SCRIPT);
+
+    //stuffLoader_.Queue("script/img/" + this.folder_.toLowerCase() + ".png.js",RESOURCE_TYPES.SCRIPT);
 
     
-    //stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
-    //stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-    //stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
-    //if(this.projectiles_.length > 0)
-    //    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
+    if(this.projectiles_.length > 0)
+        stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
 
 }
 
@@ -33,6 +34,7 @@ Player.prototype.QueueSwingSound = function(value)
     else if(!!(value & SWINGSOUND.HK)) this.QueueSound("audio/misc/hk.zzz");
     else if(!!(value & SWINGSOUND.MK)) this.QueueSound("audio/misc/mk.zzz");
     else if(!!(value & SWINGSOUND.LK)) this.QueueSound("audio/misc/lk.zzz");
+    else if(!!(value & SWINGSOUND.SLIDE0)) this.QueueSound("audio/misc/slide-0.zzz");
 }
 
 

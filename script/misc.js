@@ -1,9 +1,11 @@
 ﻿
 
-var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0Img, bg1Img)
+var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0YOffset, bg1YOffset)
 {
     this.name_ = name;
     this.bg0XOffset_ = bg0XOffset;
+    this.bg0YOffset_ = bg0YOffset || 0;
+    this.bg1YOffset_ = bg1YOffset || 0;
     this.maxLeftScroll_ = maxLeftScroll;
     this.maxRightScroll_ = maxRightScroll;
     this.bg0Img_ = "images/misc/stage/" + name + ".back.png";
@@ -11,11 +13,11 @@ var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0I
 }
 
 var stages_ = {};
-stages_["ken"] = new StageParams("ken", 129, -62.5, 322.5);
-stages_["ryu"] = new StageParams("chunli", -192, -382, -2);
-stages_["mbison"] = new StageParams("mbison", -192, -382, -2);
-stages_["akuma"] = new StageParams("akuma", -192, -382, -2);
-stages_["sodom"] = new StageParams("sodom", -192, -382, -2);
+stages_["ken"] = new StageParams("ken", 129, -62.5, 322.5, -21, -41);
+stages_["ryu"] = new StageParams("chunli", -192, -382, -2, -21, -41);
+stages_["mbison"] = new StageParams("mbison", -192, -382, -2, -21, -41);
+stages_["akuma"] = new StageParams("akuma", -192, -382, -2, -21, -41);
+stages_["sodom"] = new StageParams("sodom", -192, -382, -2, -21, -41);
 
 
 /*******************************************************************************************************************************/
@@ -75,7 +77,8 @@ function OnStageImagesLoaded()
 }
 
 /*Human users*/
-var u1_ = game_.AddUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q);
+//var u1_ = game_.AddUser1(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,0);
+var u1_ = game_.AddUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,0);
 var u2_ = game_.AddUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
 var val = 10000000;
 var u3_ = game_.AddUser(val+1,val+2,val+3,val+4,val+5,val+6,val+7,val+8,val+9,val+10,val+11);
@@ -88,10 +91,10 @@ u4_.isAlternateChar_ = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    u1_.SetChar(CHARACTERS.KEN);
-    u2_.SetChar(CHARACTERS.RYU);
+    u1_.SetChar(CHARACTERS.MBISON);
+    u2_.SetChar(CHARACTERS.KEN);
 
-    game_.StartMatch(false,[u1_],[u2_], stages_["sodom"]);
+    game_.StartMatch(false,[u1_],[u2_], stages_["ken"]);
 }
 
 /* multi player battle */
@@ -141,8 +144,8 @@ function Go()
 }
 function MaxOutEnergy()
 {
-    game_.GetMatch().GetTeamA().GetEnergybar().Change(1000);
-    game_.GetMatch().GetTeamB().GetEnergybar().Change(1000);
+    game_.match_.GetTeamA().GetEnergybar().Change(1000);
+    game_.match_.GetTeamB().GetEnergybar().Change(1000);
 }
 var debug_ = GetDebugInstance(game_);
 /*******************************************************************************************************************************/

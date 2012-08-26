@@ -58,12 +58,27 @@ Player.prototype.SendInput = function(input)
 }
 
 /*Adds a state change to the keyStateChange array*/
-Player.prototype.AddKeyStateChange = function(frame,keyCode)
+Player.prototype.AddKeyStateChange = function(frame,keyCode,isDown)
 {
     var frameOffset = 0;
     if(this.keyStates_.length > 0)
+    {
         frameOffset = frame - this.keyStates_[this.keyStates_.length-1].Frame + this.keyStates_[this.keyStates_.length-1].FrameOffset;
-    this.keyStates_[this.keyStates_.length] = {Bit:this.keyState_,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode};
+    }
+    this.keyStates_[this.keyStates_.length] = {Bit:this.keyState_,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode,NbFrames:1};
+    
+    /*if the key was let go calculate the number frames it was pressed*/
+    if(!isDown)
+    {
+        for(var i = this.keyStates_.length-1; i > -1; --i)
+        {
+            if(this.keyStates_[i].KeyCode == keyCode && !!(this.keyStates_[i].Bit & this.buttons_[keyCode].Bit))
+            {
+                this.keyStates_[i].NbFrames = frame - this.keyStates_[i].Frame;
+                return;
+            }
+        }
+    }
 }
 
 
@@ -90,7 +105,7 @@ Player.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
         if(oldState != this.keyState_)
         {
             this.keyStateChanged_ = true;
-            this.AddKeyStateChange(frame,keyCode);
+            this.AddKeyStateChange(frame,keyCode,isDown);
 
             if(!!isDown)
                 this.DebugShowKeys();
@@ -110,11 +125,34 @@ Player.prototype.CompareKeySequence = function(move,keys)
     var isMatch = true;
     do
     {
-        if(move.GetKey(keyIndex) != keys[keyIndex])
+        var userKey = keys[keyIndex].Bit;
+        var moveKey = move.GetKey(keyIndex);
+
+        if(keyIndex > 0)
+        {
+            var userDirKeys = move.StripAttackKeys(userKey);
+            var moveDirKeys = move.StripAttackKeys(moveKey);
+
+            var prevUserDirKeys = move.StripAttackKeys(keys[keyIndex-1].Bit);
+            var prevMoveDirKeys = move.StripAttackKeys(move.GetKey(keyIndex-1));
+
+            if((moveDirKeys != prevMoveDirKeys) && (userDirKeys == prevUserDirKeys))
+            {
+                return 0;
+            }
+        }
+
+        if(!(!move.MustChargeKey(keyIndex) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+        {
+            return 0;
+        }
+
+        if(moveKey != userKey)
         {
             isExactMatch = false;
         }
-        if((move.GetKey(keyIndex) & keys[keyIndex]) != move.GetKey(keyIndex))
+        /*check if the key was pressed at all*/
+        if((moveKey & userKey) != moveKey)
         {
             isMatch = false;
             break;
@@ -141,11 +179,14 @@ Player.prototype.CompareAlternateKeySequences = function(move,keys)
 
         inner : for(var j = 0, iLength = move.GetAlternateKeySequenceLength(i); j < iLength; ++j)
         {
-            if(move.GetAlternateKeySequence(i,j) != keys[j])
+            if(!(!move.MustChargeAlternateKey(i,j) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+                return 0;
+
+            if(move.GetAlternateKeySequence(i,j) != keys[j].Bit)
             {
                 isExactMatch = false;
             }
-            if((move.GetAlternateKeySequence(i,j) & keys[j]) != move.GetAlternateKeySequence(i,j))
+            if((move.GetAlternateKeySequence(i,j) & keys[j].Bit) != move.GetAlternateKeySequence(i,j))
             {
                 isMatch = false;
                 break inner;
@@ -161,12 +202,12 @@ Player.prototype.CompareAlternateKeySequences = function(move,keys)
 
 
 /*Returns a string from the keys*/
-Player.prototype.CutKey = function (keys,frame)
+Player.prototype.CutKey = function(keys,frame)
 {
     var retVal = {Duration:keys[keys.length-1].FrameOffset - keys[0].FrameOffset,Keys:[],Key:""};
     while(keys.length > 0)
     {
-        retVal.Keys[retVal.Keys.length] = keys[0].Bit;
+        retVal.Keys[retVal.Keys.length] = {Bit:keys[0].Bit,NbFrames:keys[0].NbFrames};
         retVal.Key += "_" + keys[0].Bit;
         keys = keys.slice(1);
     }

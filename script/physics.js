@@ -4,7 +4,7 @@
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
 
-    var GetMatch_ = function() { return game_.GetMatch(); }
+    var GetMatch_ = function() { return game_.match_; }
     var GetStage_ = function() { return GetMatch_().GetStage(); }
 
     var HasIntersection_ = function(a, b)
@@ -48,7 +48,7 @@
         var retVal = [];
         var match = GetMatch_();
         var PADDING = 1;
-        var players = (team == CONSTANTS.TEAM1) ? match.TeamB.GetPlayers() : match.TeamA.GetPlayers();
+        var players = (team == CONSTANTS.TEAM1) ? match.teamB_.GetPlayers() : match.teamA_.GetPlayers();
         var distance = 0;
         var otherRect = {};
         var hasP1RightIntersection = false;
@@ -117,6 +117,17 @@
                     if((hasP1BottomIntersection || hasP2BottomIntersection) && (hasP1RightIntersection || hasP2RightIntersection)) distance = rect.Bottom - otherRect.Top;
                     break;
                 }
+                default: /*check for any intersection*/
+                {
+                    if(
+                        (hasP1LeftIntersection || hasP1RightIntersection && hasP1BottomIntersection) /*right or left*/
+                        || (hasP2LeftIntersection || hasP2RightIntersection && hasP1BottomIntersection) /*right or left*/
+                       )
+                    {
+                        distance = 1;
+                    }
+                    break;
+                }
             };
 
             if(!!distance) temp[temp.length] = {Distance:Math.abs(distance), Player:players[i]};
@@ -168,6 +179,8 @@
         if(p2.IsBeingGrappled() && !p1.IsGrappling(p2.id_))
             return;
         if(p2.Flags.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
+            return;
+        if(!p2.IsVisible() && !p2.IsTeleporting())
             return;
         /*need to reform the "invulernable" flags - there are too many*/
         if(p2.Flags.Player.Has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
@@ -242,6 +255,8 @@
         if(!p2)
             return;
         if(p2.IsGrappling())
+            return;
+        if(!p2.IsVisible() && !p2.IsTeleporting())
             return;
         if(p2.Flags.Player.Has(PLAYER_FLAGS.IGNORE_ATTACKS))
             return;
@@ -356,6 +371,51 @@
     }
 
 
+    Physics.prototype.MoveOtherPlayers = function(player)
+    {
+        var myRect = player.GetRect();
+        var collisions = GetPlayersAtPosition_(myRect,player).reverse();
+        for(var i = 0, length = collisions.length; i < length; ++i)
+        {
+            var otherPlayer = collisions[i];
+            var otherRect = otherPlayer.GetRect();
+
+            if(otherPlayer.GetMidX() >= player.GetMidX()) /*must move to the right. If there isn't enough space, then move to the left*/
+            {
+                var deltaX = 0;
+                if(otherPlayer.direction_ == 1)
+                {
+                    deltaX = otherRect.Left - myRect.Right;
+                    if((Math.abs(deltaX) + otherRect.Right) > STAGE.MAX_STAGEX)
+                        deltaX = otherRect.Right - myRect.Left;
+                }
+                else
+                {
+                    deltaX = myRect.Right - otherRect.Left;
+                    if((deltaX + otherRect.Right) > STAGE.MAX_STAGEX)
+                        deltaX = myRect.Left - otherRect.Right;
+                }
+                this.MoveX(deltaX,otherPlayer,false,false,false,player.id_);
+            }
+            else /*must move to the left. If there isn't enough space, then move to the right*/
+            {
+                var deltaX = 0;
+                if(otherPlayer.direction_ == 1)
+                {
+                    deltaX = otherRect.Right - myRect.Left;
+                    if((otherRect.Left - deltaX) < STAGE.MIN_STAGEX)
+                        deltaX = otherRect.Left - myRect.Right;
+                }
+                else
+                {
+                    deltaX = myRect.Left - otherRect.Right;
+                    if((otherRect.Left - Math.abs(deltaX)) < STAGE.MIN_STAGEX)
+                        deltaX = myRect.Right - otherRect.Left;
+                }
+                this.MoveX(deltaX,otherPlayer,false,false,false,player.id_);
+            }
+        }
+    }
 
 
     Physics.prototype.FixX = function(amount,player,dontOverrideSign,canFixStageX)
@@ -451,7 +511,7 @@
 
 
 
-    Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,doubleImpededAmount)
+    Physics.prototype.MoveX = function(amount,player,dontOverrideSign,canFixStageX,doubleImpededAmount,ignoredPlayer)
     {
         if(!!amount)
         {
@@ -485,6 +545,8 @@
                 var collisions = GetPlayersAtPosition_(myRect,player,CONSTANTS.RIGHT);
                 for(var i = 0, length = collisions.length; i < length; ++i)
                 {
+                    if(!!ignoredPlayer && (ignoredPlayer == collisions[i].id_))
+                        continue;
                     collisions[i].MoveCircleToTop();
                     var otherRect = collisions[i].GetRect();
 
@@ -518,6 +580,8 @@
                     collisions = GetPlayersAtPosition_(myRect,player,CONSTANTS.LEFT);
                     for(var i = 0, length = collisions.length; i < length; ++i)
                     {
+                        if(!!ignoredPlayer && (ignoredPlayer == collisions[i].id_))
+                            continue;
                         collisions[i].MoveCircleToTop();
                         var otherRect = collisions[i].GetRect();
 
@@ -547,6 +611,8 @@
                 var collisions = GetPlayersAtPosition_(myRect,player,CONSTANTS.LEFT);
                 for(var i = 0, length = collisions.length; i < length; ++i)
                 {
+                    if(!!ignoredPlayer && (ignoredPlayer == collisions[i].id_))
+                        continue;
                     collisions[i].MoveCircleToTop();
                     var otherRect = collisions[i].GetRect();
 
@@ -580,6 +646,8 @@
                     collisions = GetPlayersAtPosition_(myRect,player,CONSTANTS.RIGHT);
                     for(var i = 0, length = collisions.length; i < length; ++i)
                     {
+                        if(!!ignoredPlayer && (ignoredPlayer == collisions[i].id_))
+                            continue;
                         collisions[i].MoveCircleToTop();
                         var otherRect = collisions[i].GetRect();
 
@@ -715,10 +783,24 @@
             }
             amount = player.WarpY(amount);
         }
+        GetStage_().ScrollY(amount);
         return amount;
     }
 
 
+    /*Returns true if any player is airborne*/
+    Physics.prototype.IsAnyPlayerAirborne = function()
+    {
+        var match = GetMatch_();
+        for(var i = 0, length = match.teamB_.GetPlayers().length; i < length; ++i)
+            if(match.teamB_.players_[i].IsAirborne())
+                return true;
+        for(var i = 0, length = match.teamA_.GetPlayers().length; i < length; ++i)
+            if(match.teamA_.players_[i].IsAirborne())
+                return true;
+
+        return false;
+    }
 
 
     /*Returns the player closest to the left side of the screen*/
@@ -726,29 +808,29 @@
     {
         var match = GetMatch_();
 
-        var minX = STAGE.MAX_STAGEX;
+        var minX = 9999;
         var retVal = null;
 
-        var tALength = match.TeamA.GetPlayers().length;
-        var tBLength = match.TeamB.GetPlayers().length;
+        var tALength = match.teamA_.GetPlayers().length;
+        var tBLength = match.teamB_.GetPlayers().length;
 
         if(!tALength || !tBLength)
             return null;
 
         for(var i = 0; i < tALength; ++i)
         {
-            if(match.TeamA.GetPlayer(i).GetLeftX() < minX)
+            if(match.teamA_.players_[i].GetLeftX() < minX)
             {
-                minX = match.TeamA.GetPlayer(i).GetLeftX();
-                retVal = match.TeamA.GetPlayer(i);
+                minX = match.teamA_.players_[i].GetLeftX();
+                retVal = match.teamA_.players_[i];
             }
         }
         for(var i = 0; i < tBLength; ++i)
         {
-            if(match.TeamB.GetPlayer(i).GetLeftX() < minX)
+            if(match.teamB_.players_[i].GetLeftX() < minX)
             {
-                minX = match.TeamB.GetPlayer(i).GetLeftX();
-                retVal = match.TeamB.GetPlayer(i);
+                minX = match.teamB_.players_[i].GetLeftX();
+                retVal = match.teamB_.players_[i];
             }
         }
 
@@ -759,29 +841,29 @@
     {
         var match = GetMatch_();
 
-        var maxX = STAGE.MIN_STAGEX;
+        var maxX = -9999;
         var retVal = null;
 
-        var tALength = match.TeamA.GetPlayers().length;
-        var tBLength = match.TeamB.GetPlayers().length;
+        var tALength = match.teamA_.GetPlayers().length;
+        var tBLength = match.teamB_.GetPlayers().length;
 
         if(!tALength || !tBLength)
             return null;
 
         for(var i = 0; i < tALength; ++i)
         {
-            if(match.TeamA.GetPlayer(i).GetLeftX() > maxX)
+            if(match.teamA_.players_[i].GetLeftX() > maxX)
             {
-                maxX = match.TeamA.GetPlayer(i).GetLeftX();
-                retVal = match.TeamA.GetPlayer(i);
+                maxX = match.teamA_.players_[i].GetLeftX();
+                retVal = match.teamA_.players_[i];
             }
         }
         for(var i = 0; i < tBLength; ++i)
         {
-            if(match.TeamB.GetPlayer(i).GetLeftX() > maxX)
+            if(match.teamB_.players_[i].GetLeftX() > maxX)
             {
-                maxX = match.TeamB.GetPlayer(i).GetLeftX();
-                retVal = match.TeamB.GetPlayer(i);
+                maxX = match.teamB_.players_[i].GetLeftX();
+                retVal = match.teamB_.players_[i];
             }
         }
 
@@ -808,16 +890,16 @@
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0, length = match.TeamB.GetPlayers().length; i < length; ++i)
-                    if(match.TeamB.GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
-                        return match.TeamB.GetPlayer(i);
+                for(var i = 0, length = match.teamB_.GetPlayers().length; i < length; ++i)
+                    if(match.teamB_.players_[i].CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.teamB_.players_[i];
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0, length = match.TeamA.GetPlayers().length; i < length; ++i)
-                    if(match.TeamA.GetPlayer(i).CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
-                        return match.TeamA.GetPlayer(i);
+                for(var i = 0, length = match.teamA_.GetPlayers().length; i < length; ++i)
+                    if(match.teamA_.players_[i].CanBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                        return match.teamA_.players_[i];
                 break;
             }
         }
@@ -841,21 +923,21 @@
         {
             case CONSTANTS.TEAM1:
             {
-                var nbPlayers = match.TeamB.GetPlayers().length;
-                if(nbPlayers == 0)
+                var nbPlayers = match.teamB_.GetPlayers().length;
+                if(nbPlayers == 0 || !match.teamB_.players_.every(function(a){return a.IsVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(match.TeamB.GetPlayer(i).GetMidX() < x)
+                    if(!!match.teamB_.players_[i].IsVisible() && (match.teamB_.players_[i].GetMidX() < x))
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                var nbPlayers = match.TeamA.GetPlayers().length;
-                if(nbPlayers == 0)
+                var nbPlayers = match.teamA_.GetPlayers().length;
+                if(nbPlayers == 0 || !match.teamA_.players_.every(function(a){return a.IsVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(match.TeamA.GetPlayer(i).GetMidX() < x)
+                    if(!!match.teamA_.players_[i].IsVisible() && (match.teamA_.players_[i].GetMidX() < x))
                         return true;
                 break;
             }
@@ -871,21 +953,21 @@
         {
             case CONSTANTS.TEAM1:
             {
-                var nbPlayers = match.TeamB.GetPlayers().length;
-                if(nbPlayers == 0)
+                var nbPlayers = match.teamB_.GetPlayers().length;
+                if(nbPlayers == 0 || !match.teamB_.players_.every(function(a){return a.IsVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(match.TeamB.GetPlayer(i).GetMidX() > x)
+                    if(!!match.teamB_.players_[i].IsVisible() && (match.teamB_.players_[i].GetMidX() > x))
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                var nbPlayers = match.TeamA.GetPlayers().length;
-                if(nbPlayers == 0)
+                var nbPlayers = match.teamA_.GetPlayers().length;
+                if(nbPlayers == 0 || !match.teamA_.players_.every(function(a){return a.IsVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(match.TeamA.GetPlayer(i).GetMidX() > x)
+                    if(!!match.teamA_.players_[i].IsVisible() && (match.teamA_.players_[i].GetMidX() > x))
                         return true;
                 break;
             }

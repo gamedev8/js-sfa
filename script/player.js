@@ -3,6 +3,9 @@
 /*Encapsulates a new player*/
 var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
+    user.player_ = this;
+
+    this.tmpState_ = {Y:0,V:0};
     this.name_ = name;
     this.folder_ = user.folder_;
     this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + this.name_.toLowerCase() +"-name-1.png";
@@ -13,18 +16,19 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.rightKey_ = user.Right;
     /*store all of the key mappings*/
     this.buttons_ = {};
-    this.buttons_[user.Left] =   {Ascii:user.Left,Bit:1};
-    this.buttons_[user.Right] =  {Ascii:user.Right,Bit:2};
-    this.buttons_[user.Up] =   {Ascii:user.Up,Bit:4};
-    this.buttons_[user.Down] = {Ascii:user.Down,Bit:8};
-    this.buttons_[user.P1] =     {Ascii:user.P1,Bit:16};
-    this.buttons_[user.P2] =     {Ascii:user.P2,Bit:32};
-    this.buttons_[user.P3] =     {Ascii:user.P3,Bit:64};
-    this.buttons_[user.K1] =     {Ascii:user.K1,Bit:128};
-    this.buttons_[user.K2] =     {Ascii:user.K2,Bit:256};
-    this.buttons_[user.K3] =     {Ascii:user.K3,Bit:512};
-    this.buttons_[user.Turn] =   {Ascii:user.Turn,Bit:1024};
+    this.buttons_[user.Left] =   {Button:user.Left,Bit:1};
+    this.buttons_[user.Right] =  {Button:user.Right,Bit:2};
+    this.buttons_[user.Up] =   {Button:user.Up,Bit:4};
+    this.buttons_[user.Down] = {Button:user.Down,Bit:8};
+    this.buttons_[user.P1] =     {Button:user.P1,Bit:16};
+    this.buttons_[user.P2] =     {Button:user.P2,Bit:32};
+    this.buttons_[user.P3] =     {Button:user.P3,Bit:64};
+    this.buttons_[user.K1] =     {Button:user.K1,Bit:128};
+    this.buttons_[user.K2] =     {Button:user.K2,Bit:256};
+    this.buttons_[user.K3] =     {Button:user.K3,Bit:512};
+    this.buttons_[user.Turn] =   {Button:user.Turn,Bit:1024};
 
+    this.forceNoAdjustShadowPosition_ = false;
 
     this.moves_ = {};
     this.jumpAnimation_ = {};
@@ -87,7 +91,9 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.projectiles_ = [];
     this.height_ = height;
     this.width_ = width;
+    this.pendingWidth_ = 0;
     this.halfWidth_ = width/2;
+    //this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
     this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
     this.headOffsetX_ = 40;
     this.headOffsetY_ = 10;
@@ -104,6 +110,8 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.winAnimationNames_ = [];
 
     window["Create" + user.GetFolder() + "SpriteData"]();
+    this.offsetWidth_ = 0;
+    this.offsetHeight_ = 0;
 
 
     this.LoadAssets();
@@ -117,7 +125,7 @@ Player.prototype.SetAI = function(createAiFn) { this.ai_.SetAI(createAiFn); }
 Player.prototype.PlayerCount = 0;
 Player.prototype.TakeDamage = function(amount) { this.takeDamageFn_(amount); }
 Player.prototype.ChangeEnergy = function(amount) { if(!!amount) this.changeEnergyFn_(amount); }
-Player.prototype.GetMatch = function() { return game_.GetMatch(); }
+Player.prototype.GetMatch = function() { return game_.match_; }
 Player.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
 Player.prototype.GetStage = function() { return this.GetMatch().GetStage(); }
 Player.prototype.GetGame = function() { return game_; }
@@ -130,6 +138,17 @@ Player.prototype.SetBeingGrappled = function(value) { this.isBeingThrown_ = valu
 Player.prototype.GetNameImageSrc = function() { return this.nameImageSrc_; }
 Player.prototype.GetPortriatImageSrc = function() { return this.portriatImageSrc_; }
 Player.prototype.GetName = function() { return this.name_; }
+Player.prototype.GetTarget = function()
+{
+    if(this.team_ == 1)
+    {
+        return game_.match_.teamB_.players_[0];
+    }
+    else
+    {
+        return game_.match_.teamA_.players_[0];
+    }
+}
 
 Player.prototype.GetEnergyLevel = function()
 {
@@ -169,14 +188,15 @@ Player.prototype.IncCombo = function()
 
 Player.prototype.Reset = function(ignoreDirection)
 {
+    this.teleportX_ = 0;
+    this.teleportFramesLeft_ = 0;
+
     this.dizzyIndex_ = 0;
     this.dizzyValue_ = 0;
     this.maxDizzyValue_ = CONSTANTS.MAX_DIZZY_VALUE;
     this.SetPendingGrapple(false);
     this.isExecutingSuperMove_ = false;
     this.isLosing_ = false;
-    this.lastShadowLeft_ = null;
-    this.lastShadowRight_ = null;
     this.canHoldAirborne_ = true;
     this.showSlideDirt_ = true;
     this.isPaused_ = false;
@@ -215,7 +235,7 @@ Player.prototype.Reset = function(ignoreDirection)
     this.isBeingThrown_ = false;
     this.grappledPlayer_ = null;
     this.x_ = 0;
-    this.y_ = 0;
+    this.y_ = STAGE.FLOORY;
     this.lastFrameY_ = 0;
     this.constY_ = 0;
     this.yBottomOffset_ = 0;
@@ -240,8 +260,6 @@ Player.prototype.Reset = function(ignoreDirection)
     this.lastHitFrame_ = {};
     this.winningFrame_ = CONSTANTS.NO_FRAME;
     this.target_ = 0;
-    this.SetX(0);
-    this.SetY(STAGE.FLOORY);
     this.ClearProjectiles();
     this.ClearDizzy();
 }
@@ -423,14 +441,14 @@ Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
     while(++bigDirtIndex < this.bigDirtIndices_.length)
     {
         var item = this.otherAnimations_.BigDirt[this.bigDirtIndices_[bigDirtIndex]];
-        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,STAGE.FLOORY,this.x_,STAGE.FLOORY))
+        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
             this.bigDirtIndices_.splice(bigDirtIndex,1);
     }
     /*dizzy*/
     if(this.IsDizzy())
     {
         var item = this.otherAnimations_.Dizzy[this.dizzyIndex_];
-        if(item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,STAGE.FLOORY,this.x_,this.y_,this.GetBoxWidth()))
+        if(item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,game_.match_.stage_.GetGroundY(),this.x_,this.y_,this.GetBoxWidth()))
             item.StartFrame = frame;
     }
 }
@@ -504,6 +522,8 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
 {
     if(!this.isPaused_)
     {
+        if(!!this.teleportFramesLeft_)
+            this.AdvanceTeleportation(frame);
         this.DecreaseDizziness(frame);
         if(this.ai_.IsRunning())
             this.ai_.FrameMove(frame);
@@ -515,7 +535,7 @@ Player.prototype.OnFrameMove = function(frame,stageX,stageY)
         if(!!this.grappledPlayer_)
             this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.Trail)
-            this.FrameMoveTrail(frame,this.GetStage().deltaX_,stageY);
+            this.FrameMoveTrail(frame,this.GetStage().DeltaX,stageY);
         if(!this.forceImmobile_ && this.IsDead())
             this.ForceTeamLose(frame);
     }
@@ -532,6 +552,19 @@ Player.prototype.FrameMoveTrail = function(frame,stageX,stageY)
     this.currentAnimation_.Animation.Trail.FrameMove(frame,index,this.direction_,stageX,stageY);
 }
 
+
+/*sets some data beforehand*/
+Player.prototype.SetPendingFrame = function(pendingFrame)
+{
+    if(!!pendingFrame)
+    {
+        var data = spriteLookup_.Get(pendingFrame.RightSrc);
+        if(!!data)
+        {
+            this.pendingWidth_ = data.WidthInt;
+        }
+    }
+}
 
 /*Show the image at the current frame in the current animation*/
 Player.prototype.FrameMove = function(frame,stageX,stageY)
@@ -555,6 +588,7 @@ Player.prototype.FrameMove = function(frame,stageX,stageY)
         var currentFrame = this.currentAnimation_.Animation.GetFrame(delta);
         if(!!currentFrame || (!!this.currentFrame_ && (!!(this.currentFrame_.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME))))
         {
+            this.SetPendingFrame(currentFrame);
             /*check to see if the move allows you to change direction mid-move*/
             if(!!this.mustChangeDirection_ && !!(this.currentAnimation_.Animation.Flags.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {

@@ -1,6 +1,7 @@
-﻿var ManagedText = function(elementID,text,x,y,fontSpacing,fontsPath)
+﻿var ManagedText = function(elementID,text,x,y,fontSpacing,fontsPath,charWidth,isLeft)
 {
     this.Text = text || "";
+    this.CharWidth = charWidth || 16;
     this.Element = window.document.getElementById(elementID);
     this.FontsPath = fontsPath || "font1";
     this.FontSpacing = fontSpacing || 0;
@@ -18,9 +19,11 @@
     this.HideFrame = -1;
 
     this.Width = 0;
-    this.IsLeft = true;
-    this.UpdateRate = 2;
+    this.IsLeft = (isLeft != undefined) ? !!isLeft : true;
+    this.UpdateRate = 1;
     this.Init();
+    this.Indent = 0;
+    this.IsVisible = true;
     this.Change(this.Text);
 }
 
@@ -36,8 +39,8 @@ ManagedText.prototype.SetTarget = function(x,y)
     var dx = this.TargetX - this.X;
     var dy = this.TargetY - this.Y;
 
-    var dirX = ((dx)/Math.abs(dx)) || 0;
-    var dirY = ((dy)/Math.abs(dy)) || 0;
+    var dirX = CONSTANTS.TEXT_FADE_SPEED * ((dx)/Math.abs(dx)) || 0;
+    var dirY = CONSTANTS.TEXT_FADE_SPEED * ((dy)/Math.abs(dy)) || 0;
 
     this.dX = dirX;
     this.dY = dirY;
@@ -70,15 +73,20 @@ ManagedText.prototype.GetSrc = function(letter)
     {
         case "font1": return font1_[value];
         case "font2": return font2_[value];
+        case "font3": return font3_[value];
     }
-    //return CONSTANTS.DEFAULT_BASE_IMAGES_PATH + this.FontsPath + "/" + value + ".png";
 }
 
 /*Changes the managed text*/
-ManagedText.prototype.Change = function(newText,x,hideFrame)
+ManagedText.prototype.Change = function(newText,x,hideFrame,showFrame,fadeIn,indent)
 {
+    x = (x == undefined) ? this.X : x;
+    this.ClearTarget();
+    this.HideNow();
     this.Text = "" + newText;
     this.MustUpdate = true;
+    this.Indent = indent || 0;
+    this.ShowFrame = showFrame || 0;
 
     while(this.Element.children.length > this.Text.length)
         this.Element.removeChild(this.Element.children[0]);
@@ -88,24 +96,24 @@ ManagedText.prototype.Change = function(newText,x,hideFrame)
     this.Width = 0;
     for(var i = 0,length = this.Text.length; i < length;++i)
     {
+        this.Width += (!!+this.Text.charAt(i) ? 2*this.CharWidth : this.CharWidth) + this.FontSpacing;
         this.Element.children[i].style.marginRight = this.FontSpacing + "px";
-        //var src = this.GetSrc(this.Text.charAt(i));
-        //var currentSrc = ((this.Element.children[i].src || "").match(/.\.png$/) || []).join();
-
-        //if(currentSrc != src)
-        //{
-            this.Element.children[i].onload = (function(thisValue,fontSpacing)
-            {
-                return function()
-                {
-                    thisValue.Width += this.width + fontSpacing; 
-                }
-            })(this,this.FontSpacing);
-            this.Element.children[i].src = this.GetSrc(this.Text.charAt(i));
-        //}
+        this.Element.children[i].src = this.GetSrc(this.Text.charAt(i));
     }
 
     if(!!hideFrame)
+    {
+        if(!fadeIn)
+        {
+            this.ShowNow(x,hideFrame);
+        }
+        else
+        {
+            this.HideFadeNow();
+            this.Show(hideFrame);
+        }
+    }
+    else
     {
         this.ShowNow(x,hideFrame);
     }
@@ -124,11 +132,25 @@ ManagedText.prototype.MoveY = function(dy)
     this.Y += dy;
     this.MustUpdate = true;
 }
-
-ManagedText.prototype.HideNow = function() { this.Element.style.display = "none";}
+ManagedText.prototype.SetVisible = function(value)
+{
+    value = (value === undefined) ? false : !!value;
+    if(this.IsVisible != value)
+    {
+        this.IsVisible = value;
+        this.Element.style.display = !!value ? "" : "none";
+    }
+}
+ManagedText.prototype.HideNow = function() { this.SetVisible(false);}
 ManagedText.prototype.Hide = function() { this.SetTarget(-this.Width,this.Y); }
-ManagedText.prototype.ShowNow = function(x,hideFrame) { this.X = (x != 0 ? x : null) || 0; this.Element.style.display = ""; this.MustUpdate = true; if(!!hideFrame) {this.HideFrame = hideFrame;}}
-ManagedText.prototype.Show = function(hideFrame) { this.SetTarget(0,this.Y); if(!!hideFrame) {this.HideFrame = hideFrame;}}
+ManagedText.prototype.HideFadeNow = function()
+{
+    this.X = -this.Width;
+}
+
+ManagedText.prototype.ClearTarget = function() { this.dX = 0;this.dY = 0;this.HideFrame = -1; }
+ManagedText.prototype.ShowNow = function(x,hideFrame) { this.X = (x != 0 ? x : null) || 0; this.MustUpdate = true; if(!!hideFrame) {this.HideFrame = hideFrame;}}
+ManagedText.prototype.Show = function(hideFrame) { this.SetTarget(this.Indent,this.Y); if(!!hideFrame) {this.HideFrame = hideFrame;}}
 
 /*toggles between using the left and right css properties for horizontal positioning*/
 ManagedText.prototype.ChangeDirection = function()
@@ -139,9 +161,10 @@ ManagedText.prototype.ChangeDirection = function()
 
 ManagedText.prototype.FrameMove = function(frame)
 {
-    if(frame == this.HideFrame)
+    if(!!this.IsVisible && this.HideFrame != -1 && (frame >= this.HideFrame))
         this.HideNow();
-    if(frame % this.UpdateRate== 0)
+    /*
+    if(frame % this.UpdateRate == 0)
     {
         if(!!this.AnimateFunction)
         {
@@ -156,24 +179,28 @@ ManagedText.prototype.FrameMove = function(frame)
             }
         }
     }
-    if(!!this.dX)
+    */
+    if(frame > this.ShowFrame)
     {
-        this.MoveX(this.dX);
-        if(this.X == this.TargetX)
-            this.dX = 0;
-    }
-    if(!!this.dY)
-    {
-        this.MoveY(this.dY);
-        if(this.Y == this.TargetY)
-            this.dY = 0;
+        if(!!this.dX)
+        {
+            this.MoveX(this.dX);
+            if(this.X >= this.TargetX)
+                this.dX = 0;
+        }
+        if(!!this.dY)
+        {
+            this.MoveY(this.dY);
+            if(this.Y >= this.TargetY)
+                this.dY = 0;
+        }
     }
 }
 
 
 ManagedText.prototype.Render = function(frame)
 {
-    if(!!this.MustUpdate)
+    if(!!this.MustUpdate && frame > this.ShowFrame)
     {
         this.MustUpdate = false;
         if(this.IsLeft)
@@ -188,6 +215,7 @@ ManagedText.prototype.Render = function(frame)
             this.Element.style.right = this.X + "px";
             this.Element.style.top = this.Y + "px";
         }
+        this.SetVisible(true);
     }
 }
 
@@ -217,9 +245,9 @@ var CreateFontSystem = function()
 
 
     /*adds some managed text to the system*/
-    FontSystem.prototype.AddText = function(elementID,text,x,y,fontSpacing,fontsPath)
+    FontSystem.prototype.AddText = function(elementID,text,x,y,fontSpacing,fontsPath,isLeft)
     {
-        var ref = new ManagedText(elementID,text,x,y,fontSpacing,fontsPath);
+        var ref = new ManagedText(elementID,text,x,y,fontSpacing,fontsPath,0,isLeft);
         ref.Init();
         this.Text[this.Text.length] = ref;
         return ref;

@@ -29,7 +29,7 @@ Player.prototype.GetAbsFrontX = function(useImageWidth) { if(this.direction_ > 0
 Player.prototype.GetAbsBackX = function(useImageWidth)  { if(this.direction_ > 0){ return this.GetRightX(useImageWidth); } else { return this.GetLeftX(useImageWidth); } }
 
 Player.prototype.GetBoxTop = function() { return this.y_ + (this.GetBoxHeight()); }
-Player.prototype.GetConstOffsetTop = function() { return this.height_ + STAGE.FLOORY; }
+Player.prototype.GetConstOffsetTop = function() { return this.height_ + game_.match_.stage_.GetGroundY(); }
 Player.prototype.GetOffsetBoxTop = function() { return this.y_ + (this.GetBoxHeight()) + this.yTopOffset_; }
 Player.prototype.GetBoxBottom = function() { return this.y_; }
 Player.prototype.GetOffsetBoxBottom = function() { return this.y_ + this.yBottomOffset_; }
@@ -38,7 +38,7 @@ Player.prototype.GetConstHeight = function() { return this.height_; }
 Player.prototype.GetConstWidth = function() { return this.width_; }
 Player.prototype.GetConstFrontX = function() { return this.GetX() + this.GetConstWidth(); }
 Player.prototype.GetFrontX = function() { return this.GetX() + this.GetBoxWidth(); }
-Player.prototype.GetBoxWidth = function() { return parseInt(this.spriteElement_.style.width); }
+Player.prototype.GetBoxWidth = function() { return parseInt(this.element_.style.width); }
 Player.prototype.GetBoxHeight = function() { return parseInt(this.spriteElement_.style.height); }
 Player.prototype.GetRect = function(useImageWidth)
 {
@@ -60,12 +60,15 @@ Player.prototype.SetLeft = function(value) { this.element_.style.left = (value) 
 
 Player.prototype.SetY = function(value)
 {
-    this.y_ = Math.max(value,STAGE.FLOORY);
+    this.y_ = Math.max(value,game_.match_.stage_.GetGroundY());
     this.MoveCircle();
 }
 Player.prototype.SetX = function(value)
 {
-    value = Math.min(Math.max(value,0),STAGE.MAX_X);
+    if(this.y_ == game_.match_.stage_.GetGroundY())
+        value = Math.min(Math.max(value,0),STAGE.MAX_STAGEX - (this.pendingWidth_ || 0));
+    else
+        value = Math.min(Math.max(value,0),STAGE.MAX_STAGEX - (this.pendingWidth_ || 0) * 0.8);
     this.x_ = value;
     this.MoveCircle();
 }
@@ -89,9 +92,20 @@ Player.prototype.AlignX = function(deltaX) { this.x_ += (deltaX * -this.directio
 Player.prototype.SetImageX = function(value) {if(this.direction_ > 0){this.spriteElement_.style.right = value+"px"; } else {this.spriteElement_.style.left = value+"px";}}
 Player.prototype.SetImageY = function(value) { this.spriteElement_.style.bottom = value+"px"; }
 Player.prototype.IsCrouching = function() { return this.Flags.Pose.Has(POSE_FLAGS.CROUCHING); }
-Player.prototype.IsOnGround = function() { return this.y_ == STAGE.FLOORY; }
-Player.prototype.IsAirborne = function() { return this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > STAGE.FLOORY; }
+Player.prototype.IsOnGround = function() { return this.y_ == game_.match_.stage_.GetGroundY(); }
+Player.prototype.IsAirborne = function() { return this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > game_.match_.stage_.GetGroundY(); }
+Player.prototype.AlignY = function(groundY)
+{
+    if(this.y_ != groundY && !(this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.Has(POSE_FLAGS.AIRBORNE_FB)))
+    {
+        this.y_ = groundY;
+    }
+}
 Player.prototype.IsDescending = function() { return this.lastFrameY_ > this.constY_; }
+Player.prototype.IsVisible = function() { return !this.Flags.Player.Has(PLAYER_FLAGS.INVISIBLE); }
+Player.prototype.IsTeleporting = function() { return !!this.IsTeleportingStarting() || !!this.IsTeleportingEnding(); }
+Player.prototype.IsTeleportingStarting = function() { return !!this.currentAnimation_ && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.TELEPORT_START); }
+Player.prototype.IsTeleportingEnding = function()   { return !!this.currentAnimation_ && !!this.currentAnimation_.Animation && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.TELEPORT_END); }
 Player.prototype.JumpedOverAPlayer = function() { return this.IsAirborne() && this.IsDescending() && !!this.mustChangeDirection_; }
 Player.prototype.CanBeJuggled = function()
 {
@@ -122,11 +136,9 @@ Player.prototype.CheckMustChangeDirection = function()
 Player.prototype.ChangeDirection = function(quick)
 {
     this.mustChangeDirection_ = 0;
-    var pnlStageWidth = STAGE.CSSWIDTH;//parseInt(window.document.getElementById("pnlStage").style.width);
+    var pnlStageWidth = STAGE.CSSWIDTH;
     var imgWidth = parseInt(this.spriteElement_.style.width) || 0;
-    //this.ExecuteAnimation("turn");
-    //var move = this.moves_["_0_turn"];
-    //this.SetCurrentAnimation({Animation:move,StartFrame:this.GetMatch().GetCurrentFrame(),Direction:-this.direction_});
+
 
     /*facing left*/
     if(this.IsFacingLeft())
@@ -219,8 +231,17 @@ Player.prototype.MoveCircle = function()
     if(this.direction_ < 0)
         x = this.GetX();
     else
-        x = STAGE.MAX_X - this.GetX();
-    this.circle_.RenderX = x + this.circle_.R;
+        x = STAGE.MAX_STAGEX - this.GetX();
+    if(!!this.currentFrame_ && !!this.pendingWidth_)
+    {
+        //this.circle_.R = (this.pendingWidth_ + (this.currentFrame_.ImageOffsetX || 0)) / 2;
+        //this.circle_.RSq = this.circle_.R * this.circle_.R;
+    }
+    if(this.direction_ == -1)
+        this.circle_.RenderX = x + this.circle_.R;
+    else
+        this.circle_.RenderX = x - this.circle_.R;
+
 
     this.circle_.LocalY = this.circle_.R;
     this.circle_.LocalX = this.circle_.R;
@@ -241,22 +262,98 @@ Player.prototype.OffsetImageY = function(amount)
 {
     this.SetImageY(amount);
 }
-Player.prototype.CheckDirection = function()
+/*sets the target to which the player will teleport*/
+Player.prototype.SetTeleportTarget = function(flag,nbFrames)
 {
-    if(!this.mustChangeDirection_)
+    var foe = this.GetTarget();
+    if(foe)
     {
-        if(this.GetPhysics().IsRightMostPlayer(this.id_) && this.direction_ == -1)
-            this.TurnAround();
-        else if(this.GetPhysics().IsLeftMostPlayer(this.id_) && this.direction_ == 1)
-            this.TurnAround();
+        this.teleportFramesLeft_ = nbFrames;
+        this.teleport0GapX_ = "";
+        this.teleportX_ = 0;
+        switch(flag)
+        {
+            case COMBAT_FLAGS.TELEPORT_BEHIND:  { this.teleportX_ = (STAGE.MAX_STAGEX - foe.x_) / nbFrames; this.teleport0GapX_ = "b"; break; }
+            case COMBAT_FLAGS.TELEPORT_INFRONT: { this.teleportX_ = (STAGE.MAX_STAGEX - foe.x_ - foe.offsetWidth_ - this.offsetWidth_) / nbFrames; this.teleport0GapX_ = "f"; break; }
+            case COMBAT_FLAGS.TELEPORT_MIDDLE:  { this.teleportX_ = ((STAGE.MAX_STAGEX - foe.x_ - foe.offsetWidth_ - this.offsetWidth_) / nbFrames)/2; this.teleport0GapX_ = "m"; break; }
+            case COMBAT_FLAGS.TELEPORT_BACK:    { this.teleportX_ = (0 - this.x_) / nbFrames; this.teleport0GapX_ = "bw"; break; }
+        }
+        this.teleportX_ /= 2;
+    }
+}
+
+/*Advances the players teleportation. If this is the last movement, the player is warper to his final position*/
+Player.prototype.AdvanceTeleportation = function()
+{
+    if(!!this.teleportFramesLeft_)
+    {
+        var foe = this.GetTarget();
+        --this.teleportFramesLeft_;
+        if(this.teleportFramesLeft_ <= 0)
+        {
+            this.teleportX_ = 0;
+            if(!!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.TELEPORT_END) && !!this.teleport0GapX_)
+            {
+                if(foe)
+                {
+                    var otherRect = foe.GetRect();
+                    var buffer = 1.5;
+                    var midBuffer = 0.35;
+                    var x = this.x_;
+                    switch(this.teleport0GapX_)
+                    {
+                        case "f": /*must end up infront of the enemy*/
+                        {
+                            x = this.direction_ == -1 ? x = otherRect.Left - this.offsetWidth_ * buffer : (STAGE.MAX_STAGEX - otherRect.Right) - this.offsetWidth_ * buffer;
+                            break;
+                        }
+                        case "b": /*must end up behind enemy*/
+                        {
+                            x = this.direction_ == -1 ? x = otherRect.Right : x = STAGE.MAX_STAGEX - otherRect.Left;
+                            break;
+                        }
+                        case "bw": /*back wall*/
+                        {
+                            x = 0;
+                            break;
+                        }
+                        case "m": /*mid screen*/
+                        {
+                            x = this.direction_ == -1 ? otherRect.Left * midBuffer : (STAGE.MAX_STAGEX - otherRect.Right) * midBuffer;
+                            break;
+                        }
+                    }
+                    this.SetX(x);
+                }
+            }
+        }
         else
         {
-            if((this.direction_ == 1) && this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_) === false)
-                this.TurnAround();
-            else if((this.direction_ == -1) && this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(),this.team_) === false)
-                this.TurnAround();
+            if(!foe || !game_.match_.GetPhysics().IsWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ))
+                this.MoveX(this.teleportX_);
         }
     }
+}
+
+Player.prototype.MustChangeDirection = function(recheck)
+{
+    if(!this.mustChangeDirection_ || !!recheck)
+    {
+        if((this.direction_ == 1) && this.GetPhysics().IsAnyPlayerFromOtherTeamMoreLeft(this.GetMidX(),this.team_) === false)
+            return true;
+        else if((this.direction_ == -1) && this.GetPhysics().IsAnyPlayerFromOtherTeamMoreRight(this.GetMidX(true),this.team_) === false)
+            return true;
+    }
+
+    if(!!recheck)
+        this.mustChangeDirection_ = false;
+
+    return false;
+}
+Player.prototype.CheckDirection = function()
+{
+    if(this.MustChangeDirection())
+        this.TurnAround();
 }
 /*player faces his target*/
 Player.prototype.FaceTarget = function()
@@ -357,11 +454,14 @@ Player.prototype.ConvertY = function(y)
 }
 Player.prototype.IsLeftCornered = function(x)
 {
+    var rect = this.GetRect();
+    return rect.Left <= STAGE.MIN_X;
+
     x = x || this.GetX();
     var retVal = false;
     if(this.direction_ < 0 && x <= STAGE.MIN_X)
         retVal = true;
-    else if(this.direction_ > 0 && x >= STAGE.MAX_X)
+    else if(this.direction_ > 0 && x >= STAGE.MAX_STAGEX - (this.pendingWidth_ || 0))
         retVal = true;
     return retVal;
 }
@@ -371,9 +471,12 @@ Player.prototype.IsLeftCorneredInStage = function(x)
 }
 Player.prototype.IsRightCornered = function(x)
 {
+    var rect = this.GetRect();
+    return rect.Right >= STAGE.MAX_STAGEX;
+
     x = x || this.GetX();
     var retVal = false;
-    if(this.direction_ < 0 && x >= STAGE.MAX_X)
+    if(this.direction_ < 0 && x >= STAGE.MAX_STAGEX - (this.pendingWidth_ || 0))
         retVal = true;
     else if(this.direction_ > 0 && x <= STAGE.MIN_X)
         retVal = true;
@@ -400,9 +503,9 @@ Player.prototype.ShowSmallDirt = function(frame)
     }
 }
 /*Puts a player in sliding motion*/
-Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
+Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt,forceSlide)
 {
-    if(!!this.currentAnimation_.Animation.Flags.Combat && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+    if(!forceSlide && !!this.currentAnimation_.Animation.Flags.Combat && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
         return this.StopSlide();
 
     if(this.isSliding_)
@@ -424,8 +527,6 @@ Player.prototype.StartSlide = function(frame,amount,direction,fx,hideSlideDirt)
 /*Handles the player sliding*/
 Player.prototype.Slide = function(frame)
 {
-    if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.Flags.Combat && !!(this.currentAnimation_.Animation.Flags.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
-        return this.StopSlide();
     if(!!this.frameFreeze_ && !this.IsBlocking())
         return;
     if(this.t_ >= CONSTANTS.HALF_PI || !this.isSliding_ || !!this.IsBeingGrappled())
@@ -448,7 +549,7 @@ Player.prototype.Slide = function(frame)
 
     var deltaX = (this.lastFx_ - this.fx_);
     
-    if(this.y_ == STAGE.FLOORY)
+    if(this.IsOnGround())
         this.MoveX(deltaX);
     else
         this.slideFactor_ *= 0.5;
@@ -466,13 +567,16 @@ Player.prototype.StopSlide = function()
         this.showSlideDirt_ = true;
     }
 }
-
+/*calculates the next position of the players jump*/
 Player.prototype.AdvanceJump = function(ignoreYCheck)
 {
     //this.x1 = this.x0_ + ((this.jumpVelocityX_ * this.jumpT_) * 0.1);
     var y = this.y0_ + ((this.jumpVelocityY_ * this.jumpT_) - ((CONSTANTS.HALF_G) * (this.jumpT_*this.jumpT_))) * CONSTANTS.Y_DAMPING;
+
     if(!!(this.Flags.Pose.Has(POSE_FLAGS.HOLD_AIRBORNE)))
+    {
         this.HoldJump();
+    }
 
     ++this.jumpT_;
 
@@ -489,7 +593,7 @@ Player.prototype.AdvanceJump = function(ignoreYCheck)
     this.MoveX(dx);
     this.MoveY(dy);
 
-    if(!ignoreYCheck && this.GetY() <= STAGE.FLOORY)
+    if(!ignoreYCheck && this.GetY() <= game_.match_.stage_.GetGroundY())
     {
         this.Flags.Pose.Remove(POSE_FLAGS.AIRBORNE);
         this.Flags.Pose.Remove(POSE_FLAGS.AIRBORNE_FB);

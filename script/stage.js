@@ -1,26 +1,27 @@
 ﻿var Stage = function(bg0XOffset)
 {
-    this.bgImg0_ =  {xOffset:0,element:window.document.getElementById("bg0")};
-    this.bgImg1_ = {element:window.document.getElementById("bg1")};
-    this.bg_ = {element:window.document.getElementById("pnlStage")};
-    this.lastX_ = 0;
-    this.x_ = 0;
-    this.x0 = 0;
-    this.x1 = 0;
-    this.deltaX_ = 0;
-    this.y_ = 0;
-    this.deltaY_ = 0;
+    this.BgImg0 =  {xOffset:0,element:window.document.getElementById("bg0")};
+    this.BgImg1 = {element:window.document.getElementById("bg1")};
+    this.Bg = {element:window.document.getElementById("pnlStage")};
+    this.LastX = 0;
+    this.X = 0;
+    this.X0 = 0;
+    this.X1 = 0;
+    this.DeltaX = 0;
+    this.Y = STAGE.FLOORY;
+    this.OffsetY = 0;
+    this.DeltaY = 0;
 
-    this.bg0XOffset_ = bg0XOffset;
-    this.bgRate_ = 0;
-    this.maxLeftScroll_ = 0;
-    this.maxRightScroll_ = 0;
-    this.music_ = null;
-    this.params_ = null;
+    this.Bg0XOffset = bg0XOffset;
+    this.BgRate = 0;
+    this.MaxLeftScroll = 0;
+    this.MaxRightScroll = 0;
+    this.Music = null;
+    this.Params = null;
+    this.CanMoveY = true;
 }
-
 Stage.prototype.GetGame = function() { return game_; }
-Stage.prototype.GetMatch = function() { return game_.GetMatch(); }
+Stage.prototype.GetMatch = function() { return game_.match_; }
 Stage.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
 Stage.prototype.OnAudioLoaded = function()
 {
@@ -28,46 +29,48 @@ Stage.prototype.OnAudioLoaded = function()
 }
 Stage.prototype.LoadAssets = function()
 {
-    this.music_ = "audio/" + this.params_.name_.toLowerCase() + "/theme.zzz";
-    stuffLoader_.Queue(this.params_.name_.toLowerCase() + "-theme.js",RESOURCE_TYPES.BASE64AUDIO);
-    stuffLoader_.Queue(this.params_.bg0Img_,RESOURCE_TYPES.IMAGE);
-    stuffLoader_.Queue(this.params_.bg1Img_,RESOURCE_TYPES.IMAGE);
+    this.Music = "audio/" + this.Params.name_.toLowerCase() + "/theme.zzz";
+    stuffLoader_.Queue(this.Params.name_.toLowerCase() + "-theme.js",RESOURCE_TYPES.BASE64AUDIO);
+    stuffLoader_.Queue(this.Params.bg0Img_,RESOURCE_TYPES.IMAGE);
+    stuffLoader_.Queue(this.Params.bg1Img_,RESOURCE_TYPES.IMAGE);
 }
 Stage.prototype.Setup = function(params)
 {
-    this.params_ = params;
+    this.Params = params;
     this.LoadAssets();
 }
 Stage.prototype.Start = function()
 {
-    this.bgImg0_.xOffset = this.params_.bg0XOffset_;
-    this.bgImg0_.element.src = this.params_.bg0Img_;
-    this.bgImg1_.element.src = this.params_.bg1Img_;
-    this.bgImg0_.element.className = "bg0 " + this.params_.name_ + "-bg0";
-    this.bgImg1_.element.className = "bg1 " + this.params_.name_ + "-bg1";
-    this.maxLeftScroll_  = this.params_.maxLeftScroll_; 
-    this.maxRightScroll_ = this.params_.maxRightScroll_;
+    this.BgImg0.xOffset = this.Params.bg0XOffset_;
+    this.BgImg0.yOffset = this.Params.bg0YOffset_;
+    this.BgImg1.yOffset = this.Params.bg1YOffset_;
 
-    this.fadeOutMusic_ = 0;
+    this.BgYScrollRate = this.Params.bg0YOffset_ / this.Params.bg1YOffset_;
+    this.MaxScrollY = this.Params.bg1YOffset_ / STAGE.SCROLLY_FACTOR;
+
+    this.BgImg0.element.src = this.Params.bg0Img_;
+    this.BgImg1.element.src = this.Params.bg1Img_;
+    this.BgImg0.element.className = "bg0 " + this.Params.name_ + "-bg0";
+    this.BgImg1.element.className = "bg1 " + this.Params.name_ + "-bg1";
+    this.MaxLeftScroll  = this.Params.maxLeftScroll_; 
+    this.MaxRightScroll = this.Params.maxRightScroll_;
+
+    this.CanMoveY = true;
 }
 
-Stage.prototype.FadeOutMusic = function()
-{
-    this.fadeOutMusic_ = 1;
-}
 Stage.prototype.RestartMusic = function()
 {
-    soundManager_.Restart(this.music_);
+    soundManager_.Restart(this.Music);
 }
 
 Stage.prototype.PlayMusic = function()
 {
-    soundManager_.Play(this.music_,true);
+    soundManager_.Play(this.Music,true);
 }
 
 Stage.prototype.PauseMusic = function()
 {
-    soundManager_.Pause(this.music_);
+    soundManager_.Pause(this.Music);
 }
 
 /**/
@@ -79,36 +82,51 @@ Stage.prototype.Pause = function()
 /**/
 Stage.prototype.Resume = function()
 {
-    soundManager_.Resume(this.music_);
+    soundManager_.Resume(this.Music);
 }
 
 /**/
 Stage.prototype.Release = function()
 {
     this.PauseMusic();
-    this.bgImg0_.element.src = "";
-    this.bgImg1_.element.src = "";
-    this.bgImg0_.element.className = "";
-    this.bgImg1_.element.className = "";
+    this.BgImg0.element.src = "";
+    this.BgImg1.element.src = "";
+    this.BgImg0.element.className = "";
+    this.BgImg1.element.className = "";
+}
+
+Stage.prototype.GetDeltaY = function() { return this.GetGroundY() - this.LastGroundY; }
+Stage.prototype.GetDeltaX = function() { return this.X - this.LastX;}
+
+Stage.prototype.GetOffsetY = function(flip)
+{
+    return this.OffsetY;
+}
+
+Stage.prototype.GetGroundY = function()
+{
+    return STAGE.FLOORY + this.OffsetY;
 }
 
 Stage.prototype.FrameMove = function(frame)
 {
-    this.lastX_ = this.x_;
-    this.deltaX_ = 0;
-    this.deltaY_ = 0;
-
-    if(!!this.fadeOutMusic_)
-    {
-        this.fadeOutMusic_ = false;
-        soundManager_.FadeOut(this.music_);
-    }
+    this.LastX = this.X;
+    this.LastGroundY = this.GetGroundY();
+    this.DeltaX = 0;
+    this.DeltaY = 0;
 }
 
 Stage.prototype.Render = function(frame)
 {
-    this.bgImg0_.element.style.left = this.x0 + "px";
-    this.bgImg1_.element.style.left = this.x1 + "px";
+    this.BgImg0.element.style.left = this.X0 + "px";
+    this.BgImg1.element.style.left = this.X1 + "px";
+
+    var offset = this.BgImg1.yOffset - this.GetOffsetY()
+
+    this.BgImg0.element.style.top = this.BgImg0.yOffset - (this.BgYScrollRate * this.GetOffsetY()) + "px";
+    this.BgImg1.element.style.top = this.BgImg1.yOffset - this.GetOffsetY() + "px";
+
+    this.CanMoveY = true;
 }
 
 /* Returns true if the stage has been cornered */
@@ -119,12 +137,12 @@ Stage.prototype.IsCornered = function()
 /* Returns true if the stage has been cornered */
 Stage.prototype.IsRightCornered = function()
 {
-    return this.x_ <= STAGE.MIN_STAGEX;
+    return this.X <= STAGE.MIN_STAGEX;
 }
 /* Returns true if the stage has been cornered */
 Stage.prototype.IsLeftCornered = function()
 {
-    return this.x_ >= STAGE.MAX_STAGEX;
+    return this.X >= STAGE.MAX_STAGEX;
 } 
 
 
@@ -147,9 +165,9 @@ Stage.prototype.ClampX = function(x,delta)
 /*Clamps the Y value to be between the min and max*/
 Stage.prototype.ClampY = function(y,delta)
 {
-    if((y + delta) < STAGE.FLOORY)
+    if((y + delta) < this.GetGroundY())
     {
-        delta = STAGE.FLOORY - y;
+        delta = this.GetGroundY() - y;
     }
     /*
     TODO: add support for a max Y value!
@@ -165,7 +183,7 @@ Stage.prototype.ClampY = function(y,delta)
 /**/
 Stage.prototype.FixX = function(amount)
 {
-    var stageMovedX = game_.GetMatch().deltaX_;
+    var stageMovedX = game_.match_.deltaX_;
     if(!!stageMovedX)
     {
         /*ensure the directions are the opposite*/
@@ -180,10 +198,21 @@ Stage.prototype.AlignPlayersX = function()
 {
     var match = this.GetMatch();
 
-    for(var i = 0, length = match.TeamA.GetPlayers().length; i < length; ++i)
-        match.TeamA.GetPlayer(i).AlignX(this.deltaX_);
-    for(var i = 0, length = match.TeamB.GetPlayers().length; i < length; ++i)
-        match.TeamB.GetPlayer(i).AlignX(this.deltaX_);
+    for(var i = 0, length = match.teamA_.GetPlayers().length; i < length; ++i)
+        match.teamA_.players_[i].AlignX(this.DeltaX);
+    for(var i = 0, length = match.teamB_.GetPlayers().length; i < length; ++i)
+        match.teamB_.players_[i].AlignX(this.DeltaX);
+}
+
+/*Aligns the players with the stage.*/
+Stage.prototype.AlignPlayersY = function()
+{
+    var match = this.GetMatch();
+
+    for(var i = 0, length = match.teamA_.GetPlayers().length; i < length; ++i)
+        match.teamA_.players_[i].AlignY(this.GetGroundY());
+    for(var i = 0, length = match.teamB_.GetPlayers().length; i < length; ++i)
+        match.teamB_.players_[i].AlignY(this.GetGroundY());
 }
 
 
@@ -250,7 +279,28 @@ Stage.prototype.MoveX = function(amount)
     return retVal * 2;
 }
 
+/**/
+Stage.prototype.ScrollY = function()
+{
+    if(!!this.CanMoveY)
+    {
+        this.CanMoveY = false;
 
+        var y = this.GetMatch().GetHighestY();
+
+        if(y > STAGE.VERT_SCROLL_Y) /*moving up*/
+        {
+            this.OffsetY = Math.max(STAGE.VERT_SCROLL_Y - y, this.MaxScrollY) * STAGE.SCROLLY_FACTOR;
+        }
+        else
+        {
+            this.OffsetY = 0;
+        }
+
+
+        this.AlignPlayersY();
+    }
+}
 
 /*Checks for physics with the stage*/
 Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
@@ -341,8 +391,8 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     var isP1InThreshold = p1NewMidX >= CONSTANTS.MOVEMENT_THRESHOLD_LEFT && p1NewMidX <= CONSTANTS.MOVEMENT_THRESHOLD_RIGHT;
     var isP2InThreshold = p2NewMidX >= CONSTANTS.MOVEMENT_THRESHOLD_LEFT && p2NewMidX <= CONSTANTS.MOVEMENT_THRESHOLD_RIGHT;
     var areBothPlayersInThreshold = isP1InThreshold && isP2InThreshold;
-    var isStageLeftCornered = this.x_ >= STAGE.MAX_STAGEX;
-    var isStageRightCornered = this.x_ <= STAGE.MIN_STAGEX;
+    var isStageLeftCornered = this.X >= STAGE.MAX_STAGEX;
+    var isStageRightCornered = this.X <= STAGE.MIN_STAGEX;
     var isStageCornered = isStageLeftCornered || isStageRightCornered;
 
     var isLeftPlayer = p1LeftX < p2LeftX;
@@ -397,42 +447,42 @@ Stage.prototype.Init = function()
     var screenWidth = GetWidth(window.document.body);
     var screenHeight = GetHeight(window.document.body);
 
-    var w = parseInt(GetWidth(this.bg_.element));
+    var w = parseInt(GetWidth(this.Bg.element));
     if(!w) w = 0;
     var diff = (screenWidth - w) / 2;
-    this.bg_.element.style.left = diff + "px";
+    this.Bg.element.style.left = diff + "px";
 
     
-    var diff0 = (screenWidth - parseFloat(this.bgImg0_.element.width)) / 2;
-    var diff1 = (screenWidth - parseFloat(this.bgImg1_.element.width)) / 2;
+    var diff0 = (screenWidth - parseFloat(this.BgImg0.element.width)) / 2;
+    var diff1 = (screenWidth - parseFloat(this.BgImg1.element.width)) / 2;
     var img1Left = diff1 - diff;
 
-    this.bgImg0_.element.style.left = this.bgImg0_.xOffset + "px";
-    this.bgImg1_.element.style.left = img1Left + "px";
-    this.x_ = Math.abs(diff1 - diff);
-    var elementWidth = parseFloat(this.bg_.element.style.width);
-    this.maxRight_ = img1Left - (this.bgImg1_.element.width - STAGE.MAX_STAGEX) - img1Left;
+    this.BgImg0.element.style.left = this.BgImg0.xOffset + "px";
+    this.BgImg1.element.style.left = img1Left + "px";
+    this.X = Math.abs(diff1 - diff);
+    var elementWidth = parseFloat(this.Bg.element.style.width);
+    this.MaxRight = img1Left - (this.BgImg1.element.width - STAGE.MAX_STAGEX) - img1Left;
 
     /*If the browser doesn't allow decimal places in pixel values, then we have to set the bgRate_ to 0.
     The far background will not scroll with the screen. You won't notice unless you know it's happening.*/
     /*
-    var leftTest = parseFloat(this.bgImg0_.element.style.left);
+    var leftTest = parseFloat(this.BgImg0.element.style.left);
     leftTest += 0.01;
-    this.bgImg0_.element.style.left = leftTest + "px";
+    this.BgImg0.element.style.left = leftTest + "px";
 
-    if(leftTest != parseFloat(this.bgImg0_.element.style.left))
-        this.bgRate_ = 0;
+    if(leftTest != parseFloat(this.BgImg0.element.style.left))
+        this.BgRate = 0;
     else
-        this.bgRate_ = (this.bgImg0_.element.width - elementWidth) / (this.bgImg1_.element.width - elementWidth);
+        this.BgRate = (this.BgImg0.element.width - elementWidth) / (this.BgImg1.element.width - elementWidth);
     */
 
-    this.x0 = parseFloat(this.bgImg0_.element.style.left);
-    this.x1 = parseFloat(this.bgImg1_.element.style.left);
+    this.X0 = parseFloat(this.BgImg0.element.style.left);
+    this.X1 = parseFloat(this.BgImg1.element.style.left);
 
-    var bgImg0RightGap = parseInt(this.bgImg0_.element.width) + parseInt(this.bgImg0_.element.style.left) - w;
-    var bgImg1RightGap = parseInt(this.bgImg1_.element.width) + parseInt(this.bgImg1_.element.style.left) - w;
+    var bgImg0RightGap = parseInt(this.BgImg0.element.width) + parseInt(this.BgImg0.element.style.left) - w;
+    var bgImg1RightGap = parseInt(this.BgImg1.element.width) + parseInt(this.BgImg1.element.style.left) - w;
 
-    this.bgRate_ =  bgImg0RightGap / bgImg1RightGap;
+    this.BgRate =  bgImg0RightGap / bgImg1RightGap;
 
     this._MoveX(0,true);
 }
@@ -441,17 +491,17 @@ Stage.prototype.CanScrollX = function ()
 {
     var flag = true;
     var match = this.GetMatch();
-    for(var i = 0; i < match.TeamA.GetPlayers().length; ++i)
+    for(var i = 0; i < match.teamA_.GetPlayers().length; ++i)
     {
-        if(match.TeamA.GetPlayer(i).GetX() == STAGE.MIN_X)
+        if(match.teamA_.players_[i].GetX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
         }
     }
-    for(var i = 0; i < match.TeamB.GetPlayers().length; ++i)
+    for(var i = 0; i < match.teamB_.GetPlayers().length; ++i)
     {
-        if(match.TeamB.GetPlayer(i).GetX() == STAGE.MIN_X)
+        if(match.teamB_.players_[i].GetX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
@@ -467,7 +517,7 @@ Stage.prototype._MoveHoriz = function(amount,px)
 {
     if(!this.CanScrollX())
     {
-        this.deltaX_ = 0;
+        this.DeltaX = 0;
         return;
     }
 
@@ -475,27 +525,27 @@ Stage.prototype._MoveHoriz = function(amount,px)
     {
         amount = 0;
     }
-    this.x0 += amount * this.bgRate_;
-    this.x1 += amount;
+    this.X0 += amount * this.BgRate;
+    this.X1 += amount;
 
-    this.x_ += amount;
+    this.X += amount;
 
-    this.deltaX_ = amount;
-    if(this.x1 > 0)
+    this.DeltaX = amount;
+    if(this.X1 > 0)
     {
         //floating point error will cause them to be off a little, this will fix
-        this.deltaX_ = 0;
-        this.x0 = 0;
-        this.x1 = 0;
-        this.x_ = STAGE.MAX_STAGEX;
+        this.DeltaX = 0;
+        this.X0 = 0;
+        this.X1 = 0;
+        this.X = STAGE.MAX_STAGEX;
     }
-    if(this.x1 < this.maxRight_)
+    if(this.X1 < this.MaxRight)
     {
         //floating point error will cause them to be off a little, this will fix
-        this.deltaX_ = 0;
-        this.x0 = this.maxRightScroll_;
-        this.x1 = this.maxRight_;
-        this.x_ = 0;
+        this.DeltaX = 0;
+        this.X0 = this.MaxRightScroll;
+        this.X1 = this.MaxRight;
+        this.X = 0;
     }
     this.AlignPlayersX();
 }
@@ -505,7 +555,7 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
 {
     if(!this.CanScrollX())
     {
-        this.deltaX_ = 0;
+        this.DeltaX = 0;
         return 0;
     }
 
@@ -514,33 +564,33 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
         amount = 0;
     }
 
-    this.x0 += amount * this.bgRate_;
-    this.x1 += amount;
+    this.X0 += amount * this.BgRate;
+    this.X1 += amount;
 
-    this.x_ += amount;
+    this.X += amount;
 
-    this.deltaX_ = amount;
-    if(this.x1 > 0)
+    this.DeltaX = amount;
+    if(this.X1 > 0)
     {
         //floating point error will cause them to be off a little, this will fix
-        this.x0 = this.maxRightScroll_;
-        this.x1 = 0;
+        this.X0 = this.MaxRightScroll;
+        this.X1 = 0;
         !dontAlignPlayers
-            ? this.deltaX_ = 0
-            : this.deltaX_ = this.x_ - STAGE.MAX_STAGEX;
-        this.x_ = STAGE.MAX_STAGEX;
+            ? this.DeltaX = 0
+            : this.DeltaX = this.X - STAGE.MAX_STAGEX;
+        this.X = STAGE.MAX_STAGEX;
     }
-    if(this.x1 < this.maxRight_)
+    if(this.X1 < this.MaxRight)
     {
         //floating point error will cause them to be off a little, this will fix
-        this.x0 = this.maxLeftScroll_;
-        this.x1 = this.maxRight_;
+        this.X0 = this.MaxLeftScroll;
+        this.X1 = this.MaxRight;
         !dontAlignPlayers
-            ? this.deltaX_ = 0
-            : this.deltaX_ = 0 - this.x_;
-        this.x_ = 0;
+            ? this.DeltaX = 0
+            : this.DeltaX = 0 - this.X;
+        this.X = 0;
     }
     if(!dontAlignPlayers)
         this.AlignPlayersX();
-    return this.deltaX_;
+    return this.DeltaX;
 }

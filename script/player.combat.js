@@ -185,6 +185,10 @@ Player.prototype.TryStartGrapple = function(move,frame)
 /*returns true if this player can be grappled*/
 Player.prototype.CanBeGrappled = function(x,y,distance,airborneFlags,isAirborne)
 {
+    /*visible will be false during teleportation moves*/
+    if(!this.IsVisible())
+        return false;
+
     /*player can not have a grapple on him already!*/
     if(this.HasPendingGrapple() || this.IsBeingGrappled())
         return false;
@@ -220,6 +224,13 @@ Player.prototype.HandleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
         {
             var offsetX = forcedFrame.X;
             var offsetY = forcedFrame.Y;
+
+            if(!!this.currentFrame_.HitPoints[0])
+            {
+                offsetX *= this.currentFrame_.HitPoints[0].Tx || 1;
+                offsetY *= this.currentFrame_.HitPoints[0].Ty || 1;
+            }
+
 
             var x = this.ConvertX(this.x_ + offsetX);
             var y = this.ConvertY(this.y_ + offsetY);
@@ -907,7 +918,7 @@ Player.prototype.SetLastHit = function(animation,type,offsetX,offsetY)
         case CONSTANTS.USE_PLAYER_XY:
         {
             animation.initialX_ = this.GetX() + offsetX;
-            animation.initialY_ = STAGE.FLOORY + offsetY;
+            animation.initialY_ = game_.match_.stage_.GetGroundY() + offsetY;
             break;
         };
         default:
@@ -920,8 +931,8 @@ Player.prototype.SetLastHit = function(animation,type,offsetX,offsetY)
     };
     animation.initialPlayerX_ = this.x_;
     animation.initialPlayerY_ = this.y_;
-    animation.initialStageX_ = this.GetStage().x_;
-    animation.initialStageY_ = this.GetStage().y_;
+    animation.initialStageX_ = this.GetStage().X;
+    animation.initialStageY_ = this.GetStage().GetGroundY();
 }
 
 

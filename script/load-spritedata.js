@@ -23,7 +23,7 @@
 	spriteLookup_.Load("images/misc/misc/ken-name-1.png","images/misc/misc/char-sprites.png", "-532px", "-130px", "58px", "34px");
 	spriteLookup_.Load("images/misc/misc/ken-r-portriat-1.png","images/misc/misc/char-sprites.png", "-590px", "-84px", "64px", "80px");
 	spriteLookup_.Load("images/misc/misc/ken-shadow.png","images/misc/misc/char-sprites.png", "-654px", "-126px", "136px", "38px");
-	spriteLookup_.Load("images/misc/misc/mbison-name.png","images/misc/misc/char-sprites.png", "-790px", "-130px", "112px", "34px");
+	spriteLookup_.Load("images/misc/misc/mbison-name-1.png","images/misc/misc/char-sprites.png", "-790px", "-130px", "112px", "34px");
 	spriteLookup_.Load("images/misc/misc/mbison-r-portriat-1.png","images/misc/misc/char-sprites.png", "-902px", "-82px", "62px", "82px");
 	spriteLookup_.Load("images/misc/misc/mbison-shadow.png","images/misc/misc/char-sprites.png", "-964px", "-134px", "196px", "30px");
 	spriteLookup_.Load("images/misc/misc/rose-shadow.png","images/misc/misc/char-sprites.png", "-1160px", "-126px", "136px", "38px");

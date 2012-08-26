@@ -116,7 +116,10 @@
                         Frame:frame
                         ,Left:this.FollowElement.style.left
                         ,Right:this.FollowElement.style.right
-                        ,Bottom:this.FollowElement.style.bottom
+                        /*Must remove the stage offsetY from the cordinate and apply it on the current frame.*/
+                        /*Remember that recording it here will apply the coordinate after a certain number of frames,*/
+                        /*and if the screen Y changes then it will mess up the trail - so we must remove the screen offset*/
+                        ,Bottom:parseInt(this.FollowElement.style.bottom) - game_.match_.stage_.OffsetY + "px"
                         ,Top:this.FollowElement.style.top
                         ,DeltaX:0
                         ,DeltaY:0
@@ -138,18 +141,28 @@
                     var frame = this.Trail[trailIndex].Animation.BaseAnimation.frames_[frameIndex];
                     var coords = frame.UserData;
                     for(var coordIndex = 0, nbCoords = coords.length; coordIndex < nbCoords; coordIndex++)
+                    {
                         coords[coordIndex].DeltaX += stageDiffX;
+                    }
                 }
             }
         }
 
         if(!!stageDiffY)
         {
-            for(var i = 0, length = this.Trail.length; i < length; i++)
+            for(var trailIndex = 0, nbTrails = this.Trail.length; trailIndex < nbTrails; trailIndex++)
             {
+                for(var frameIndex = 0, nbFrames = this.Trail[trailIndex].Animation.BaseAnimation.frames_.length; frameIndex < nbFrames; ++frameIndex)
+                {
+                    var frame = this.Trail[trailIndex].Animation.BaseAnimation.frames_[frameIndex];
+                    var coords = frame.UserData;
+                    for(var coordIndex = 0, nbCoords = coords.length; coordIndex < nbCoords; coordIndex++)
+                    {
+                        //coords[coordIndex].DeltaY += -stageDiffY;
+                    }
+                }
             }
         }
-
     }
 
     /*returns the first coordinate at the requested frame index*/
@@ -172,6 +185,7 @@
         {
             /*The trail is applying the exact coords of the player, but the screen may move, which must be applied to all trail coords!*/
             this.ApplyStageOffset(stageDiffX,stageDiffY);
+            var stageOffsetY = game_.match_.stage_.OffsetY;
             
             for(var i = 0, length = this.Trail.length; i < length; i++)
             {
@@ -182,7 +196,7 @@
                     {
                         this.Trail[i].Element.style.left = (!!coords.Left) ? coords.DeltaX + parseInt(coords.Left) + "px" : "";
                         this.Trail[i].Element.style.right = (!!coords.Right) ? coords.DeltaX + parseInt(coords.Right) + "px" : "";
-                        this.Trail[i].Element.style.bottom = (!!coords.Bottom) ? coords.DeltaY + parseInt(coords.Bottom) + "px" : "";
+                        this.Trail[i].Element.style.bottom = (!!coords.Bottom) ? coords.DeltaY + stageOffsetY + parseInt(coords.Bottom) + "px" : "";
                         this.Trail[i].Element.style.top = (!!coords.Top) ? coords.DeltaY + parseInt(coords.Top) + "px" : "";
                     }
                 }

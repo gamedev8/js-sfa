@@ -33,7 +33,7 @@ Circle.prototype.Render = function(x,y,r,n)
         if(this.DebugElement.children[i].className == "bDebug")
             this.DebugElement.removeChild(this.DebugElement.children[i]);
     }
-    this.DebugElement.innerHTML += html;
+    this.DebugElement.innerHTML = html;
 }
 /*Returns the distance from the passed in circle*/
 Circle.prototype.GetDistanceSq = function(otherCircle)
@@ -65,8 +65,8 @@ Circle.prototype.RejectX = function(otherCircle)
             this.LocalX += dir;
             this.RenderX += dir;
         }while(this.Intersects(otherCircle) && ++delta < 10000);
-        //otherCircle.Render()
-        //this.Render();
+        /*otherCircle.Render()*/
+        /*this.Render();*/
     }
     return delta;
 }

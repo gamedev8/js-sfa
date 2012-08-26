@@ -56,6 +56,10 @@ var BUTTONS =
     ,MEDIUM_KICK:256
     ,HARD_KICK:512
     ,TURN_AROUND:1024
+    ,SELECT:2048
+    ,START:4096
+    ,CHARGE:8192
+    ,EXACT:16384
 }
 
 var MAX = 
@@ -85,6 +89,8 @@ var SWINGSOUND =
     ,LK:1 << 4
     ,MK:1 << 5
     ,HK:1 << 6
+    ,SLIDE0:1 << 7
+    ,SLIDE1:1 << 8
 }
 
 var HITSOUND = 
@@ -139,6 +145,7 @@ var PLAYER_FLAGS =
     ,IGNORE_ATTACKS:1 << 19
     ,IGNORE_MOVE_OVERRIDE:1 << 20
     ,DIZZY:1 << 21
+    ,INVISIBLE:1 << 22
 }
 
 
@@ -177,6 +184,12 @@ var COMBAT_FLAGS =
     ,STOP_SLIDE_BACK:1 << 5
     ,NO_SLIDE_BACK:1 << 6
     ,SUPER_MOVE_PAUSE:1 << 7
+    ,TELEPORT_BEHIND:1 << 8
+    ,TELEPORT_INFRONT:1 << 9
+    ,TELEPORT_MIDDLE:1 << 10
+    ,TELEPORT_BACK:1 << 11
+    ,TELEPORT_START:1 << 12
+    ,TELEPORT_END:1 << 13
 }
 
 
@@ -264,6 +277,8 @@ var STAGE =
     ,START_X:150
     ,START_X_OFFSET:50
     ,FLOORY:57
+    ,VERT_SCROLL_Y:180
+    ,SCROLLY_FACTOR:0.5
     ,CSSWIDTH:768
 }
 
@@ -319,7 +334,7 @@ var CONSTANTS =
     ,MEDIUM_INCREASE_DIZZY:10
     ,HARD_INCREASE_DIZZY:20
     ,MAX_KEYSTATES:15
-    ,MAX_KEY_LIFE:25
+    ,MAX_KEY_LIFE:20
     ,EXACT_MATCH:2
     ,PRIORITY_MATCH:1
     ,MAX_EXTRA_IMAGES:20
@@ -340,7 +355,7 @@ var CONSTANTS =
     ,Y_DAMPING:0.1
     ,HALF_G:0.5*9.81
     ,SMALLDIRT_OFFSETY:15
-    ,BIGDIRT_OFFSETY:70
+    ,BIGDIRT_OFFSETY:13
     /*the following are just to help cut down on literals throughout the code*/
     ,FIRST_HIT:1
     ,SECOND_HIT:2
@@ -373,7 +388,10 @@ var CONSTANTS =
     ,DEFAULT_MEDIUM_HRSLIDE:60
     ,DEFAULT_HARD_HRSLIDE:80
 
-    ,DEFAULT_COMBO_TEXT_LIFE:100
+    ,COMBO_TEXT_LIFE:100
+    ,TEXT_LIFE:100
+    ,TEXT_FADE_SPEED:20
+    ,TEXT_DELAY:100
 
     /*hits are buffered for the following number of frames - to allow the other player to also register a hit, removing any advantage for any player*/
     ,DEFAULT_ACTION_FRAME_DELAY:2
@@ -412,10 +430,11 @@ var CONSTANTS =
     ,COL2:1
     ,COL3:2
     ,COL4:3
-
+    ,NBCHARGE_FRAMES:60
     ,MAX_CREDITS:9
 
     ,PRESENT_DELAY:5
+    ,MIN_TELEPORT_DISTANCE_SQ:10
 
     ,NO_FRAME:-1
     ,DEFEATED_FRAME:100
@@ -436,6 +455,18 @@ var CONSTANTS =
     ,START_THEME_DELAY:400
     ,ANNOUNCE_FIRST_ROUND_DELAY:460
     ,START_FIRST_ROUND_DELAY:580
+
+
+    /*
+    ,SHOW_FACEOFF_DELAY:0
+    ,SHOW_FACEOFF_PICS_DELAY:0
+    ,SHOW_FACEOFF_NAMES_DELAY:0
+    ,REMOVE_FACEOFF_PICS_DELAY:0
+    ,SHOW_TEAMS_DELAY:0
+    ,START_THEME_DELAY:0
+    ,ANNOUNCE_FIRST_ROUND_DELAY:0
+    ,START_FIRST_ROUND_DELAY:0
+    */
 
 };
 var CHARACTERS = 
@@ -477,6 +508,24 @@ var RESOURCE_TYPES =
     ,BASE64AUDIO:3
     ,SCRIPT:4
 };
+
+var GAMEPAD = 
+{
+    LEFT:"dpadLeft"
+    ,UP:"dpadUp"
+    ,RIGHT:"dpadRight"
+    ,DOWN:"dpadDown"
+    ,B0:"faceButton0"
+    ,B1:"faceButton1"
+    ,B2:"faceButton2"
+    ,B3:"faceButton3"
+    ,LS0:"leftShoulder0"
+    ,LS1:"leftShoulder1"
+    ,RS0:"rightShoulder0"
+    ,RS1:"rightShoulder1"
+    ,SELECT:"select"
+    ,START:"start"
+}
 
 var KEYS = 
 {

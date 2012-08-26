@@ -1,41 +1,42 @@
 ﻿var CreateTeam = function(num)
 {
-    var players_ = [];
     var cursor_ = 0;
     var lastCursor_ = -1;
     var teamNum_ = num;
     var portriatImg_ = window.document.getElementById("portriatTeam" + num);
     var nameImg_ = window.document.getElementById("nameTeam" + num);
     var healthbar_ = CreateHealthBar("pnlHealthbarTeam" + num,num);
-    var energybar_ = CreateEnergyBar("pnlEnergyBarTeam" + num,num);
+    var energybar_ = CreateEnergyBar("pnlEnergyBarTeam" + num + "Container",num);
     var comboText_ = null;
+    var nbHitsText_ = null;
     var currentCombo_ = 0;
     var currentComboRefCount_ = 0;
     var nbPlayers_ = 0;
 
     var Team = function(num)
     {
+        this.players_ = [];
     }
 
     Team.prototype.GetGame = function() { return game_; }
     Team.prototype.GetPlayer = function(value) { return this.GetPlayers()[value]; }
-    Team.prototype.GetPlayers = function() { return players_; }
+    Team.prototype.GetPlayers = function() { return this.players_; }
     Team.prototype.SetPlayers = function(value)
     {
-        players_ = value;
+        this.players_ = value;
         this.SetPlayerIndexes();
-        nbPlayers_ = players_.length;
+        nbPlayers_ = this.players_.length;
     }
     Team.prototype.AddPlayer = function(value)
     {
-        players_.push(value);
+        this.players_.push(value);
         this.SetPlayerIndexes();
-        nbPlayers_ = players_.length;
+        nbPlayers_ = this.players_.length;
     }
     Team.prototype.SetPlayerIndexes = function()
     {
-        for(var i = 0, length = players_.length; i < length; ++i)
-            players_[i].SetIndex(i);
+        for(var i = 0, length = this.players_.length; i < length; ++i)
+            this.players_[i].SetIndex(i);
     }
     Team.prototype.GetCursor = function() { return cursor_; }
     Team.prototype.SetCursor = function(value) { cursor_ = value; }
@@ -53,6 +54,7 @@
     Team.prototype.SetEnergybar = function(value) { energybar_ = value; }
     Team.prototype.GetComboText = function() { return comboText_; }
     Team.prototype.SetComboText = function(value) { comboText_ = value; }
+    Team.prototype.SetNbHitText = function(value) { nbHitsText_ = value; }
     Team.prototype.GetCurrentCombo = function() { return currentCombo_; }
     Team.prototype.SetCurrentCombo = function(value) { currentCombo_ = value; }
     Team.prototype.IncCurrentCombo = function() { ++currentCombo_; }
@@ -102,19 +104,39 @@
 
     Team.prototype.InitText = function()
     {
-        this.SetComboText(game_.AddManagedText("pnlTeam" + this.GetTeamNum() + "ComboText",0,170,"font2"));
+        comboText_ = game_.AddManagedText("pnlTeam" + this.GetTeamNum() + "ComboText",0,170,"font2", teamNum_ == 2);
+        nbHitsText_ = game_.AddManagedText("pnlTeam" + this.GetTeamNum() + "NbHitsText",0,170,"font3", teamNum_ == 2);
+    }
+
+
+    Team.prototype.GetNbHitsText = function(nbHits)
+    {
+        if(nbHits == 2) return "GOOD !";
+        else if(nbHits == 3) return "GOOD !!";
+        else if(nbHits == 4) return "GREAT !";
+        else if(nbHits == 5) return "GREAT !!";
+        else if(nbHits == 6) return "VERY GOOD !";
+        else if(nbHits == 7) return "VERY GOOD !!";
+        else if(nbHits == 8) return "WONDERFUL !";
+        else if(nbHits == 9) return "WONDERFUL !!";
+        else if(nbHits == 10) return "FANTASTIC !";
+        else if(nbHits == 11) return "FANTASTIC !!";
+        else if(nbHits == 12) return "MARVELOUS !";
+        else if(nbHits == 13) return "MARVELOUS !!";
+        else return "MARVELOUS !!!";
     }
 
 
     Team.prototype.WriteCombo = function(nbHits)
     {
-        this.GetComboText().Change(nbHits + TEXT.HIT_COMBO,10,game_.GetCurrentFrame() + CONSTANTS.DEFAULT_COMBO_TEXT_LIFE);
+        comboText_.Change(nbHits + TEXT.HIT_COMBO,10,game_.GetCurrentFrame() + CONSTANTS.COMBO_TEXT_LIFE);
+        this.WriteText(this.GetNbHitsText(nbHits));
     }
 
 
     Team.prototype.WriteText = function(text)
     {
-        this.GetComboText().Change(text,10,game_.GetCurrentFrame() + CONSTANTS.DEFAULT_COMBO_TEXT_LIFE);
+        nbHitsText_.Change(text,10,game_.GetCurrentFrame() + CONSTANTS.TEXT_DELAY + CONSTANTS.TEXT_LIFE,game_.GetCurrentFrame() + CONSTANTS.TEXT_DELAY,true,30);
     }
 
 
@@ -123,7 +145,8 @@
     {
         portriatImg_.style.display = "none";
         nameImg_.style.display = "none";
-        this.GetComboText().HideNow();
+        comboText_.HideNow();
+        nbHitsText_.HideNow();
         healthbar_.Release();
         energybar_.Release();
         for(var i = 0, length = nbPlayers_; i < length; ++i)
@@ -134,14 +157,14 @@
     Team.prototype.Show = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            players_[i].Show();
+            this.players_[i].Show();
         portriatImg_.parentNode.style.display = "";
     }
 
     Team.prototype.Hide = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            players_[i].Hide();
+            this.players_[i].Hide();
         portriatImg_.parentNode.style.display = "none";
     }
 

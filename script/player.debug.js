@@ -6,10 +6,9 @@ Player.prototype.RenderDebugInfo = function()
     this.debugB_.style.left = (this.GetRightX()) + "px";
     this.debugB_.style.bottom = bottom;
     this.debugF_.style.left = (this.GetLeftX()) + "px";
-    this.debugF_.style.bottom = bottom
+    this.debugF_.style.bottom = bottom;
 
     this.MoveCircle();
-
     this.circle_.Render();
 
     var x = 0;
@@ -72,13 +71,13 @@ Player.prototype.CreateDebugElements = function(parentElement)
     this.debugF_.className = "left";
     this.debugF_.innerHTML = "l";
     (parentElement || window.document.getElementById("pnlStage")).appendChild(this.debugF_);
-    
 
     var d = window.document.createElement("div");
     d.className = "circle-debug";
     this.circle_.DebugElement = d;
     this.circle_.Render();
-    (parentElement || window.document.getElementById("pnlStage")).appendChild(d);
+    //(parentElement || window.document.getElementById("pnlStage")).appendChild(d);
+    this.element_.appendChild(d);
     */
 
     this.debugHit_ = window.document.createElement("b");

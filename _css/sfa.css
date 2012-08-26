@@ -29,9 +29,9 @@ div.stance-container-p1 {left:32px;}
 div.stance-container-p2 {right:32px;}
 .stance-name {position:absolute;z-index:3;bottom:0px;background-image:url(../images/misc/font3/name-sprites.png);}
 .stance-shadow {position:absolute;z-index:1;background-image:url(../images/misc/misc/char-sprites.png);}
-div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
-div.dimBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:15;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
-div.loadingBackground{height:576px;width:768px;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:200;background:#111;text-align:center;}
+div.stage{height:576px;width:768px;bottom:50px;overflow:hidden;position:absolute;display:inline-block;}
+div.dimBackground{height:100%;width:100%;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:16;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
+div.loadingBackground{height:100%;width:100%;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:9999999;background:#111;text-align:center;}
 span.loading {background-color:#222;color:#aaaaff;}
 div.loading {font-size:24px; margin-top:50px;}
 span.done-loading {font-weight:normal;color:#00aa00;}
@@ -63,9 +63,9 @@ div.team2Keys {color:#ff6666;right:0px;}
 .paused {margin-top:2px;background:#ff0000;color:#fff;}
 .frame-rate{background:#666;text-transform:uppercase;}
 
-div.projectile{position:absolute;bottom:35px;z-index:20;background-position:0 0;background-repeat:no-repeat;}
+div.projectile{position:absolute;bottom:35px;z-index:16;background-position:0 0;background-repeat:no-repeat;}
 
-div.circle-debug{position:absolute;bottom:35px;}
+div.circle-debug{position:absolute;}
 b.right{display:none;background-color:#ff0000;}
 b.left{display:none;background-color:#0000ff;color:#fff;}
 b.bDebug{background-color:#00ff00;height:1px;width:1px;}
@@ -73,7 +73,7 @@ b.hit{background-color:#ff0000;color:#fff;z-index:100;}
 
 b{position:absolute;display:inline-block;width:10px;line-height:15px;vertical-align:middle;color:#000;text-align:center;font-size:8px;text-transform:uppercase;}
 
-div.team{position:absolute;top:20px;z-index:25;}
+div.team{position:absolute;top:20px;z-index:0;}
 div.team div{position:absolute;}
 div.team img{position:absolute;}
 div.team div.health-bar{top:20px;}
@@ -111,28 +111,31 @@ div.team2 div.health-bar .life{left:-292px;}
 div.team2 .name{right:0px;}
 div.team2 .portriat{right:0px;}
 
-.dirt,.big-dirt,.front-hit-report,.rear-hit-report{position:absolute;z-index:20; background-position: 0 0;outline:none;border:none;}
+.dirt,.big-dirt,.front-hit-report,.rear-hit-report{position:absolute;z-index:15; background-position: 0 0;outline:none;border:none;}
 .dirt{background-image:url(../images/misc/misc/dirt-sprites.png);}
 .big-dirt{background-image:url(../images/misc/misc/dirt-sprites.png);}
 .front-hit-report{background-image:url(../images/misc/misc/blast-sprites.png);}
 .rear-hit-report{background-image:url(../images/misc/misc/blast-sprites.png);}
 
+.team1-energy-bar-container,.team2-energy-bar-container{position:absolute;bottom:5px;z-index:99998;}
+.team1-energy-bar-container{left:25px;}
+.team2-energy-bar-container{right:25px;}
 div.energy-bar{width:336px;}
 .energy-bar,.inner-energy-bar{z-index:1000;}
 div.inner-energy-bar{bottom:0px;width:336px;height:49px;background-image:url(../images/misc/misc/bars-sprites.png);}
-div.team1 .level-0-energy,div.team1 .level-1-energy,div.team1 .level-2-energy{z-index:1001;position:absolute;height:16px;bottom:23px;background-repeat:repeat-x;}
-div.team1 div.energy-bar{right:-355px;bottom:-554px;}
-div.team1 div.inner-energy-bar{right:0px;}
-div.team1 .level-0-energy{right:4px;background-image:url(../images/misc/misc/energy-bar-lvl0.png);}
-div.team1 .level-1-energy{right:100px;background-image:url(../images/misc/misc/energy-bar-lvl1.png);}
-div.team1 .level-2-energy{right:196px;background-image:url(../images/misc/misc/energy-bar-lvl2.png);}
+div.team1-energy-bar-container .level-0-energy,div.team1-energy-bar-container .level-1-energy,div.team1-energy-bar-container .level-2-energy{z-index:1001;position:absolute;height:16px;bottom:23px;background-repeat:repeat-x;}
+div.team1-energy-bar-container div.energy-bar{right:-355px;bottom:-554px;}
+div.team1-energy-bar-container div.inner-energy-bar{right:0px;}
+div.team1-energy-bar-container .level-0-energy{right:4px;background-image:url(../images/misc/misc/energy-bar-lvl0.png);}
+div.team1-energy-bar-container .level-1-energy{right:100px;background-image:url(../images/misc/misc/energy-bar-lvl1.png);}
+div.team1-energy-bar-container .level-2-energy{right:196px;background-image:url(../images/misc/misc/energy-bar-lvl2.png);}
 
-div.team2 .level-0-energy,div.team2 .level-1-energy,div.team2 .level-2-energy{z-index:1001;position:absolute;height:16px;bottom:23px;background-repeat:repeat-x;}
-div.team2 div.energy-bar{left:-355px;bottom:-554px;}
-div.team2 div.inner-energy-bar{left:0px;}
-div.team2 .level-0-energy{left:4px;background-image:url(../images/misc/misc/energy-bar-lvl0.png);}
-div.team2 .level-1-energy{left:100px;background-image:url(../images/misc/misc/energy-bar-lvl1.png);}
-div.team2 .level-2-energy{left:196px;background-image:url(../images/misc/misc/energy-bar-lvl2.png);}
-div div.Text{z-index:5000;position:absolute;background:Tranparent;line-height:50px;}
+div.team2-energy-bar-container .level-0-energy,div.team2-energy-bar-container .level-1-energy,div.team2-energy-bar-container .level-2-energy{z-index:1001;position:absolute;height:16px;bottom:23px;background-repeat:repeat-x;}
+div.team2-energy-bar-container div.energy-bar{left:-355px;bottom:-554px;}
+div.team2-energy-bar-container div.inner-energy-bar{left:0px;}
+div.team2-energy-bar-container .level-0-energy{left:4px;background-image:url(../images/misc/misc/energy-bar-lvl0.png);}
+div.team2-energy-bar-container .level-1-energy{left:100px;background-image:url(../images/misc/misc/energy-bar-lvl1.png);}
+div.team2-energy-bar-container .level-2-energy{left:196px;background-image:url(../images/misc/misc/energy-bar-lvl2.png);}
+div div.Text{z-index:15;position:absolute;background:Tranparent;line-height:50px;}
 div div.Text img{vertical-align:top;z-index:5000;background:Tranparent;}
 .hidden{background-color:Transparent;}
