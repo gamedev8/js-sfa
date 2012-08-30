@@ -5,7 +5,7 @@ body div.select {height:100%;width:100%;background:url(../images/misc/misc/playe
 .insert-coin{background-image:url(../images/misc/font1/insert.png);width:172px;height:21px;bottom:144px;left:292px;}
 .credits-text{background-image:url(../images/misc/font1/credits.png);width:320px;height:124px;bottom:0px;left:224px;}
 .credits{}
-
+.animation-debug{position:absolute;right:20px;bottom:50px;}
 .faceoff{text-align:center;position:absolute;height:100%;width:100%;overflow:hidden;}
 .team1-faceoff,.team2-faceoff{position:absolute;text-align:center;top:82px;background-image:url(../images/misc/misc/head-sprites.png);}
 .faceoff-name{display:inline-block;position:relative;bottom:-310px;background-image:url(../images/misc/font3/name-sprites.png);}

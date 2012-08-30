@@ -145,8 +145,14 @@
     {
         portriatImg_.style.display = "none";
         nameImg_.style.display = "none";
-        comboText_.HideNow();
-        nbHitsText_.HideNow();
+        if(!!comboText_)
+        {
+            comboText_.HideNow();
+        }
+        if(!!nbHitsText_)
+        {
+            nbHitsText_.HideNow();
+        }
         healthbar_.Release();
         energybar_.Release();
         for(var i = 0, length = nbPlayers_; i < length; ++i)

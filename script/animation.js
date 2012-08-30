@@ -52,6 +52,11 @@
         {
             currentFrame.FlagsToSet.Player = (currentFrame.FlagsToSet.Player || MISC_FLAGS.NONE) | PLAYER_FLAGS.INVULNERABLE;
         }
+        /*ensure that isAttack_ is set properly*/
+        if(!!(currentFrame.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
+        {
+            this.isAttack_ = true;
+        }
 
         if(!!this.isAttack_)
         {

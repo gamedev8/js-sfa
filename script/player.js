@@ -461,6 +461,12 @@ Player.prototype.HoldFrame = function(frame)
         ++this.currentAnimation_.StartFrame;
     }
 }
+/*Moves the animation back one frame*/
+Player.prototype.ReverseFrame = function(frame)
+{
+    if(!!this.currentFrame_)
+        this.currentAnimation_.StartFrame += 2;
+}
 /*Prevents the animation from continuing for one frame*/
 Player.prototype.ForceHoldFrame = function(frame)
 {

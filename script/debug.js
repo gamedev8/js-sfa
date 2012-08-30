@@ -101,6 +101,42 @@
         return null;
     }
 
+    Debug.prototype.P1ReverseFrame = function()
+    {
+        debug_.P1().ReverseFrame();
+        game_.Pause();
+    }
+
+    Debug.prototype.P1StepFrame = function()
+    {
+        game_.Pause();
+    }
+
+    var txtX = window.document.getElementById("txtX");
+    var txtY = window.document.getElementById("txtY");
+
+
+    Debug.prototype.SetOffsets = function(x,y)
+    {
+        txtX.value = x;
+        txtY.value = y;
+    }
+
+    Debug.prototype.P1SetFrameOffsets = function()
+    {
+        var x = window.document.getElementById("txtX").value;
+        var y = window.document.getElementById("txtY").value;
+
+        if(!!+x || x === 0)
+        {
+            debug_.P1().currentFrame_.ImageOffsetX = x;
+        }
+        if(!!+y || y === 0)
+        {
+            debug_.P1().currentFrame_.ImageOffsetY = y;
+        }
+    }
+
     Debug.prototype.KeyCount = 1000;
 
     Debug.prototype.InjectPlayer = function(playerId,team)

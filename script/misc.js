@@ -92,9 +92,9 @@ u4_.isAlternateChar_ = true;
 function StartQuickMatch()
 {
     u1_.SetChar(CHARACTERS.MBISON);
-    u2_.SetChar(CHARACTERS.KEN);
+    //u2_.SetChar(CHARACTERS.KEN);
 
-    game_.StartMatch(false,[u1_],[u2_], stages_["ken"]);
+    game_.StartMatch(false,[u1_],[], stages_["ken"]);
 }
 
 /* multi player battle */

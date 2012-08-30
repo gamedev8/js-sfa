@@ -670,6 +670,8 @@ Player.prototype.SetCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         /*used to force the other player to change frames during a throw*/
         if(!!isNewFrame)
         {
+            /*debug_.SetOffsets(this.currentFrame_.ImageOffsetX,this.currentFrame_.ImageOffsetY);*/
+
             ++this.currentAnimation_.FrameIndex;
             if(!!this.currentFrame_.SlideForce)
                 this.StartSlide(frame,this.currentFrame_.SlideForce,this.direction_,this.currentFrame_.SlideFactor,true,true);

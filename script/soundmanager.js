@@ -1,4 +1,6 @@
-﻿var CreateSoundManager = function()
+﻿var __noSound = false;
+
+var CreateSoundManager = function()
 {
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
@@ -37,6 +39,7 @@
     /*creates a DOM audio element and loads it with base64 data*/
     SoundManager.prototype.LoadBase64 = function(path,nbChannels,defaultVolume,base64Data,loop)
     {
+        if(!!__noSound) return;
         if(!items_[path])
         {
             nbChannels = nbChannels || 1;
@@ -71,6 +74,7 @@
     /*creates a DOM audio element and loads it*/
     SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
     {
+        if(!!__noSound) return;
         if(!items_[path])
         {
             nbChannels = nbChannels || 1;

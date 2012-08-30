@@ -263,73 +263,73 @@ Player.prototype.CreateMBison = function(user)
     var k1 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"light kick",0,[BUTTONS.LIGHT_KICK]);
     k1.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
-    k1.AddFrame(player,0,"",folder + "/k2-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
-    k1.AddFrame(player,0,"",folder + "/k1-1.png",7,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,80,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 200,y: 135 },{ state: HIT_FLAGS.NEAR,x: 250,y: 85}],ATTACK_FLAGS.LIGHT,1,1,10);
+    k1.AddFrame(player,0,"",folder + "/k1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,1,-10);
+    k1.AddFrame(player,0,"",folder + "/k1-1.png",7,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,54,-1,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 270,y: 185 },{ state: HIT_FLAGS.NEAR,x: 290,y: 95}],ATTACK_FLAGS.LIGHT,1,1,10);
     k1.EndBlock();
-    k1.AddFrame(player,0,"",folder + "/turn-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    k1.AddFrame(player,0,"",folder + "/turn-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
     var k2 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"medium kick",0,[BUTTONS.MEDIUM_KICK]);
     k2.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     k2.SetMediumAttack();
     k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
-    k2.AddFrame(player,0,"",folder + "/k2-0.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    k2.AddFrame(player,0,"",folder + "/k2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    k2.AddFrame(player,0,"",folder + "/k2-1.png",8,{SwingSound:SWINGSOUND.MP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK},MISC_FLAGS.NONE,0,0,0,10,null,80,0,ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:200,y:135},{state:HIT_FLAGS.NEAR,x:270,y:205}],ATTACK_FLAGS.MEDIUM,CONSTANTS.SECOND_HIT,1,8);
-    k2.AddFrame(player,0,"",folder + "/k2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    k2.AddFrame(player,0,"",folder + "/k1-0.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,1,-10);
+    k2.AddFrame(player,0,"",folder + "/k2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,40,10);
+    k2.AddFrame(player,0,"",folder + "/k2-1.png",8,{SwingSound:SWINGSOUND.MP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK},MISC_FLAGS.NONE,0,0,0,10,null,40,0,ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:230,y:165},{state:HIT_FLAGS.NEAR,x:300,y:165},{state:HIT_FLAGS.NEAR,x:370,y:165}],ATTACK_FLAGS.MEDIUM,CONSTANTS.SECOND_HIT,1,8);
+    k2.AddFrame(player,0,"",folder + "/k2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,40,10);
     k2.EndBlock();
-    k2.AddFrame(player,0,"",folder + "/turn-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    k2.AddFrame(player,0,"",folder + "/turn-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
     var k3 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"hard kick",0,[BUTTONS.HARD_KICK]);
     k3.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     k3.SetHardAttack();
     k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
-    k3.AddFrame(player,0,"",folder + "/k1-0.png",3,{Player:PLAYER_FLAGS.MOVE_TO_FRONT},{Player:PLAYER_FLAGS.MOBILE});
-    k3.AddFrame(player,0,"",folder + "/k2-0.png",4,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,10,null,10,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.FAR,x:200,y:125}],ATTACK_FLAGS.HARD,1,1,20);
-    k3.AddFrame(player,0,"",folder + "/k3-0.png",8,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,10,null,10,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.FAR,x:330,y:235}],ATTACK_FLAGS.HARD,2,1,20);
-    k3.AddFrame(player,0,"",folder + "/k3-1.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    k3.AddFrame(player,0,"",folder + "/k2-0.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    k3.AddFrame(player,0,"",folder + "/k1-0.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    k3.AddFrame(player,0,"",folder + "/k1-0.png",3,{Player:PLAYER_FLAGS.MOVE_TO_FRONT},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,1,-10);
+    k3.AddFrame(player,0,"",folder + "/k2-0.png",4,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,10,null,40,10,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.FAR,x:200,y:125}],ATTACK_FLAGS.HARD,1,1,20);
+    k3.AddFrame(player,0,"",folder + "/k3-0.png",8,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,10,null,40,5,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.FAR,x:330,y:235}],ATTACK_FLAGS.HARD,2,1,20);
+    k3.AddFrame(player,0,"",folder + "/k3-1.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,40,-5);
+    k3.AddFrame(player,0,"",folder + "/k2-0.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,40,10);
+    k3.AddFrame(player,0,"",folder + "/k1-0.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,1,-10);
     k3.EndBlock();
-    k3.AddFrame(player,0,"",folder + "/turn-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0);
+    k3.AddFrame(player,0,"",folder + "/turn-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
     var p1 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"light punch",0,[BUTTONS.LIGHT_PUNCH]);
     p1.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
-    p1.AddFrame(player,0,"",folder + "/p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    p1.AddFrame(player,0,"",folder + "/p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 110,y: 193 },{ state: HIT_FLAGS.FAR,x: 194,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
-    p1.AddFrame(player,0,"",folder + "/p1-2.png",3,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 110,y: 193 },{ state: HIT_FLAGS.FAR,x: 194,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
+    p1.AddFrame(player,0,"",folder + "/p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-3,-11);
+    p1.AddFrame(player,0,"",folder + "/p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,-15,-11,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 220,y: 193 },{ state: HIT_FLAGS.FAR,x: 320,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
+    p1.AddFrame(player,0,"",folder + "/p1-2.png",3,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,-25,-11,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 220,y: 193 },{ state: HIT_FLAGS.FAR,x: 320,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
     p1.EndBlock();
-    p1.AddFrame(player,0,"",folder + "/p1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    p1.AddFrame(player,0,"",folder + "/turn-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    p1.AddFrame(player,0,"",folder + "/p1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,10,-11);
+    p1.AddFrame(player,0,"",folder + "/turn-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
     var p2 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"medium punch",0,[BUTTONS.MEDIUM_PUNCH]);
     p2.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     p2.SetMediumAttack();
     p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
-    p2.AddFrame(player,0,"",folder + "/p2-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    p2.AddFrame(player,0,"",folder + "/p2-1.png",2,MISC_FLAGS.NONE);
-    p2.AddFrame(player,0,"",folder + "/p2-3.png",2,MISC_FLAGS.NONE);
-    p2.AddFrame(player,0,"",folder + "/p2-4.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 130,y: 145 },{ state: HIT_FLAGS.FAR,x: 170,y: 185}],ATTACK_FLAGS.MEDIUM,1,1,15);
-    p2.AddFrame(player,0,"",folder + "/p2-5.png",3,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 150,y: 220 },{ state: HIT_FLAGS.FAR,x: 135,y: 270}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    p2.AddFrame(player,0,"",folder + "/p2-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-60,-11);
+    p2.AddFrame(player,0,"",folder + "/p2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
+    p2.AddFrame(player,0,"",folder + "/p2-3.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
+    p2.AddFrame(player,0,"",folder + "/p2-4.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,-22,-11,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 220,y: 193 },{ state: HIT_FLAGS.FAR,x: 320,y: 193}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    p2.AddFrame(player,0,"",folder + "/p2-5.png",3,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,-22,-11,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 150,y: 220 },{ state: HIT_FLAGS.FAR,x: 135,y: 270}],ATTACK_FLAGS.MEDIUM,1,1,15);
     p2.EndBlock();
-    p2.AddFrame(player,0,"",folder + "/p1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    p2.AddFrame(player,0,"",folder + "/turn-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    p2.AddFrame(player,0,"",folder + "/p1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,1,-11);
+    p2.AddFrame(player,0,"",folder + "/turn-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
     var p3 = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"hard punch",0,[BUTTONS.HARD_PUNCH]);
     p3.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     p3.SetHardAttack();
     p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
-    p3.AddFrame(player,0,"",folder + "/p2-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    p3.AddFrame(player,0,"",folder + "/p2-1.png",2);
-    p3.AddFrame(player,0,"",folder + "/p2-2.png",2);
-    p3.AddFrame(player,0,"",folder + "/p3-0.png",2);
-    p3.AddFrame(player,0,"",folder + "/p3-1.png",2);
-    p3.AddFrame(player,0,"",folder + "/p3-2.png",2,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
-    p3.AddFrame(player,0,"",folder + "/p3-3.png",2,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
-    p3.AddFrame(player,0,"",folder + "/p3-4.png",1,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
+    p3.AddFrame(player,0,"",folder + "/p2-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-60,-11);
+    p3.AddFrame(player,0,"",folder + "/p2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
+    p3.AddFrame(player,0,"",folder + "/p2-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
+    p3.AddFrame(player,0,"",folder + "/p3-0.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
+    p3.AddFrame(player,0,"",folder + "/p3-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
+    p3.AddFrame(player,0,"",folder + "/p3-2.png",2,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-25,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:190,y:81},{state:HIT_FLAGS.FAR,x:240,y:181},{state:HIT_FLAGS.FAR,x:240,y:281}],ATTACK_FLAGS.HARD,1,1,20);
+    p3.AddFrame(player,0,"",folder + "/p3-3.png",2,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-35,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:190,y:81},{state:HIT_FLAGS.FAR,x:240,y:181},{state:HIT_FLAGS.FAR,x:240,y:281}],ATTACK_FLAGS.HARD,1,1,20);
+    p3.AddFrame(player,0,"",folder + "/p3-4.png",1,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-35,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:190,y:81},{state:HIT_FLAGS.FAR,x:240,y:181},{state:HIT_FLAGS.FAR,x:240,y:281}],ATTACK_FLAGS.HARD,1,1,20);
     p3.EndBlock();
-    p3.AddFrame(player,0,"",folder + "/p1-3.png",6);
-    p3.AddFrame(player,0,"",folder + "/turn-2.png",8);
+    p3.AddFrame(player,0,"",folder + "/p1-3.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,1,-11);
+    p3.AddFrame(player,0,"",folder + "/turn-2.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
 
     var throw1X = -4;
@@ -350,69 +350,69 @@ Player.prototype.CreateMBison = function(user)
     var crouch_p1 = player.AddAnimation(POSE_FLAGS.CROUCHING,"crouch p1",0,[BUTTONS.LIGHT_PUNCH],110);
     crouch_p1.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
-    crouch_p1.AddFrame(player,0,"",folder + "/crouch_p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_p1.AddFrame(player,0,"",folder + "/crouch_p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 110,y: 120 },{ state: HIT_FLAGS.NEAR,x: 194,y: 120}],ATTACK_FLAGS.LIGHT,1,1,10);
+    crouch_p1.AddFrame(player,0,"",folder + "/crouch_p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-62,-21);
+    crouch_p1.AddFrame(player,0,"",folder + "/crouch_p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,-41,-16,ATTACK_FLAGS.LIGHT | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 210,y: 120 },{ state: HIT_FLAGS.NEAR,x: 290,y: 120}],ATTACK_FLAGS.LIGHT,1,1,10);
     crouch_p1.EndBlock();
-    crouch_p1.AddFrame(player,0,"",folder + "/crouch_p1-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    crouch_p1.AddFrame(player,0,"",folder + "/crouch_p1-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-62,-21);
     crouch_p1.Chain(crouch,2);
 
     var crouch_p2 = player.AddAnimation(POSE_FLAGS.CROUCHING,"crouch p2",0,[BUTTONS.MEDIUM_PUNCH],110);
     crouch_p2.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_p2.SetMediumAttack();
     crouch_p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
-    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-0.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-1.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 110,y: 120 },{ state: HIT_FLAGS.NEAR,x: 194,y: 120}],ATTACK_FLAGS.MEDIUM,1,1,15);
-    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-2.png",1,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 110,y: 120 },{ state: HIT_FLAGS.NEAR,x: 194,y: 120}],ATTACK_FLAGS.MEDIUM,1,1,15);
-    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-3.png",3,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 110,y: 120 },{ state: HIT_FLAGS.NEAR,x: 194,y: 120}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-62,-21);
+    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-0.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-62,-21);
+    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-1.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,-41,-16,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 210,y: 120 },{ state: HIT_FLAGS.NEAR,x: 290,y: 120}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-2.png",1,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,-41,-16,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 210,y: 120 },{ state: HIT_FLAGS.NEAR,x: 290,y: 120}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p2-3.png",3,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,-41,-16,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 210,y: 120 },{ state: HIT_FLAGS.NEAR,x: 290,y: 120}],ATTACK_FLAGS.MEDIUM,1,1,15);
     crouch_p2.EndBlock();
-    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p1-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    crouch_p2.AddFrame(player,0,"",folder + "/crouch_p1-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-62,-21);
     crouch_p2.Chain(crouch,2);
 
     var crouch_p3 = player.AddAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING,"crouch p3",0,[BUTTONS.CROUCH|BUTTONS.HARD_PUNCH],110);
     crouch_p3.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_p3.SetHardAttack();
     crouch_p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING | OVERRIDE_FLAGS.AIRBORNE);
-    crouch_p3.AddFrame(player,0,"",folder + "/crouch_p3-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_p3.AddFrame(player,0,"",folder + "/crouch_p3-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    crouch_p3.AddFrame(player,0,"",folder + "/p3-0.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    crouch_p3.AddFrame(player,0,"",folder + "/p3-1.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    crouch_p3.AddFrame(player,0,"",folder + "/p3-2.png",2,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
-    crouch_p3.AddFrame(player,0,"",folder + "/p3-3.png",2,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
-    crouch_p3.AddFrame(player,0,"",folder + "/p3-4.png",1,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
+    crouch_p3.AddFrame(player,0,"",folder + "/crouch_p3-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-60,-11);
+    crouch_p3.AddFrame(player,0,"",folder + "/crouch_p3-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
+    crouch_p3.AddFrame(player,0,"",folder + "/p3-0.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
+    crouch_p3.AddFrame(player,0,"",folder + "/p3-1.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
+    crouch_p3.AddFrame(player,0,"",folder + "/p3-2.png",2,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-25,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
+    crouch_p3.AddFrame(player,0,"",folder + "/p3-3.png",2,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-35,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
+    crouch_p3.AddFrame(player,0,"",folder + "/p3-4.png",1,{Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-35,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
     crouch_p3.EndBlock();
-    crouch_p3.AddFrame(player,0,"",folder + "/p1-3.png",6);
-    crouch_p3.AddFrame(player,0,"",folder + "/crouch_p1-0.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    crouch_p3.AddFrame(player,0,"",folder + "/p1-3.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,1,-11);
+    crouch_p3.AddFrame(player,0,"",folder + "/crouch_p1-0.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-62,-21);
     crouch_p3.Chain(crouch,2);
 
     var crouch_k1 = player.AddAnimation(POSE_FLAGS.CROUCHING,"crouch k1",0,[BUTTONS.LIGHT_KICK],110);
     crouch_k1.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
-    crouch_k1.AddFrame(player,0,"",folder + "/crouch_k1-0.png",4,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_k1.AddFrame(player,0,"",folder + "/crouch_k1-1.png",4,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 110,y: 40 },{ state: HIT_FLAGS.NEAR,x: 210,y: 1}],ATTACK_FLAGS.LIGHT,1,1,10);
+    crouch_k1.AddFrame(player,0,"",folder + "/crouch_k1-0.png",4,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-41,-16);
+    crouch_k1.AddFrame(player,0,"",folder + "/crouch_k1-1.png",4,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,-46,-20,ATTACK_FLAGS.LIGHT | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 210,y: 40 },{ state: HIT_FLAGS.NEAR,x: 260,y: 10}],ATTACK_FLAGS.LIGHT,1,1,10);
     crouch_k1.EndBlock();
-    crouch_k1.AddFrame(player,0,"",folder + "/crouch_k1-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    crouch_k1.AddFrame(player,0,"",folder + "/crouch_k1-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-41,-16);
     crouch_k1.Chain(crouch,2);
 
     var crouch_k2 = player.AddAnimation(POSE_FLAGS.CROUCHING,"crouch k2",0,[BUTTONS.MEDIUM_KICK],110);
     crouch_k2.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_k2.SetMediumAttack();
     crouch_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
-    crouch_k2.AddFrame(player,0,"",folder + "/crouch_k1-0.png",6,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_k2.AddFrame(player,0,"",folder + "/crouch_k1-1.png",4,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_2,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 140,y: 35 },{ state: HIT_FLAGS.NEAR,x: 185,y: 30 },{ state: HIT_FLAGS.NEAR,x: 260,y: 1}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    crouch_k2.AddFrame(player,0,"",folder + "/crouch_k1-0.png",6,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-41,-16);
+    crouch_k2.AddFrame(player,0,"",folder + "/crouch_k1-1.png",4,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_2,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,-46,-20,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.NEAR,x: 210,y: 40 },{ state: HIT_FLAGS.NEAR,x: 280,y: 10 },{ state: HIT_FLAGS.NEAR,x: 260,y: 1}],ATTACK_FLAGS.MEDIUM,1,1,15);
     crouch_k2.EndBlock();
-    crouch_k2.AddFrame(player,0,"",folder + "/crouch_k1-0.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    crouch_k2.AddFrame(player,0,"",folder + "/crouch_k1-0.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-41,-16);
     crouch_k2.Chain(crouch,2);
 
     var crouch_k3 = player.AddAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_2,"crouch k3",0,[BUTTONS.CROUCH|BUTTONS.HARD_KICK],110);
     crouch_k3.SetHardAttack();
     crouch_k3.Flags = ({Combat:COMBAT_FLAGS.NO_SLIDE_BACK,Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
-    crouch_k3.AddFrame(player,0,"",folder + "/crouch_k3-0.png",8,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_k3.AddFrameWithSound(player,1,"audio/mbison/thrust-1.zzz",0,"",folder + "/crouch_k3-1.png",20,{SwingSound:SWINGSOUND.SLIDE0,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD | ATTACK_FLAGS.HITS_LOW | ATTACK_FLAGS.TRIP,[{ state: HIT_FLAGS.NEAR,x: 260,y: 35 },{ state: HIT_FLAGS.FAR,x: 380,y: 35}],ATTACK_FLAGS.HARD,1,1,20,150);
+    crouch_k3.AddFrame(player,0,"",folder + "/crouch_k3-0.png",8,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-14,-13);
+    crouch_k3.AddFrameWithSound(player,1,"audio/mbison/thrust-1.zzz",0,"",folder + "/crouch_k3-1.png",20,{SwingSound:SWINGSOUND.SLIDE0,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK },MISC_FLAGS.NONE,0,0,0,10,null,-116,-16,ATTACK_FLAGS.HARD | ATTACK_FLAGS.HITS_LOW | ATTACK_FLAGS.TRIP,[{ state: HIT_FLAGS.NEAR,x: 160,y: 35 },{ state: HIT_FLAGS.FAR,x: 280,y: 35}],ATTACK_FLAGS.HARD,1,1,20,150);
     crouch_k3.EndBlock();
-    crouch_k3.AddFrame(player,0,"",folder + "/crouch_k3-2.png",6);
-    crouch_k3.AddFrame(player,0,"",folder + "/cturn-2.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    crouch_k3.AddFrame(player,0,"",folder + "/crouch_k3-2.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-48,-13);
+    crouch_k3.AddFrame(player,0,"",folder + "/cturn-2.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-74,-16);
     crouch_k3.Chain(crouch,2);
 
     /***************************************/
@@ -423,11 +423,11 @@ Player.prototype.CreateMBison = function(user)
 
     var jump_p1 = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump p1",0,[BUTTONS.LIGHT_PUNCH],0,true,true);
     jump_p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
-    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-2.png",13,{SwingSound:SWINGSOUND.LP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:160,y:75,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-43,0);
+    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
+    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-2.png",13,{SwingSound:SWINGSOUND.LP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:210,y:125,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:260,y:125,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
     jump_p1.EndBlock();
-    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    jump_p1.AddFrame(player,0,"",folder + "/jump_p1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
     jump_p1.AddFrame(player,0,"",folder + "/jump_p1-0.png",4);
     jump_p1.AddRepeatingFrame(player,-11,"168",folder + "/jump-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,-94,0,0,0,0,0,0,0);
     jump_p1.AddRepeatingFrame(player,-11,"168",folder + "/jump-5.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
@@ -436,15 +436,15 @@ Player.prototype.CreateMBison = function(user)
     var jump_p2 = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump p2",0,[BUTTONS.MEDIUM_PUNCH],0,true,true);
     jump_p2.SetMediumAttack();
     jump_p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-1.png",3);
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-0.png",3);
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-1.png",4,{SwingSound:SWINGSOUND.MP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:180,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-2.png",4,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:180,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-1.png",4,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:180,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-43,0);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-1.png",4,{SwingSound:SWINGSOUND.MP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:210,y:125,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:260,y:125,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-2.png",4,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:210,y:125,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:260,y:125,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p2-1.png",4,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:210,y:125,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:260,y:125,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
     jump_p2.EndBlock();
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-1.png",3);
-    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-0.png",4);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
+    jump_p2.AddFrame(player,0,"",folder + "/jump_p1-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
     jump_p2.AddRepeatingFrame(player,-11,"168",folder + "/jump-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,-94,0,0,0,0,0,0,0);
     jump_p2.AddRepeatingFrame(player,-11,"168",folder + "/jump-5.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
     jump_p2.Chain(jump_land);
@@ -452,28 +452,28 @@ Player.prototype.CreateMBison = function(user)
     var jump_p3 = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump p3",0,[BUTTONS.HARD_PUNCH],0,true,true);
     jump_p3.SetHardAttack();
     jump_p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
-    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-0.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-1.png",5);
-    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-2.png",3,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:180,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
-    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-3.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:180,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
-    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:180,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
+    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-0.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-43,0);
+    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-1.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
+    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-2.png",3,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:230,y:85,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:330,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
+    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-3.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:230,y:85,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:330,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
+    jump_p3.AddFrame(player,0,"",folder + "/jump_p3-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:230,y:85,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:330,y:55,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
     jump_p3.EndBlock();
-    jump_p3.AddFrame(player,0,"",folder + "/jump_p1-0.png",3);
+    jump_p3.AddFrame(player,0,"",folder + "/jump_p1-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
     jump_p3.AddRepeatingFrame(player,-11,"168",folder + "/jump-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,-94,0,0,0,0,0,0,0);
     jump_p3.AddRepeatingFrame(player,-11,"168",folder + "/jump-5.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
     jump_p3.Chain(jump_land);
     
     var jump_k1 = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump k1",0,[BUTTONS.LIGHT_KICK],0,true,true);
     jump_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{SwingSound:SWINGSOUND.LP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
-    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-25,0);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{SwingSound:SWINGSOUND.LP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-100,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-96,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-100,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-96,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-100,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-96,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-1.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-100,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
+    jump_k1.AddFrame(player,0,"",folder + "/jump_k1-2.png",3,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK},MISC_FLAGS.NONE,0,0,0,10,null,-96,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.LIGHT,[{state:HIT_FLAGS.NEAR,x:170,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:190,y:85,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
     jump_k1.EndBlock();
     jump_k1.AddRepeatingFrame(player,-11,"168",folder + "/jump-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,-94,0,0,0,0,0,0,0);
     jump_k1.AddRepeatingFrame(player,-11,"168",folder + "/jump-5.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
@@ -482,8 +482,8 @@ Player.prototype.CreateMBison = function(user)
     var jump_k2 = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump k2",0,[BUTTONS.MEDIUM_KICK],0,true,true);
     jump_k2.SetMediumAttack();
     jump_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
-    jump_k2.AddFrame(player,0,"",folder + "/jump_k1-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    jump_k2.AddFrame(player,0,"",folder + "/jump_k2-0.png",6,{SwingSound:SWINGSOUND.MP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:140,y:235,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:90,y:155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    jump_k2.AddFrame(player,0,"",folder + "/jump_k1-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-25,0);
+    jump_k2.AddFrame(player,0,"",folder + "/jump_k2-0.png",6,{SwingSound:SWINGSOUND.MP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK},MISC_FLAGS.NONE,0,0,0,10,null,-100,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.NEAR,x:140,y:115,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:200,y:115,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:320,y:115,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.MEDIUM,1,1,15);
     jump_k2.EndBlock();
     jump_k2.AddRepeatingFrame(player,-11,"168",folder + "/jump-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,-94,0,0,0,0,0,0,0);
     jump_k2.AddRepeatingFrame(player,-11,"168",folder + "/jump-5.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
@@ -492,9 +492,9 @@ Player.prototype.CreateMBison = function(user)
     var jump_k3 = player.AddAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump k3",0,[BUTTONS.HARD_KICK],0,true,true);
     jump_k3.SetHardAttack();
     jump_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
-    jump_k3.AddFrame(player,0,"",folder + "/jump_k1-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    jump_k3.AddFrame(player,0,"",folder + "/jump_k3-0.png",4);
-    jump_k3.AddFrame(player,0,"",folder + "/jump_k3-1.png",6,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:180,y:135,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:80,y:135,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
+    jump_k3.AddFrame(player,0,"",folder + "/jump_k1-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-25,0);
+    jump_k3.AddFrame(player,0,"",folder + "/jump_k3-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-100,0);
+    jump_k3.AddFrame(player,0,"",folder + "/jump_k3-1.png",6,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,10,null,-90,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:120,y:105,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:180,y:65,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.NEAR,x:260,y:-15,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
     jump_k3.EndBlock();
     jump_k3.AddRepeatingFrame(player,-11,"168",folder + "/jump-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,-94,0,0,0,0,0,0,0);
     jump_k3.AddRepeatingFrame(player,-11,"168",folder + "/jump-5.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
@@ -532,15 +532,11 @@ Player.prototype.CreateMBison = function(user)
 
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-0.png",1,0,0,-23);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
-        projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-2.png",1,0,0,-25);
-        projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-3.png",2,0,0,-23);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
-        projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-4.png",1,0,0,-25);
-        projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
         projectile.animation_.AddFrame(player,0,"",folder + "/projectile-1.png",2,0,0,0);
 
         projectile.disintegrationAnimation_.AddFrame(player,0,"",folder + "/projectile-disintegrate-0.png",3,0,0,-32);
@@ -557,21 +553,53 @@ Player.prototype.CreateMBison = function(user)
         fireball.IsSpecialMove = true;
         fireball.EnergyToAdd = (5);
         fireball.Flags = ({Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE});
-        fireball.AddFrame(player,0,"",folder + "/block-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-        fireball.AddFrame(player,0,"",folder + "/fireball-0.png",1);
-        fireball.AddFrame(player,0,"",folder + "/fireball-1.png",1);
-        fireball.AddFrame(player,0,"",folder + "/fireball-2.png",1);
-        fireball.AddFrame(player,0,"",folder + "/fireball-3.png",1);
-        fireball.AddFrame(player,0,"",folder + "/p2-0.png",2);
-        fireball.AddFrameWithSound(player,1,"audio/mbison/thrust-2.zzz",0,"",folder + "/fireball-4.png",1,{Combat:COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},0,0,0,0,0,x);
-        fireball.AddFrameWithSound(player,1,"audio/misc/projectile-0.zzz",0,"",folder + "/fireball-5.png",2);
-        fireball.AddFrame(player,0,"",folder + "/fireball-6.png",24);
+        fireball.AddFrame(player,0,"",folder + "/block-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-35,-11);
+        fireball.AddFrame(player,0,"",folder + "/fireball-0.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-70,-11);
+        fireball.AddFrame(player,0,"",folder + "/fireball-1.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-70,-11);
+        fireball.AddFrame(player,0,"",folder + "/fireball-2.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-70,-11);
+        fireball.AddFrame(player,0,"",folder + "/fireball-3.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-70,-11);
+        fireball.AddFrame(player,0,"",folder + "/p2-0.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
+        fireball.AddFrameWithSound(player,1,"audio/mbison/thrust-2.zzz",0,"",folder + "/fireball-4.png",1,{Combat:COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},MISC_FLAGS.NONE,0,0,0,0,x,0,-11);
+        fireball.AddFrameWithSound(player,1,"audio/misc/projectile-0.zzz",0,"",folder + "/fireball-5.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
+        fireball.AddFrame(player,0,"",folder + "/fireball-6.png",24,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-20,-11);
+        fireball.AddFrame(player,0,"",folder + "/p1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,10,-11);
+        fireball.AddFrame(player,0,"",folder + "/turn-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
     }
 
     /*******************************************************/
     /*******************************************************/
     /*******************************************************/
 
+    var flipKickLand = player.AddAnimation(POSE_FLAGS.ANY,"flip kick land",0,["flip_kick_land"],0,false);
+    flipKickLand.AddFrame(player,0,"",folder + "/crouch_k3-2.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-48,-13);
+
+
+    for(var i = 0; i < 4; ++i)
+    {
+        var button = BUTTONS.LIGHT_KICK;
+        var x = 5;
+        if(i == 1) {button = BUTTONS.MEDIUM_KICK; x = 5;}
+        else if(i == 2) {button = BUTTONS.HARD_KICK; x = 5;}
+
+        var flipKick = player.AddAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"flip kick k"+(i+1), CONSTANTS.MAX_FRAME,[BUTTONS.BACK|BUTTONS.CHARGE,0,BUTTONS.FORWARD,BUTTONS.FORWARD|button],0,false);
+        flipKick.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.NONE);
+        flipKick.IsSpecialMove = true;
+        flipKick.EnergyToAdd = (5);
+        //flipKick.Flags = {};
+        flipKick.Vy = 130;
+        flipKick.Vx = 80;
+        flipKick.VxFnArgs = {};
+        flipKick.VxAirFn = (function(args) { return function(dx,t) { return dx; } });
+
+        
+
+        flipKick.AddRepeatingFrame(player,0,"",folder + "/crouch_k3-2.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},x,0,0,0,-48,-13);
+        flipKick.AddFrameWithSound(player,1,"audio/mbison/thrust-0.zzz",0,"",folder + "/skick-0.png",4, {Pose:POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,0,null,-28,0);
+        flipKick.AddFrame(player,0,"",folder + "/skick-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-43,0);
+        flipKick.AddFrame(player,0,"",folder + "/skick-2.png",4,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,20,null,-20,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:170,y:105},{state:HIT_FLAGS.NEAR,x:220,y:105},{state:HIT_FLAGS.NEAR,x:280,y:105}],ATTACK_FLAGS.HARD,CONSTANTS.FIRST_HIT,1,20);
+        flipKick.AddFrame(player,0,"",folder + "/skick-3.png",CONSTANTS.MAX_FRAME,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HK},MISC_FLAGS.NONE,0,0,0,20,null,-100,0,ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN,[{state:HIT_FLAGS.NEAR,x:150,y:105},{state:HIT_FLAGS.NEAR,x:220,y:5}],ATTACK_FLAGS.HARD,CONSTANTS.SECOND_HIT,1,20);
+        flipKick.Chain(flipKickLand);
+    }
 
     for(var i = 0; i < 4; ++i)
     {
