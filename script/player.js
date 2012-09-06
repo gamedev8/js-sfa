@@ -3,80 +3,81 @@
 /*Encapsulates a new player*/
 var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
-    user.player_ = this;
-
-    this.tmpState_ = {Y:0,V:0};
-    this.name_ = name;
-    this.folder_ = user.folder_;
-    this.nameImageSrc_ = nameImageSrc || "images/misc/misc/" + this.name_.toLowerCase() +"-name-1.png";
-    this.portriatImageSrc_ = portriatImageSrc || "images/misc/misc/" + this.folder_.toLowerCase() + "-r-portriat-1.png";
+    user.Player = this;
+    this.Mass = 1;
+    this.JumpSpeed = 1;
+    this.TmpState = {Y:0,V:0};
+    this.Name = name;
+    this.Folder = user.Folder;
+    this.NameImageSrc = nameImageSrc || "images/misc/misc/" + this.Name.toLowerCase() +"-name-1.png";
+    this.PortriatImageSrc = portriatImageSrc || "images/misc/misc/" + this.Folder.toLowerCase() + "-r-portriat-1.png";
 
     /*these 2 are used so we can easily swap left and right when the player changes directions*/
-    this.leftKey_ = user.Left;
-    this.rightKey_ = user.Right;
+    this.LeftKey = user.Left;
+    this.RightKey = user.Right;
     /*store all of the key mappings*/
-    this.buttons_ = {};
-    this.buttons_[user.Left] =   {Button:user.Left,Bit:1};
-    this.buttons_[user.Right] =  {Button:user.Right,Bit:2};
-    this.buttons_[user.Up] =   {Button:user.Up,Bit:4};
-    this.buttons_[user.Down] = {Button:user.Down,Bit:8};
-    this.buttons_[user.P1] =     {Button:user.P1,Bit:16};
-    this.buttons_[user.P2] =     {Button:user.P2,Bit:32};
-    this.buttons_[user.P3] =     {Button:user.P3,Bit:64};
-    this.buttons_[user.K1] =     {Button:user.K1,Bit:128};
-    this.buttons_[user.K2] =     {Button:user.K2,Bit:256};
-    this.buttons_[user.K3] =     {Button:user.K3,Bit:512};
-    this.buttons_[user.Turn] =   {Button:user.Turn,Bit:1024};
+    this.Buttons = {};
+    this.Buttons[user.Left] =   {Button:user.Left,Bit:1};
+    this.Buttons[user.Right] =  {Button:user.Right,Bit:2};
+    this.Buttons[user.Up] =   {Button:user.Up,Bit:4};
+    this.Buttons[user.Down] = {Button:user.Down,Bit:8};
+    this.Buttons[user.P1] =     {Button:user.P1,Bit:16};
+    this.Buttons[user.P2] =     {Button:user.P2,Bit:32};
+    this.Buttons[user.P3] =     {Button:user.P3,Bit:64};
+    this.Buttons[user.K1] =     {Button:user.K1,Bit:128};
+    this.Buttons[user.K2] =     {Button:user.K2,Bit:256};
+    this.Buttons[user.K3] =     {Button:user.K3,Bit:512};
+    this.Buttons[user.Turn] =   {Button:user.Turn,Bit:1024};
 
-    this.forceNoAdjustShadowPosition_ = false;
+    this.ForceNoAdjustShadowPosition = false;
 
-    this.moves_ = {};
-    this.jumpAnimation_ = {};
+    this.Moves = {};
+    this.JumpAnimation = {};
 
-    this.otherAnimations_ = {};
-    this.otherAnimations_.Dirt = [];
-    this.otherAnimations_.BigDirt = [];
-    this.otherAnimations_.Dizzy = [];
-    this.frontHitReport_ = [];
-    this.rearHitReport_ = [];
-    this.dirtIndices_ = [];
-    this.bigDirtIndices_ = [];
+    this.OtherAnimations = {};
+    this.OtherAnimations.Dirt = [];
+    this.OtherAnimations.BigDirt = [];
+    this.OtherAnimations.Dizzy = [];
+    this.FrontHitReport = [];
+    this.RearHitReport = [];
+    this.DirtIndices = [];
+    this.BigDirtIndices = [];
     
-    this.frontHitReportImages_ = []
-    this.rearHitReportImages_ = []
+    this.FrontHitReportImages = []
+    this.RearHitReportImages = []
     
-    this.currentAnimation_ = null;
-    this.currentFrame_ = null;
+    this.CurrentAnimation = null;
+    this.CurrentFrame = null;
 
 
-    this.element_ = null;
-    this.dizzyElement_ = null;
-    this.image_ = null;
-    this.spriteElement_ = null;
-    this.shadowContainer_ = null;
-    this.shadow_ = null;
+    this.Element = null;
+    this.DizzyElement = null;
+    this.Image = null;
+    this.SpriteElement = null;
+    this.ShadowContainer = null;
+    this.Shadow = null;
 
-    this.moveStageXFn_ = null;
-    this.moveOtherPlayersToBackFn_ = null;
-    this.moveOtherPlayersToFrontFn_ = null;
-    this.moveXFn_ = null;
-    this.moveYFn_ = null;
-    this.takeDamageFn_ = null;
-    this.changeEnergyFn_ = null;
-    this.attackFn_ = null;
-    this.projectileAttackFn_ = null;
-    this.getHealthFn_ = null;
-    this.getEnergyFn_ = null;
-    this.onStartAttackFn_ = null;
-    this.onEndAttackFn_ = null;
-    this.onStartAirAttackFn_ = null;
-    this.onEndAirAttackFn_ = null;
-    this.onProjectileMovedFn_ = null;
-    this.onProjectileGoneFn_ = null;
-    this.onIncComboFn_ = null;
-    this.onIncComboRefCountFn_ = null;
-    this.onDecComboRefCountFn_ = null;
-    this.getCurrentComboCountFn_ = null;
+    this.moveStageXFn = null;
+    this.moveOtherPlayersToBackFn = null;
+    this.moveOtherPlayersToFrontFn = null;
+    this.moveXFn = null;
+    this.moveYFn = null;
+    this.takeDamageFn = null;
+    this.changeEnergyFn = null;
+    this.attackFn = null;
+    this.projectileAttackFn = null;
+    this.getHealthFn = null;
+    this.getEnergyFn = null;
+    this.onStartAttackFn = null;
+    this.onEndAttackFn = null;
+    this.onStartAirAttackFn = null;
+    this.onEndAirAttackFn = null;
+    this.onProjectileMovedFn = null;
+    this.onProjectileGoneFn = null;
+    this.onIncComboFn = null;
+    this.onIncComboRefCountFn = null;
+    this.onDecComboRefCountFn = null;
+    this.getCurrentComboCountFn = null;
 
     this._showCurrentFrameImageHelperParams = 
     {
@@ -87,72 +88,73 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     }
 
 
-    this.nbFrames_ = 0;
-    this.projectiles_ = [];
-    this.height_ = height;
-    this.width_ = width;
-    this.pendingWidth_ = 0;
-    this.halfWidth_ = width/2;
-    //this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
-    this.circle_ = new Circle(this.halfWidth_,this.halfWidth_,this.halfWidth_);
-    this.headOffsetX_ = 40;
-    this.headOffsetY_ = 10;
-    this.ai_ = new CreateAIProxy(this);
-    this.hasPendingGrapple_ = false;
+    this.NbFrames = 0;
+    this.Projectiles = [];
+    this.Height = height;
+    this.Width = width;
+    this.PendingWidth = 0;
+    this.HalfWidth = width/2;
+    //this.Circle = new Circle(this.HalfWidth,this.HalfWidth,this.HalfWidth);
+    this.Circle = new Circle(this.HalfWidth,this.HalfWidth,this.HalfWidth);
+    this.HeadOffsetX = 40;
+    this.HeadOffsetY = 10;
+    this.Ai = new CreateAIProxy(this);
+    this.HasPendingGrapple = false;
     /**/
-    this.slideFactor_ = slideFactor || 30;
-    this.baseTakeHitDelay_ = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
-    this.baseGiveHitDelay_ = CONSTANTS.DEFAULT_GIVE_HIT_DELAY;
-    this.index_ = 0;
-    this.id_ = "";
-    this.team_ = 0;
-    this.defaultShadowImageSrc_ = "images/misc/misc/shadow.png";
-    this.winAnimationNames_ = [];
+    this.SlideFactor = slideFactor || 30;
+    this.BaseTakeHitDelay = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
+    this.BaseGiveHitDelay = CONSTANTS.DEFAULT_GIVE_HIT_DELAY;
+    this.Index = 0;
+    this.Id = "";
+    this.Team = 0;
+    this.DefaultShadowImageSrc = "images/misc/misc/shadow.png";
+    this.WinAnimationNames = [];
 
-    window["Create" + user.GetFolder() + "SpriteData"]();
-    this.offsetWidth_ = 0;
-    this.offsetHeight_ = 0;
+    window["Create" + user.getFolder() + "SpriteData"]();
+    this.OffsetWidth = 0;
+    this.OffsetHeight = 0;
+    this.IgnoreOverrides = false;
 
 
-    this.LoadAssets();
-    this.CreateElement();
-    this.Reset();
-    this.AddGenericAnimations();
+    this.loadAssets();
+    this.createElement();
+    this.reset();
+    this.addGenericAnimations();
 }
-Player.prototype.SetIndex = function(index) { this.index_ = index; }
-Player.prototype.GetIndex = function() { return this.index_; }
-Player.prototype.SetAI = function(createAiFn) { this.ai_.SetAI(createAiFn); }
-Player.prototype.PlayerCount = 0;
-Player.prototype.TakeDamage = function(amount) { this.takeDamageFn_(amount); }
-Player.prototype.ChangeEnergy = function(amount) { if(!!amount) this.changeEnergyFn_(amount); }
-Player.prototype.GetMatch = function() { return game_.match_; }
-Player.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
-Player.prototype.GetStage = function() { return this.GetMatch().GetStage(); }
-Player.prototype.GetGame = function() { return game_; }
-Player.prototype.GetHealth = function() { return !!this.getHealthFn_ ? this.getHealthFn_() : -1; }
-Player.prototype.GetEnergy = function() { return this.getEnergyFn_(); }
-Player.prototype.IsExecutingSuperMove = function () { return this.isExecutingSuperMove_; }
-Player.prototype.SetExecutingSuperMove = function (value) { this.isExecutingSuperMove_ = value; }
-Player.prototype.IsBeingGrappled = function() { return this.isBeingThrown_; }
-Player.prototype.SetBeingGrappled = function(value) { this.isBeingThrown_ = value; }
-Player.prototype.GetNameImageSrc = function() { return this.nameImageSrc_; }
-Player.prototype.GetPortriatImageSrc = function() { return this.portriatImageSrc_; }
-Player.prototype.GetName = function() { return this.name_; }
-Player.prototype.GetTarget = function()
+Player.prototype.setIndex = function(index) { this.Index = index; }
+Player.prototype.getIndex = function() { return this.Index; }
+Player.prototype.setAI = function(createAiFn) { this.Ai.setAI(createAiFn); }
+Player.prototype.playerCount = 0;
+Player.prototype.takeDamage = function(amount) { this.takeDamageFn(amount); }
+Player.prototype.changeEnergy = function(amount) { if(!!amount) this.changeEnergyFn(amount); }
+Player.prototype.getMatch = function() { return game_.Match; }
+Player.prototype.getPhysics = function() { return this.getMatch().getPhysics(); }
+Player.prototype.getStage = function() { return this.getMatch().getStage(); }
+Player.prototype.getGame = function() { return game_; }
+Player.prototype.getHealth = function() { return !!this.getHealthFn ? this.getHealthFn() : -1; }
+Player.prototype.getEnergy = function() { return this.getEnergyFn(); }
+Player.prototype.getIsExecutingSuperMove = function () { return this.IsExecutingSuperMove; }
+Player.prototype.setExecutingSuperMove = function (value) { this.IsExecutingSuperMove = value; }
+Player.prototype.isBeingGrappled = function() { return this.IsBeingThrown; }
+Player.prototype.setBeingGrappled = function(value) { this.IsBeingThrown = value; }
+Player.prototype.getNameImageSrc = function() { return this.NameImageSrc; }
+Player.prototype.getPortriatImageSrc = function() { return this.PortriatImageSrc; }
+Player.prototype.getName = function() { return this.Name; }
+Player.prototype.getTarget = function()
 {
-    if(this.team_ == 1)
+    if(this.Team == 1)
     {
-        return game_.match_.teamB_.players_[0];
+        return game_.Match.TeamB.Players[0];
     }
     else
     {
-        return game_.match_.teamA_.players_[0];
+        return game_.Match.TeamA.Players[0];
     }
 }
 
-Player.prototype.GetEnergyLevel = function()
+Player.prototype.getEnergyLevel = function()
 {
-    var value = this.GetEnergy();
+    var value = this.getEnergy();
     if(value >= ENERGYBAR.MAX_LEVEL2)
         return ENERGYBAR.LEVELMAXED;
     else if(value >= ENERGYBAR.MAX_LEVEL1)
@@ -164,111 +166,110 @@ Player.prototype.GetEnergyLevel = function()
 
 }
 
-Player.prototype.GetName = function() { return this.name_; }
-Player.prototype.IsDead = function() { return !this.GetHealth(); }
-Player.prototype.HasPendingGrapple = function() { return this.hasPendingGrapple_; }
-Player.prototype.SetPendingGrapple = function(value) { this.hasPendingGrapple_ = value; }
-Player.prototype.SetPaused = function(paused) { this.isPaused_ = paused; }
-Player.prototype.GetAdjustShadowPosition = function() { return this.adjustShadowPosition_; }
-Player.prototype.SetAdjustShadowPosition = function(value) { this.adjustShadowPosition_ = value; }
-Player.prototype.SetFlags = function(value) { this.Flags = value; }
-Player.prototype.GetFlags = function() { return this.Flags; }
+Player.prototype.getName = function() { return this.Name; }
+Player.prototype.isDead = function() { return !this.getHealth(); }
+Player.prototype.getHasPendingGrapple = function() { return this.HasPendingGrapple; }
+Player.prototype.setPendingGrapple = function(value) { this.HasPendingGrapple = value; }
+Player.prototype.setPaused = function(paused) { this.IsPaused = paused; }
+Player.prototype.getAdjustShadowPosition = function() { return this.AdjustShadowPosition; }
+Player.prototype.setAdjustShadowPosition = function(value) { this.AdjustShadowPosition = value; }
+Player.prototype.setFlags = function(value) { this.Flags = value; }
+Player.prototype.getFlags = function() { return this.Flags; }
 
-Player.prototype.ResetCombo = function()
+Player.prototype.resetCombo = function()
 {
-    if(!!this.onDecComboRefCountFn_)    
-        this.onDecComboRefCountFn_();
+    if(!!this.onDecComboRefCountFn)    
+        this.onDecComboRefCountFn();
 }
-Player.prototype.IncCombo = function()
+Player.prototype.incCombo = function()
 {
-    if(!this.getCurrentComboCountFn_())
-        this.onIncComboRefCountFn_();
-    this.onIncComboFn_();
+    if(!this.getCurrentComboCountFn())
+        this.onIncComboRefCountFn();
+    this.onIncComboFn();
 }
 
-Player.prototype.Reset = function(ignoreDirection)
+Player.prototype.reset = function(ignoreDirection)
 {
-    this.teleportX_ = 0;
-    this.teleportFramesLeft_ = 0;
+    this.TeleportX = 0;
+    this.TeleportFramesLeft = 0;
 
-    this.dizzyIndex_ = 0;
-    this.dizzyValue_ = 0;
-    this.maxDizzyValue_ = CONSTANTS.MAX_DIZZY_VALUE;
-    this.SetPendingGrapple(false);
-    this.isExecutingSuperMove_ = false;
-    this.isLosing_ = false;
-    this.canHoldAirborne_ = true;
-    this.showSlideDirt_ = true;
-    this.isPaused_ = false;
+    this.DizzyIndex = 0;
+    this.DizzyValue = 0;
+    this.MaxDizzyValue = CONSTANTS.MAX_DIZZY_VALUE;
+    this.setPendingGrapple(false);
+    this.IsExecutingSuperMove = false;
+    this.IsLosing = false;
+    this.CanHoldAirborne = true;
+    this.ShowSlideDirt = true;
+    this.IsPaused = false;
 
-    //this.canInterrupt_ = false;
-    this.ignoreCollisionsWith_ = "";
-    this.ignoreCollisionsWithOtherTeam_ = false;
-    this.forceImmobile_ = false;
-    this.ignoreHoldFrame_ = false;
-    this.mustClearAllowBlock_ = false;
-    this.mustClearAllowAirBlock_ = false;
+    //this.CanInterrupt = false;
+    this.IgnoreCollisionsWith = "";
+    this.IgnoreCollisionsWithOtherTeam = false;
+    this.ForceImmobile = false;
+    this.IgnoreHoldFrame = false;
+    this.MustClearAllowBlock = false;
+    this.MustClearAllowAirBlock = false;
     /*this is the combo against THIS player! Not against other players*/
-    this.ResetCombo();
-    this.interuptAnimation_ = null;
-    this.currentAnimation_ = null;
-    this.currentFrame_ = null;
-    this.onAnimationCompleteFn_ = null;
-    this.isFacingRight_ = true;
+    this.resetCombo();
+    this.InteruptAnimation = null;
+    this.CurrentAnimation = null;
+    this.CurrentFrame = null;
+    this.onAnimationCompleteFn = null;
+    this.IsFacingRight = true;
     if (!ignoreDirection)
-        this.direction_ = 1;
-    this.health_ = 100;
+        this.Direction = 1;
+    this.Health = 100;
     this.Flags = new PlayerFlags(this);
-    this.keyState_ = 0;
-    this.keyStates_ = [];
-    this.isInAttackFrame_ = false;
+    this.KeyState = 0;
+    this.KeyStates = [];
+    this.IsInAttackFrame = false;
 
-    this.lastKeyStates_ = [];
-    this.clearKeyStateCount_ = 0;
-    this.adjustShadowPosition_ = true;
-    this.mustChangeDirection_ = 0;
-    this.blockedProjectiles_ = {};
-    this.blockedAttacks_ = [];
-    this.blockedAirAttacks_ = [];
+    this.LastKeyStates = [];
+    this.ClearKeyStateCount = 0;
+    this.AdjustShadowPosition = true;
+    this.MustChangeDirection = 0;
+    this.BlockedProjectiles = {};
+    this.BlockedAttacks = [];
+    this.BlockedAirAttacks = [];
 
-    this.giveHitFn_ = null;
-    this.isBeingThrown_ = false;
-    this.grappledPlayer_ = null;
+    this.giveHitFn = null;
+    this.IsBeingThrown = false;
+    this.GrappledPlayer = null;
     this.x_ = 0;
     this.y_ = STAGE.FLOORY;
-    this.lastFrameY_ = 0;
-    this.constY_ = 0;
-    this.yBottomOffset_ = 0;
-    this.yTopOffset_ = 0;
-    this.fx_ = 0;
-    this.fy_ = 0;
-    this.lastFx_ = 0;
-    this.lastFy_ = 0;
+    this.LastFrameY = 0;
+    this.ConstY = 0;
+    this.YBottomOffset = 0;
+    this.YTopOffset = 0;
+    this.Fx = 0;
+    this.Fy = 0;
+    this.LastFx = 0;
+    this.LastFy = 0;
     /*jump velocity*/
-    this.jumpVelocityX_ = 0;
-    this.jumpVelocityY_ = 0;
-    this.zOrder_ = null;
-    this.sounds_ = [];
+    this.JumpVelocityX = 0;
+    this.JumpVelocityY = 0;
+    this.ZOrder = null;
+    this.Sounds = [];
     /**/
     this.t_ = 0;
-    this.frameFreeze_ = 0;
-    this.isSliding_ = false;
-    this.slideCount_ = 0;
-    this.isDead_ = false;
-    this.moveCount_ = 0;
-    this.registeredHit_ = new RegisteredHit();
-    this.lastHitFrame_ = {};
-    this.winningFrame_ = CONSTANTS.NO_FRAME;
-    this.target_ = 0;
-    this.ClearProjectiles();
-    this.ClearDizzy();
+    this.FrameFreeze = 0;
+    this.IsSliding = false;
+    this.SlideCount = 0;
+    this.MoveCount = 0;
+    this.RegisteredHit = new RegisteredHit();
+    this.LastHitFrame = {};
+    this.WinningFrame = CONSTANTS.NO_FRAME;
+    this.Target = 0;
+    this.clearProjectiles();
+    this.clearDizzy();
 }
 
-Player.prototype.CreateElement = function(x,y,parentElement)
+Player.prototype.createElement = function(x,y,parentElement)
 {
     parentElement = (parentElement || window.document.getElementById("pnlStage"));
-    this.element_ = window.document.createElement("div");
-    this.element_.className = "player";
+    this.Element = window.document.createElement("div");
+    this.Element.className = "player";
 
     var createElement = function(tagName,className,attrib,value,parent)
     {
@@ -276,472 +277,481 @@ Player.prototype.CreateElement = function(x,y,parentElement)
         i.className = className;
         if(!!attrib)
             i.style[attrib] = value;
-        (parent || this.element_).appendChild(i);
+        (parent || this.Element).appendChild(i);
         return i;
     }
 
 
-    this.dizzyElement_ = window.document.createElement("div");
-    this.dizzyElement_.className = "player-dizzy";
-    this.dizzyElement_.style.display = "none";
-    this.spriteElement_ = window.document.createElement("div");
-    this.spriteElement_.className = "player-sprite";
-    this.element_.appendChild(this.spriteElement_);
+    this.DizzyElement = window.document.createElement("div");
+    this.DizzyElement.className = "player-dizzy";
+    this.DizzyElement.style.display = "none";
+    this.SpriteElement = window.document.createElement("div");
+    this.SpriteElement.className = "player-sprite";
+    this.Element.appendChild(this.SpriteElement);
 
     for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
-        this.frontHitReportImages_[this.frontHitReportImages_.length] = createElement.call(this,"div","front-hit-report","display","none",parentElement);
+        this.FrontHitReportImages[this.FrontHitReportImages.length] = createElement.call(this,"div","front-hit-report","display","none",parentElement);
     for(var i = 0; i < CONSTANTS.MAX_EXTRA_IMAGES; ++i)
-        this.rearHitReportImages_[this.rearHitReportImages_.length] = createElement.call(this,"div","rear-hit-report","display","none",parentElement);
+        this.RearHitReportImages[this.RearHitReportImages.length] = createElement.call(this,"div","rear-hit-report","display","none",parentElement);
 
 
-    this.shadowContainer_ = window.document.createElement("div");
-    this.shadowContainer_.className = "shadow";
-    this.shadow_ = createElement.call(this,"div","shadow","","",this.shadowContainer_);
+    this.ShadowContainer = window.document.createElement("div");
+    this.ShadowContainer.className = "shadow";
+    this.Shadow = createElement.call(this,"div","shadow","","",this.ShadowContainer);
 
-    parentElement.appendChild(this.shadowContainer_);
-    parentElement.appendChild(this.element_);
-    parentElement.appendChild(this.dizzyElement_);
+    parentElement.appendChild(this.ShadowContainer);
+    parentElement.appendChild(this.Element);
+    parentElement.appendChild(this.DizzyElement);
 
-    this.CreateDebugElements();
+    this.createDebugElements();
 }
-Player.prototype.SetZOrder = function(value)
+Player.prototype.setZOrder = function(value)
 {
-    this.zOrder_ = value;
+    this.ZOrder = value;
 }
-Player.prototype.CheckZOrder = function()
+Player.prototype.checkZOrder = function()
 {
-    if(this.zOrder_ != null)
+    if(this.ZOrder != null)
     {
-        this.element_.style.zIndex = this.zOrder_;
-        this.zOrder_ = null;
+        this.Element.style.zIndex = this.ZOrder;
+        this.ZOrder = null;
     }
 }
-Player.prototype.MoveToBack = function(dontMoveOtherPlayers)
+Player.prototype.moveToBack = function(dontMoveOtherPlayers)
 {
-    this.SetZOrder(1);
+    this.setZOrder(1);
     if(!dontMoveOtherPlayers)
-        this.moveOtherPlayersToFrontFn_();
+        this.moveOtherPlayersToFrontFn();
 }
-Player.prototype.MoveToFront = function(dontMoveOtherPlayers)
+Player.prototype.moveToFront = function(dontMoveOtherPlayers)
 {
-    if(this.IsExecutingSuperMove())
-        this.SetZOrder(16);
+    if(this.getIsExecutingSuperMove())
+        this.setZOrder(16);
     else
-        this.SetZOrder(14);
+        this.setZOrder(14);
 
     if(!dontMoveOtherPlayers)
-        this.moveOtherPlayersToBackFn_();
+        this.moveOtherPlayersToBackFn();
 }
 /*Change the speed of the moves for this player*/
-Player.prototype.ChangeSpeed = function(amount)
+Player.prototype.changeSpeed = function(amount)
 {
     var fastestFrame = 999999;
-    for(var i in this.moves_)
-        for(var x = 0; x < this.moves_[i].BaseAnimation.frames_.length; ++x)
-            fastestFrame = Math.min(this.moves_[i].BaseAnimation.frames_[x].Frames,fastestFrame);
+    for(var i in this.Moves)
+        for(var x = 0; x < this.Moves[i].BaseAnimation.Frames.length; ++x)
+            fastestFrame = Math.min(this.Moves[i].BaseAnimation.Frames[x].Frames,fastestFrame);
     fastestFrame -= 1;
-    for(var i in this.moves_)
-        this.moves_[i].frameSpeed_ = Math.min(Math.max(this.moves_[i].frameSpeed_ + amount, CONSTANTS.MIN_FRAME_DELAY), fastestFrame);
+    for(var i in this.Moves)
+        this.Moves[i].FrameSpeed = Math.min(Math.max(this.Moves[i].FrameSpeed + amount, CONSTANTS.MIN_FRAME_DELAY), fastestFrame);
 }
-Player.prototype.ResetSpeed = function()
+Player.prototype.resetSpeed = function()
 {
-    for(var i in this.moves_)
-        this.moves_[i].frameSpeed_ = 0;
+    for(var i in this.Moves)
+        this.Moves[i].FrameSpeed = 0;
 }
 /*Simply returns the count of all of the frames*/
-Player.prototype.GetNextFrameID = function()
+Player.prototype.getNextFrameID = function()
 {
-    return this.nbFrames_;
+    return this.NbFrames;
 }
 /*If the move is a projectile, and a projectile is already active, then this returns true;*/
-Player.prototype.IsProjectileInUse = function(move)
+Player.prototype.isProjectileInUse = function(move)
 {
-    return (!!(move.Flags.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE)) && !!this.Flags.Combat.Has(COMBAT_FLAGS.PROJECTILE_ACTIVE);
+    return (!!(move.Flags.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE)) && !!this.Flags.Combat.has(COMBAT_FLAGS.PROJECTILE_ACTIVE);
 }
 
 /*Gets the direction of the attack relative to the current player*/
-Player.prototype.GetAttackDirection = function(attackDirection)
+Player.prototype.getAttackDirection = function(attackDirection)
 {
-    var direction = -this.direction_;
-    if(this.direction_ > 0 && attackDirection > 0)
+    var direction = -this.Direction;
+    if(this.Direction > 0 && attackDirection > 0)
         direction = -1
-    else if(this.direction_ < 0 && attackDirection < 0)
+    else if(this.Direction < 0 && attackDirection < 0)
         direction = 1
-    else if(this.direction_ > 0 && attackDirection < 0)
+    else if(this.Direction > 0 && attackDirection < 0)
         direction = 1
-    else if(this.direction_ < 0 && attackDirection > 0)
+    else if(this.Direction < 0 && attackDirection > 0)
         direction = -1
     return direction;
 }
 /*Gets the direction of the attack relative to the current player*/
-Player.prototype.GetRelativeDirection = function(attackDirection)
+Player.prototype.getRelativeDirection = function(attackDirection)
 {
-    var direction = -this.direction_;
-    if(this.direction_ > 0 && attackDirection > 0)
+    var direction = -this.Direction;
+    if(this.Direction > 0 && attackDirection > 0)
         direction = -1
-    else if(this.direction_ < 0 && attackDirection < 0)
+    else if(this.Direction < 0 && attackDirection < 0)
         direction = -1
-    else if(this.direction_ > 0 && attackDirection < 0)
+    else if(this.Direction > 0 && attackDirection < 0)
         direction = 1
-    else if(this.direction_ < 0 && attackDirection > 0)
+    else if(this.Direction < 0 && attackDirection > 0)
         direction = 1
     return direction;
 }
 /*Gets the direction of the attack relative to the current player*/
-Player.prototype.GetProjectileDirection = function(attackDirection)
+Player.prototype.getProjectileDirection = function(attackDirection)
 {
-    var direction = -this.direction_;
-    if(this.direction_ > 0 && attackDirection > 0)
+    var direction = -this.Direction;
+    if(this.Direction > 0 && attackDirection > 0)
         direction = -1
-    else if(this.direction_ < 0 && attackDirection < 0)
+    else if(this.Direction < 0 && attackDirection < 0)
         direction = -1
-    else if(this.direction_ > 0 && attackDirection < 0)
+    else if(this.Direction > 0 && attackDirection < 0)
         direction = 1
-    else if(this.direction_ < 0 && attackDirection > 0)
+    else if(this.Direction < 0 && attackDirection > 0)
         direction = -1
     return direction;
 }
 /*Holds the current frame*/
-Player.prototype.SetHoldFrame = function(nbFrames)
+Player.prototype.setHoldFrame = function(nbFrames)
 {
-    this.frameFreeze_ = nbFrames;
+    this.FrameFreeze = nbFrames;
 }
 
 /*
 Handles other animations
 */
-Player.prototype.OtherAnimationFrameMove = function(frame,stageX,stageY)
+Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
 {
     /*front hit report images*/
     var fhrIndex = -1;
-    while(++fhrIndex < this.frontHitReport_.length)
+    while(++fhrIndex < this.FrontHitReport.length)
     {
-        var item = this.frontHitReport_[fhrIndex];
-        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
-            this.frontHitReport_.splice(fhrIndex,1);
+        var item = this.FrontHitReport[fhrIndex];
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+            this.FrontHitReport.splice(fhrIndex,1);
     }
     /*rear hit report images*/
     var rhrIndex = -1;
-    while(++rhrIndex < this.rearHitReport_.length)
+    while(++rhrIndex < this.RearHitReport.length)
     {
-        var item = this.rearHitReport_[rhrIndex];
-        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
-            this.rearHitReport_.splice(rhrIndex,1);
+        var item = this.RearHitReport[rhrIndex];
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+            this.RearHitReport.splice(rhrIndex,1);
     }
     /*dirt images*/
     var dirtIndex = -1;
-    while(++dirtIndex < this.dirtIndices_.length)
+    while(++dirtIndex < this.DirtIndices.length)
     {
-        var item = this.otherAnimations_.Dirt[this.dirtIndices_[dirtIndex]];
-        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
-            this.dirtIndices_.splice(dirtIndex,1);
+        var item = this.OtherAnimations.Dirt[this.DirtIndices[dirtIndex]];
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+            this.DirtIndices.splice(dirtIndex,1);
     }
     /*big dirt images*/
     var bigDirtIndex = -1;
-    while(++bigDirtIndex < this.bigDirtIndices_.length)
+    while(++bigDirtIndex < this.BigDirtIndices.length)
     {
-        var item = this.otherAnimations_.BigDirt[this.bigDirtIndices_[bigDirtIndex]];
-        if(!item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
-            this.bigDirtIndices_.splice(bigDirtIndex,1);
+        var item = this.OtherAnimations.BigDirt[this.BigDirtIndices[bigDirtIndex]];
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+            this.BigDirtIndices.splice(bigDirtIndex,1);
     }
     /*dizzy*/
-    if(this.IsDizzy())
+    if(this.isDizzy())
     {
-        var item = this.otherAnimations_.Dizzy[this.dizzyIndex_];
-        if(item.Animation.TryRender(frame,item.StartFrame,item.Element,stageX,game_.match_.stage_.GetGroundY(),this.x_,this.y_,this.GetBoxWidth()))
+        var item = this.OtherAnimations.Dizzy[this.DizzyIndex];
+        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.x_,this.y_,this.getBoxWidth()))
             item.StartFrame = frame;
     }
 }
 /*Prevents the animation from continuing for one frame*/
-Player.prototype.HoldFrame = function(frame)
+Player.prototype.holdFrame = function(frame)
 {
-    this.frameFreeze_ = Math.max(this.frameFreeze_ - 1, 0);
-    if(!!this.currentFrame_)
+    this.FrameFreeze = Math.max(this.FrameFreeze - 1, 0);
+    if(!!this.CurrentFrame)
     {
-        ++this.currentAnimation_.StartFrame;
+        ++this.CurrentAnimation.StartFrame;
     }
 }
 /*Moves the animation back one frame*/
-Player.prototype.ReverseFrame = function(frame)
+Player.prototype.reverseFrame = function(frame)
 {
-    if(!!this.currentFrame_)
-        this.currentAnimation_.StartFrame += 2;
+    if(!!this.CurrentFrame)
+        this.CurrentAnimation.StartFrame += 2;
 }
 /*Prevents the animation from continuing for one frame*/
-Player.prototype.ForceHoldFrame = function(frame)
+Player.prototype.forceHoldFrame = function(frame)
 {
-    if(!!this.currentFrame_)
-        ++this.currentAnimation_.StartFrame;
+    if(!!this.CurrentFrame)
+        ++this.CurrentAnimation.StartFrame;
 }
 /*Prevents the animation from continuing for one frame*/
-Player.prototype.ForceNextFrame = function(frame)
+Player.prototype.forceNextFrame = function(frame)
 {
-    if(!!this.currentFrame_)
-        this.currentAnimation_.StartFrame = frame - this.currentFrame_.GetEndFrameOffset();
+    if(!!this.CurrentFrame)
+        this.CurrentAnimation.StartFrame = frame - this.CurrentFrame.getEndFrameOffset();
 }
 
 /*Can the current move be interrupted by a speial move?*/
-Player.prototype.CheckForInterupt = function(frame)
+Player.prototype.checkForInterupt = function(frame)
 {
-    if(!!this.interuptAnimation_)
+    if(!!this.InteruptAnimation)
     {
-        if((--this.interuptAnimation_.Delay <= 0))
+        if((--this.InteruptAnimation.Delay <= 0))
         {
-            var temp = this.interuptAnimation_;
+            var temp = this.InteruptAnimation;
             temp.StartFrame = frame;
-            this.interuptAnimation_ = null;
-            this.SetCurrentAnimation(temp);
+            this.InteruptAnimation = null;
+            this.setCurrentAnimation(temp);
         }
     }
-    else if(!!this.currentAnimation_ && !!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.InteruptAnimation)
+    else if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.InteruptAnimation)
     {
-        var poseFlags = this.currentAnimation_.Animation.InteruptAnimationFlags.Pose
+        var poseFlags = this.CurrentAnimation.Animation.InteruptAnimationFlags.Pose
         if(!!(poseFlags & this.Flags.Pose.Value))
         {
-            var key = this.currentAnimation_.Animation.InteruptAnimation.GetKey(this.currentAnimation_.Animation.InteruptAnimation.GetKeySequenceLength() - 1);
-            if(this.IsKeyDown(key))
+            var key = this.CurrentAnimation.Animation.InteruptAnimation.getKey(this.CurrentAnimation.Animation.InteruptAnimation.getKeySequenceLength() - 1);
+            if(this.isKeyDown(key))
             {
-                this.ChainToAnimation(frame, this.currentAnimation_.Animation.InteruptAnimation);
+                this.chainToAnimation(frame, this.CurrentAnimation.Animation.InteruptAnimation);
             }
         }
     }
 }
 
-Player.prototype.OnPreFrameMove = function(frame)
+Player.prototype.onPreFrameMove = function(frame)
 {
 }
 
-Player.prototype.OnRenderComplete = function(frame)
+Player.prototype.onRenderComplete = function(frame)
 {
-    this.lastFrameY_ = this.constY_;
-    this.constY_ = this.y_;
+    this.LastFrameY = this.ConstY;
+    this.ConstY = this.y_;
 }
 
 
-Player.prototype.PlaySounds = function()
+Player.prototype.playSounds = function()
 {
-    while(this.sounds_.length > 0)
-        soundManager_.Play(this.sounds_.splice(0,1)[0]);
+    while(this.Sounds.length > 0)
+        soundManager_.play(this.Sounds.splice(0,1)[0]);
 }
 
-Player.prototype.OnFrameMove = function(frame,stageX,stageY)
+Player.prototype.onFrameMove = function(frame,stageX,stageY)
 {
-    if(!this.isPaused_)
+    if(!this.IsPaused)
     {
-        if(!!this.teleportFramesLeft_)
-            this.AdvanceTeleportation(frame);
-        this.DecreaseDizziness(frame);
-        if(this.ai_.IsRunning())
-            this.ai_.FrameMove(frame);
-        this.CheckForInterupt(frame);
-        this.FrameMove(frame,stageX,stageY);
-        this.isInAttackFrame_ = false;
-        if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
-            this.HandleAttack(frame, this.currentFrame_);
-        if(!!this.grappledPlayer_)
-            this.HandleGrapple(this.currentAnimation_.FrameIndex - 1,frame,stageX,stageY);
-        if(!!this.currentAnimation_.Animation && !!this.currentAnimation_.Animation.Trail)
-            this.FrameMoveTrail(frame,this.GetStage().DeltaX,stageY);
-        if(!this.forceImmobile_ && this.IsDead())
-            this.ForceTeamLose(frame);
+        if(!!this.TeleportFramesLeft)
+            this.advanceTeleportation(frame);
+        this.decreaseDizziness(frame);
+        if(this.Ai.isRunning())
+            this.Ai.frameMove(frame);
+        this.checkForInterupt(frame);
+        this.frameMove(frame,stageX,stageY);
+        this.IsInAttackFrame = false;
+        if(!!this.CurrentFrame && !!(this.CurrentFrame.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
+            this.handleAttack(frame, this.CurrentFrame);
+        if(!!this.GrappledPlayer)
+            this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
+        if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)
+            this.frameMoveTrail(frame,this.getStage().DeltaX,stageY);
+        if(!this.ForceImmobile && this.isDead())
+            this.forceTeamLose(frame);
     }
     else
     {
-        this.ForceHoldFrame(frame);
+        this.forceHoldFrame(frame);
     }
 }
 
 
-Player.prototype.FrameMoveTrail = function(frame,stageX,stageY)
+Player.prototype.frameMoveTrail = function(frame,stageX,stageY)
 {
-    var index = this.currentAnimation_.Animation.GetFrameIndex(this.currentFrame_.ID)
-    this.currentAnimation_.Animation.Trail.FrameMove(frame,index,this.direction_,stageX,stageY);
+    var index = this.CurrentAnimation.Animation.getFrameIndex(this.CurrentFrame.ID)
+    this.CurrentAnimation.Animation.Trail.frameMove(frame,index,this.Direction,stageX,stageY);
 }
 
 
 /*sets some data beforehand*/
-Player.prototype.SetPendingFrame = function(pendingFrame)
+Player.prototype.setPendingFrame = function(pendingFrame)
 {
     if(!!pendingFrame)
     {
-        var data = spriteLookup_.Get(pendingFrame.RightSrc);
+        var data = spriteLookup_.get(pendingFrame.RightSrc);
         if(!!data)
         {
-            this.pendingWidth_ = data.WidthInt;
+            this.PendingWidth = data.WidthInt;
         }
     }
 }
 
 /*Show the image at the current frame in the current animation*/
-Player.prototype.FrameMove = function(frame,stageX,stageY)
+Player.prototype.frameMove = function(frame,stageX,stageY)
 {
-    this.CheckDirection();
-    if(this.isSliding_)
-        this.Slide(frame);
+    this.checkDirection();
+    if(this.IsSliding)
+        this.slide(frame);
 
-    this.HandleProjectiles(frame,stageX,stageY);
-    this.OtherAnimationFrameMove(frame, stageX, stageY);
+    this.handleProjectiles(frame,stageX,stageY);
+    this.otherAnimationFrameMove(frame, stageX, stageY);
 
-    if(!!this.IsBeingGrappled())
+    if(!!this.isBeingGrappled())
         return;
 
-    if(!!this.frameFreeze_)
-        this.HoldFrame(frame);
+    if(!!this.FrameFreeze)
+        this.holdFrame(frame);
 
-    if(!!this.currentAnimation_ && !!this.currentAnimation_.Animation)
+    if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation)
     {
-        var delta = frame - this.currentAnimation_.StartFrame;
-        var currentFrame = this.currentAnimation_.Animation.GetFrame(delta);
-        if(!!currentFrame || (!!this.currentFrame_ && (!!(this.currentFrame_.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME))))
+        var delta = frame - this.CurrentAnimation.StartFrame;
+        var currentFrame = this.CurrentAnimation.Animation.getFrame(delta);
+        if(!!currentFrame || (!!this.CurrentFrame && (!!(this.CurrentFrame.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME))))
         {
-            this.SetPendingFrame(currentFrame);
+            this.setPendingFrame(currentFrame);
             /*check to see if the move allows you to change direction mid-move*/
-            if(!!this.mustChangeDirection_ && !!(this.currentAnimation_.Animation.Flags.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
+            if(!!this.MustChangeDirection && !!(this.CurrentAnimation.Animation.Flags.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {
-                this.ChangeDirection();
+                this.changeDirection();
                 return;
             }
 
             /*check to see if the new frame needs to be airborne*/
-            if((!!currentFrame && (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE) || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB))))
+            if((!!currentFrame && (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1)
+                        || (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE)
+                        || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB)))))
             {
-                if(!this.IsAirborne())
+                if(!this.isAirborne() || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.FORCE_START_AIRBORNE))
                 {
                     var direction = 1;
                     if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
-                        direction = this.currentAnimation_.AttackDirection;
-                    //this.PerformJump(direction * this.currentAnimation_.Animation.Vx,this.currentAnimation_.Animation.Vy,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
-                    this.PerformJump(direction * this.currentAnimation_.Vx,this.currentAnimation_.Vy,this.currentAnimation_.Animation.GetXModifier(),this.currentAnimation_.Animation.GetYModifier());
+                        direction = this.CurrentAnimation.AttackDirection;
+                    //this.performJump(direction * this.CurrentAnimation.Animation.Vx,this.CurrentAnimation.Animation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier());
+                    this.performJump(direction * this.CurrentAnimation.Vx,this.CurrentAnimation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.StartAirborneAt,this.CurrentAnimation.Animation.UseJumpSpeed);
+
+                    if(!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1))
+                    {
+                        this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE_FB);
+                        this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE);
+                        this.Flags.Pose.add(POSE_FLAGS.AIR_COMBO_1);
+                    }
                 }
                 else
                 {
-                    this.SetVxFn(this.currentAnimation_.Animation.GetAirXModifier());
-                    this.SetVyFn(this.currentAnimation_.Animation.GetAirYModifier());
+                    this.setVxFn(this.CurrentAnimation.Animation.getAirXModifier());
+                    this.setVyFn(this.CurrentAnimation.Animation.getAirYModifier());
                 }
             }
-            if(!this.frameFreeze_)
+            if(!this.FrameFreeze)
             {
                 /*if the player is still airborne then apply next step*/
-                if(this.IsAirborne())
+                if(this.isAirborne())
                 {
-                    if(this.IsBlocking())
+                    if(this.isBlocking())
                     {
-                        this.Flags.Player.Remove(PLAYER_FLAGS.MOBILE);
-                        this.ForceHoldFrame(frame);
+                        this.Flags.Player.remove(PLAYER_FLAGS.MOBILE);
+                        this.forceHoldFrame(frame);
                     }
-                    if(!this.AdvanceJump() && !this.currentAnimation_.Animation.IsThrow)
+                    if(!this.advanceJump() && !this.CurrentAnimation.Animation.IsThrow)
                     {
-                        this.TryChainAnimation(frame);
+                        this.tryChainAnimation(frame);
                         return;
                     }
                 }
             }
             /*some moves (crouch) require frame to not change, this simulates that.*/
-            if(!!this.currentFrame_ && !!(this.currentFrame_.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME) && !this.ignoreHoldFrame_)
+            if(!!this.CurrentFrame && !!(this.CurrentFrame.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME) && !this.IgnoreHoldFrame)
             {
                 /*get the key that must be pressed*/
-                var key = this.currentAnimation_.Animation.GetKey(this.currentAnimation_.Animation.GetKeySequenceLength() - 1);
+                var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
                 /*if the key is NOT pressed, then offset into the next frame in the current move*/
-                if(!this.IsKeyDown(key))
+                if(!this.isKeyDown(key))
                 {
-                    this.ForceNextFrame(frame);
+                    this.forceNextFrame(frame);
                     /*must clear frame because the current frame has a HOLD_FRAME flag*/
-                    this.SetCurrentFrame(null,frame);
+                    this.setCurrentFrame(null,frame);
                 }
             }
             else if(!!currentFrame && !!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.MUST_HOLD_KEY)) /*Does the move require the key to be held? ... */
             {
                 /*the last key in the keySequence must be the required key*/
-                var key = this.currentAnimation_.Animation.GetKey(this.currentAnimation_.Animation.GetKeySequenceLength() - 1);
-                if(this.IsKeyDown(key)) /*... and was the key pressed?*/
+                var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
+                if(this.isKeyDown(key)) /*... and was the key pressed?*/
                 {
-                    this.SetCurrentFrame(currentFrame,frame,stageX,stageY);
+                    this.setCurrentFrame(currentFrame,frame,stageX,stageY);
                 }
                 else
                 {
                     /*the required key is not pressed, look for a new move*/
-                    this.TryChainAnimation(frame,stageX,stageY);
+                    this.tryChainAnimation(frame,stageX,stageY);
                 }
             }
             else if(!currentFrame)
             {
-                this.TryChainAnimation(frame,stageX,stageY);
+                this.tryChainAnimation(frame,stageX,stageY);
             }
             else
             {
-                if(!this.currentFrame_ || (currentFrame.ID != this.currentFrame_.ID))
+                if(!this.CurrentFrame || (currentFrame.ID != this.CurrentFrame.ID))
                 {
-                    this.SetCurrentFrame(currentFrame,frame,stageX,stageY);
+                    this.setCurrentFrame(currentFrame,frame,stageX,stageY);
                 }
             }
         }
         else
         {
             /*No more frames for the move.*/
-            this.TryChainAnimation(frame);
+            this.tryChainAnimation(frame);
         }
     }
     else
     {
-        this.TryChainAnimation(frame);
+        this.tryChainAnimation(frame);
     }
 
-    this.checkedForAnimation_ = false;
-    this.CleanUpKeyStateChanges(frame);
-    /*this.DebugShowKeys();*/
+    this.CheckedForAnimation = false;
+    this.cleanUpKeyStateChanges(frame);
+    /*this.debugShowKeys();*/
 }
 
 
 /*Sets the team and initializes the energy bar and portriat*/
-Player.prototype.SetupInfo = function(value,side)
+Player.prototype.setupInfo = function(value,side)
 {
-    this.team_ = value;
-    this.portriatImageSrc_ = this.portriatImageSrc_.replace("x-",side + "-")
+    this.Team = value;
+    this.PortriatImageSrc = this.PortriatImageSrc.replace("x-",side + "-")
 
-    this.CreateKeysElement();
+    this.createKeysElement();
 }
 
 /*remove any DOM element that was added by this instance*/
-Player.prototype.Release = function()
+Player.prototype.release = function()
 {
     var parentElement = (parentElement || window.document.getElementById("pnlStage"));
 
-    for(var i = 0; i < this.frontHitReportImages_.length; ++i)
-        utils_.RemoveFromDOM(this.frontHitReportImages_[i]);
-    for(var i = 0; i < this.rearHitReportImages_.length; ++i)
-        utils_.RemoveFromDOM(this.rearHitReportImages_[i]);
-    for(var i = 0; i < this.otherAnimations_.Dirt.length; ++i)
-        utils_.RemoveFromDOM(this.otherAnimations_.Dirt[i].Element);
-    for(var i = 0; i < this.otherAnimations_.BigDirt.length; ++i)
-        utils_.RemoveFromDOM(this.otherAnimations_.BigDirt[i].Element);
-    this.ClearProjectiles();
-    for(var i = 0; i < this.projectiles_.length; ++i)
-        this.projectiles_[i].Release();
+    for(var i = 0; i < this.FrontHitReportImages.length; ++i)
+        utils_.removeFromDOM(this.FrontHitReportImages[i]);
+    for(var i = 0; i < this.RearHitReportImages.length; ++i)
+        utils_.removeFromDOM(this.RearHitReportImages[i]);
+    for(var i = 0; i < this.OtherAnimations.Dirt.length; ++i)
+        utils_.removeFromDOM(this.OtherAnimations.Dirt[i].Element);
+    for(var i = 0; i < this.OtherAnimations.BigDirt.length; ++i)
+        utils_.removeFromDOM(this.OtherAnimations.BigDirt[i].Element);
+    this.clearProjectiles();
+    for(var i = 0; i < this.Projectiles.length; ++i)
+        this.Projectiles[i].release();
 
-    this.ReleaseDebugElements();
+    this.releaseDebugElements();
 
-    utils_.RemoveFromDOM(this.shadowContainer_);
-    utils_.RemoveFromDOM(this.element_);
-    utils_.RemoveFromDOM(this.dizzyElement_);
-    for(var i in this.moves_)
+    utils_.removeFromDOM(this.ShadowContainer);
+    utils_.removeFromDOM(this.Element);
+    utils_.removeFromDOM(this.DizzyElement);
+    for(var i in this.Moves)
     {
-        var trail = this.moves_[i].Trail;
+        var trail = this.Moves[i].Trail;
         if(!!trail)
-            trail.Release();
+            trail.release();
     }
 }
 
 /**/
-Player.prototype.Pause = function()
+Player.prototype.pause = function()
 {
-    if(this.IsDizzy())
-        soundManager_.Pause("audio/misc/dizzy.zzz");
+    if(this.isDizzy())
+        soundManager_.pause("audio/misc/dizzy.zzz");
 }
 
 
 /**/
-Player.prototype.Resume = function()
+Player.prototype.resume = function()
 {
-    if(this.IsDizzy())
-        soundManager_.Resume("audio/misc/dizzy.zzz");
+    if(this.isDizzy())
+        soundManager_.resume("audio/misc/dizzy.zzz");
 }

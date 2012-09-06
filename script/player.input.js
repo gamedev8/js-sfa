@@ -1,80 +1,80 @@
-﻿/*Some moves require the key to be held, this function can be used to check that.*/
-Player.prototype.IsKeyDown = function(key)
+/*Some moves require the key to be held, this function can be used to check that.*/
+Player.prototype.isKeyDown = function(key)
 {
-    return !!(this.keyState_ & key);
+    return !!(this.KeyState & key);
 }
 
 
-Player.prototype.HandleInput = function(keyboardState,frame)
+Player.prototype.handleInput = function(keyboardState,frame)
 {
-    if(!this.forceImmobile_ && this.keyState_ > 0)
-        this.CheckForAnimation(frame);
+    if(!this.ForceImmobile && this.KeyState > 0)
+        this.checkForAnimation(frame);
 }
 
-Player.prototype.ClearInput = function()
+Player.prototype.clearInput = function()
 {
-    this.keyStates_ = [];
-    this.keyState_ = 0;
+    this.KeyStates = [];
+    this.KeyState = 0;
 }
 
 /*Ensures that the keyStateChange array doesn't get too big*/
-Player.prototype.CleanUpKeyStateChanges = function(frame)
+Player.prototype.cleanUpKeyStateChanges = function(frame)
 {
-    if(this.keyStates_.length > CONSTANTS.MAX_KEYSTATES)
-        this.keyStates_ = this.keyStates_.slice(this.keyStates_.length - CONSTANTS.MAX_KEYSTATES);
+    if(this.KeyStates.length > CONSTANTS.MAX_KEYSTATES)
+        this.KeyStates = this.KeyStates.slice(this.KeyStates.length - CONSTANTS.MAX_KEYSTATES);
 
     var i = 0;
-    while(i < this.keyStates_.length)
+    while(i < this.KeyStates.length)
     {
-        if(this.keyStates_[i].Bit == 0 && (frame - this.keyStates_[i].Frame) > CONSTANTS.MAX_KEY_LIFE)
-            this.keyStates_ = this.keyStates_.slice(i+1);
+        if(this.KeyStates[i].Bit == 0 && (frame - this.KeyStates[i].Frame) > CONSTANTS.MAX_KEY_LIFE)
+            this.KeyStates = this.KeyStates.slice(i+1);
         ++i;
     }
 
 }
 
 /*Simuates pressing keys*/
-Player.prototype.SendInput = function(input)
+Player.prototype.sendInput = function(input)
 {
-    if(!input || !this.GetMatch().GetAllowInput())
+    if(!input || !this.getMatch().getAllowInput())
         return;
 
-    var frame = this.GetMatch().GetCurrentFrame();
+    var frame = this.getMatch().getCurrentFrame();
     var key;
     for(var i = 0; i < input.length; ++i)
     {
         key = null;
-        for(var a in this.buttons_)
+        for(var a in this.Buttons)
         {
-            if(this.buttons_[a].Bit == input[i].Button)
+            if(this.Buttons[a].Bit == input[i].Button)
             {
                 key = a;
                 break;
             }
         }
 
-        if(!!key) this.OnKeyStateChanged(input[i].IsDown,key,frame);
+        if(!!key) this.onKeyStateChanged(input[i].IsDown,key,frame);
     }
 }
 
 /*Adds a state change to the keyStateChange array*/
-Player.prototype.AddKeyStateChange = function(frame,keyCode,isDown)
+Player.prototype.addKeyStateChange = function(frame,keyCode,isDown)
 {
     var frameOffset = 0;
-    if(this.keyStates_.length > 0)
+    if(this.KeyStates.length > 0)
     {
-        frameOffset = frame - this.keyStates_[this.keyStates_.length-1].Frame + this.keyStates_[this.keyStates_.length-1].FrameOffset;
+        frameOffset = frame - this.KeyStates[this.KeyStates.length-1].Frame + this.KeyStates[this.KeyStates.length-1].FrameOffset;
     }
-    this.keyStates_[this.keyStates_.length] = {Bit:this.keyState_,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode,NbFrames:1};
+    this.KeyStates[this.KeyStates.length] = {Bit:this.KeyState,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode,NbFrames:1};
     
     /*if the key was let go calculate the number frames it was pressed*/
     if(!isDown)
     {
-        for(var i = this.keyStates_.length-1; i > -1; --i)
+        for(var i = this.KeyStates.length-1; i > -1; --i)
         {
-            if(this.keyStates_[i].KeyCode == keyCode && !!(this.keyStates_[i].Bit & this.buttons_[keyCode].Bit))
+            if(this.KeyStates[i].KeyCode == keyCode && !!(this.KeyStates[i].Bit & this.Buttons[keyCode].Bit))
             {
-                this.keyStates_[i].NbFrames = frame - this.keyStates_[i].Frame;
+                this.KeyStates[i].NbFrames = frame - this.KeyStates[i].Frame;
                 return;
             }
         }
@@ -83,32 +83,32 @@ Player.prototype.AddKeyStateChange = function(frame,keyCode,isDown)
 
 
 /*Handles key state changes*/
-Player.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
+Player.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
 {
 
-    if(!!this.buttons_[keyCode])
+    if(!!this.Buttons[keyCode])
     {
-        var oldState = this.keyState_;
+        var oldState = this.KeyState;
 
         /*key state just changed to pressed*/
-        if(!!isDown &&  !(this.keyState_ & this.buttons_[keyCode].Bit))
+        if(!!isDown &&  !(this.KeyState & this.Buttons[keyCode].Bit))
         {
-            this.keyState_ |= this.buttons_[keyCode].Bit;
+            this.KeyState |= this.Buttons[keyCode].Bit;
         }
         /*key state just changed to released*/
-        else if(!isDown && !!(this.keyState_ & this.buttons_[keyCode].Bit))
+        else if(!isDown && !!(this.KeyState & this.Buttons[keyCode].Bit))
         {
-            this.keyState_ = (this.keyState_ | this.buttons_[keyCode].Bit) ^ this.buttons_[keyCode].Bit;
+            this.KeyState = (this.KeyState | this.Buttons[keyCode].Bit) ^ this.Buttons[keyCode].Bit;
         }
 
         /*if the state has changed, then log it*/
-        if(oldState != this.keyState_)
+        if(oldState != this.KeyState)
         {
-            this.keyStateChanged_ = true;
-            this.AddKeyStateChange(frame,keyCode,isDown);
+            this.KeyStateChanged = true;
+            this.addKeyStateChange(frame,keyCode,isDown);
 
             if(!!isDown)
-                this.DebugShowKeys();
+                this.debugShowKeys();
         }
     }
 }
@@ -118,7 +118,7 @@ Returns 2 if there is an exact match.
 Returns 1 if there is a priority match.
 Returns 0 if there is no match
 */
-Player.prototype.CompareKeySequence = function(move,keys)
+Player.prototype.compareKeySequence = function(move,keys)
 {
     var keyIndex = 0;
     var isExactMatch = true;
@@ -126,15 +126,15 @@ Player.prototype.CompareKeySequence = function(move,keys)
     do
     {
         var userKey = keys[keyIndex].Bit;
-        var moveKey = move.GetKey(keyIndex);
+        var moveKey = move.getKey(keyIndex);
 
         if(keyIndex > 0)
         {
-            var userDirKeys = move.StripAttackKeys(userKey);
-            var moveDirKeys = move.StripAttackKeys(moveKey);
+            var userDirKeys = move.stripAttackKeys(userKey);
+            var moveDirKeys = move.stripAttackKeys(moveKey);
 
-            var prevUserDirKeys = move.StripAttackKeys(keys[keyIndex-1].Bit);
-            var prevMoveDirKeys = move.StripAttackKeys(move.GetKey(keyIndex-1));
+            var prevUserDirKeys = move.stripAttackKeys(keys[keyIndex-1].Bit);
+            var prevMoveDirKeys = move.stripAttackKeys(move.getKey(keyIndex-1));
 
             if((moveDirKeys != prevMoveDirKeys) && (userDirKeys == prevUserDirKeys))
             {
@@ -142,7 +142,7 @@ Player.prototype.CompareKeySequence = function(move,keys)
             }
         }
 
-        if(!(!move.MustChargeKey(keyIndex) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+        if(!(!move.mustChargeKey(keyIndex) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
         {
             return 0;
         }
@@ -168,25 +168,25 @@ Returns 2 if there is an exact match.
 Returns 1 if there is a priority match.
 Returns 0 if there is no match
 */
-Player.prototype.CompareAlternateKeySequences = function(move,keys)
+Player.prototype.compareAlternateKeySequences = function(move,keys)
 {
     var isExactMatch = false;
     var isMatch = false;
-    outer : for(var i = 0, length = move.GetAlternateKeySequencesLength(); i < length; ++i)
+    outer : for(var i = 0, length = move.getAlternateKeySequencesLength(); i < length; ++i)
     {
         isExactMatch = true;
         isMatch = true;
 
-        inner : for(var j = 0, iLength = move.GetAlternateKeySequenceLength(i); j < iLength; ++j)
+        inner : for(var j = 0, iLength = move.getAlternateKeySequenceLength(i); j < iLength; ++j)
         {
-            if(!(!move.MustChargeAlternateKey(i,j) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+            if(!(!move.mustChargeAlternateKey(i,j) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
                 return 0;
 
-            if(move.GetAlternateKeySequence(i,j) != keys[j].Bit)
+            if(move.getAlternateKeySequence(i,j) != keys[j].Bit)
             {
                 isExactMatch = false;
             }
-            if((move.GetAlternateKeySequence(i,j) & keys[j].Bit) != move.GetAlternateKeySequence(i,j))
+            if((move.getAlternateKeySequence(i,j) & keys[j].Bit) != move.getAlternateKeySequence(i,j))
             {
                 isMatch = false;
                 break inner;
@@ -202,7 +202,7 @@ Player.prototype.CompareAlternateKeySequences = function(move,keys)
 
 
 /*Returns a string from the keys*/
-Player.prototype.CutKey = function(keys,frame)
+Player.prototype.cutKey = function(keys,frame)
 {
     var retVal = {Duration:keys[keys.length-1].FrameOffset - keys[0].FrameOffset,Keys:[],Key:""};
     while(keys.length > 0)
@@ -214,47 +214,47 @@ Player.prototype.CutKey = function(keys,frame)
     return retVal;
 }
 /*returns true if the player is in a state where the current animation can be interupted with another animation*/
-Player.prototype.AllowInterupt = function()
+Player.prototype.allowInterupt = function()
 {
-    return this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_1)
-            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_2)
-            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_3)
-            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_4)
-            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_5)
-            || this.Flags.Pose.Has(POSE_FLAGS.ALLOW_INTERUPT_6)
+    return this.Flags.Pose.has(POSE_FLAGS.ALLOW_INTERUPT_1)
+            || this.Flags.Pose.has(POSE_FLAGS.ALLOW_INTERUPT_2)
+            || this.Flags.Pose.has(POSE_FLAGS.ALLOW_INTERUPT_3)
+            || this.Flags.Pose.has(POSE_FLAGS.ALLOW_INTERUPT_4)
+            || this.Flags.Pose.has(POSE_FLAGS.ALLOW_INTERUPT_5)
+            || this.Flags.Pose.has(POSE_FLAGS.ALLOW_INTERUPT_6)
         ;
 }
 /*Check the current key sequence for a move to execute*/
-Player.prototype.CheckForAnimation = function(frame)
+Player.prototype.checkForAnimation = function(frame)
 {
-    if(!this.GetMatch().GetAllowInput())
+    if(!this.getMatch().getAllowInput())
         return;
-    if(!!this.checkedForAnimation_)
+    if(!!this.CheckedForAnimation)
         return;
-    this.checkedForAnimation_ = true;
+    this.CheckedForAnimation = true;
 
 
-    if(this.Flags.Player.Has(PLAYER_FLAGS.MOBILE) || (this.AllowInterupt() && !this.interuptAnimation_))
+    if(this.Flags.Player.has(PLAYER_FLAGS.MOBILE) || (this.allowInterupt() && !this.InteruptAnimation))
     {
-        this.keyStateChanged_ = false;
+        this.KeyStateChanged = false;
         var keys = [];
-        for(var i = 0; i < this.keyStates_.length; ++i)
-            keys[keys.length] = this.keyStates_[i];
+        for(var i = 0; i < this.KeyStates.length; ++i)
+            keys[keys.length] = this.KeyStates[i];
 
         var cb = 0;
         while(keys.length > 0)
         {
-            var value = this.CutKey(keys,frame);
-            var move = this.FindAnimation(value,frame);
+            var value = this.cutKey(keys,frame);
+            var move = this.findAnimation(value,frame);
             if(!!move && (!move.Duration || (value.Duration <= move.Duration)))
             {
                 /*is there no current move, or is the user executing a new move*/
-                if(!this.currentAnimation_ || (this.currentAnimation_.Animation.BaseAnimation.name_ != move.BaseAnimation.name_))
+                if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
                 {
-                    if(this.AllowInterupt())
-                        this.interuptAnimation_ = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.direction_};
+                    if(this.allowInterupt())
+                        this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
                     else
-                        this.SetCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.direction_});
+                        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
                 }
                 return;
             }
@@ -268,9 +268,9 @@ Player.prototype.CheckForAnimation = function(frame)
             if(++cb > 100)
                 break;
         }
-        if(!this.keyState_)
+        if(!this.KeyState)
         {
-            this.GoToStance(frame);
+            this.goToStance(frame);
         }
     }
 }

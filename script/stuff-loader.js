@@ -1,4 +1,4 @@
-﻿var CreateUtils = function()
+var CreateUtils = function()
 {
     var loadingCount_ = 0;
 
@@ -6,18 +6,18 @@
     {
     }
 
-    Utils.prototype.AddBase64Audio = function(src, callbackFn, context)
+    Utils.prototype.addBase64Audio = function(src, callbackFn, context)
     {
-        src = "script/audio/" + src.replace(".js",soundManager_.GetExtension()) + ".js";
-        return this.AddScript(src,callbackFn,context);
+        src = "script/audio/" + src.replace(".js",soundManager_.getExtension()) + ".js";
+        return this.addScript(src,callbackFn,context);
     }
 
-    Utils.prototype.AddBase64Image = function(src, callbackFn, context)
+    Utils.prototype.addBase64Image = function(src, callbackFn, context)
     {
-        return this.AddScript(src,callbackFn,context);
+        return this.addScript(src,callbackFn,context);
     }
 
-    Utils.prototype.AddScript = function(src, callbackFn, context)
+    Utils.prototype.addScript = function(src, callbackFn, context)
     {
         if(!window.document.getElementById(src))
         {
@@ -50,12 +50,12 @@
             return false;
     }
 
-    Utils.prototype.RemoveFromDOM = function(element)
+    Utils.prototype.removeFromDOM = function(element)
     {
         if(!!element)
         {
             while(element.children.length > 0)
-                utils_.RemoveChildrenFromDOM(element.children[0]);
+                utils_.removeChildrenFromDOM(element.children[0]);
             var parentNode = element.parentNode;
             if(!!parentNode)
                 parentNode.removeChild(element);
@@ -64,7 +64,7 @@
         }
     }
 
-    Utils.prototype.RemoveChildrenFromDOM = function(element,keepOrginalElement)
+    Utils.prototype.removeChildrenFromDOM = function(element,keepOrginalElement)
     {
         if(!!element)
         {
@@ -82,7 +82,7 @@
             {
                 while(element.children.length > 0)
                 {
-                    utils_.RemoveChildrenFromDOM(element.children[0]);
+                    utils_.removeChildrenFromDOM(element.children[0]);
                 }
             }
         }
@@ -148,21 +148,21 @@ var CreateStuffLoader = function()
 
     var DownloadBase64Image_ = function(index)
     {
-        if(!utils_.AddBase64Image(stuff_[index].Src, CreateOnDoneCallback_(index)))
+        if(!utils_.addBase64Image(stuff_[index].Src, CreateOnDoneCallback_(index)))
             OnDone_();
     }
 
 
     var DownloadBase64Audio_ = function(index)
     {
-        if(!utils_.AddBase64Audio(stuff_[index].Src, CreateOnDoneCallback_(index)))
+        if(!utils_.addBase64Audio(stuff_[index].Src, CreateOnDoneCallback_(index)))
             OnDone_();
     }
 
 
     var DownloadScript_ = function(index)
     {
-        if(!utils_.AddScript(stuff_[index].Src, CreateOnDoneCallback_(index)))
+        if(!utils_.addScript(stuff_[index].Src, CreateOnDoneCallback_(index)))
             OnDone_();
     }
 
@@ -172,7 +172,7 @@ var CreateStuffLoader = function()
     }
 
 
-    StuffLoader.prototype.Queue = function(src,type)
+    StuffLoader.prototype.queue = function(src,type)
     {
         if(!stuff_[src])
         {
@@ -180,7 +180,7 @@ var CreateStuffLoader = function()
         }
     }
 
-    StuffLoader.prototype.Start = function(reportProgressCallback, callback, context)
+    StuffLoader.prototype.start = function(reportProgressCallback, callback, context)
     {
         for(var i in stuff_)
             ++nbElements_;

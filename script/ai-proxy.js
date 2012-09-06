@@ -1,4 +1,4 @@
-﻿var CreateAIProxy = function(player,createAiFn)
+var CreateAIProxy = function(player,createAiFn)
 {
     var player_ = player;
     var managed_ = !!createAiFn ? createAiFn(player) : null;
@@ -8,20 +8,20 @@
     {
     }
 
-    AIProxy.prototype.SetAI = function(createAiFn)
+    AIProxy.prototype.setAI = function(createAiFn)
     {
         managed_ = !!createAiFn ? createAiFn(player_) : null;
     }
 
-    AIProxy.prototype.IsRunning = function()
+    AIProxy.prototype.isRunning = function()
     {
         return !!managed_;
     }
 
 
-    AIProxy.prototype.FrameMove = function(frame)
+    AIProxy.prototype.frameMove = function(frame)
     {
-        managed_.FrameMove(frame);
+        managed_.frameMove(frame);
     }
 
     return new AIProxy();

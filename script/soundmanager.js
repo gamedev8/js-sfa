@@ -1,4 +1,3 @@
-﻿var __noSound = false;
 
 var CreateSoundManager = function()
 {
@@ -34,12 +33,12 @@ var CreateSoundManager = function()
     {
     }
 
-    SoundManager.prototype.GetExtension = function() { return extension_; }
+    SoundManager.prototype.getExtension = function() { return extension_; }
 
     /*creates a DOM audio element and loads it with base64 data*/
-    SoundManager.prototype.LoadBase64 = function(path,nbChannels,defaultVolume,base64Data,loop)
+    SoundManager.prototype.loadBase64 = function(path,nbChannels,defaultVolume,base64Data,loop)
     {
-        if(!!__noSound) return;
+        if(!!__debugMode) return;
         if(!items_[path])
         {
             nbChannels = nbChannels || 1;
@@ -72,9 +71,9 @@ var CreateSoundManager = function()
         return path;
     }
     /*creates a DOM audio element and loads it*/
-    SoundManager.prototype.Load = function(path,nbChannels,defaultVolume)
+    SoundManager.prototype.load = function(path,nbChannels,defaultVolume)
     {
-        if(!!__noSound) return;
+        if(!!__debugMode) return;
         if(!items_[path])
         {
             nbChannels = nbChannels || 1;
@@ -105,7 +104,7 @@ var CreateSoundManager = function()
     }
 
     /**/
-    SoundManager.prototype.Unload = function(path)
+    SoundManager.prototype.unload = function(path)
     {
         if(!!items_[path])
         {
@@ -120,7 +119,7 @@ var CreateSoundManager = function()
     }
 
     /**/
-    SoundManager.prototype.SetVolume = function(path, value)
+    SoundManager.prototype.setVolume = function(path, value)
     {
         if(!!items_[path])
         {
@@ -130,7 +129,7 @@ var CreateSoundManager = function()
     }
 
     /**/
-    SoundManager.prototype.GetVolume = function(path)
+    SoundManager.prototype.getVolume = function(path)
     {
         if(!!items_[path])
         {
@@ -140,7 +139,7 @@ var CreateSoundManager = function()
     }
 
     /**/
-    SoundManager.prototype.IsPlaying = function(path)
+    SoundManager.prototype.isPlaying = function(path)
     {
         if(!!items_[path])
         {
@@ -151,7 +150,7 @@ var CreateSoundManager = function()
 
 
     /**/
-    SoundManager.prototype.Restart = function(path,loops)
+    SoundManager.prototype.restart = function(path,loops)
     {
         if(!!items_[path])
         {
@@ -163,7 +162,7 @@ var CreateSoundManager = function()
     }
 
     /**/
-    SoundManager.prototype.Play = function(path,loops)
+    SoundManager.prototype.play = function(path,loops)
     {
         if(!!items_[path])
         {
@@ -190,7 +189,7 @@ var CreateSoundManager = function()
     }
 
     /*sets the volume and plays the sound*/
-    SoundManager.prototype.PlayWithVolume = function(obj,loops)
+    SoundManager.prototype.playWithVolume = function(obj,loops)
     {
         var path = obj.Value;
         if(!!items_[path])
@@ -220,7 +219,7 @@ var CreateSoundManager = function()
 
 
     /**/
-    SoundManager.prototype.Replay = function(path)
+    SoundManager.prototype.replay = function(path)
     {
         if(!!items_[path])
         {
@@ -234,7 +233,7 @@ var CreateSoundManager = function()
 
 
     /**/
-    SoundManager.prototype.Pause = function(path)
+    SoundManager.prototype.pause = function(path)
     {
         if(!!items_[path])
         {
@@ -244,17 +243,17 @@ var CreateSoundManager = function()
     }
 
     /**/
-    SoundManager.prototype.PauseAll = function()
+    SoundManager.prototype.pauseAll = function()
     {
     }
 
     /**/
-    SoundManager.prototype.ResumeAll = function()
+    SoundManager.prototype.resumeAll = function()
     {
     }
 
     /**/
-    SoundManager.prototype.Resume = function(path)
+    SoundManager.prototype.resume = function(path)
     {
         if(!!items_[path])
         {
@@ -264,7 +263,7 @@ var CreateSoundManager = function()
         }
     }
     /**/
-    SoundManager.prototype.PlayOrResume = function(path,loops)
+    SoundManager.prototype.playOrResume = function(path,loops)
     {
         if(!!items_[path])
         {
@@ -275,39 +274,39 @@ var CreateSoundManager = function()
                 el.play();
             }
             else
-                this.Play(path,loops);
+                this.play(path,loops);
         }
     }
 
     /**/
-    SoundManager.prototype.Preload = function()
+    SoundManager.prototype.preload = function()
     {
     }
 
 
     /**/
-    SoundManager.prototype.QueueSound = function(value,volume,delay)
+    SoundManager.prototype.queueSound = function(value,volume,delay)
     {
-        sounds_[sounds_.length] = {Value:value, Volume:volume||1, Frame:game_.GetCurrentFrame() + (delay||0)};
+        sounds_[sounds_.length] = {Value:value, Volume:volume||1, Frame:game_.getCurrentFrame() + (delay||0)};
     }
 
 
     /**/
-    SoundManager.prototype.FrameMove = function(frame)
+    SoundManager.prototype.frameMove = function(frame)
     {
     }
 
     /**/
-    SoundManager.prototype.Render = function(frame)
+    SoundManager.prototype.render = function(frame)
     {
         for(var i in sounds_)
         {
             if(frame >= sounds_[i].Frame)
-                this.PlayWithVolume(sounds_.splice(i,1)[0]);
+                this.playWithVolume(sounds_.splice(i,1)[0]);
         }
     }
 
     return new SoundManager();
 }
 var soundManager_ = CreateSoundManager();
-soundManager_.Preload();
+soundManager_.preload();

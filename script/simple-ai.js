@@ -1,4 +1,4 @@
-﻿var CreateSimpleRyuAI = function(player)
+var CreateSimpleRyuAI = function(player)
 {
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
@@ -35,10 +35,10 @@
     /*private function*/
     var GetOtherTeam_ = function()
     {
-        if(player_.team_ == BUTTONS.FORWARD)
-            return player_.GetMatch().GetTeamB().GetPlayers();
+        if(player_.Team == BUTTONS.FORWARD)
+            return player_.getMatch().getTeamB().getPlayers();
         else
-            return player_.GetMatch().GetTeamA().GetPlayers();
+            return player_.getMatch().getTeamA().getPlayers();
     }
 
     /*private member*/
@@ -46,7 +46,7 @@
     {
         var otherPlayers = GetOtherTeam_();
         for(var i = 0; i < otherPlayers.length; ++i)
-            if(otherPlayers[i].IsAirborne())
+            if(otherPlayers[i].isAirborne())
                 return false;
 
         return true;
@@ -58,9 +58,9 @@
         var otherPlayers = GetOtherTeam_();
         for(var i = 0; i < otherPlayers.length; ++i)
         {
-            if(otherPlayers[i].IsAirborne() && otherPlayers[i].IsVulnerable())
+            if(otherPlayers[i].isAirborne() && otherPlayers[i].isVulnerable())
             {
-                if(player_.GetPhysics().IsWithinDistanceX(player_,otherPlayers[i],distance))
+                if(player_.getPhysics().isWithinDistanceX(player_,otherPlayers[i],distance))
                 {
                     return otherPlayers[i];
                 }
@@ -76,7 +76,7 @@
         var otherPlayers = GetOtherTeam_();
         for(var i = 0; i < otherPlayers.length; ++i)
         {
-            if(player_.GetPhysics().IsWithinDistanceX(player_,otherPlayers[i],distance))
+            if(player_.getPhysics().isWithinDistanceX(player_,otherPlayers[i],distance))
             {
                 return otherPlayers[i];
             }
@@ -88,7 +88,7 @@
 
     var ThrowSuperFireball_ = function()
     {
-        var energyLevel = player_.GetEnergyLevel();
+        var energyLevel = player_.getEnergyLevel();
         if(energyLevel > 0)
         {
             if(Math.floor(Math.random() * 10) > 8)
@@ -96,9 +96,9 @@
                 var which = Math.floor(Math.random() * energyLevel) + 1
                 switch(which)
                 {
-                    case ENERGYBAR.LEVELMAXED: player_.SendInput(hardSuperFireballInput_); break;
-                    case ENERGYBAR.LEVEL2: player_.SendInput(mediumSuperFireballInput_); break;
-                    case ENERGYBAR.LEVEL1: player_.SendInput(lightSuperFireballInput_); break;
+                    case ENERGYBAR.LEVELMAXED: player_.sendInput(hardSuperFireballInput_); break;
+                    case ENERGYBAR.LEVEL2: player_.sendInput(mediumSuperFireballInput_); break;
+                    case ENERGYBAR.LEVEL1: player_.sendInput(lightSuperFireballInput_); break;
                     default: return false;
 
                 }
@@ -159,16 +159,16 @@
 
 
 
-    SimpleRyuAI.prototype.FrameMove = function(frame)
+    SimpleRyuAI.prototype.frameMove = function(frame)
     {
         
         if(inputToSend_.length == 0)
         {
-            player_.ClearInput();
+            player_.clearInput();
             if((frame % 20) == 0)
-                player.TargetLastAttacker(frame);
+                player.targetLastAttacker(frame);
 
-            if(player_.Flags.Pose.Has(POSE_FLAGS.ALLOW_BLOCK))
+            if(player_.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK))
             {
                 if(!DoUppercut_(frame))
                 {
@@ -197,7 +197,7 @@
         {
             if(inputToSend_[i].Frame == frame)
             {
-                player_.SendInput(inputToSend_[i].Input);
+                player_.sendInput(inputToSend_[i].Input);
                 inputToSend_.splice(i,1);
             }
             else

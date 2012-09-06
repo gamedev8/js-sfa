@@ -11,7 +11,7 @@ var Key = function(name,keyCode,bit)
 /*
     Determines whether this instance has the passed in key code
 */
-Key.prototype.HandleKey = function(keyCode)
+Key.prototype.handleKey = function(keyCode)
 {
     this.IsPressed = (this.KeyCode === keyCode);
 
@@ -30,18 +30,20 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.AdjustShadowPosition = true;
         this.Duration = duration || 0;
         this.ChainAnimation = null;
+        this.ChainOnHitAnimation = null;
         this.ChainAnimationFrame = 0;
+        this.ChainOnHitAnimationFrame = 0;
         this.GrappleDistance = 0;
         this.IsImplicit = false;
         this.Priority = priority || 100;
         this.Vx = 0;
         this.Vy = 0;
-        this.ChainVxFunc = function(x) { return x; };
-        this.ChainVyFunc = function(y) { return y; };
-        this.VyFn = function(a) {return function(b) {return b}};
-        this.VxFn = function(a) {return function(b) {return b}};
-        this.VyAirFn = function(a) {return function(b) {return b}};
-        this.VxAirFn = function(a) {return function(b) {return b}};
+        this.chainVxFn = function(x) { return x; };
+        this.chainVyFn = function(y) { return y; };
+        this.vyFn = function(a) {return function(b) {return b}};
+        this.vxFn = function(a) {return function(b) {return b}};
+        this.vyAirFn = function(a) {return function(b) {return b}};
+        this.vxAirFn = function(a) {return function(b) {return b}};
         this.EnergyToAdd = energyToAdd || 0;
         this.EnergyToSubtract = 0;
         this.InvokedAnimationName = invokedAnimationName || "";
@@ -59,6 +61,8 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.RequiredFlags = requiredFlags;
         this.BehaviorFlags = behaviorFlags || 0;
         this.OverrideFlags = new MoveOverrideFlags();
+        this.KeepAirborneFunctions = false;
+        this.UseJumpSpeed = false;
 
         this.VyAirFnArgs = {};
         this.VxAirFnArgs = {};
@@ -69,24 +73,28 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.InteruptAnimation = null;
         this.InteruptAnimationFlags = null;
         this.IgnoreDepressedKeys = false;
+        /*by setting the following value, the jump will start at a different point. It is almost like skipping frames to a certain point in a jump.*/
+        this.NbFramesAirborneAdvance = 0;
+        /*by setting the following value the initial jump Y position will be set*/
+        this.StartAirborneAt = 0;
     }
 
-    Animation.prototype.GetAlternateKeySequencesLength = function() { return this.AlternateKeySequences.length; }
-    Animation.prototype.GetAlternateKeySequenceLength = function(i) { return this.AlternateKeySequences[i].length; }
-    Animation.prototype.GetAlternateKeySequence = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? ((this.AlternateKeySequences[i][j] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.AlternateKeySequences[i][j]; }
-    Animation.prototype.SetAlternateKeySequence = function(i,value) { return this.AlternateKeySequences[i] = value; }
-    Animation.prototype.GetKeySequenceLength = function() { return this.KeySequence.length; }
-    Animation.prototype.CheckKey = function(index, userKey, userKeys)
+    Animation.prototype.getAlternateKeySequencesLength = function() { return this.AlternateKeySequences.length; }
+    Animation.prototype.getAlternateKeySequenceLength = function(i) { return this.AlternateKeySequences[i].length; }
+    Animation.prototype.getAlternateKeySequence = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? ((this.AlternateKeySequences[i][j] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.AlternateKeySequences[i][j]; }
+    Animation.prototype.setAlternateKeySequence = function(i,value) { return this.AlternateKeySequences[i] = value; }
+    Animation.prototype.getKeySequenceLength = function() { return this.KeySequence.length; }
+    Animation.prototype.checkKey = function(index, userKey, userKeys)
     {
-        var thisKey = this.GetKey(index);
-        var chargeCheck = this.MustChargeKey(index);
+        var thisKey = this.getKey(index);
+        var chargeCheck = this.mustChargeKey(index);
         if(!chargeCheck || (userKey.NbFrames > CONSTANTS.NBCHARGE_FRAMES))
         {
-            var userKeyStripped = this.StripAttackKeys(userKey.Bit);
-            var thisKeyStripped = this.StripAttackKeys(thisKey);
+            var userKeyStripped = this.stripAttackKeys(userKey.Bit);
+            var thisKeyStripped = this.stripAttackKeys(thisKey);
 
-            var userAtackKeys = this.StripDirectionKeys(userKey.Bit);
-            var thisAtackKeys = this.StripDirectionKeys(thisKey);
+            var userAtackKeys = this.stripDirectionKeys(userKey.Bit);
+            var thisAtackKeys = this.stripDirectionKeys(thisKey);
 
             /*attack keys must match*/
             if((!!userAtackKeys || !!thisAtackKeys) && !(userAtackKeys & thisAtackKeys))
@@ -106,17 +114,17 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 
         return false;
     }
-    Animation.prototype.CompareKeySequenceLength = function(length)
+    Animation.prototype.compareKeySequenceLength = function(length)
     {
         return (this.KeySequence.length == length) || (!!this.IgnoreDepressedKeys && (this.KeySequence.length <= length));
     }
-    Animation.prototype.FilterKeySequence = function(userKeys)
+    Animation.prototype.filterKeySequence = function(userKeys)
     {
         if(!!this.IgnoreDepressedKeys && (userKeys.length > 0))
         {
             /*there must be enough keys in the array to see if every key is there*/
             /*the first and last keys must match*/
-            if((userKeys.length == this.KeySequence.length || userKeys.length > this.KeySequence.length) && this.CheckKey(0,userKeys[0],userKeys) && (this.CheckKey(keySequence.length-1,userKeys[userKeys.length - 1],userKeys)))
+            if((userKeys.length == this.KeySequence.length || userKeys.length > this.KeySequence.length) && this.checkKey(0,userKeys[0],userKeys) && (this.checkKey(keySequence.length-1,userKeys[userKeys.length - 1],userKeys)))
             {
                 var retVal = [];
                 var keysIndex = -1;
@@ -130,10 +138,10 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
                 {
                     /*if the user key is not equal to the current keySequence, then check the next user key against the key in this move's sequence*/
                     /*if they are equal, then move on to the next key in both sequences*/
-                    if(this.CheckKey(keysSequenceIndex,userKeys[keysIndex],userKeys))
+                    if(this.checkKey(keysSequenceIndex,userKeys[keysIndex],userKeys))
                     {
-                        dirKey = this.StripAttackKeys(this.GetKey(keysSequenceIndex));
-                        userDirKey = this.StripAttackKeys(userKeys[keysIndex].Bit);
+                        dirKey = this.stripAttackKeys(this.getKey(keysSequenceIndex));
+                        userDirKey = this.stripAttackKeys(userKeys[keysIndex].Bit);
                         if(keysIndex > 0)
                         {
                             if((dirKey != lastDirKey) && (userDirKey == lastUserDirKey))
@@ -162,7 +170,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         return {Keys:userKeys,Match:0};
     }
     /*uses bitwise operations to strip the attack keys from the bit pattern*/
-    Animation.prototype.StripAttackKeys = function(bit)
+    Animation.prototype.stripAttackKeys = function(bit)
     {
         return (bit | BUTTONS.LIGHT_PUNCH
                     | BUTTONS.MEDIUM_PUNCH
@@ -190,7 +198,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
                     ;
     }
     /*uses bitwise operations to strip the direction keys from the bit pattern*/
-    Animation.prototype.StripDirectionKeys = function(bit)
+    Animation.prototype.stripDirectionKeys = function(bit)
     {
         return (bit | BUTTONS.JUMP
                     | BUTTONS.FORWARD
@@ -213,7 +221,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
                     ^ BUTTONS.CHARGE
                     ;
     }
-    Animation.prototype.HasAttackKeys = function(index)
+    Animation.prototype.hasAttackKeys = function(index)
     {
         return !!(this.KeySequence[index] & BUTTONS.LIGHT_PUNCH) 
             ? true : !!(this.KeySequence[index] & BUTTONS.MEDIUM_PUNCH) 
@@ -223,7 +231,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
             ? true : !!(this.KeySequence[index] & BUTTONS.HARD_KICK) 
             ;
     }
-    Animation.prototype.KeyHasAttackKeys = function(key)
+    Animation.prototype.keyHasAttackKeys = function(key)
     {
         return !!(key.Bit & BUTTONS.LIGHT_PUNCH) 
             ? true : !!(key.Bit & BUTTONS.MEDIUM_PUNCH) 
@@ -233,130 +241,137 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
             ? true : !!(key.Bit & BUTTONS.HARD_KICK) 
             ;
     }
-    Animation.prototype.GetKey = function(index) { return !!+this.KeySequence[index] ? ((this.KeySequence[index] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.KeySequence[index]; }
-    Animation.prototype.MustChargeKey = function(index) { return !!+this.KeySequence[index] ? (!!(this.KeySequence[index] & BUTTONS.CHARGE)) : false; }
-    Animation.prototype.MustChargeAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (!!(this.AlternateKeySequences[i][j] & BUTTONS.CHARGE)) : false; }
-    Animation.prototype.MustMatchExactKey = function(index) { return !!+this.KeySequence[index] ? (!!(this.KeySequence[index] & BUTTONS.EXACT)) : false; }
-    Animation.prototype.MustMatchExactAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (!!(this.AlternateKeySequences[i][j] & BUTTONS.EXACT)) : false; }
+    Animation.prototype.getKey = function(index) { return !!+this.KeySequence[index] ? ((this.KeySequence[index] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.KeySequence[index]; }
+    Animation.prototype.mustChargeKey = function(index) { return !!+this.KeySequence[index] ? (!!(this.KeySequence[index] & BUTTONS.CHARGE)) : false; }
+    Animation.prototype.mustChargeAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (!!(this.AlternateKeySequences[i][j] & BUTTONS.CHARGE)) : false; }
+    Animation.prototype.mustMatchExactKey = function(index) { return !!+this.KeySequence[index] ? (!!(this.KeySequence[index] & BUTTONS.EXACT)) : false; }
+    Animation.prototype.mustMatchExactAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (!!(this.AlternateKeySequences[i][j] & BUTTONS.EXACT)) : false; }
 
-    Animation.prototype.GetXModifier = function() { return this.XModifier(this.VxFnArgs); }
-    Animation.prototype.GetYModifier = function() { return this.YModifier(this.VyFnArgs); }
-    Animation.prototype.GetAirYModifier = function() { return this.AirYModifier(this.VyAirFnArgs); }
-    Animation.prototype.GetAirXModifier = function() { return this.AirXModifier(this.VxAirFnArgs); }
-    Animation.prototype.XModifier = function(args) { return this.VxFn(args); }
-    Animation.prototype.YModifier = function(args) { return this.VyFn(args); }
-    Animation.prototype.AirYModifier = function(args) { return this.VyAirFn(args); }
-    Animation.prototype.AirXModifier = function(args) { return this.VxAirFn(args); }
-    Animation.prototype.SetOtherPlayerAirborneFlags = function(flags) { this.OtherPlayerAirborneFlags = flags; }
-    Animation.prototype.GetOtherPlayerAirborneFlags = function() { return this.OtherPlayerAirborneFlags; }
-    Animation.prototype.IsAttack = function() { return this.BaseAnimation.isAttack_; }
+    Animation.prototype.getXModifier = function() { return this.xModifier(this.VxFnArgs); }
+    Animation.prototype.getYModifier = function() { return this.yModifier(this.VyFnArgs); }
+    Animation.prototype.getAirYModifier = function() { return this.airYModifier(this.VyAirFnArgs); }
+    Animation.prototype.getAirXModifier = function() { return this.airXModifier(this.VxAirFnArgs); }
+    Animation.prototype.xModifier = function(args) { return this.vxFn(args); }
+    Animation.prototype.yModifier = function(args) { return this.vyFn(args); }
+    Animation.prototype.airYModifier = function(args) { return this.vyAirFn(args); }
+    Animation.prototype.airXModifier = function(args) { return this.vxAirFn(args); }
+    Animation.prototype.setOtherPlayerAirborneFlags = function(flags) { this.OtherPlayerAirborneFlags = flags; }
+    Animation.prototype.getOtherPlayerAirborneFlags = function() { return this.OtherPlayerAirborneFlags; }
+    Animation.prototype.isAttack = function() { return this.BaseAnimation.IsAttack; }
 
-    Animation.prototype.EndBlock = function()
+    Animation.prototype.endBlock = function()
     {
-        this.BaseAnimation.skipFrameBlockCheck_ = true;
-        this.BaseAnimation.canAddStopBlock_ = true;
+        this.BaseAnimation.SkipFrameBlockCheck = true;
+        this.BaseAnimation.CanAddStopBlock = true;
+        this.BaseAnimation.SetFramesToVulnerable = true;
     }
 
-    Animation.prototype.AddAlternateKeySequence = function(sequence)
+    Animation.prototype.addAlternateKeySequence = function(sequence)
     {
         this.AlternateKeySequences[this.AlternateKeySequences.length] = sequence;
     }
 
-    Animation.prototype.Chain = function(move,frameOffset)
+    Animation.prototype.chain = function(move,frameOffset)
     {
         this.ChainAnimation = (move);
         this.ChainAnimationFrame = (frameOffset || 0);
     }
-    
-    Animation.prototype.AllowInterupt = function(move,frameOffset,flags)
+
+    Animation.prototype.chainOnHit = function(move,frameOffset)
+    {
+        this.ChainOnHitAnimation = (move);
+        this.ChainOnHitAnimationFrame = (frameOffset || 0);
+    }
+   
+    Animation.prototype.allowInterupt = function(move,frameOffset,flags)
     {
         this.InteruptAnimation = move;
         this.ChainAnimationFrame = (frameOffset || 0);
         this.InteruptAnimationFlags = flags;
     }
 
-    Animation.prototype.AddAnimation = function(animation)
+    Animation.prototype.addAnimation = function(animation)
     {
         this.Animations.push(animation);
     }
 
-    Animation.prototype.AddFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
-        return this.BaseAnimation.AddFrameWithSound.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.addFrameWithSound.apply(this.BaseAnimation,arguments);
     }
 
-    Animation.prototype.AddFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
-        return this.BaseAnimation.AddFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
     }
-    Animation.prototype.AddOffsetFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,x,y)
+    Animation.prototype.addOffsetFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,x,y)
     {
-        return this.BaseAnimation.AddOffsetFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.addOffsetFrame.apply(this.BaseAnimation,arguments);
     }
-    Animation.prototype.AddRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
-    {
-        this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
-        return this.BaseAnimation.AddRepeatingFrameWithSound.apply(this.BaseAnimation,arguments);
-    }
-    Animation.prototype.AddRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
-        return this.BaseAnimation.AddRepeatingFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.addRepeatingFrameWithSound.apply(this.BaseAnimation,arguments);
     }
-    Animation.prototype.GetNextFrameOffset = function(id) { return this.BaseAnimation.GetNextFrameOffset.apply(this.BaseAnimation,arguments); }
-    Animation.prototype.GetFrame = function(frameDelta)
+    Animation.prototype.addRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    {
+        this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+        return this.BaseAnimation.addRepeatingFrame.apply(this.BaseAnimation,arguments);
+    }
+    Animation.prototype.getNextFrameOffset = function(id) { return this.BaseAnimation.getNextFrameOffset.apply(this.BaseAnimation,arguments); }
+    Animation.prototype.getFrame = function(frameDelta)
     {
         if(!!this.ControllerAnimation && !!this.ControllerAnimation.Animation)
         {
             var index = this.ControllerAnimation.FrameIndex;
             if(index > -1)
-                return this.BaseAnimation.frames_[index];
+                return this.BaseAnimation.Frames[index];
         }
         else
-            return this.BaseAnimation.GetFrame.apply(this.BaseAnimation,arguments);
+            return this.BaseAnimation.getFrame.apply(this.BaseAnimation,arguments);
 
         return null;
     }
-    Animation.prototype.GetFrameIndex  = function(id) { return this.BaseAnimation.GetFrameIndex(id); }
-    Animation.prototype.SetGrappleDistance = function(x)
+    Animation.prototype.getFrameIndex  = function(id) { return this.BaseAnimation.getFrameIndex(id); }
+    Animation.prototype.setGrappleDistance = function(x)
     {
         this.GrappleDistance = x;
         this.BehaviorFlags = BEHAVIOR_FLAGS.THROW;
         this.IsThrow = true;
     }
-    Animation.prototype.AddUserDataToFrame = function(index,data)
+    Animation.prototype.addUserDataToFrame = function(index,data)
     {
-        var frame = this.BaseAnimation.frames_[index];
+        var frame = this.BaseAnimation.Frames[index];
         frame.UserData[frame.UserData.length] = data;
     }
-    Animation.prototype.ClearAllFrameUserData = function()
+    Animation.prototype.clearAllFrameUserData = function()
     {
-        for(var i = 0,length = this.BaseAnimation.frames_.length; i < length; ++i)
-            this.BaseAnimation.frames_[i].UserData = [];
+        for(var i = 0,length = this.BaseAnimation.Frames.length; i < length; ++i)
+            this.BaseAnimation.Frames[i].UserData = [];
     }
 
-    Animation.prototype.SetMediumAttack = function()
+    Animation.prototype.setMediumAttack = function()
     {
         this.EnergyToAdd = (2);
     }
 
-    Animation.prototype.SetHardAttack = function()
+    Animation.prototype.setHardAttack = function()
     {
         this.EnergyToAdd = (3);
     }
 
-    Animation.prototype.RenderChildren = function(frame,startFrame,direction,zIndex,x,y)
+    Animation.prototype.renderChildren = function(frame,startFrame,direction,zIndex,x,y)
     {
         for(var i = 0,length = this.Animations.length; i < length; ++i)
-            this.Animations[i].TryRender(frame,{StartFrame:startFrame,ZIndex:zIndex,X:x,Y:y},direction);
+            this.Animations[i].tryRender(frame,{StartFrame:startFrame,ZIndex:zIndex,X:x,Y:y},direction);
     }
 
-    Animation.prototype.HideChildren = function()
+    Animation.prototype.hideChildren = function()
     {
         for(var i = 0,length = this.Animations.length; i < length; ++i)
-            this.Animations[i].Hide();
+            this.Animations[i].hide();
     }
 
     return new Animation();
@@ -368,76 +383,76 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
     var GenericAnimation = function()
     {
         this.BaseAnimation = CreateBaseAnimation(frames,name,false);
-        this.state_ = state || 0;
-        this.moveFlags_ = moveFlags || 0;
+        this.State = state || 0;
+        this.MoveFlags = moveFlags || 0;
         this.RequiredFlags = requiredState || 0;
-        this.initialX_ = 0;
-        this.initialStageX_ = 0;
-        this.initialPlayerX_ = 0;
-        this.initialY_ = 0;
-        this.initialStageY_ = 0;
-        this.initialPlayerY_ = 0;
-        this.isActive_ = false;
-        this.direction_ = 0;
-        this.centeredOffset_ = centeredOffset;
-        this.topOffset_ = topOffset;
-        this.isLooping_ = isLooping || false;
-        this.internalFrame_ = 0;
+        this.InitialX = 0;
+        this.InitialStageX = 0;
+        this.InitialPlayerX = 0;
+        this.InitialY = 0;
+        this.InitialStageY = 0;
+        this.InitialPlayerY = 0;
+        this.IsActive = false;
+        this.Direction = 0;
+        this.CenteredOffset = centeredOffset;
+        this.TopOffset = topOffset;
+        this.IsLooping = isLooping || false;
+        this.InternalFrame = 0;
     }
-    GenericAnimation.prototype.Reset = function()
+    GenericAnimation.prototype.reset = function()
     {
-        this.internalFrame_ = 0;
+        this.InternalFrame = 0;
     }
-    GenericAnimation.prototype.HasUserData = function(index)
+    GenericAnimation.prototype.hasUserData = function(index)
     {
-        var frame = this.BaseAnimation.frames_[index];
+        var frame = this.BaseAnimation.Frames[index];
         return !!frame.UserData && (frame.UserData.length > 0);
     }
-    GenericAnimation.prototype.AddUserDataToFrame = function(index,data)
+    GenericAnimation.prototype.addUserDataToFrame = function(index,data)
     {
-        var frame = this.BaseAnimation.frames_[index];
+        var frame = this.BaseAnimation.Frames[index];
         if(!!frame)
             frame.UserData[frame.UserData.length] = data;
     }
-    GenericAnimation.prototype.ClearAllFrameUserData = function()
+    GenericAnimation.prototype.clearAllFrameUserData = function()
     {
-        for(var i = 0,length = this.BaseAnimation.frames_.length; i < length; ++i)
-            this.BaseAnimation.frames_[i].UserData = [];
+        for(var i = 0,length = this.BaseAnimation.Frames.length; i < length; ++i)
+            this.BaseAnimation.Frames[i].UserData = [];
     }
 
-    GenericAnimation.prototype.AddFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints) { return this.BaseAnimation.AddFrame.apply(this.BaseAnimation,arguments); }
-    GenericAnimation.prototype.AddRepeatingFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints) { return this.BaseAnimation.AddRepeatingFrame.apply(this.BaseAnimation,arguments); }
-    GenericAnimation.prototype.AddTrailFrame = function(player,image,nbFrames)
+    GenericAnimation.prototype.addFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints) { return this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments); }
+    GenericAnimation.prototype.addRepeatingFrame = function(player,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints) { return this.BaseAnimation.addRepeatingFrame.apply(this.BaseAnimation,arguments); }
+    GenericAnimation.prototype.addTrailFrame = function(player,image,nbFrames)
     {
-        return this.BaseAnimation.AddFrame(player,0,null,image,nbFrames);
+        return this.BaseAnimation.addFrame(player,0,null,image,nbFrames);
     }
-    GenericAnimation.prototype.AddRepeatingTrailFrame = function(player,image,nbFrames)
+    GenericAnimation.prototype.addRepeatingTrailFrame = function(player,image,nbFrames)
     {
-        return this.BaseAnimation.AddRepeatingFrame(player,0,null,image,nbFrames);
+        return this.BaseAnimation.addRepeatingFrame(player,0,null,image,nbFrames);
     }
-    GenericAnimation.prototype.GetFrame = function(frameDelta) { return this.BaseAnimation.GetFrame.apply(this.BaseAnimation,arguments); }
-    GenericAnimation.prototype.GetNextFrameOffset = function(id) { return this.BaseAnimation.GetNextFrameOffset.apply(this.BaseAnimation,arguments); }
-    GenericAnimation.prototype.TryRender = function(frame,startFrame,element,stageX,stageY,playerX,playerY,playerWidth)
+    GenericAnimation.prototype.getFrame = function(frameDelta) { return this.BaseAnimation.getFrame.apply(this.BaseAnimation,arguments); }
+    GenericAnimation.prototype.getNextFrameOffset = function(id) { return this.BaseAnimation.getNextFrameOffset.apply(this.BaseAnimation,arguments); }
+    GenericAnimation.prototype.tryRender = function(frame,startFrame,element,stageX,stageY,playerX,playerY,playerWidth)
     {
         var offsetX = 0;
         var offsetY = 0;
         var delta = 0;
-        if(!!this.isLooping_)
+        if(!!this.IsLooping)
         {
-            if(this.internalFrame_ > this.BaseAnimation.nbFrames_)
-                this.internalFrame_ = 0;
-            delta = this.internalFrame_++;
+            if(this.InternalFrame > this.BaseAnimation.NbFrames)
+                this.InternalFrame = 0;
+            delta = this.InternalFrame++;
         }
         else
             delta = frame - startFrame;
 
-        var newFrame = this.GetFrame(delta);
+        var newFrame = this.getFrame(delta);
         if(!newFrame)
         {
             /*free the element so it can be reused in other animations*/
             element.style.display="none";
             element.isInUse = false;
-            this.isActive_ = false;
+            this.IsActive = false;
             return false;
         }
         else
@@ -447,20 +462,20 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
             offsetX = newFrame.X;
             offsetY = newFrame.Y;
 
-            if(!!this.centeredOffset_)
-                offsetX = playerWidth * this.centeredOffset_;
-            if(!!this.topOffset_)
-                offsetY = this.topOffset_;
+            if(!!this.CenteredOffset)
+                offsetX = playerWidth * this.CenteredOffset;
+            if(!!this.TopOffset)
+                offsetY = this.TopOffset;
 
-            var data = spriteLookup_.Get(newFrame.RightSrc)
+            var data = spriteLookup_.get(newFrame.RightSrc)
             if(!!data && (element.style.backgroundPositionX != data.Left))
             {
                 element.style.backgroundPosition = data.Left + " " + data.Bottom;
                 element.style.width = data.Width;
                 element.style.height = data.Height;
             }
-            AutoApplyFlip(element,this.direction_ == -1);
-            if(this.direction_ > 0)
+            AutoApplyFlip(element,this.Direction == -1);
+            if(this.Direction > 0)
             {
                 /*move the image to the middle of the point*/
                 offsetX -= (parseInt(element.style.width)/2);
@@ -473,40 +488,40 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
                 offsetY -= (parseInt(element.style.height)/2);
             }
 
-            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_TO_PLAYER))
+            if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_TO_PLAYER))
             {
                 offsetX += playerX;
                 offsetY += playerY;
             }
-            else if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            else if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_WITH_PLAYER))
             {
-                offsetX += playerX - this.initialPlayerX_;
-                offsetY += playerY - this.initialPlayerY_;
+                offsetX += playerX - this.InitialPlayerX;
+                offsetY += playerY - this.InitialPlayerY;
             }
         }
         /*Must add the change in stageX to the position to keep the animation in one place on the screen,
          unless the animation must move with the player - in which case we disregard the stageX*/
-        if(this.direction_ > 0)
+        if(this.Direction > 0)
         {
             element.style.left = "";
-            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_TO_PLAYER))
+            if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_TO_PLAYER))
                 element.style.right = offsetX + "px";
-            else if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
-                element.style.right = (offsetX + this.initialX_) + "px";
+            else if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_WITH_PLAYER))
+                element.style.right = (offsetX + this.InitialX) + "px";
             else
-                element.style.right = (offsetX + this.initialX_ + (this.initialStageX_ - stageX)) + "px";
+                element.style.right = (offsetX + this.InitialX + (this.InitialStageX - stageX)) + "px";
         }
         else
         {
             element.style.right = "";
-            if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_TO_PLAYER))
+            if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_TO_PLAYER))
                 element.style.left = offsetX + "px";
-            else if(!!(this.moveFlags_ & MOVE_FLAGS.MOVE_WITH_PLAYER))
-                element.style.left = (offsetX + this.initialX_) + "px";
+            else if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_WITH_PLAYER))
+                element.style.left = (offsetX + this.InitialX) + "px";
             else
-                element.style.left = (offsetX + this.initialX_  - (this.initialStageX_ - stageX)) + "px";
+                element.style.left = (offsetX + this.InitialX  - (this.InitialStageX - stageX)) + "px";
         }
-        element.style.bottom = (offsetY + this.initialY_ + (stageY - this.initialStageY_)) + "px";
+        element.style.bottom = (offsetY + this.InitialY + (stageY - this.InitialStageY)) + "px";
         return true;
     }
     return new GenericAnimation();
@@ -518,50 +533,50 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
     var BasicAnimation = function()
     {
         this.BaseAnimation = CreateBasicBaseAnimation(frames,name);
-        this.isLooping_ = isLooping || false;
-        this.internalFrame_ = 0;
-        this.direction_  = direction || 0;
-        this.initialStageY_ = 0;
+        this.IsLooping = isLooping || false;
+        this.InternalFrame = 0;
+        this.Direction  = direction || 0;
+        this.InitialStageY = 0;
         if(!!bgImg)
-            this.CreateElement(bgImg);
+            this.createElement(bgImg);
     }
 
-    BasicAnimation.prototype.Count = 0;
+    BasicAnimation.prototype.count = 0;
 
-    BasicAnimation.prototype.CreateElement = function(bgImg)
+    BasicAnimation.prototype.createElement = function(bgImg)
     {
-        this.element_ = window.document.createElement("div");
-        this.element_.className = "basic-animation";
-        this.element_.style.display = "none";
-        this.element_.style.backgroundImage = "url(" + bgImg + ")";
-        window.document.getElementById("pnlStage").appendChild(this.element_);
+        this.Element = window.document.createElement("div");
+        this.Element.className = "basic-animation";
+        this.Element.style.display = "none";
+        this.Element.style.backgroundImage = "url(" + bgImg + ")";
+        window.document.getElementById("pnlStage").appendChild(this.Element);
     }
 
-    BasicAnimation.prototype.GetFrame = function(frameDelta)
+    BasicAnimation.prototype.getFrame = function(frameDelta)
     {
-        return this.BaseAnimation.GetFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.getFrame.apply(this.BaseAnimation,arguments);
     }
 
-    BasicAnimation.prototype.AddEmptyFrame = function(owner,nbFrames)
+    BasicAnimation.prototype.addEmptyFrame = function(owner,nbFrames)
     {
-        this.BaseAnimation.AddEmptyFrame.apply(this.BaseAnimation,arguments);
+        this.BaseAnimation.addEmptyFrame.apply(this.BaseAnimation,arguments);
     }
 
-    BasicAnimation.prototype.AddFrame = function(owner,image,nbFrames)
+    BasicAnimation.prototype.addFrame = function(owner,image,nbFrames)
     {
-        this.BaseAnimation.AddFrame.apply(this.BaseAnimation,arguments);
+        this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
     }
 
-    BasicAnimation.prototype.Hide = function()
+    BasicAnimation.prototype.hide = function()
     {
-        if(!!this.element_)
-            this.element_.style.display = "none";
+        if(!!this.Element)
+            this.Element.style.display = "none";
     }
 
-    BasicAnimation.prototype.TryRender = function(frame,object,direction)
+    BasicAnimation.prototype.tryRender = function(frame,object,direction)
     {
-        direction = direction || this.direction_;
-        var element = this.element_ || object.Element;
+        direction = direction || this.Direction;
+        var element = this.Element || object.Element;
         var startFrame = object.StartFrame;
         AutoApplyFlip(element,direction == -1);
 
@@ -570,16 +585,16 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         if(!!object.ZIndex)
             element.style.zIndex = object.ZIndex;
         var delta = 0;
-        if(!!this.isLooping_)
+        if(!!this.IsLooping)
         {
-            if(this.internalFrame_ > this.BaseAnimation.nbFrames_)
-                this.internalFrame_ = 0;
-            delta = this.internalFrame_++;
+            if(this.InternalFrame > this.BaseAnimation.NbFrames)
+                this.InternalFrame = 0;
+            delta = this.InternalFrame++;
         }
         else
             delta = frame - startFrame;
 
-        var newFrame = this.GetFrame(delta);
+        var newFrame = this.getFrame(delta);
         if(!newFrame)
         {
             /*free the element so it can be reused in other animations*/
@@ -590,7 +605,7 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         {
             offsetX += newFrame.X;
             offsetY += newFrame.Y;
-            var data = spriteLookup_.Get(newFrame.RightSrc)
+            var data = spriteLookup_.get(newFrame.RightSrc)
             if(!!data && (element.style.backgroundPositionX != data.Left))
             {
                 element.style.backgroundPosition = data.Left + " " + data.Bottom;
@@ -635,17 +650,17 @@ var CreateFrameImageLookup = function()
     
     var FrameImageLookup = function()
     {
-        this.data_ = {}
+        this.Data = {}
     }
     
-    FrameImageLookup.prototype.GetNbImages = function() { return nbImages_; }
-    FrameImageLookup.prototype.GetNbImagesLoading = function() { return nbImagesLoading_; }
-    FrameImageLookup.prototype.GetElement = function() { return element_; }
-    FrameImageLookup.prototype.LoadBase64Audio = function(key,value)
+    FrameImageLookup.prototype.getNbImages = function() { return nbImages_; }
+    FrameImageLookup.prototype.getNbImagesLoading = function() { return nbImagesLoading_; }
+    FrameImageLookup.prototype.getElement = function() { return element_; }
+    FrameImageLookup.prototype.loadBase64Audio = function(key,value)
     {
-        if(!this.data_[key])
+        if(!this.Data[key])
         {
-            this.data_[key] = value;
+            this.Data[key] = value;
         }
         else
         {
@@ -654,7 +669,7 @@ var CreateFrameImageLookup = function()
     }
     
     /*Image only loaded once*/
-    FrameImageLookup.prototype.Load = function(src)
+    FrameImageLookup.prototype.load = function(src)
     {
         if(!images_.hasOwnProperty(src))
         {
@@ -668,13 +683,13 @@ var CreateFrameImageLookup = function()
             {
                 return function()
                 {
-                    if(!!--thisValue.nbImagesLoading_)
+                    if(!!--thisValue.NbImagesLoading)
                     {
-                        thisValue.GetElement().innerHTML = (100*(thisValue.GetNbImages()-thisValue.GetNbImagesLoading())/thisValue.GetNbImages()).toFixed(1);
+                        thisValue.getElement().innerHTML = (100*(thisValue.getNbImages()-thisValue.getNbImagesLoading())/thisValue.getNbImages()).toFixed(1);
                     }
                     else
                     {
-                        thisValue.GetElement().innerHTML = "100";
+                        thisValue.getElement().innerHTML = "100";
                     }
                 }
             })(this);
@@ -682,20 +697,20 @@ var CreateFrameImageLookup = function()
         }
         return images_[src];
     }
-    FrameImageLookup.prototype.Get = function(src)
+    FrameImageLookup.prototype.get = function(src)
     {
         return images_[src];
     }
-    FrameImageLookup.prototype.GetBgB64 = function(element,src)
+    FrameImageLookup.prototype.getBgB64 = function(element,src)
     {
-        element.style.backgroundImage = this.GetB64(src,true);
+        element.style.backgroundImage = this.getB64(src,true);
     }
-    FrameImageLookup.prototype.GetB64 = function(src,isBg)
+    FrameImageLookup.prototype.getB64 = function(src,isBg)
     {
         if(!!isBg)
-            return "url('" + this.data_[src] + "')";
+            return "url('" + this.Data[src] + "')";
         else
-            return this.data_[src];
+            return this.Data[src];
     }
     return new FrameImageLookup();
 }
@@ -711,31 +726,31 @@ var CreateSpriteLookup = function()
     
     var SpriteLookup = function()
     {
-        this.data_ = {};
+        this.Data = {};
     }
     
     /*Image only loaded once*/
-    SpriteLookup.prototype.Load = function(key,src,left,bottom,width,height)
+    SpriteLookup.prototype.load = function(key,src,left,bottom,width,height)
     {
         src = src.replace("|","");
     
-        if(!this.Get(key))
+        if(!this.get(key))
         {
-            this.data_[key] = {Key:key,Sprite:src,Left:left,Bottom:bottom,Width:width,Height:height,WidthInt:parseInt(width),HeightInt:parseInt(height)};
+            this.Data[key] = {Key:key,Sprite:src,Left:left,Bottom:bottom,Width:width,Height:height,WidthInt:parseInt(width),HeightInt:parseInt(height)};
         }
-        return this.data_[key];
+        return this.Data[key];
     }
-    SpriteLookup.prototype.Get = function(key)
+    SpriteLookup.prototype.get = function(key)
     {
-        return this.data_[key];
+        return this.Data[key];
     }
-    SpriteLookup.prototype.GetLeft = function(key)
+    SpriteLookup.prototype.getLeft = function(key)
     {
-        return (this.data_[key] || {}).Left || "";
+        return (this.Data[key] || {}).Left || "";
     }
-    SpriteLookup.prototype.Set = function(element,key,setBackgroundImage,displayNone,isBase64)
+    SpriteLookup.prototype.set = function(element,key,setBackgroundImage,displayNone,isBase64)
     {
-        var data = this.Get(key);
+        var data = this.get(key);
         if(!!data)
         {
             if(!!setBackgroundImage)
@@ -748,7 +763,7 @@ var CreateSpriteLookup = function()
                 else
                 {
                     if(!element.style.backgroundImage)
-                        element.style.backgroundImage = "url(" + imageLookup_.data_[data.Sprite] + ")";
+                        element.style.backgroundImage = "url(" + imageLookup_.Data[data.Sprite] + ")";
                 }
             }
             if(element.style.backgroundPosition != data.Left + " " + data.Bottom)
@@ -819,13 +834,14 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.Y = y || 0;
         this.ImageOffsetX = imageOffsetX === 0 ? 0 : (imageOffsetX || null);
         this.ImageOffsetY = imageOffsetY === 0 ? 0 : (imageOffsetY || null);
-        this.chainProjectile_ = chainProjectile;
-        this.soundFilename_ = "";
-        this.soundVolume_ = 1;
+        this.Vulnerable = false;
+        this.ChainProjectile = chainProjectile;
+        this.SoundFilename = "";
+        this.SoundVolume = 1;
 
     }
-    Frame.prototype.GetEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
-    Frame.prototype.GetImageSrc = function(direction){ return this.RightSrc; }
+    Frame.prototype.getEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
+    Frame.prototype.getImageSrc = function(direction){ return this.RightSrc; }
     return new Frame();
 }
 /************************************************************************/
@@ -835,193 +851,193 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     var energyToAdd_ = energyToAdd || 0;
     var Projectile = function()
     {
-        this.owner_ = player;
-        this.animation_ = animation;
-        this.disintegrationAnimation_ = disintegrationAnimation;
-        this.offsetX_ = xOffset;
-        this.offsetY_ = yOffset;
-        this.initialX_ = xOffset;
-        this.initialY_ = yOffset;
+        this.Owner = player;
+        this.Animation = animation;
+        this.DisintegrationAnimation = disintegrationAnimation;
+        this.OffsetX = xOffset;
+        this.OffsetY = yOffset;
+        this.InitialX = xOffset;
+        this.InitialY = yOffset;
         this.x_ = xOffset;
         this.y_ = yOffset;
-        this.xSpeed_ = xSpeed || 1;
-        this.ySpeed_ = ySpeed || 0;
-        this.xFunc_ = xFunc || function(y){return this.xSpeed_ * 3;}
-        this.yFunc_ = yFunc || function(x){return this.ySpeed_ * 1;}
-        this.direction_ = player.direction_;
-        this.startFrame_ = 0;
-        this.element_ = window.document.createElement("div");
-        this.element_.className="projectile";
-        this.element_.style.display="none";
-        window.document.getElementById("pnlStage").appendChild(this.element_);
-        this.isActive_ = false;
-        this.attackState_ = attackFlags || 0;
-        this.hitState_ = hitState || 0;
-        this.baseDamage_ = baseDamage || 0;
-        this.flagsToSend_ = MISC_FLAGS.NONE;
-        this.isDisintegrating_ = false;
+        this.XSpeed = xSpeed || 1;
+        this.YSpeed = ySpeed || 0;
+        this.XFunc = xFunc || function(y){return this.XSpeed * 3;}
+        this.YFunc = yFunc || function(x){return this.YSpeed * 1;}
+        this.Direction = player.Direction;
+        this.StartFrame = 0;
+        this.Element = window.document.createElement("div");
+        this.Element.className="projectile";
+        this.Element.style.display="none";
+        window.document.getElementById("pnlStage").appendChild(this.Element);
+        this.IsActive = false;
+        this.AttackState = attackFlags || 0;
+        this.HitState = hitState || 0;
+        this.BaseDamage = baseDamage || 0;
+        this.FlagsToSend = MISC_FLAGS.NONE;
+        this.IsDisintegrating = false;
         this.t_ = 0;
-        this.VxFn = null;
-        this.VyFn = null;
-        this.nbHits_ = 0;
-        this.maxHits_ = 1;
-        this.hitStopFrameCount_ = CONSTANTS.DEFAULT_PROJECTILE_HIT_STOP_FRAME_COUNT;
-        this.lastHitFrame_ = 0;
-        this.fx_ = 1;
-        this.fy_ = 1;
-        this.id_ = "" + Projectile.prototype.Count;
-        this.canJuggle_ = false;
-        this.trimX_ = 20;
-        this.trimY_ = 70;
-        ++Projectile.prototype.Count;
+        this.vxFn = null;
+        this.vyFn = null;
+        this.NbHits = 0;
+        this.MaxHits = 1;
+        this.HitStopFrameCount = CONSTANTS.DEFAULT_PROJECTILE_HIT_STOP_FRAME_COUNT;
+        this.LastHitFrame = 0;
+        this.Fx = 1;
+        this.Fy = 1;
+        this.Id = "" + Projectile.prototype.count;
+        this.CanJuggle = false;
+        this.TrimX = 20;
+        this.TrimY = 70;
+        ++Projectile.prototype.count;
     }
-    Projectile.prototype.SetEnergyToAdd = function(value) { energyToAdd_ = value; }
-    Projectile.prototype.GetVxFunc = function() { return this.VxFn; }
-    Projectile.prototype.SetVxFunc = function(value) { this.VxFn = value; }
-    Projectile.prototype.GetVyFunc = function() { return this.VyFn; }
-    Projectile.prototype.SetVyFunc = function(value) { this.VyFn = value; }
-    Projectile.prototype.Count = 0;
+    Projectile.prototype.setEnergyToAdd = function(value) { energyToAdd_ = value; }
+    Projectile.prototype.getVxFn = function() { return this.vxFn; }
+    Projectile.prototype.setVxFn = function(value) { this.vxFn = value; }
+    Projectile.prototype.getVyFn = function() { return this.vyFn; }
+    Projectile.prototype.setVyFn = function(value) { this.vyFn = value; }
+    Projectile.prototype.count = 0;
     /*Stops the projectile*/
-    Projectile.prototype.Cancel = function(ignoreOnGoneEvent)
+    Projectile.prototype.cancel = function(ignoreOnGoneEvent)
     {
-        this.element_.style.display="none";
-        this.x_ = this.offsetX_;
-        this.y_ = this.offsetY_;
+        this.Element.style.display="none";
+        this.x_ = this.OffsetX;
+        this.y_ = this.OffsetY;
         this.t_ = 0;
-        this.isActive_ = false;
-        this.isDisintegrating_ = false;
+        this.IsActive = false;
+        this.IsDisintegrating = false;
         if(!ignoreOnGoneEvent)
-            this.owner_.onProjectileGoneFn_(this.id_);
+            this.Owner.onProjectileGoneFn(this.Id);
     }
 
-    Projectile.prototype.Release = function()
+    Projectile.prototype.release = function()
     {
-        utils_.RemoveFromDOM(this.element_);
+        utils_.removeFromDOM(this.Element);
     }
 
     /*Fires the projectile*/
-    Projectile.prototype.Throw = function(frame,stageX,stageY)
+    Projectile.prototype.throw = function(frame,stageX,stageY)
     {
-        if(!!this.isDisintegrating_)
-            this.Cancel();
-        this.startFrame_ = frame;
+        if(!!this.IsDisintegrating)
+            this.cancel();
+        this.StartFrame = frame;
         this.t_ = 0;
-        this.element_.style.display="none";
-        this.direction_ = this.owner_.direction_;
-        if(this.direction_ == -1)
-            this.element_.className="projectile flipped";
+        this.Element.style.display="none";
+        this.Direction = this.Owner.Direction;
+        if(this.Direction == -1)
+            this.Element.className="projectile flipped";
         else
-            this.element_.className="projectile";
+            this.Element.className="projectile";
 
-        this.x_ += this.owner_.GetX();
-        this.y_ += this.owner_.GetY();
-        this.stageX_ = stageX;
-        this.stageY_ = stageY;
-        this.isActive_ = true;
-        this.isDisintegrating_ = false;
-        this.VxFn = (this.animation_.GetXModifier());
-        this.VyFn = (this.animation_.GetYModifier());
-        this.nbHits_ = 0;
-        this.lastHitFrame_ = 0;
+        this.x_ += this.Owner.getX();
+        this.y_ += this.Owner.getY();
+        this.StageX = stageX;
+        this.StageY = stageY;
+        this.IsActive = true;
+        this.IsDisintegrating = false;
+        this.vxFn = (this.Animation.getXModifier());
+        this.vyFn = (this.Animation.getYModifier());
+        this.NbHits = 0;
+        this.LastHitFrame = 0;
     }
 
-    Projectile.prototype.GetTop = function()
+    Projectile.prototype.getTop = function()
     {
-        return parseInt(this.element_.style.bottom) + parseInt(this.element_.style.height) - this.trimY_;
+        return parseInt(this.Element.style.bottom) + parseInt(this.Element.style.height) - this.TrimY;
     }
 
-    Projectile.prototype.GetBottom = function()
+    Projectile.prototype.getBottom = function()
     {
-        return parseInt(this.element_.style.bottom) + this.trimY_;
+        return parseInt(this.Element.style.bottom) + this.TrimY;
     }
 
-    Projectile.prototype.GetBackX = function()
+    Projectile.prototype.getBackX = function()
     {
-        if(this.direction_ < 0)
-            return parseInt(this.element_.style.left) + (this.trimX_);
+        if(this.Direction < 0)
+            return parseInt(this.Element.style.left) + (this.TrimX);
         else
-            return STAGE.MAX_STAGEX - (parseInt(this.element_.style.right) + (this.trimX_));
+            return STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + (this.TrimX));
     }
 
-    Projectile.prototype.GetFrontX = function()
+    Projectile.prototype.getFrontX = function()
     {
-        if(this.direction_  < 0)
-            return (parseInt(this.element_.style.width) + parseInt(this.element_.style.left)) - this.trimX_;
+        if(this.Direction  < 0)
+            return (parseInt(this.Element.style.width) + parseInt(this.Element.style.left)) - this.TrimX;
         else
-            return (STAGE.MAX_STAGEX - (parseInt(this.element_.style.right) + parseInt(this.element_.style.width) - this.trimX_));
+            return (STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + parseInt(this.Element.style.width) - this.TrimX));
     }
-    Projectile.prototype.GetLeftX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_ + parseInt(this.element_.style.width);}else{return this.x_;}}
-    Projectile.prototype.GetRightX = function() { if(this.direction_ > 0){return STAGE.MAX_STAGEX - this.x_;}else{return this.x_ + parseInt(this.element_.style.width);}}
-    Projectile.prototype.GetMidX = function()
+    Projectile.prototype.getLeftX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.x_ + parseInt(this.Element.style.width);}else{return this.x_;}}
+    Projectile.prototype.getRightX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.x_;}else{return this.x_ + parseInt(this.Element.style.width);}}
+    Projectile.prototype.getMidX = function()
     {
-        var left = this.GetBackX();
-        var right = this.GetFrontX();
+        var left = this.getBackX();
+        var right = this.getFrontX();
 
         return right - ((right-left)/2);
     }
-    Projectile.prototype.GetMidY = function()
+    Projectile.prototype.getMidY = function()
     {
-        var bottom = this.GetBottom();
-        var top = this.GetTop();
+        var bottom = this.getBottom();
+        var top = this.getTop();
 
         return top - ((top-bottom)/2);
     }
 
     /*Is the projectile active?*/
-    Projectile.prototype.IsActive = function()
+    Projectile.prototype.getIsActive = function()
     {
-        if(this.IsDisintegrating())
+        if(this.getIsDisintegrating())
             return false;
-        return this.isActive_;
+        return this.IsActive;
     }
 
     /*Is the projectile active?*/
-    Projectile.prototype.IsDisintegrating = function()
+    Projectile.prototype.getIsDisintegrating = function()
     {
-        return this.isDisintegrating_;
+        return this.IsDisintegrating;
     }
 
     /*Is the projectile still visible?*/
-    Projectile.prototype.IsVisible = function(stageX,stageY)
+    Projectile.prototype.isVisible = function(stageX,stageY)
     {
         return (this.x_ < STAGE.MAX_STAGEX && this.x_ > -100) && (this.y_ > 0 && this.y_ < 1000);
     }
 
 
-    Projectile.prototype.CanHit = function(frame)
+    Projectile.prototype.canHit = function(frame)
     {
-        return !this.isDisintegrating_ && ((!this.lastHitFrame_) || (frame > (this.lastHitFrame_ + this.hitStopFrameCount_)));
+        return !this.IsDisintegrating && ((!this.LastHitFrame) || (frame > (this.LastHitFrame + this.HitStopFrameCount)));
     }
 
-    Projectile.prototype.IsInHitStop = function(frame)
+    Projectile.prototype.isInHitStop = function(frame)
     {
-        return ((!!this.lastHitFrame_) && (frame < (this.lastHitFrame_ + this.hitStopFrameCount_)));
+        return ((!!this.LastHitFrame) && (frame < (this.LastHitFrame + this.HitStopFrameCount)));
     }
 
     /*Advances the projectile*/
-    Projectile.prototype.Advance = function(frame,stageX,stageY)
+    Projectile.prototype.advance = function(frame,stageX,stageY)
     {
         /*Is the projectile still on screen?*/
-        if(!this.IsVisible(0,0))
+        if(!this.isVisible(0,0))
         {
-            this.Cancel();
+            this.cancel();
             return null;
         }
-        //this.element_.style.display = "none";
+        //this.Element.style.display = "none";
         ++this.t_;
-        this.isActive_ = true;
+        this.IsActive = true;
 
 
 
-        if(!this.IsInHitStop(frame))
+        if(!this.isInHitStop(frame))
         {
-            if(!this.isDisintegrating_)
+            if(!this.IsDisintegrating)
             {
-                var xSpeed = this.VxFn(this.xSpeed_,this.t_);
-                var ySpeed = this.VyFn(this.ySpeed_,this.t_);
+                var xSpeed = this.vxFn(this.XSpeed,this.t_);
+                var ySpeed = this.vyFn(this.YSpeed,this.t_);
 
-                var dx = (xSpeed) + (this.direction_ > 0 ? (this.stageX_ - stageX) : (stageX - this.stageX_));
-                var dy = (ySpeed) + (stageY - this.stageY_);
+                var dx = (xSpeed) + (this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX));
+                var dy = (ySpeed) + (stageY - this.StageY);
 
 
                 this.x_ += dx;
@@ -1029,10 +1045,10 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
             }
 
         }
-        if(!!this.isDisintegrating_)
+        if(!!this.IsDisintegrating)
         {
-            this.x_ += this.direction_ > 0 ? (this.stageX_ - stageX) : (stageX - this.stageX_);
-            this.y_ += stageY - this.stageY_;
+            this.x_ += this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX);
+            this.y_ += stageY - this.StageY;
         }
 
 
@@ -1041,111 +1057,111 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         var offsetX = 0;
         var offsetY = 0;
 
-        var delta = frame - this.startFrame_;
+        var delta = frame - this.StartFrame;
         var newFrame = null;
-        if(!this.isDisintegrating_)
+        if(!this.IsDisintegrating)
         {
-            newFrame = this.animation_.GetFrame(delta);
+            newFrame = this.Animation.getFrame(delta);
             if(!newFrame)
             {
-                newFrame = this.animation_.BaseAnimation.frames_[0];
-                this.startFrame_ = frame;
+                newFrame = this.Animation.BaseAnimation.Frames[0];
+                this.StartFrame = frame;
             }
         }
         else
         {
-            newFrame = this.disintegrationAnimation_.GetFrame(delta);
+            newFrame = this.DisintegrationAnimation.getFrame(delta);
             if(!newFrame)
             {
-                this.Cancel();
+                this.cancel();
                 return null;
             }
         }
 
-        this.SetSprite(newFrame,offsetX,offsetY,stageX,stageY);
-        this.stageX_ = stageX;
-        this.stageY_ = stageY;
+        this.setSprite(newFrame,offsetX,offsetY,stageX,stageY);
+        this.StageX = stageX;
+        this.StageY = stageY;
 
         /*Allow players on the other team to deal with projectile coming toward them.*/
-        this.owner_.OnProjectileMoved(this.id_,this.GetMidX(),this.GetMidY());
+        this.Owner.onProjectileMoved(this.Id,this.getMidX(),this.getMidY());
 
         return this;
     }
 
 
     /*sets and moves the image - for browsers that load preloaded images instantly when the src property is set*/
-    Projectile.prototype.SetSprite = function(newFrame,offsetX,offsetY,stageX,stageY)
+    Projectile.prototype.setSprite = function(newFrame,offsetX,offsetY,stageX,stageY)
     {
         if(!!newFrame)
         {
             offsetX = newFrame.X;
             offsetY = newFrame.Y;
 
-            var data = spriteLookup_.Get(newFrame.RightSrc)
-            if(!!data && (this.element_.style.backgroundPosition != data.Left + " " + data.Bottom))
+            var data = spriteLookup_.get(newFrame.RightSrc)
+            if(!!data && (this.Element.style.backgroundPosition != data.Left + " " + data.Bottom))
             {
-                this.element_.style.width = data.Width;
-                this.element_.style.height = data.Height;
-                this.element_.style.backgroundPosition = data.Left + " " + data.Bottom;
+                this.Element.style.width = data.Width;
+                this.Element.style.height = data.Height;
+                this.Element.style.backgroundPosition = data.Left + " " + data.Bottom;
             }
         }
 
-        if(this.isDisintegrating_)
+        if(this.IsDisintegrating)
         {
-            if(this.direction_ > 0)
+            if(this.Direction > 0)
             {
-                this.element_.style.left = (offsetX + FlipCoord(this.x_,parseInt(this.element_.style.width))) + "px";
-                this.element_.style.right = "";
+                this.Element.style.left = (offsetX + FlipCoord(this.x_,parseInt(this.Element.style.width))) + "px";
+                this.Element.style.right = "";
             }
             else
             {
-                this.element_.style.right = (offsetX + FlipCoord(this.x_,parseInt(this.element_.style.width))) + "px";
-                this.element_.style.left = "";
+                this.Element.style.right = (offsetX + FlipCoord(this.x_,parseInt(this.Element.style.width))) + "px";
+                this.Element.style.left = "";
             }
         }
         else
         {
-            if(this.direction_ > 0)
+            if(this.Direction > 0)
             {
-                this.element_.style.left = "";
-                this.element_.style.right = (offsetX + this.x_) + "px";
+                this.Element.style.left = "";
+                this.Element.style.right = (offsetX + this.x_) + "px";
             }
             else
             {
-                this.element_.style.right = "";
-                this.element_.style.left = (offsetX + this.x_) + "px";
+                this.Element.style.right = "";
+                this.Element.style.left = (offsetX + this.x_) + "px";
             }
         }
-        var imgOffsetY = this.y_ - (parseInt(this.element_.style.height)/2);
-        this.element_.style.bottom = imgOffsetY + "px";
-        if(this.element_.style.display != "")
-            this.element_.style.display="";
+        var imgOffsetY = this.y_ - (parseInt(this.Element.style.height)/2);
+        this.Element.style.bottom = imgOffsetY + "px";
+        if(this.Element.style.display != "")
+            this.Element.style.display="";
     }
 
 
-    Projectile.prototype.Disintegrate = function(frame)
+    Projectile.prototype.disintegrate = function(frame)
     {
-        this.isDisintegrating_ = true;
-        this.startFrame_ = frame;
+        this.IsDisintegrating = true;
+        this.StartFrame = frame;
     }
     /*The projectile has hit a player*/
-    Projectile.prototype.HitPlayer = function(frame)
+    Projectile.prototype.hitPlayer = function(frame)
     {
-        this.lastHitFrame_ = frame;
-        if(++this.nbHits_ >= this.maxHits_)
-            this.Disintegrate(frame);
+        this.LastHitFrame = frame;
+        if(++this.NbHits >= this.MaxHits)
+            this.disintegrate(frame);
     }
     /*The projectile has hit another projectile*/
-    Projectile.prototype.HitProjectile = function(frame,otherProjectile)
+    Projectile.prototype.hitProjectile = function(frame,otherProjectile)
     {
-        var isSuper = !!(this.flagsToSend_ & ATTACK_FLAGS.SUPER);
-        var isOtherSuper = !!(otherProjectile.flagsToSend_ & ATTACK_FLAGS.SUPER);
+        var isSuper = !!(this.FlagsToSend & ATTACK_FLAGS.SUPER);
+        var isOtherSuper = !!(otherProjectile.FlagsToSend & ATTACK_FLAGS.SUPER);
         var areBothSupers = isSuper && isOtherSuper;
 
         if(!isSuper || areBothSupers)
-            this.Disintegrate(frame);
+            this.disintegrate(frame);
         if(!isOtherSuper || areBothSupers)
-            otherProjectile.Disintegrate(frame);
+            otherProjectile.disintegrate(frame);
     }
     return new Projectile();
 }

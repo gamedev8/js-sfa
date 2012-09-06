@@ -1,4 +1,4 @@
-﻿var CreateTeam = function(num)
+var CreateTeam = function(num)
 {
     var cursor_ = 0;
     var lastCursor_ = -1;
@@ -15,101 +15,101 @@
 
     var Team = function(num)
     {
-        this.players_ = [];
+        this.Players = [];
     }
 
-    Team.prototype.GetGame = function() { return game_; }
-    Team.prototype.GetPlayer = function(value) { return this.GetPlayers()[value]; }
-    Team.prototype.GetPlayers = function() { return this.players_; }
-    Team.prototype.SetPlayers = function(value)
+    Team.prototype.getGame = function() { return game_; }
+    Team.prototype.getPlayer = function(value) { return this.getPlayers()[value]; }
+    Team.prototype.getPlayers = function() { return this.Players; }
+    Team.prototype.setPlayers = function(value)
     {
-        this.players_ = value;
-        this.SetPlayerIndexes();
-        nbPlayers_ = this.players_.length;
+        this.Players = value;
+        this.setPlayerIndexes();
+        nbPlayers_ = this.Players.length;
     }
-    Team.prototype.AddPlayer = function(value)
+    Team.prototype.addPlayer = function(value)
     {
-        this.players_.push(value);
-        this.SetPlayerIndexes();
-        nbPlayers_ = this.players_.length;
+        this.Players.push(value);
+        this.setPlayerIndexes();
+        nbPlayers_ = this.Players.length;
     }
-    Team.prototype.SetPlayerIndexes = function()
+    Team.prototype.setPlayerIndexes = function()
     {
-        for(var i = 0, length = this.players_.length; i < length; ++i)
-            this.players_[i].SetIndex(i);
+        for(var i = 0, length = this.Players.length; i < length; ++i)
+            this.Players[i].setIndex(i);
     }
-    Team.prototype.GetCursor = function() { return cursor_; }
-    Team.prototype.SetCursor = function(value) { cursor_ = value; }
-    Team.prototype.GetLastCursor = function() { return lastCursor_; }
-    Team.prototype.SetLastCursor = function(value) { lastCursor_ = value; }
-    Team.prototype.GetTeamNum = function() { return teamNum_; }
-    Team.prototype.SetTeamNum = function(value) { teamNum_ = value; }
-    Team.prototype.GetPortriatImg = function() { return portriatImg_; }
-    Team.prototype.SetPortriatImg = function(value) { portriatImg_ = value; }
-    Team.prototype.GetNameImg = function() { return nameImg_; }
-    Team.prototype.SetNameImg = function(value) { nameImg_ = value; }
-    Team.prototype.GetHealthbar = function() { return healthbar_; }
-    Team.prototype.SetHealthbar = function(value) { healthbar_ = value; }
-    Team.prototype.GetEnergybar = function() { return energybar_; }
-    Team.prototype.SetEnergybar = function(value) { energybar_ = value; }
-    Team.prototype.GetComboText = function() { return comboText_; }
-    Team.prototype.SetComboText = function(value) { comboText_ = value; }
-    Team.prototype.SetNbHitText = function(value) { nbHitsText_ = value; }
-    Team.prototype.GetCurrentCombo = function() { return currentCombo_; }
-    Team.prototype.SetCurrentCombo = function(value) { currentCombo_ = value; }
-    Team.prototype.IncCurrentCombo = function() { ++currentCombo_; }
-    Team.prototype.GetCurrentComboRefCount = function() { return currentComboRefCount_; }
-    Team.prototype.SetCurrentComboRefCount = function(value) { currentComboRefCount_ = value; }
-    Team.prototype.IncCurrentComboRefCount = function() { ++currentComboRefCount_; }
+    Team.prototype.getCursor = function() { return cursor_; }
+    Team.prototype.setCursor = function(value) { cursor_ = value; }
+    Team.prototype.getLastCursor = function() { return lastCursor_; }
+    Team.prototype.setLastCursor = function(value) { lastCursor_ = value; }
+    Team.prototype.getTeamNum = function() { return teamNum_; }
+    Team.prototype.setTeamNum = function(value) { teamNum_ = value; }
+    Team.prototype.getPortriatImg = function() { return portriatImg_; }
+    Team.prototype.setPortriatImg = function(value) { portriatImg_ = value; }
+    Team.prototype.getNameImg = function() { return nameImg_; }
+    Team.prototype.setNameImg = function(value) { nameImg_ = value; }
+    Team.prototype.getHealthbar = function() { return healthbar_; }
+    Team.prototype.setHealthbar = function(value) { healthbar_ = value; }
+    Team.prototype.getEnergybar = function() { return energybar_; }
+    Team.prototype.setEnergybar = function(value) { energybar_ = value; }
+    Team.prototype.getComboText = function() { return comboText_; }
+    Team.prototype.setComboText = function(value) { comboText_ = value; }
+    Team.prototype.setNbHitText = function(value) { nbHitsText_ = value; }
+    Team.prototype.getCurrentCombo = function() { return currentCombo_; }
+    Team.prototype.setCurrentCombo = function(value) { currentCombo_ = value; }
+    Team.prototype.incCurrentCombo = function() { ++currentCombo_; }
+    Team.prototype.getCurrentComboRefCount = function() { return currentComboRefCount_; }
+    Team.prototype.setCurrentComboRefCount = function(value) { currentComboRefCount_ = value; }
+    Team.prototype.incCurrentComboRefCount = function() { ++currentComboRefCount_; }
 
 
-    Team.prototype.Init = function()
+    Team.prototype.init = function()
     {
         portriatImg_.style.display = "";
         nameImg_.style.display = "";
-        healthbar_.Init();
-        energybar_.Init();
+        healthbar_.init();
+        energybar_.init();
 
         /*
-        imageLookup_.GetBgB64(portriatImg_,"images/misc/char-sprites.png");
-        imageLookup_.GetBgB64(nameImg_,"images/misc/char-sprites.png");
+        imageLookup_.getBgB64(portriatImg_,"images/misc/char-sprites.png");
+        imageLookup_.getBgB64(nameImg_,"images/misc/char-sprites.png");
         */
-        this.Hide();
+        this.hide();
     }
 
 
 
-    Team.prototype.IncComboRefCount = function()
+    Team.prototype.incComboRefCount = function()
     {
-        this.IncCurrentComboRefCount();
+        this.incCurrentComboRefCount();
     }
 
 
-    Team.prototype.DecComboRefCount = function()
+    Team.prototype.decComboRefCount = function()
     {
-        this.SetCurrentComboRefCount(Math.max(this.GetCurrentComboRefCount() - 1, 0));
-        if(!this.GetCurrentComboRefCount())
+        this.setCurrentComboRefCount(Math.max(this.getCurrentComboRefCount() - 1, 0));
+        if(!this.getCurrentComboRefCount())
         {
-            this.SetCurrentCombo(0);
+            this.setCurrentCombo(0);
         }
     }
 
-    Team.prototype.IncCombo = function()
+    Team.prototype.incCombo = function()
     {
-        this.IncCurrentCombo();
-        if(this.GetCurrentCombo() > 1)
-            this.WriteCombo(this.GetCurrentCombo());
+        this.incCurrentCombo();
+        if(this.getCurrentCombo() > 1)
+            this.writeCombo(this.getCurrentCombo());
     }
 
 
-    Team.prototype.InitText = function()
+    Team.prototype.initText = function()
     {
-        comboText_ = game_.AddManagedText("pnlTeam" + this.GetTeamNum() + "ComboText",0,170,"font2", teamNum_ == 2);
-        nbHitsText_ = game_.AddManagedText("pnlTeam" + this.GetTeamNum() + "NbHitsText",0,170,"font3", teamNum_ == 2);
+        comboText_ = game_.addManagedText("pnlTeam" + this.getTeamNum() + "ComboText",0,170,"font2", teamNum_ == 2);
+        nbHitsText_ = game_.addManagedText("pnlTeam" + this.getTeamNum() + "NbHitsText",0,170,"font3", teamNum_ == 2);
     }
 
 
-    Team.prototype.GetNbHitsText = function(nbHits)
+    Team.prototype.getNbHitsText = function(nbHits)
     {
         if(nbHits == 2) return "GOOD !";
         else if(nbHits == 3) return "GOOD !!";
@@ -127,98 +127,98 @@
     }
 
 
-    Team.prototype.WriteCombo = function(nbHits)
+    Team.prototype.writeCombo = function(nbHits)
     {
-        comboText_.Change(nbHits + TEXT.HIT_COMBO,10,game_.GetCurrentFrame() + CONSTANTS.COMBO_TEXT_LIFE);
-        this.WriteText(this.GetNbHitsText(nbHits));
+        comboText_.change(nbHits + TEXT.HIT_COMBO,10,game_.getCurrentFrame() + CONSTANTS.COMBO_TEXT_LIFE);
+        this.writeText(this.getNbHitsText(nbHits));
     }
 
 
-    Team.prototype.WriteText = function(text)
+    Team.prototype.writeText = function(text)
     {
-        nbHitsText_.Change(text,10,game_.GetCurrentFrame() + CONSTANTS.TEXT_DELAY + CONSTANTS.TEXT_LIFE,game_.GetCurrentFrame() + CONSTANTS.TEXT_DELAY,true,30);
+        nbHitsText_.change(text,10,game_.getCurrentFrame() + CONSTANTS.TEXT_DELAY + CONSTANTS.TEXT_LIFE,game_.getCurrentFrame() + CONSTANTS.TEXT_DELAY,true,30);
     }
 
 
     /*remove any DOM element that was added by this instance*/
-    Team.prototype.Release = function()
+    Team.prototype.release = function()
     {
         portriatImg_.style.display = "none";
         nameImg_.style.display = "none";
         if(!!comboText_)
         {
-            comboText_.HideNow();
+            comboText_.hideNow();
         }
         if(!!nbHitsText_)
         {
-            nbHitsText_.HideNow();
+            nbHitsText_.hideNow();
         }
-        healthbar_.Release();
-        energybar_.Release();
+        healthbar_.release();
+        energybar_.release();
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.GetPlayer(i).Release();
-        this.SetCursor(0);
+            this.getPlayer(i).release();
+        this.setCursor(0);
     }
 
-    Team.prototype.Show = function()
+    Team.prototype.show = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.players_[i].Show();
+            this.Players[i].show();
         portriatImg_.parentNode.style.display = "";
     }
 
-    Team.prototype.Hide = function()
+    Team.prototype.hide = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.players_[i].Hide();
+            this.Players[i].hide();
         portriatImg_.parentNode.style.display = "none";
     }
 
-    Team.prototype.Pause = function()
+    Team.prototype.pause = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.GetPlayer(i).Pause();
+            this.getPlayer(i).pause();
     }
 
-    Team.prototype.Resume = function()
+    Team.prototype.resume = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.GetPlayer(i).Resume();
+            this.getPlayer(i).resume();
     }
 
     /**/
-    Team.prototype.FrameMove = function(frame, keyboardState, x, y)
+    Team.prototype.frameMove = function(frame, keyboardState, x, y)
     {
         if(frame % 100 == 0)
-            this.SetCursor(((this.GetCursor() + 1) < nbPlayers_) ? (this.GetCursor()+1) : 0);
+            this.setCursor(((this.getCursor() + 1) < nbPlayers_) ? (this.getCursor()+1) : 0);
 
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.GetPlayer(i).HandleInput(keyboardState,frame);
+            this.getPlayer(i).handleInput(keyboardState,frame);
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.GetPlayer(i).OnFrameMove(frame,x,y);
+            this.getPlayer(i).onFrameMove(frame,x,y);
 
-        healthbar_.FrameMove(frame);
-        energybar_.FrameMove(frame);
+        healthbar_.frameMove(frame);
+        energybar_.frameMove(frame);
     }
 
 
     /* Shows details about the players on the team */
-    Team.prototype.Render = function(frame,deltaX)
+    Team.prototype.render = function(frame,deltaX)
     {
-        if(this.GetCursor() != this.GetLastCursor())
+        if(this.getCursor() != this.getLastCursor())
         {
-            this.SetLastCursor(this.GetCursor());
-            if(!!this.GetPlayer(this.GetCursor()))
+            this.setLastCursor(this.getCursor());
+            if(!!this.getPlayer(this.getCursor()))
             {
-                spriteLookup_.Set(nameImg_, this.GetPlayer(this.GetCursor()).GetNameImageSrc());
-                spriteLookup_.Set(portriatImg_, this.GetPlayer(this.GetCursor()).GetPortriatImageSrc());
+                spriteLookup_.set(nameImg_, this.getPlayer(this.getCursor()).getNameImageSrc());
+                spriteLookup_.set(portriatImg_, this.getPlayer(this.getCursor()).getPortriatImageSrc());
             }
         }
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.GetPlayer(i).Render(frame,deltaX);
+            this.getPlayer(i).render(frame,deltaX);
 
-        energybar_.Render(frame);
-        healthbar_.Render(frame);
+        energybar_.render(frame);
+        healthbar_.render(frame);
     }
 
     return new Team(num);

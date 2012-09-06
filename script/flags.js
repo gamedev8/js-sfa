@@ -5,20 +5,20 @@
     this.Owner = owner || null;
 }
 
-Flags.prototype.Clear = function() { this.Set(0); }
-Flags.prototype.Set = function(value) { this.Value = value || MISC_FLAGS.NONE; return this.Value; }
-Flags.prototype.Get = function()      { return this.Value; }
-Flags.prototype.Has = function(value) { return !!(this.Value & value); }
-Flags.prototype.Add = function(value)
+Flags.prototype.clear = function() { this.set(0); }
+Flags.prototype.set = function(value) { this.Value = value || MISC_FLAGS.NONE; return this.Value; }
+Flags.prototype.get = function()      { return this.Value; }
+Flags.prototype.has = function(value) { return !!(this.Value & value); }
+Flags.prototype.add = function(value)
 {
     if(this.IsPlayer && !!this.Owner)
     {
-        if(!!(value & PLAYER_FLAGS.MOBILE) && !this.Has(PLAYER_FLAGS.MOBILE))
-            this.Owner.ResetCombo();
+        if(!!(value & PLAYER_FLAGS.MOBILE) && !this.has(PLAYER_FLAGS.MOBILE))
+            this.Owner.resetCombo();
     }
     return this.Value |= (value || MISC_FLAGS.NONE);
 }
-Flags.prototype.Remove = function(value) { return this.Value = (this.Value | value) ^ value; }
+Flags.prototype.remove = function(value) { return this.Value = (this.Value | value) ^ value; }
 
 var PlayerFlags = function(owner)
 {
@@ -146,6 +146,7 @@ var PLAYER_FLAGS =
     ,IGNORE_MOVE_OVERRIDE:1 << 20
     ,DIZZY:1 << 21
     ,INVISIBLE:1 << 22
+    ,MOVE_TO_ENEMY:1 << 23
 }
 
 
@@ -167,10 +168,12 @@ var POSE_FLAGS =
     ,ALLOW_INTERUPT_4:1 << 13
     ,ALLOW_INTERUPT_5:1 << 14
     ,ALLOW_INTERUPT_6:1 << 15
-    ,ALLOW_INTERUPT_7:1 << 16
-    ,ALLOW_INTERUPT_8:1 << 17
-    ,ALLOW_INTERUPT_9:1 << 18
-    ,ALLOW_INTERUPT_10:1 << 19
+    ,FORCE_HOLD_AIRBORNE_XY:1 << 16
+    /*the player will start a jump, even if the player is already in the air*/
+    ,FORCE_START_AIRBORNE:1 << 17
+    ,AIR_COMBO_1:1 << 18
+    ,AIR_COMBO_2:1 << 19
+    ,AIR_COMBO_3:1 << 20
 }
 
 
@@ -190,6 +193,7 @@ var COMBAT_FLAGS =
     ,TELEPORT_BACK:1 << 11
     ,TELEPORT_START:1 << 12
     ,TELEPORT_END:1 << 13
+    ,CHAIN_ON_HIT:1 << 14
 }
 
 
@@ -314,7 +318,7 @@ var CONSTANTS =
     ,MAX_PRIORITY:1 << 30
     ,NORMAL_SPEED:14
     ,SLOW_SPEED:70
-    ,MAX_FRAME:100000000000000 /*round will end when Game.prototype.frame_ reaches this value*/
+    ,MAX_FRAME:100000000000000 /*round will end when Game.prototype.frame reaches this value*/
     ,TARGET_FPS:64
     ,MS_PER_SEC:1000
     ,FPS_VALUE:60000
@@ -353,7 +357,8 @@ var CONSTANTS =
     ,DIRT_FREQUENCY:5
     ,X_DAMPING:0.1
     ,Y_DAMPING:0.1
-    ,HALF_G:0.5*9.81
+    ,G:9.80665
+    ,HALF_G:0.5*9.80665
     ,SMALLDIRT_OFFSETY:15
     ,BIGDIRT_OFFSETY:13
     /*the following are just to help cut down on literals throughout the code*/

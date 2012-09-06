@@ -30,7 +30,7 @@ var CreateGame = function()
     var speed_ = CONSTANTS.NORMAL_SPEED;
     var targetFPS_ = CONSTANTS.TARGET_FPS;
     var extraSpeed_ = 0;
-    var text_ = null;//fontSystem_.AddText("pnlText");
+    var text_ = null;//fontSystem_.addText("pnlText");
     var useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
     var state_ = 0;
     var isInitialized_ = false;
@@ -44,92 +44,92 @@ var CreateGame = function()
     /*Encapulates a new game*/
     var Game = function ()
     {
-        lastTime_ = this.GetCurrentTime();
-        this.InitGame();
-        this.match_ = null;
-        this.usingGamepads_ = !!Gamepad.supported;
+        lastTime_ = this.getCurrentTime();
+        this.initGame();
+        this.Match = null;
+        this.UsingGamepads = !!Gamepad.supported;
     }
 
-    Game.prototype.GetMatch = function() { return this.match_; }
+    Game.prototype.getMatch = function() { return this.Match; }
 
-    Game.prototype.IsGameOver = function()
+    Game.prototype.isGameOver = function()
     {
         return frame_ >= CONSTANTS.MAX_FRAME;
     }
 
-    Game.prototype.AddManagedText = function(elementId,x,y,fontPath,isLeft)
+    Game.prototype.addManagedText = function(elementId,x,y,fontPath,isLeft)
     {
-        return fontSystem_.AddText(elementId,"",x,y,0,fontPath,isLeft);
+        return fontSystem_.addText(elementId,"",x,y,0,fontPath,isLeft);
     }
 
-    Game.prototype.SetSpeed = function(value)
+    Game.prototype.setSpeed = function(value)
     {
         speed_ = value;
     }
 
-    Game.prototype.GetSpeed = function() { return speed_; }
-    Game.prototype.GetCurrentFrame = function () { return frame_; }
+    Game.prototype.getSpeed = function() { return speed_; }
+    Game.prototype.getCurrentFrame = function () { return frame_; }
 
     /*Resets the timer*/
-    Game.prototype.ResetFrame = function()
+    Game.prototype.resetFrame = function()
     {
         frame_ = 0;
     }
 
     /*Returns the current time in milliseconds*/
-    Game.prototype.GetCurrentTime = function()
+    Game.prototype.getCurrentTime = function()
     {
         if(!!Date.now)
             return Date.now();
         else
             return (new Date() - new Date(0));
     }
-    Game.prototype.HasState = function(flag)
+    Game.prototype.hasState = function(flag)
     {
         return (flag & state_) > 0
     }
 
-    Game.prototype.AddState = function(flag)
+    Game.prototype.addState = function(flag)
     {
         state_ |= flag;
     }
 
-    Game.prototype.ToggleState = function(flag)
+    Game.prototype.toggleState = function(flag)
     {
         state_ ^= flag;
     }
 
-    Game.prototype.RemoveState = function(flag)
+    Game.prototype.removeState = function(flag)
     {
         state_ = (state_ | (flag)) ^ (flag);
     }
 
 
-    Game.prototype.OnStageImagesLoaded = function()
+    Game.prototype.onStageImagesLoaded = function()
     {
-        if(!!this.match_)
-            this.match_.GetStage().Init();
+        if(!!this.Match)
+            this.Match.getStage().init();
     }
 
-    Game.prototype.ReleaseText = function()
+    Game.prototype.releaseText = function()
     {
-        fontSystem_.Reset();
-        text_ = fontSystem_.AddText("pnlText","");
+        fontSystem_.reset();
+        text_ = fontSystem_.addText("pnlText","");
     }
 
-    Game.prototype.ResetKeys = function()
+    Game.prototype.resetKeys = function()
     {
         keyboardState_ = {};
         if(!!managed_)
-            managed_.ResetKeys();
+            managed_.resetKeys();
     }
 
-    Game.prototype.InitGame = function()
+    Game.prototype.initGame = function()
     {
-        Stage.prototype.Center();
+        Stage.prototype.center();
     }
 
-    Game.prototype.Init = function()
+    Game.prototype.init = function()
     {
         if(!isInitialized_)
         {
@@ -137,7 +137,7 @@ var CreateGame = function()
             {
                 return function(e)
                 {
-                    thisValue.HandleKeyPress(e,isDown);
+                    thisValue.handleKeyPress(e,isDown);
                 }
             }
 
@@ -145,7 +145,7 @@ var CreateGame = function()
             {
                 return function(e)
                 {
-                    thisValue.ResetKeys();
+                    thisValue.resetKeys();
                 }
             }
 
@@ -168,14 +168,14 @@ var CreateGame = function()
 
     }
 
-    Game.prototype.PreloadTextImages = function()
+    Game.prototype.preloadTextImages = function()
     {
         if(!!isInitialized_)
             return;
-        fontSystem_.Preload();
+        fontSystem_.preload();
     }
 
-    Game.prototype.ShowElements = function()
+    Game.prototype.showElements = function()
     {
         window.document.getElementById("pnlTeam1").style.display = "";
         window.document.getElementById("pnlTeam2").style.display = "";
@@ -183,7 +183,7 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "";
     }
 
-    Game.prototype.HideElements = function()
+    Game.prototype.hideElements = function()
     {
         window.document.getElementById("pnlTeam1").style.display = "none";
         window.document.getElementById("pnlTeam2").style.display = "none";
@@ -191,75 +191,75 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "none";
     }
 
-    Game.prototype.StartMatch = function(startPaused,teamA,teamB,stage,callback)
+    Game.prototype.startMatch = function(startPaused,teamA,teamB,stage,callback)
     {
-        this.startPaused_ = startPaused;
-        this.ResetGameData();
+        this.StartPaused = startPaused;
+        this.resetGameData();
 
         var fn = function(thisValue)
         {
             return function()
             {
-                thisValue.CreateMatch(teamA,teamB,stage,callback);
+                thisValue.createMatch(teamA,teamB,stage,callback);
             }
         }
 
         charSelect_ = charSelect_ || CreateCharSelect();
-        charSelect_.LoadUserAssets(teamA);
-        charSelect_.LoadUserAssets(teamB);
+        charSelect_.loadUserAssets(teamA);
+        charSelect_.loadUserAssets(teamB);
 
-        this.StartLoading(null,fn(this));
+        this.startLoading(null,fn(this));
     }
 
 
-    Game.prototype.CreateMatch = function(teamA,teamB,stage,callback)
+    Game.prototype.createMatch = function(teamA,teamB,stage,callback)
     {
         if(!!charSelect_)
         {
-            a = charSelect_.GetPlayers(teamA);
-            b = charSelect_.GetPlayers(teamB);
-            stage = stage || charSelect_.GetStage();
+            a = charSelect_.getPlayers(teamA);
+            b = charSelect_.getPlayers(teamB);
+            stage = stage || charSelect_.getStage();
 
-            charSelect_.Release();
+            charSelect_.release();
         }
 
-        this.match_ = CreateMatch(a,b,stage);
-        managed_ = this.match_;
-        announcer_.SetMatch(this.match_);
-        this.ShowElements();
+        this.Match = CreateMatch(a,b,stage);
+        managed_ = this.Match;
+        announcer_.setMatch(this.Match);
+        this.showElements();
 
 
-        this.Go(this.RunGameLoop,callback);
+        this.go(this.runGameLoop,callback);
     }
 
-    Game.prototype.StartCharSelect = function()
+    Game.prototype.startCharSelect = function()
     {
-        this.ResetGameData();
+        this.resetGameData();
         charSelect_ = CreateCharSelect(user1_,user2_);
         managed_ = charSelect_;
 
-        this.Go(this.RunCharSelectLoop);
+        this.go(this.runCharSelectLoop);
     }
     /**/
-    Game.prototype.StartInsertCoinScreen = function()
+    Game.prototype.startInsertCoinScreen = function()
     {
-        this.ResetGameData();
+        this.resetGameData();
         insertCoinScreen_ = CreateInsertCoinScreen(user1_,user2_);
         managed_ = insertCoinScreen_;
-        this.Go(this.RunInsertCoinScreenLoop);
+        this.go(this.runInsertCoinScreenLoop);
     }
     /**/
-    Game.prototype.Go = function(loopFn, callback)
+    Game.prototype.go = function(loopFn, callback)
     {
-        this.Init();
-        this.PreloadTextImages();
-        Stage.prototype.Center();
+        this.init();
+        this.preloadTextImages();
+        Stage.prototype.center();
         isInitialized_ = true;
         frame_ = 0;
-        this.StartLoading(loopFn, callback);
+        this.startLoading(loopFn, callback);
     }
     /*shows the loading screen*/
-    Game.prototype.ShowLoading = function(show)
+    Game.prototype.showLoading = function(show)
     {
         if(!!show)
         {
@@ -274,28 +274,28 @@ var CreateGame = function()
         }
     }
     /*starts loading assets*/
-    Game.prototype.StartLoading = function(loopFn, callback)
+    Game.prototype.startLoading = function(loopFn, callback)
     {
-        this.ShowLoading(true);
-        var createClosure = function(thisRef,fn1, fn2) { return function() { thisRef.OnDoneLoading(fn1,fn2); } }
+        this.showLoading(true);
+        var createClosure = function(thisRef,fn1, fn2) { return function() { thisRef.onDoneLoading(fn1,fn2); } }
 
-        stuffLoader_.Start(this.OnProgress,createClosure(this, loopFn, callback),this);
+        stuffLoader_.start(this.onProgress,createClosure(this, loopFn, callback),this);
     }
     /*executed when the assets are done loading*/
-    Game.prototype.OnDoneLoading = function(runLoopFn, callback)
+    Game.prototype.onDoneLoading = function(runLoopFn, callback)
     {
         if(!!runLoopFn)
         {
-            managed_.Start(!!this.startPaused_);
+            managed_.start(!!this.StartPaused);
             runLoopFn.call(this);
-            if(!!this.startPaused_)
-                this.Pause();
+            if(!!this.StartPaused)
+                this.pause();
         }
         if(!!callback)
             callback();
     }
     /*executed when an asset is done loading*/
-    Game.prototype.OnProgress = function(nbRemaining)
+    Game.prototype.onProgress = function(nbRemaining)
     {
         if(!nbRemaining)
             pnlLoading_.innerHTML = "done";
@@ -303,39 +303,39 @@ var CreateGame = function()
             pnlLoading_.innerHTML = nbRemaining;
     }
     /*resets common data*/
-    Game.prototype.ResetGameData = function()
+    Game.prototype.resetGameData = function()
     {
-        this.HideElements();
-        this.Break();
-        this.ReleaseText();
-        announcer_.Release();
+        this.hideElements();
+        this.stop();
+        this.releaseText();
+        announcer_.release();
         speed_ = CONSTANTS.NORMAL_SPEED;
         if(!!charSelect_)
-            charSelect_.Release();
-        if(!!this.match_)
-            this.match_.Release();
+            charSelect_.release();
+        if(!!this.Match)
+            this.Match.release();
         if(!!insertCoinScreen_)
-            insertCoinScreen_.Release();
+            insertCoinScreen_.release();
     }
     /*Increases the game loop speed*/
-    Game.prototype.SpeedUp = function()
+    Game.prototype.speedUp = function()
     {
         if(speed_ > CONSTANTS.MIN_DELAY)
             speed_ -= CONSTANTS.SPEED_INCREMENT;
     }
     /*Decreases the game loop speed*/
-    Game.prototype.SlowDown = function()
+    Game.prototype.slowDown = function()
     {
         if(speed_ < CONSTANTS.MAX_DELAY)
             speed_ += CONSTANTS.SPEED_INCREMENT;
     }
 
-    Game.prototype.IsPaused = function() { return this.HasState(GAME_STATES.PAUSED); }
+    Game.prototype.isPaused = function() { return this.hasState(GAME_STATES.PAUSED); }
 
-    Game.prototype.QuickPause = function()
+    Game.prototype.quickPause = function()
     {
-        this.AddState(GAME_STATES.PAUSED);
-        this.AddState(GAME_STATES.STEP_FRAME);
+        this.addState(GAME_STATES.PAUSED);
+        this.addState(GAME_STATES.STEP_FRAME);
         window.document.getElementById("spnState").innerHTML = "State: Frame Step"
         window.document.getElementById("spnState").className = "state paused"
         window.document.getElementById("spnStepFrame").className = "state running"
@@ -343,45 +343,45 @@ var CreateGame = function()
     }
 
     /*pauses the game*/
-    Game.prototype.Pause = function()
+    Game.prototype.pause = function()
     {
-        this.QuickPause();
+        this.quickPause();
         if(!!managed_)
-            managed_.Pause();
-        soundManager_.PauseAll();
+            managed_.pause();
+        soundManager_.pauseAll();
     }
     /*resumes the game*/
-    Game.prototype.Resume = function()
+    Game.prototype.resume = function()
     {
-        this.RemoveState(GAME_STATES.PAUSED);
+        this.removeState(GAME_STATES.PAUSED);
         window.document.getElementById("spnState").innerHTML = "State: Running";
         window.document.getElementById("spnState").className = "state running";
         window.document.getElementById("spnStepFrame").className = ""
         window.document.getElementById("spnResume").className = ""
         if(!!managed_)
-            managed_.Resume();
-        soundManager_.ResumeAll();
+            managed_.resume();
+        soundManager_.resumeAll();
     }
     /*Returns true if the key is being released*/
-    Game.prototype.WasKeyPressed = function(key,keyCode,isDown)
+    Game.prototype.wasKeyPressed = function(key,keyCode,isDown)
     {
         return (keyCode == key && !!keyboardState_["_" + key] && !isDown)
     }
     /*Helper method - forwards the button press to the key press handler function*/
-    Game.prototype.HandleGamePadHelper = function(pad,key)
+    Game.prototype.handleGamePadHelper = function(pad,key)
     {
         if(!!pad[key] != keyboardState_["_" + key])
         {
             if(!!managed_)
             {
-                this.HandleKeyPress({which:key},!!pad[key]);
+                this.handleKeyPress({which:key},!!pad[key]);
             }
         }
     }
     /*Handles gamepad button presses*/
-    Game.prototype.HandleGamePadButtonPresses = function()
+    Game.prototype.handleGamePadButtonPresses = function()
     {
-        if(!!this.usingGamepads_)
+        if(!!this.UsingGamepads)
         {
             for(var i = 0, length = users_.length; i < length; ++i)
             {
@@ -390,104 +390,104 @@ var CreateGame = function()
                     var pad = Gamepad.getState([users_[i].GamepadIndex]);
                     if(!!pad)
                     {
-                        this.HandleGamePadHelper(pad,GAMEPAD.DOWN);
-                        this.HandleGamePadHelper(pad,GAMEPAD.LEFT);
-                        this.HandleGamePadHelper(pad,GAMEPAD.RIGHT);
-                        this.HandleGamePadHelper(pad,GAMEPAD.UP);
-                        this.HandleGamePadHelper(pad,GAMEPAD.B0);
-                        this.HandleGamePadHelper(pad,GAMEPAD.B1);
-                        this.HandleGamePadHelper(pad,GAMEPAD.B2);
-                        this.HandleGamePadHelper(pad,GAMEPAD.B3);
-                        this.HandleGamePadHelper(pad,GAMEPAD.LS0);
-                        this.HandleGamePadHelper(pad,GAMEPAD.LS1);
-                        this.HandleGamePadHelper(pad,GAMEPAD.RS0);
-                        this.HandleGamePadHelper(pad,GAMEPAD.RS1);
-                        this.HandleGamePadHelper(pad,GAMEPAD.START);
-                        this.HandleGamePadHelper(pad,GAMEPAD.SELECT);
+                        this.handleGamePadHelper(pad,GAMEPAD.DOWN);
+                        this.handleGamePadHelper(pad,GAMEPAD.LEFT);
+                        this.handleGamePadHelper(pad,GAMEPAD.RIGHT);
+                        this.handleGamePadHelper(pad,GAMEPAD.UP);
+                        this.handleGamePadHelper(pad,GAMEPAD.B0);
+                        this.handleGamePadHelper(pad,GAMEPAD.B1);
+                        this.handleGamePadHelper(pad,GAMEPAD.B2);
+                        this.handleGamePadHelper(pad,GAMEPAD.B3);
+                        this.handleGamePadHelper(pad,GAMEPAD.LS0);
+                        this.handleGamePadHelper(pad,GAMEPAD.LS1);
+                        this.handleGamePadHelper(pad,GAMEPAD.RS0);
+                        this.handleGamePadHelper(pad,GAMEPAD.RS1);
+                        this.handleGamePadHelper(pad,GAMEPAD.START);
+                        this.handleGamePadHelper(pad,GAMEPAD.SELECT);
                     }
                 }
             }
         }
     }
     /*Handle game wide key events, or pass the event on to the match*/
-    Game.prototype.HandleKeyPress = function(e,isDown)
+    Game.prototype.handleKeyPress = function(e,isDown)
     {
         var keyCode = e.which || e.keyCode;
         /*Alert(keyCode);*/
 
 
-        if(this.WasKeyPressed(KEYS.O,keyCode,isDown))
+        if(this.wasKeyPressed(KEYS.O,keyCode,isDown))
         {
-            this.Pause();
+            this.pause();
         }
-        if(this.WasKeyPressed(KEYS.P,keyCode,isDown))
+        if(this.wasKeyPressed(KEYS.P,keyCode,isDown))
         {
-            this.Resume();
+            this.resume();
         }
-        if(this.WasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
+        if(this.wasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
         {
             frame_ = CONSTANTS.MAX_FRAME + 1;
-            this.End();
+            this.end();
         }
-        if(this.WasKeyPressed(KEYS.EIGHT,keyCode,isDown))
-            this.SpeedUp();
-        if(this.WasKeyPressed(KEYS.NINE,keyCode,isDown))
-            this.SlowDown();
+        if(this.wasKeyPressed(KEYS.EIGHT,keyCode,isDown))
+            this.speedUp();
+        if(this.wasKeyPressed(KEYS.NINE,keyCode,isDown))
+            this.slowDown();
 
         keyboardState_["_" + keyCode] = isDown;
         if(!!managed_)
         {
-            managed_.OnKeyStateChanged(isDown,keyCode,frame_);
+            managed_.onKeyStateChanged(isDown,keyCode,frame_);
         }
     }
 
-    Game.prototype.HandleInput = function()
+    Game.prototype.handleInput = function()
     {
-        this.HandleGamePadButtonPresses();
+        this.handleGamePadButtonPresses();
     }
 
-    Game.prototype.End = function()
+    Game.prototype.end = function()
     {
-        this.ReleaseText();
-        this.ResetKeys();
-        managed_.Kill()
+        this.releaseText();
+        this.resetKeys();
+        managed_.kill()
         managed_ = null;
-        announcer_.Release();
+        announcer_.release();
     }
 
-    Game.prototype.AddUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
-        user1_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+        user1_ = this.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
         return user1_;
     }
-    Game.prototype.AddUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
-        user2_ = this.AddUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+        user2_ = this.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
         return user2_;
     }
-    Game.prototype.AddUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
         var user = null;
         if(gamepad != undefined)
-            user = this.AddGamepadUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+            user = this.addGamepadUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
         else
             user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
 
         users_.push(user);
         return user;
     }
-    Game.prototype.AddGamepadUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addGamepadUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
     {
         return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
     }
 
 
     /*Shows the frame rate on screen*/
-    Game.prototype.ShowFPS = function()
+    Game.prototype.showFPS = function()
     {
         if(frame_ % targetFPS_ == 0)
         {
-            var now = this.GetCurrentTime();
+            var now = this.getCurrentTime();
             var elapsed = now - lastTime_;
             lastTime_ = now;
 
@@ -496,99 +496,99 @@ var CreateGame = function()
         }
     }
 
-    Game.prototype.Break = function()
+    Game.prototype.stop = function()
     {
         window.clearTimeout(nextTimeout_);
     }
 
     /*Basic game loop*/
-    Game.prototype.RunGameLoop = function()
+    Game.prototype.runGameLoop = function()
     {
-        this.HandleInput();
-        if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
+        this.handleInput();
+        if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
         {
-            this.RemoveState(GAME_STATES.STEP_FRAME);
+            this.removeState(GAME_STATES.STEP_FRAME);
             ++frame_;
-            //this.match_.PreFrameMove(frame_);
-            this.match_.FrameMove(frame_, keyboardState_);
-            announcer_.FrameMove(frame_);
-            soundManager_.FrameMove(frame_);
-            if(!this.match_.IsSuperMoveActive())
-                fontSystem_.FrameMove(frame_);
+            //this.Match.preFrameMove(frame_);
+            this.Match.frameMove(frame_, keyboardState_);
+            announcer_.frameMove(frame_);
+            soundManager_.frameMove(frame_);
+            if(!this.Match.isSuperMoveActive())
+                fontSystem_.frameMove(frame_);
 
-            this.match_.Render(frame_);
-            if(!this.match_.IsSuperMoveActive())
-                fontSystem_.Render(frame_);
-            announcer_.Render(frame_);
-            soundManager_.Render(frame_);
+            this.Match.render(frame_);
+            if(!this.Match.isSuperMoveActive())
+                fontSystem_.render(frame_);
+            announcer_.render(frame_);
+            soundManager_.render(frame_);
 
-            this.match_.RenderComplete(frame_);
-            this.ShowFPS();
+            this.Match.renderComplete(frame_);
+            this.showFPS();
         }
 
-        if(!this.match_.IsMatchOver(frame_))
+        if(!this.Match.isMatchOver(frame_))
         {
             //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             nextTimeout_ = window.setTimeout(runGameLoop_,speed_);
         }
         else
         {
-            this.match_.HandleMatchOver(frame_);
+            this.Match.handleMatchOver(frame_);
         }
     }
 
-    Game.prototype.RunInsertCoinScreenLoop = function()
+    Game.prototype.runInsertCoinScreenLoop = function()
     {
-        this.HandleInput();
-        if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
+        this.handleInput();
+        if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
         {
-            this.RemoveState(GAME_STATES.STEP_FRAME);
+            this.removeState(GAME_STATES.STEP_FRAME);
             ++frame_;
-            insertCoinScreen_.FrameMove(frame_);
-            soundManager_.FrameMove(frame_);
-            fontSystem_.FrameMove(frame_);
+            insertCoinScreen_.frameMove(frame_);
+            soundManager_.frameMove(frame_);
+            fontSystem_.frameMove(frame_);
 
 
-            insertCoinScreen_.Render(frame_);
-            soundManager_.Render(frame_);
-            fontSystem_.Render(frame_);
-            this.ShowFPS();
+            insertCoinScreen_.render(frame_);
+            soundManager_.render(frame_);
+            fontSystem_.render(frame_);
+            this.showFPS();
         }
 
-        if(!insertCoinScreen_.IsDone(frame_))
+        if(!insertCoinScreen_.isDone(frame_))
         {
             //nextTimeout_ = window.requestAnimFrame(runInsertCoinScreenLoop_,speed_);
             nextTimeout_ = window.setTimeout(runInsertCoinScreenLoop_,speed_);
         }
         else
         {
-            this.match_.HandleMatchOver(frame_);
+            this.Match.handleMatchOver(frame_);
         }
     }
 
-    Game.prototype.RunCharSelectLoop = function()
+    Game.prototype.runCharSelectLoop = function()
     {
-        if(!!charSelect_ && charSelect_.delayAfterSelect_ < CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+        if(!!charSelect_ && charSelect_.DelayAfterSelect < CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
         {
-            this.HandleInput();
-            if(!this.HasState(GAME_STATES.PAUSED) || this.HasState(GAME_STATES.STEP_FRAME))
+            this.handleInput();
+            if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
             {
-                this.RemoveState(GAME_STATES.STEP_FRAME);
+                this.removeState(GAME_STATES.STEP_FRAME);
                 ++frame_;
-                charSelect_.FrameMove(frame_);
-                soundManager_.FrameMove(frame_);
+                charSelect_.frameMove(frame_);
+                soundManager_.frameMove(frame_);
 
-                if(!!charSelect_.isDone_ && charSelect_.delayAfterSelect_ >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+                if(!!charSelect_.IsDone && charSelect_.DelayAfterSelect >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
                 {
                     managed_ = null;
-                    this.StartMatch(false,charSelect_.GetTeamA(),charSelect_.GetTeamB(),charSelect_.GetStage());
+                    this.startMatch(false,charSelect_.getTeamA(),charSelect_.getTeamB(),charSelect_.getStage());
                 }
-                charSelect_.Render(frame_);
-                soundManager_.Render(frame_);
-                this.ShowFPS();
+                charSelect_.render(frame_);
+                soundManager_.render(frame_);
+                this.showFPS();
             }
 
-            if(!this.IsGameOver())
+            if(!this.isGameOver())
             {
                 //nextTimeout_ = window.requestAnimFrame(runCharSelectLoop_,speed_);
                 nextTimeout_ = window.setTimeout(runCharSelectLoop_,speed_);

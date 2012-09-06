@@ -24,278 +24,277 @@ var CreateMatch = function(team1,team2,stage)
 
     var Match = function()
     {
-        this.stage_ = new Stage();
-        this.teamA_ = CreateTeam(1);
-        this.teamB_ = CreateTeam(2);
-        this.LoadAssets();
-        this.stage_.Setup(stage);
+        this.Stage = new Stage();
+        this.TeamA = CreateTeam(1);
+        this.TeamB = CreateTeam(2);
+        this.loadAssets();
+        this.Stage.setup(stage);
 
         faceoff_ = CreateFaceoff(this);
     }
-    Match.prototype.GetPhysics = function() { return physics_; }
-    Match.prototype.GetTeamA = function() { return this.teamA_; }
-    Match.prototype.GetTeamB = function() { return this.teamB_; }
-    Match.prototype.GetDefeatedTeam = function() { return defeatedTeam_; }
-    Match.prototype.SetDefeatedTeam = function(value) { defeatedTeam_ = value; }
-    Match.prototype.IsRoundOver = function() { return isRoundOver_; }
-    Match.prototype.SetRoundOver = function(value) { isRoundOver_ = value; }
-    Match.prototype.GetGotoNewRoundFrame = function() { return gotoNewRoundFrame_; }
-    Match.prototype.SetGotoNewRoundFrame = function(value) { gotoNewRoundFrame_ = value; }
-    Match.prototype.GetPlayerCount = function() { return playerCount_; }
-    Match.prototype.SetPlayerCount = function(value) { playerCount_ = value; }
-    Match.prototype.GetHitSystem = function() { return actionSystem_; }
-    Match.prototype.SetActionSystem = function(value) { actionSystem_ = value; }
-    Match.prototype.IsSuperMoveActive = function() { return isSuperMoveActive_; }
-    Match.prototype.SetSuperMoveActive = function(value) { isSuperMoveActive_ = value; }
-    Match.prototype.GetDimBackgroundElement = function() { return dimBackground_; }
-    Match.prototype.GetRound = function() { return round_; }
-    Match.prototype.SetRound = function(value) { round_ = value; }
-    Match.prototype.GetAllowInput = function() { return allowInput_; }
-    Match.prototype.SetAllowInput = function(value) { allowInput_ = value; }
+    Match.prototype.getPhysics = function() { return physics_; }
+    Match.prototype.getTeamA = function() { return this.TeamA; }
+    Match.prototype.getTeamB = function() { return this.TeamB; }
+    Match.prototype.getDefeatedTeam = function() { return defeatedTeam_; }
+    Match.prototype.setDefeatedTeam = function(value) { defeatedTeam_ = value; }
+    Match.prototype.isRoundOver = function() { return isRoundOver_; }
+    Match.prototype.setRoundOver = function(value) { isRoundOver_ = value; }
+    Match.prototype.getGotoNewRoundFrame = function() { return gotoNewRoundFrame_; }
+    Match.prototype.setGotoNewRoundFrame = function(value) { gotoNewRoundFrame_ = value; }
+    Match.prototype.getPlayerCount = function() { return playerCount_; }
+    Match.prototype.setPlayerCount = function(value) { playerCount_ = value; }
+    Match.prototype.getHitSystem = function() { return actionSystem_; }
+    Match.prototype.isSuperMoveActive = function() { return isSuperMoveActive_; }
+    Match.prototype.setSuperMoveActive = function(value) { isSuperMoveActive_ = value; }
+    Match.prototype.getDimBackgroundElement = function() { return dimBackground_; }
+    Match.prototype.getRound = function() { return round_; }
+    Match.prototype.setRound = function(value) { round_ = value; }
+    Match.prototype.getAllowInput = function() { return allowInput_; }
+    Match.prototype.setAllowInput = function(value) { allowInput_ = value; }
 
-    Match.prototype.GetStage = function() { return this.stage_; }
-    Match.prototype.ResetKeys = function()
+    Match.prototype.getStage = function() { return this.Stage; }
+    Match.prototype.resetKeys = function()
     {
-        for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-            this.teamA_.GetPlayer(i).ClearInput();
-        for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-            this.teamB_.GetPlayer(i).ClearInput();
+        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            this.TeamA.getPlayer(i).clearInput();
+        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            this.TeamB.getPlayer(i).clearInput();
     }
-    Match.prototype.PlayerCount = function()
+    Match.prototype.playerCount = function()
     {
-        if(this.GetPlayerCount())
-            this.SetPlayerCount(this.teamA_.GetPlayers().length + this.teamB_.GetPlayers().length);
+        if(this.getPlayerCount())
+            this.setPlayerCount(this.TeamA.getPlayers().length + this.TeamB.getPlayers().length);
 
-        return this.GetPlayerCount();
+        return this.getPlayerCount();
         
     }
-    Match.prototype.GetGame = function() { return game_; }
-    Match.prototype.GetCurrentFrame = function() { return game_.GetCurrentFrame(); }
+    Match.prototype.getGame = function() { return game_; }
+    Match.prototype.getCurrentFrame = function() { return game_.getCurrentFrame(); }
 
-    Match.prototype.InitText = function()
+    Match.prototype.initText = function()
     {
-        this.teamA_.InitText();
-        this.teamB_.InitText();
+        this.TeamA.initText();
+        this.TeamB.initText();
     }
 
 
     /*Tells the result of the match*/
-    Match.prototype.HandleMatchOver = function(frame)
+    Match.prototype.handleMatchOver = function(frame)
     {
         if(frame > CONSTANTS.MAX_FRAME)
         {
-            announcer_.TimeOver();
+            announcer_.timeOver();
         }
     }
     /* Is the match over yet? */
-    Match.prototype.IsMatchOver = function(frame)
+    Match.prototype.isMatchOver = function(frame)
     {
         return frame > CONSTANTS.MAX_FRAME;
     }
 
-    Match.prototype.ShowTeamInfo = function()
+    Match.prototype.showTeamInfo = function()
     {
     }
     /*Changes the health value for a team*/
-    Match.prototype.ChangeHealth = function(team, changeAmount)
+    Match.prototype.changeHealth = function(team, changeAmount)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {this.teamA_.GetHealthbar().Change(changeAmount); break; }
-            case CONSTANTS.TEAM2: {this.teamB_.GetHealthbar().Change(changeAmount); break; }
+            case CONSTANTS.TEAM1: {this.TeamA.getHealthbar().change(changeAmount); break; }
+            case CONSTANTS.TEAM2: {this.TeamB.getHealthbar().change(changeAmount); break; }
         };
     }
     /*Changes the energy value for a team*/
-    Match.prototype.ChangeEnergy = function(team, changeAmount)
+    Match.prototype.changeEnergy = function(team, changeAmount)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {this.teamA_.GetEnergybar().Change(changeAmount); break; }
-            case CONSTANTS.TEAM2: {this.teamB_.GetEnergybar().Change(changeAmount); break; }
+            case CONSTANTS.TEAM1: {this.TeamA.getEnergybar().change(changeAmount); break; }
+            case CONSTANTS.TEAM2: {this.TeamB.getEnergybar().change(changeAmount); break; }
         };
     }
     /*Returns the health for a team*/
-    Match.prototype.GetHealth = function(team)
+    Match.prototype.getHealth = function(team)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {return this.teamA_.GetHealthbar().GetAmount();}
-            case CONSTANTS.TEAM2: {return this.teamB_.GetHealthbar().GetAmount();}
+            case CONSTANTS.TEAM1: {return this.TeamA.getHealthbar().getAmount();}
+            case CONSTANTS.TEAM2: {return this.TeamB.getHealthbar().getAmount();}
         }
     }
     /*Returns the energy for a team*/
-    Match.prototype.GetEnergy = function(team)
+    Match.prototype.getEnergy = function(team)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {return this.teamA_.GetEnergybar().GetAmount();}
-            case CONSTANTS.TEAM2: {return this.teamB_.GetEnergybar().GetAmount();}
+            case CONSTANTS.TEAM1: {return this.TeamA.getEnergybar().getAmount();}
+            case CONSTANTS.TEAM2: {return this.TeamB.getEnergybar().getAmount();}
         }
     }
     /*returns the highest Y value*/
-    Match.prototype.GetHighestY = function()
+    Match.prototype.getHighestY = function()
     {
         var retVal = 0;
-        for(var i = 0; i < this.teamA_.players_.length; ++i)
-            retVal = this.teamA_.players_[i].y_ > retVal ? this.teamA_.players_[i].y_ : retVal;
-        for(var i = 0; i < this.teamB_.players_.length; ++i)
-            retVal = this.teamB_.players_[i].y_ > retVal ? this.teamB_.players_[i].y_ : retVal;
+        for(var i = 0; i < this.TeamA.Players.length; ++i)
+            retVal = this.TeamA.Players[i].y_ > retVal ? this.TeamA.Players[i].y_ : retVal;
+        for(var i = 0; i < this.TeamB.Players.length; ++i)
+            retVal = this.TeamB.Players[i].y_ > retVal ? this.TeamB.Players[i].y_ : retVal;
         return retVal;
     }
     /*Gets the current frame*/
-    Match.prototype.GetCurrentFrame = function()
+    Match.prototype.getCurrentFrame = function()
     {
-        return game_.GetCurrentFrame();
+        return game_.getCurrentFrame();
     }
     /*A team has just been defeated*/
-    Match.prototype.DefeatTeam = function(team,attackDirection,loseIgnoreId)
+    Match.prototype.defeatTeam = function(team,attackDirection,loseIgnoreId)
     {
-        announcer_.KO();
-        this.ReleaseAllInput();
+        announcer_.kO();
+        this.releaseAllInput();
 
-        this.SetAllowInput(false);
-        var frame = game_.GetCurrentFrame();
-        game_.SetSpeed(CONSTANTS.SLOW_SPEED);
-        this.SetDefeatedTeam(team);
-        switch(this.GetDefeatedTeam())
+        this.setAllowInput(false);
+        var frame = game_.getCurrentFrame();
+        game_.setSpeed(CONSTANTS.SLOW_SPEED);
+        this.setDefeatedTeam(team);
+        switch(this.getDefeatedTeam())
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-                    if(this.teamA_.GetPlayer(i).id_ != loseIgnoreId)
-                        this.teamA_.GetPlayer(i).ForceLose(attackDirection);
-                for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-                    this.teamB_.GetPlayer(i).JustWon(frame);
+                for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                    if(this.TeamA.getPlayer(i).Id != loseIgnoreId)
+                        this.TeamA.getPlayer(i).forceLose(attackDirection);
+                for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                    this.TeamB.getPlayer(i).justWon(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-                    if(this.teamB_.GetPlayer(i).id_ != loseIgnoreId)
-                        this.teamB_.GetPlayer(i).ForceLose(attackDirection);
-                for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-                    this.teamA_.GetPlayer(i).JustWon(frame);
+                for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                    if(this.TeamB.getPlayer(i).Id != loseIgnoreId)
+                        this.TeamB.getPlayer(i).forceLose(attackDirection);
+                for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                    this.TeamA.getPlayer(i).justWon(frame);
                 break;
             }
         }
     }
     /*Should be called after the player who was defeated hits the ground*/
-    Match.prototype.DeadAnimationComplete = function(player,frame)
+    Match.prototype.deadAnimationComplete = function(player,frame)
     {
-        if(!this.IsRoundOver())
+        if(!this.isRoundOver())
         {
-            this.SetRoundOver(true);
-            game_.SetSpeed(CONSTANTS.NORMAL_SPEED);
-            this.SetGotoNewRoundFrame(frame);
+            this.setRoundOver(true);
+            game_.setSpeed(CONSTANTS.NORMAL_SPEED);
+            this.setGotoNewRoundFrame(frame);
 
-            announcer_.EndRound();
+            announcer_.endRound();
         }
     }
     /*Registers an action*/
-    Match.prototype.RegisterAction = function(details)
+    Match.prototype.registerAction = function(details)
     {
-        this.GetHitSystem().Register(details);
+        this.getHitSystem().register(details);
     }
     /**/
-    Match.prototype.ReleaseAllInput = function()
+    Match.prototype.releaseAllInput = function()
     {
-        game_.ResetKeys();
+        game_.resetKeys();
     }
     /*Restarts the match*/
-    Match.prototype.Reset = function()
+    Match.prototype.reset = function()
     {
-        if(this.GetGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
+        if(this.getGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
         {
-            game_.ShowLoading(true);
+            game_.showLoading(true);
             isPresented_ = false;
-            faceoff_.Reset();
-            this.SetAllowInput(false);
-            this.SetRound(this.GetRound() + 1);
-            game_.SetSpeed(CONSTANTS.NORMAL_SPEED);
-            this.SetGotoNewRoundFrame(CONSTANTS.NO_FRAME);
-            this.teamA_.SetCursor(0);
-            this.teamB_.SetCursor(0);
-            this.SetSuperMoveActive(false);
+            faceoff_.reset();
+            this.setAllowInput(false);
+            this.setRound(this.getRound() + 1);
+            game_.setSpeed(CONSTANTS.NORMAL_SPEED);
+            this.setGotoNewRoundFrame(CONSTANTS.NO_FRAME);
+            this.TeamA.setCursor(0);
+            this.TeamB.setCursor(0);
+            this.setSuperMoveActive(false);
 
 
-            game_.ResetFrame();
+            game_.resetFrame();
 
-            this.teamA_.GetEnergybar().Change(0,0);
-            this.teamB_.GetEnergybar().Change(0,0);
+            this.TeamA.getEnergybar().change(0,0);
+            this.TeamB.getEnergybar().change(0,0);
 
-            if(!!this.teamA_.GetPlayer(0))
-                this.teamA_.GetPlayer(0).SetX(STAGE.START_X);
-            if(!!this.teamB_.GetPlayer(0))
-                this.teamB_.GetPlayer(0).SetX(STAGE.START_X);
+            if(!!this.TeamA.getPlayer(0))
+                this.TeamA.getPlayer(0).setX(STAGE.START_X);
+            if(!!this.TeamB.getPlayer(0))
+                this.TeamB.getPlayer(0).setX(STAGE.START_X);
 
             /*set the starting locations for each player*/
-            for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
+            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
             {
-                this.teamA_.GetPlayer(i).Reset(true);
-                this.teamA_.GetPlayer(i).SetDirection(-1);
-                this.teamA_.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                this.TeamA.getPlayer(i).reset(true);
+                this.TeamA.getPlayer(i).setDirection(-1);
+                this.TeamA.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
-            for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
+            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
             {
-                this.teamB_.GetPlayer(i).Reset(true);
-                this.teamB_.GetPlayer(i).SetDirection(1);
-                this.teamB_.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                this.TeamB.getPlayer(i).reset(true);
+                this.TeamB.getPlayer(i).setDirection(1);
+                this.TeamB.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
 
-            this.SetRoundOver(false);
-            this.stage_.Init();
-            game_.ReleaseText();
+            this.setRoundOver(false);
+            this.Stage.init();
+            game_.releaseText();
 
-            this.teamA_.GetHealthbar().Reset();
-            this.teamB_.GetHealthbar().Reset();
+            this.TeamA.getHealthbar().reset();
+            this.TeamB.getHealthbar().reset();
 
         }
     }
 
     /**/
-    Match.prototype.Pause = function()
+    Match.prototype.pause = function()
     {
-        this.stage_.Pause();
-        this.teamA_.Pause();
-        this.teamB_.Pause();
+        this.Stage.pause();
+        this.TeamA.pause();
+        this.TeamB.pause();
     }
 
     /**/
-    Match.prototype.Resume = function()
+    Match.prototype.resume = function()
     {
-        this.stage_.Resume();
-        this.teamA_.Resume();
-        this.teamB_.Resume();
+        this.Stage.resume();
+        this.TeamA.resume();
+        this.TeamB.resume();
     }
 
-    Match.prototype.PlayerIndex = 0;
+    Match.prototype.playerIndex = 0;
 
     /*sets up the player to take part in the match*/
-    Match.prototype.SetupPlayer = function(player,team)
+    Match.prototype.setupPlayer = function(player,team)
     {
-        var moveStageX          = function(thisValue,otherTeam) { return function(amount,dontOverrideSign) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) {amount = thisValue.GetStage().ScrollX(amount,this,otherTeam.GetPlayers()[i],thisValue,dontOverrideSign);}; return amount; } };
-        /*var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.GetPhysics().FixX(amount,this,false,true);  return 0; } };*/
-        var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.GetPhysics().MoveOtherPlayers(this);  return 0; } };
-        var moveX               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.GetStage().ScrollX(amount,this,null,thisValue); thisValue.GetPhysics().MoveX(amount,this,false,true); return 0; } };
-        var moveY               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.GetPhysics().MoveY(amount,this); return 0; } };
-        var moveToBack          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.GetPlayers().length;++i) {otherTeam.GetPlayers()[i].MoveToBack(true);} } }
-        var moveToFront         = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.GetPlayers().length;++i) {otherTeam.GetPlayers()[i].MoveToFront(true);} } }
-        var projectileMoved     = function(thisValue,otherTeam) { return function(id,x,y) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowBlockFromProjectile(thisValue.GetGame().GetCurrentFrame(),true,id,x,y); } } }
-        var projectileGone      = function(thisValue,otherTeam) { return function(id)     { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowBlockFromProjectile(thisValue.GetGame().GetCurrentFrame(),false,id); } } }
-        var startAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
-        var endAttack           = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { this.Flags.Combat.Remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.GetPlayers()[i].SetAllowBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
-        var startAirAttack      = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { otherTeam.GetPlayers()[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),true,this.GetMidX(),this.GetMidY()); } } }
-        var endAirAttack        = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { this.Flags.Combat.Remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.GetPlayers()[i].SetAllowAirBlock(id,thisValue.GetGame().GetCurrentFrame(),false); } } }
-        var attack              = function(thisValue,otherTeam) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { thisValue.GetPhysics().TryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,otherTeam.GetPlayers()[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound); } } }
-        var projectileAttack    = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.GetPlayers().length;++i) { thisValue.GetPhysics().TryProjectileAttack(frame,projectile,this,otherTeam.GetPlayers()[i]); } } }
-        var changeHealth        = function(thisValue)         { return function(amount) { thisValue.ChangeHealth(this.team_,amount); } }
-        var getHealth           = function(thisValue)         { return function() { return thisValue.GetHealth(this.team_); } }
-        var changeEnergy        = function(thisValue)         { return function(amount) { thisValue.ChangeEnergy(this.team_,amount); } }
-        var getEnergy           = function(thisValue)         { return function() { return thisValue.GetEnergy(this.team_); } }
-        var incCombo            = function(thisValue,team)    { return function() { return team.IncCombo(); } }
-        var incComboRefCount    = function(thisValue,team)    { return function() { return team.IncComboRefCount(); } }
-        var decComboRefCount    = function(thisValue,team)    { return function() { return team.DecComboRefCount(); } }
-        var getCurrentComboCount= function(thisValue,team)    { return function() { return team.GetCurrentCombo(); } }
+        var moveStageX          = function(thisValue,otherTeam) { return function(amount,dontOverrideSign) { for(var i = 0; i < otherTeam.getPlayers().length;++i) {amount = thisValue.getStage().scrollX(amount,this,otherTeam.getPlayers()[i],thisValue,dontOverrideSign);}; return amount; } };
+        /*var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().fixX(amount,this,false,true);  return 0; } };*/
+        var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().moveOtherPlayers(this);  return 0; } };
+        var moveX               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getStage().scrollX(amount,this,null,thisValue); thisValue.getPhysics().moveX(amount,this,false,true); return 0; } };
+        var moveY               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getPhysics().moveY(amount,this); return 0; } };
+        var moveToBack          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayers()[i].moveToBack(true);} } }
+        var moveToFront         = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayers()[i].moveToFront(true);} } }
+        var projectileMoved     = function(thisValue,otherTeam) { return function(id,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
+        var projectileGone      = function(thisValue,otherTeam) { return function(id)     { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),false,id); } } }
+        var startAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY()); } } }
+        var endAttack           = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.getPlayers()[i].setAllowBlock(id,thisValue.getGame().getCurrentFrame(),false); } } }
+        var startAirAttack      = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowAirBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY()); } } }
+        var endAirAttack        = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.getPlayers()[i].setAllowAirBlock(id,thisValue.getGame().getCurrentFrame(),false); } } }
+        var attack              = function(thisValue,otherTeam) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,otherTeam.getPlayers()[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound); } } }
+        var projectileAttack    = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryProjectileAttack(frame,projectile,this,otherTeam.getPlayers()[i]); } } }
+        var changeHealth        = function(thisValue)         { return function(amount) { thisValue.changeHealth(this.Team,amount); } }
+        var getHealth           = function(thisValue)         { return function() { return thisValue.getHealth(this.Team); } }
+        var changeEnergy        = function(thisValue)         { return function(amount) { thisValue.changeEnergy(this.Team,amount); } }
+        var getEnergy           = function(thisValue)         { return function() { return thisValue.getEnergy(this.Team); } }
+        var incCombo            = function(thisValue,team)    { return function() { return team.incCombo(); } }
+        var incComboRefCount    = function(thisValue,team)    { return function() { return team.incComboRefCount(); } }
+        var decComboRefCount    = function(thisValue,team)    { return function() { return team.decComboRefCount(); } }
+        var getCurrentComboCount= function(thisValue,team)    { return function() { return team.getCurrentCombo(); } }
 
         var otherTeam = null;
         var myTeam = null;
@@ -303,251 +302,251 @@ var CreateMatch = function(team1,team2,stage)
 
         switch(team)
         {
-            case 1: {dir = "l"; myTeam = this.teamA_; otherTeam = this.teamB_; break;}
-            case 2: {dir = "r"; myTeam = this.teamB_; otherTeam = this.teamA_; break;}
+            case 1: {dir = "l"; myTeam = this.TeamA; otherTeam = this.TeamB; break;}
+            case 2: {dir = "r"; myTeam = this.TeamB; otherTeam = this.TeamA; break;}
         }
 
-        var index = Match.prototype.PlayerIndex++;
+        var index = Match.prototype.playerIndex++;
 
-        player.id_ = "t" + team + "p" + index;
-        player.moveStageXFn_ = moveStageX(this,otherTeam);
-        player.fixXFn_ = fixX(this,otherTeam);
-        player.moveXFn_ = moveX(this,otherTeam);
-        player.moveYFn_ = moveY(this,otherTeam);
-        player.moveOtherPlayersToBackFn_ = moveToBack(this,otherTeam);
-        player.moveOtherPlayersToFrontFn_ = moveToFront(this,otherTeam);
-        player.takeDamageFn_ = changeHealth(this);
-        player.changeEnergyFn_ = changeEnergy(this);
-        player.attackFn_ = attack(this,otherTeam);
-        player.projectileAttackFn_ = projectileAttack(this,otherTeam);
-        player.SetupInfo(team,dir);
-        player.getHealthFn_ = getHealth(this);
-        player.getEnergyFn_ = getEnergy(this);
-        player.onStartAttackFn_ = startAttack(this,otherTeam);
-        player.onEndAttackFn_ = endAttack(this,otherTeam);
-        player.onStartAirAttackFn_ = startAirAttack(this,otherTeam);
-        player.onEndAirAttackFn_ = endAirAttack(this,otherTeam);
-        player.onProjectileMovedFn_ = projectileMoved(this,otherTeam);
-        player.onProjectileGoneFn_ = projectileGone(this,otherTeam);
-        player.onIncComboFn_ = incCombo(this,myTeam);
-        player.onIncComboRefCountFn_ = incComboRefCount(this,myTeam);
-        player.onDecComboRefCountFn_ = decComboRefCount(this,myTeam);
-        player.getCurrentComboCountFn_ = getCurrentComboCount(this,myTeam);
-        player.InitSprite();
-        player.SetY(this.stage_.GetGroundY());
+        player.Id = "t" + team + "p" + index;
+        player.moveStageXFn = moveStageX(this,otherTeam);
+        player.fixXFn = fixX(this,otherTeam);
+        player.moveXFn = moveX(this,otherTeam);
+        player.moveYFn = moveY(this,otherTeam);
+        player.moveOtherPlayersToBackFn = moveToBack(this,otherTeam);
+        player.moveOtherPlayersToFrontFn = moveToFront(this,otherTeam);
+        player.takeDamageFn = changeHealth(this);
+        player.changeEnergyFn = changeEnergy(this);
+        player.attackFn = attack(this,otherTeam);
+        player.projectileAttackFn = projectileAttack(this,otherTeam);
+        player.setupInfo(team,dir);
+        player.getHealthFn = getHealth(this);
+        player.getEnergyFn = getEnergy(this);
+        player.onStartAttackFn = startAttack(this,otherTeam);
+        player.onEndAttackFn = endAttack(this,otherTeam);
+        player.onStartAirAttackFn = startAirAttack(this,otherTeam);
+        player.onEndAirAttackFn = endAirAttack(this,otherTeam);
+        player.onProjectileMovedFn = projectileMoved(this,otherTeam);
+        player.onProjectileGoneFn = projectileGone(this,otherTeam);
+        player.onIncComboFn = incCombo(this,myTeam);
+        player.onIncComboRefCountFn = incComboRefCount(this,myTeam);
+        player.onDecComboRefCountFn = decComboRefCount(this,myTeam);
+        player.getCurrentComboCountFn = getCurrentComboCount(this,myTeam);
+        player.initSprite();
+        player.setY(this.Stage.getGroundY());
         if(team == 1)
-            player.ChangeDirection(true);
+            player.changeDirection(true);
 
     }
 
     /*Initializes a new match*/
-    Match.prototype.Start = function(ignoreMusic)
+    Match.prototype.start = function(ignoreMusic)
     {
-        this.stage_.Start();
-        faceoff_.Init();
-        announcer_.Init();
+        this.Stage.start();
+        faceoff_.init();
+        announcer_.init();
 
-        this.teamA_.SetPlayers(team1);
-        this.teamB_.SetPlayers(team2);
-        this.InitText();
+        this.TeamA.setPlayers(team1);
+        this.TeamB.setPlayers(team2);
+        this.initText();
         /*init team 1*/
-        for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
+        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
         {
-            this.SetupPlayer(this.teamA_.GetPlayers()[i],CONSTANTS.TEAM1);
+            this.setupPlayer(this.TeamA.getPlayers()[i],CONSTANTS.TEAM1);
         }
-        if(!!this.teamA_.GetPlayer(0))
+        if(!!this.TeamA.getPlayer(0))
         {
-            faceoff_.SetTeamA(this.teamA_.GetPlayer(0).name_);
-            this.teamA_.GetPlayer(0).SetX(STAGE.START_X);
+            faceoff_.setTeamA(this.TeamA.getPlayer(0).Name);
+            this.TeamA.getPlayer(0).setX(STAGE.START_X);
         }
 
         /*init team 2*/
-        for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
+        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
         {
-            this.SetupPlayer(this.teamB_.GetPlayers()[i],CONSTANTS.TEAM2);
+            this.setupPlayer(this.TeamB.getPlayers()[i],CONSTANTS.TEAM2);
         }
-        if(!!this.teamB_.GetPlayer(0))
+        if(!!this.TeamB.getPlayer(0))
         {
-            faceoff_.SetTeamB(this.teamB_.GetPlayer(0).name_);
-            this.teamB_.GetPlayer(0).SetX(STAGE.START_X);
+            faceoff_.setTeamB(this.TeamB.getPlayer(0).Name);
+            this.TeamB.getPlayer(0).setX(STAGE.START_X);
         }
 
         /*set the starting locations for each player*/
-        for(var i = 1, length = this.teamA_.GetPlayers().length; i < length; ++i)
-            this.teamA_.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
-        for(var i = 1, length = this.teamB_.GetPlayers().length; i < length; ++i)
-            this.teamB_.GetPlayer(i).SetX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+        for(var i = 1, length = this.TeamA.getPlayers().length; i < length; ++i)
+            this.TeamA.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+        for(var i = 1, length = this.TeamB.getPlayers().length; i < length; ++i)
+            this.TeamB.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
-        this.stage_.Init();
-        this.teamA_.Init();
-        this.teamB_.Init();
+        this.Stage.init();
+        this.TeamA.init();
+        this.TeamB.init();
     }
     /*Handles key state changes*/
-    Match.prototype.OnKeyStateChanged = function(isDown,keyCode,frame)
+    Match.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
-        //if(this.GetAllowInput())
+        //if(this.getAllowInput())
         //{
-            for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-                this.teamA_.GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
-            for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-                this.teamB_.GetPlayer(i).OnKeyStateChanged(isDown,keyCode,frame);
+            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                this.TeamA.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
+            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                this.TeamB.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
         //}
     }
     /*Dims the background when a player is starting a super move*/
-    Match.prototype.SetBackgroundTransparent = function(player)
+    Match.prototype.setBackgroundTransparent = function(player)
     {
         if(!!player)
         {
-            this.GetDimBackgroundElement().style.display = "";
+            this.getDimBackgroundElement().style.display = "";
         }
         else
         {
-            this.GetDimBackgroundElement().style.display = "none";
+            this.getDimBackgroundElement().style.display = "none";
         }
     }
-    Match.prototype.OnSuperMoveStarted = function(player)
+    Match.prototype.onSuperMoveStarted = function(player)
     {
-        if(!this.IsSuperMoveActive())
+        if(!this.isSuperMoveActive())
         {
-            this.SetBackgroundTransparent(player);
-            this.SetSuperMoveActive(true);
-            for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-                if(this.teamA_.GetPlayer(i).id_ != player.id_)
-                    this.teamA_.GetPlayer(i).OnSuperMoveStarted();
-            for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-                if(this.teamB_.GetPlayer(i).id_ != player.id_)
-                    this.teamB_.GetPlayer(i).OnSuperMoveStarted();
+            this.setBackgroundTransparent(player);
+            this.setSuperMoveActive(true);
+            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                if(this.TeamA.getPlayer(i).Id != player.Id)
+                    this.TeamA.getPlayer(i).onSuperMoveStarted();
+            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                if(this.TeamB.getPlayer(i).Id != player.Id)
+                    this.TeamB.getPlayer(i).onSuperMoveStarted();
         }
     }
-    Match.prototype.OnSuperMoveCompleted = function(player)
+    Match.prototype.onSuperMoveCompleted = function(player)
     {
-        if(this.IsSuperMoveActive())
+        if(this.isSuperMoveActive())
         {
-            this.SetBackgroundTransparent();
-            for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-                if(this.teamA_.GetPlayer(i).id_ != player.id_)
-                    this.teamA_.GetPlayer(i).OnSuperMoveCompleted();
-            for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-                if(this.teamB_.GetPlayer(i).id_ != player.id_)
-                    this.teamB_.GetPlayer(i).OnSuperMoveCompleted();
-            this.SetSuperMoveActive(false);
+            this.setBackgroundTransparent();
+            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                if(this.TeamA.getPlayer(i).Id != player.Id)
+                    this.TeamA.getPlayer(i).onSuperMoveCompleted();
+            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                if(this.TeamB.getPlayer(i).Id != player.Id)
+                    this.TeamB.getPlayer(i).onSuperMoveCompleted();
+            this.setSuperMoveActive(false);
         }
     }
-    Match.prototype.PreFrameMove = function(frame)
+    Match.prototype.preFrameMove = function(frame)
     {
-        for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-            this.teamA_.GetPlayer(i).OnPreFrameMove(frame);
-        for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-            this.teamB_.GetPlayer(i).OnPreFrameMove(frame);
+        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            this.TeamA.getPlayer(i).onPreFrameMove(frame);
+        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            this.TeamB.getPlayer(i).onPreFrameMove(frame);
     }
-    Match.prototype.RenderComplete = function(frame)
+    Match.prototype.renderComplete = function(frame)
     {
-        for(var i = 0; i < this.teamA_.GetPlayers().length; ++i)
-            this.teamA_.GetPlayer(i).OnRenderComplete(frame);
-        for(var i = 0; i < this.teamB_.GetPlayers().length; ++i)
-            this.teamB_.GetPlayer(i).OnRenderComplete(frame);
-    }
-
-    /**/
-    Match.prototype.StartNewRound = function(frame)
-    {
-        announcer_.StartRound();
+        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            this.TeamA.getPlayer(i).onRenderComplete(frame);
+        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            this.TeamB.getPlayer(i).onRenderComplete(frame);
     }
 
     /**/
-    Match.prototype.EndNewRound = function(frame)
+    Match.prototype.startNewRound = function(frame)
     {
-        this.SetAllowInput(true);
+        announcer_.startRound();
     }
 
     /**/
-    Match.prototype.Present = function()
+    Match.prototype.endNewRound = function(frame)
+    {
+        this.setAllowInput(true);
+    }
+
+    /**/
+    Match.prototype.present = function()
     {
         isPresented_ = true;
-        game_.ShowLoading(false);
+        game_.showLoading(false);
     }
 
 
-    Match.prototype.HandleRound1 = function(frame)
+    Match.prototype.handleRound1 = function(frame)
     {
-        faceoff_.HandleRound1(frame);
+        faceoff_.handleRound1(frame);
         if(!startedTheme_ && (frame > CONSTANTS.START_THEME_DELAY))
         {
-            this.stage_.PlayMusic();
+            this.Stage.playMusic();
             startedTheme_ = true;
         }
         if(!teamsVisible_ && (frame > CONSTANTS.SHOW_TEAMS_DELAY))
         {
-            faceoff_.Hide(frame);
-            this.teamA_.Show();
-            this.teamB_.Show();
+            faceoff_.hide(frame);
+            this.TeamA.show();
+            this.TeamB.show();
             teamsVisible_ = true;
         }
         if((gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
-            this.Reset();
+            this.reset();
     }
 
-    Match.prototype.HandleOtherRounds = function(frame)
+    Match.prototype.handleOtherRounds = function(frame)
     {
         if((gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
         {
-            this.Reset();
-            frame = game_.GetCurrentFrame();
+            this.reset();
+            frame = game_.getCurrentFrame();
         }
-        faceoff_.HandleOtherRounds(frame);
+        faceoff_.handleOtherRounds(frame);
     }
 
     /*pre-render calculations to be performed here*/
-    Match.prototype.FrameMove = function(frame,keyboardState)
+    Match.prototype.frameMove = function(frame,keyboardState)
     {
-        this.stage_.FrameMove(frame);
-        this.GetHitSystem().FrameMove(frame);
+        this.Stage.frameMove(frame);
+        this.getHitSystem().frameMove(frame);
 
-        this.teamA_.FrameMove(frame,keyboardState,this.stage_.X, this.stage_.GetGroundY());
-        this.teamB_.FrameMove(frame,keyboardState,this.stage_.X, this.stage_.GetGroundY());
+        this.TeamA.frameMove(frame,keyboardState,this.Stage.X, this.Stage.getGroundY());
+        this.TeamB.frameMove(frame,keyboardState,this.Stage.X, this.Stage.getGroundY());
 
         if(round_ != 1)
-            this.HandleOtherRounds(frame);
+            this.handleOtherRounds(frame);
         else
         {
-            this.HandleRound1(frame);
-            faceoff_.FrameMove(frame);
+            this.handleRound1(frame);
+            faceoff_.frameMove(frame);
         }
     }
 
     /*All rendering and CSS manipulation to be done here*/
-    Match.prototype.Render = function(frame)
+    Match.prototype.render = function(frame)
     {
 
-        this.teamA_.Render(frame,this.stage_.GetDeltaX(),this.stage_.GetDeltaY());
-        this.teamB_.Render(frame,this.stage_.GetDeltaX(),this.stage_.GetDeltaY());
+        this.TeamA.render(frame,this.Stage.getDeltaX(),this.Stage.getDeltaY());
+        this.TeamB.render(frame,this.Stage.getDeltaX(),this.Stage.getDeltaY());
 
-        this.stage_.Render();
+        this.Stage.render();
 
         if(!isPresented_ && (frame > CONSTANTS.PRESENT_DELAY))
-            this.Present();
+            this.present();
         if(round_ == 1)
-            faceoff_.Render(frame);
+            faceoff_.render(frame);
     }
 
-    Match.prototype.Kill = function()
+    Match.prototype.kill = function()
     {
-        this.Release();
+        this.release();
     }
 
     /*Remove elements from the DOM and remove any custom CSS*/
-    Match.prototype.Release = function()
+    Match.prototype.release = function()
     {
-        this.stage_.Release();
-        this.teamA_.Release();
-        this.teamB_.Release();
-        faceoff_.Release();
+        this.Stage.release();
+        this.TeamA.release();
+        this.TeamB.release();
+        faceoff_.release();
     }
 
 
-    Match.prototype.LoadAssets = function()
+    Match.prototype.loadAssets = function()
     {
-        stuffLoader_.Queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
+        stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
     }
 
     /**********************************************************************************/
@@ -564,174 +563,174 @@ var CreateMatch = function(team1,team2,stage)
 
         var Faceoff = function()
         {
-            this.faceoffElement_ = null;
-            this.teamAFaceoffElement_ = null;
-            this.teamBFaceoffElement_ = null;
-            this.teamANameElement_ = null;
-            this.teamBNameElement_ = null;
-            this.vsElement_ = null;
+            this.FaceoffElement = null;
+            this.TeamAFaceoffElement = null;
+            this.TeamBFaceoffElement = null;
+            this.TeamANameElement = null;
+            this.TeamBNameElement = null;
+            this.VsElement = null;
 
-            this.maxAngle_ = 360;
-            this.maxScale_ = 1;
+            this.MaxAngle = 360;
+            this.MaxScale = 1;
 
-            this.angle_ = 0;
-            this.scale_ = 0;
+            this.Angle = 0;
+            this.Scale = 0;
 
             var nbFrames = 20;
 
-            this.rotateUpFn_ = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.maxAngle_);
-            this.rotateDownFn_ = (function(max,inc) { return function(t,value) { return Math.max(value + (max/nbFrames), 0); } })(this.maxAngle_);
-            this.scaleUpFn_ = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.maxScale_);
-            this.scaleDownFn_ = (function(max,inc) { return function(t,value) { return Math.max(value - (max/nbFrames), 0); } })(this.maxScale_);
+            this.rotateUpFn = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.MaxAngle);
+            this.rotateDownFn = (function(max,inc) { return function(t,value) { return Math.max(value + (max/nbFrames), 0); } })(this.MaxAngle);
+            this.scaleUpFn = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.MaxScale);
+            this.scaleDownFn = (function(max,inc) { return function(t,value) { return Math.max(value - (max/nbFrames), 0); } })(this.MaxScale);
         }
 
-        Faceoff.prototype.SetTeamA = function(name)
+        Faceoff.prototype.setTeamA = function(name)
         {
-            spriteLookup_.Set(this.teamAFaceoffElement_,"images/misc/misc/p2-select-" + name + ".png");
-            spriteLookup_.Set(this.teamANameElement_,"images/misc/font3/name-" + name + ".png",false,true);
+            spriteLookup_.set(this.TeamAFaceoffElement,"images/misc/misc/p2-select-" + name + ".png");
+            spriteLookup_.set(this.TeamANameElement,"images/misc/font3/name-" + name + ".png",false,true);
         }
-        Faceoff.prototype.SetTeamB = function(name)
+        Faceoff.prototype.setTeamB = function(name)
         {
-            spriteLookup_.Set(this.teamBFaceoffElement_,"images/misc/misc/p2-select-" + name + ".png");
-            spriteLookup_.Set(this.teamBNameElement_,"images/misc/font3/name-" + name + ".png",false,true);
+            spriteLookup_.set(this.TeamBFaceoffElement,"images/misc/misc/p2-select-" + name + ".png");
+            spriteLookup_.set(this.TeamBNameElement,"images/misc/font3/name-" + name + ".png",false,true);
         }
 
-        Faceoff.prototype.Init = function()
+        Faceoff.prototype.init = function()
         {
-            this.faceoffElement_ = window.document.createElement("div");
-            this.faceoffElement_.style.display = "none";
-            this.faceoffElement_.className = "faceoff";
+            this.FaceoffElement = window.document.createElement("div");
+            this.FaceoffElement.style.display = "none";
+            this.FaceoffElement.className = "faceoff";
 
-            this.teamAFaceoffElement_ = window.document.createElement("div");
-            this.teamAFaceoffElement_.className = "team1-faceoff";
+            this.TeamAFaceoffElement = window.document.createElement("div");
+            this.TeamAFaceoffElement.className = "team1-faceoff";
 
-            this.teamBFaceoffElement_ = window.document.createElement("div");
-            this.teamBFaceoffElement_.className = "team2-faceoff";
+            this.TeamBFaceoffElement = window.document.createElement("div");
+            this.TeamBFaceoffElement.className = "team2-faceoff";
 
-            this.faceoffElement_.appendChild(this.teamAFaceoffElement_);
-            this.faceoffElement_.appendChild(this.teamBFaceoffElement_);
+            this.FaceoffElement.appendChild(this.TeamAFaceoffElement);
+            this.FaceoffElement.appendChild(this.TeamBFaceoffElement);
 
-            this.teamANameElement_ = window.document.createElement("div");
-            this.teamANameElement_.className = "faceoff-name flipped";
-            this.teamAFaceoffElement_.appendChild(this.teamANameElement_);
+            this.TeamANameElement = window.document.createElement("div");
+            this.TeamANameElement.className = "faceoff-name flipped";
+            this.TeamAFaceoffElement.appendChild(this.TeamANameElement);
 
-            this.teamBNameElement_ = window.document.createElement("div");
-            this.teamBNameElement_.className = "faceoff-name";
-            this.teamBFaceoffElement_.appendChild(this.teamBNameElement_);
+            this.TeamBNameElement = window.document.createElement("div");
+            this.TeamBNameElement.className = "faceoff-name";
+            this.TeamBFaceoffElement.appendChild(this.TeamBNameElement);
 
-            this.vsElement_ = window.document.createElement("div");
-            this.vsElement_.className = "vs";
-            spriteLookup_.Set(this.vsElement_,"images/misc/misc/vs-0.png");
-            this.faceoffElement_.appendChild(this.vsElement_);
+            this.VsElement = window.document.createElement("div");
+            this.VsElement.className = "vs";
+            spriteLookup_.set(this.VsElement,"images/misc/misc/vs-0.png");
+            this.FaceoffElement.appendChild(this.VsElement);
 
-            this.Reset();
+            this.reset();
 
             /*
-            imageLookup_.GetBgB64(this.teamAFaceoffElement_,"images/misc/head-sprites.png");
-            imageLookup_.GetBgB64(this.teamBFaceoffElement_,"images/misc/head-sprites.png");
-            imageLookup_.GetBgB64(this.teamANameElement_,"images/misc/name-sprites.png");
-            imageLookup_.GetBgB64(this.teamBNameElement_,"images/misc/name-sprites.png");
-            imageLookup_.GetBgB64(this.vsElement_,"images/misc/head-sprites.png");
+            imageLookup_.getBgB64(this.TeamAFaceoffElement,"images/misc/head-sprites.png");
+            imageLookup_.getBgB64(this.TeamBFaceoffElement,"images/misc/head-sprites.png");
+            imageLookup_.getBgB64(this.TeamANameElement,"images/misc/name-sprites.png");
+            imageLookup_.getBgB64(this.TeamBNameElement,"images/misc/name-sprites.png");
+            imageLookup_.getBgB64(this.VsElement,"images/misc/head-sprites.png");
             */
 
-            window.document.getElementById("pnlStage").appendChild(this.faceoffElement_);
+            window.document.getElementById("pnlStage").appendChild(this.FaceoffElement);
         }
 
-        Faceoff.prototype.IsActive = function()
+        Faceoff.prototype.isActive = function()
         {
             return !startedRound_;
         }
 
-        Faceoff.prototype.Reset = function()
+        Faceoff.prototype.reset = function()
         {
             showedFaceoff_ = false;
             announcedNewRound_ = false;
             startedRound_ = false;
-            this.scale_ = 0;
-            this.angle_ = 0;
+            this.Scale = 0;
+            this.Angle = 0;
 
-            this.RotateScale();
+            this.rotateScale();
 
-            this.teamANameElement_.style.display = "none";
-            this.teamBNameElement_.style.display = "none";
-            this.vsElement_.style.display = "none";
+            this.TeamANameElement.style.display = "none";
+            this.TeamBNameElement.style.display = "none";
+            this.VsElement.style.display = "none";
             areNamesHidden_ = true;
         }
 
-        Faceoff.prototype.Pause = function()
+        Faceoff.prototype.pause = function()
         {
-            soundManager_.Pause(faceoffSound_);
+            soundManager_.pause(faceoffSound_);
         }
 
-        Faceoff.prototype.Resume = function()
+        Faceoff.prototype.resume = function()
         {
             if(!startedRound_)
-                soundManager_.Resume(faceoffSound_);
+                soundManager_.resume(faceoffSound_);
         }
 
-        Faceoff.prototype.Release = function()
+        Faceoff.prototype.release = function()
         {
-            utils_.RemoveFromDOM(this.faceoffElement_);
+            utils_.removeFromDOM(this.FaceoffElement);
         }
 
-        Faceoff.prototype.Show = function(frame)
+        Faceoff.prototype.show = function(frame)
         {
             showedFaceoff_ = true;
-            soundManager_.QueueSound(faceoffSound_);
-            this.faceoffElement_.style.display = "";
+            soundManager_.queueSound(faceoffSound_);
+            this.FaceoffElement.style.display = "";
         }
 
 
-        Faceoff.prototype.Hide = function(frame)
+        Faceoff.prototype.hide = function(frame)
         {
-            this.faceoffElement_.style.display = "none";
+            this.FaceoffElement.style.display = "none";
         }
 
-        Faceoff.prototype.StartNewRound = function(frame)
+        Faceoff.prototype.startNewRound = function(frame)
         {
             announcedNewRound_ = true;
-            match_.StartNewRound(frame);
+            match_.startNewRound(frame);
         }
 
-        Faceoff.prototype.EndNewRound = function(frame)
+        Faceoff.prototype.endNewRound = function(frame)
         {
             startedRound_ = true;
-            match_.EndNewRound(frame);
+            match_.endNewRound(frame);
         }
 
-        Faceoff.prototype.HandleRound1 = function(frame)
+        Faceoff.prototype.handleRound1 = function(frame)
         {
             if(!showedFaceoff_ && (frame > CONSTANTS.SHOW_FACEOFF_DELAY))
-                this.Show(frame);
+                this.show(frame);
             if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_FIRST_ROUND_DELAY))
-                this.StartNewRound(frame);
+                this.startNewRound(frame);
             if(!startedRound_ && (frame > CONSTANTS.START_FIRST_ROUND_DELAY))
-                this.EndNewRound(frame);
+                this.endNewRound(frame);
         }
 
-        Faceoff.prototype.HandleOtherRounds = function(frame)
+        Faceoff.prototype.handleOtherRounds = function(frame)
         {
             if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY))
-                this.StartNewRound(frame);
+                this.startNewRound(frame);
             if(!startedRound_ && (frame > CONSTANTS.START_NEW_ROUND_DELAY))
-                this.EndNewRound(frame);
+                this.endNewRound(frame);
         }
 
-        Faceoff.prototype.FrameMove = function(frame)
+        Faceoff.prototype.frameMove = function(frame)
         {
             if((frame > CONSTANTS.SHOW_FACEOFF_PICS_DELAY) && (frame < CONSTANTS.REMOVE_FACEOFF_PICS_DELAY))
             {
-                if(this.scale_ < this.maxScale_)
+                if(this.Scale < this.MaxScale)
                 {
-                    this.scale_ = this.scaleUpFn_(frame, this.scale_);
-                    this.angle_ = this.rotateUpFn_(frame, this.angle_);
-                    this.RotateScale();
+                    this.Scale = this.scaleUpFn(frame, this.Scale);
+                    this.Angle = this.rotateUpFn(frame, this.Angle);
+                    this.rotateScale();
                 }
                 else if(!!areNamesHidden_)
                 {
-                    this.teamANameElement_.style.display = "";
-                    this.teamBNameElement_.style.display = "";
-                    this.vsElement_.style.display = "";
+                    this.TeamANameElement.style.display = "";
+                    this.TeamBNameElement.style.display = "";
+                    this.VsElement.style.display = "";
                     areNamesHidden_ = false;
                 }
             }
@@ -739,37 +738,37 @@ var CreateMatch = function(team1,team2,stage)
             {
                 if(!areNamesHidden_)
                 {                
-                    this.teamANameElement_.style.display = "none";
-                    this.teamBNameElement_.style.display = "none";
-                    this.vsElement_.style.display = "none";
+                    this.TeamANameElement.style.display = "none";
+                    this.TeamBNameElement.style.display = "none";
+                    this.VsElement.style.display = "none";
                     areNamesHidden_ = true;
                 }
-                if(this.scale_ > 0)
+                if(this.Scale > 0)
                 {
-                    this.scale_ = this.scaleDownFn_(frame, this.scale_);
-                    this.angle_ = this.rotateDownFn_(frame, this.angle_);
-                    this.RotateScale();
+                    this.Scale = this.scaleDownFn(frame, this.Scale);
+                    this.Angle = this.rotateDownFn(frame, this.Angle);
+                    this.rotateScale();
                 }
             }
         }
 
-        Faceoff.prototype.RotateScale = function()
+        Faceoff.prototype.rotateScale = function()
         {
-            this.teamAFaceoffElement_.style["-webkit-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
-            this.teamAFaceoffElement_.style["-moz-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
-            this.teamAFaceoffElement_.style["MozTransform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
-            this.teamAFaceoffElement_.style["-o-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
-            this.teamAFaceoffElement_.style["OTransform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
-            this.teamAFaceoffElement_.style["-ms-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.TeamAFaceoffElement.style["-webkit-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
+            this.TeamAFaceoffElement.style["-moz-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
+            this.TeamAFaceoffElement.style["MozTransform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
+            this.TeamAFaceoffElement.style["-o-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
+            this.TeamAFaceoffElement.style["OTransform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
+            this.TeamAFaceoffElement.style["-ms-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
 
-            this.teamBFaceoffElement_.style["-webkit-transform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
-            this.teamBFaceoffElement_.style["-moz-transform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
-            this.teamBFaceoffElement_.style["MozTransform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
-            this.teamBFaceoffElement_.style["OTransform"] = "scale(" + this.scale_ + "," + this.scale_ + ") rotate(" + this.angle_ + "deg)";
-            this.teamBFaceoffElement_.style["-ms-transform"] = "scale(-" + this.scale_ + "," + this.scale_ + ") rotateZ(" + this.angle_ + "deg)";
+            this.TeamBFaceoffElement.style["-webkit-transform"] = "scale(" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
+            this.TeamBFaceoffElement.style["-moz-transform"] = "scale(" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
+            this.TeamBFaceoffElement.style["MozTransform"] = "scale(" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
+            this.TeamBFaceoffElement.style["OTransform"] = "scale(" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
+            this.TeamBFaceoffElement.style["-ms-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
         }
 
-        Faceoff.prototype.Render = function(frame)
+        Faceoff.prototype.render = function(frame)
         {
         }
 

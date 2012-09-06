@@ -1,109 +1,109 @@
-﻿/*Renders debug info*/
-Player.prototype.RenderDebugInfo = function()
+/*Renders debug info*/
+Player.prototype.renderDebugInfo = function()
 {
     /*
-    var bottom = (this.GetBoxBottom() + (this.GetBoxHeight()/2)) + "px";
-    this.debugB_.style.left = (this.GetRightX()) + "px";
-    this.debugB_.style.bottom = bottom;
-    this.debugF_.style.left = (this.GetLeftX()) + "px";
-    this.debugF_.style.bottom = bottom;
+    var bottom = (this.getBoxBottom() + (this.getBoxHeight()/2)) + "px";
+    this.DebugB.style.left = (this.getRightX()) + "px";
+    this.DebugB.style.bottom = bottom;
+    this.DebugF.style.left = (this.getLeftX()) + "px";
+    this.DebugF.style.bottom = bottom;
 
-    this.MoveCircle();
-    this.circle_.Render();
+    this.moveCircle();
+    this.Circle.render();
 
     var x = 0;
-    if(this.direction_ < 0)
-        x = this.GetX();
+    if(this.Direction < 0)
+        x = this.getX();
     else
-        x = STAGE.MAX_X - this.GetX();
+        x = STAGE.MAX_X - this.getX();
 
-    this.circle_.DebugElement.style.bottom = this.circle_.RenderY + "px";
-    this.circle_.DebugElement.style.left = (x + this.circle_.OffsetX) + "px";
+    this.Circle.DebugElement.style.bottom = this.Circle.RenderY + "px";
+    this.Circle.DebugElement.style.left = (x + this.Circle.OffsetX) + "px";
     */
 
 
-    if(!!this.Flags.Combat.Has(COMBAT_FLAGS.ATTACK) && this.currentFrame_.HitPoints.length > 0)
+    if(!!this.Flags.Combat.has(COMBAT_FLAGS.ATTACK) && this.CurrentFrame.HitPoints.length > 0)
     {
-        var points = this.currentFrame_.HitPoints;
-        var x = this.GetX();
-        this.debugHit_.style.bottom = (this.GetY() + points[0].y) + "px";
+        var points = this.CurrentFrame.HitPoints;
+        var x = this.getX();
+        this.DebugHit.style.bottom = (this.getY() + points[0].y) + "px";
 
-        if(this.direction_ < 0)
+        if(this.Direction < 0)
         {
-            this.debugHit_.style.right = "";
-            this.debugHit_.style.left = (x + points[0].x) + "px";
+            this.DebugHit.style.right = "";
+            this.DebugHit.style.left = (x + points[0].x) + "px";
         }
         else
         {
-            this.debugHit_.style.left = "";
-            this.debugHit_.style.right = (x + points[0].x) + "px";
+            this.DebugHit.style.left = "";
+            this.DebugHit.style.right = (x + points[0].x) + "px";
         }
-        if(this.debugHit_.style.display != "")
-            this.debugHit_.style.display = "";
+        if(this.DebugHit.style.display != "")
+            this.DebugHit.style.display = "";
     }
     else
     {
-        if(this.debugHit_.style.display != "none")
-            this.debugHit_.style.display = "none";
+        if(this.DebugHit.style.display != "none")
+            this.DebugHit.style.display = "none";
     }
 
 }
 
 
 /**/
-Player.prototype.ReleaseDebugElements = function()
+Player.prototype.releaseDebugElements = function()
 {
-    utils_.RemoveFromDOM(this.debugHit_);
-    utils_.RemoveFromDOM(this.debKeysElement_);
+    utils_.removeFromDOM(this.DebugHit);
+    utils_.removeFromDOM(this.DebKeysElement);
 }
 
 
 /**/
-Player.prototype.CreateDebugElements = function(parentElement)
+Player.prototype.createDebugElements = function(parentElement)
 {
     /*
-    this.debugB_ = window.document.createElement("b");
-    this.debugB_.className = "right";
-    this.debugB_.innerHTML = "r";
-    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.debugB_);
+    this.DebugB = window.document.createElement("b");
+    this.DebugB.className = "right";
+    this.DebugB.innerHTML = "r";
+    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.DebugB);
 
-    this.debugF_ = window.document.createElement("b");
-    this.debugF_.className = "left";
-    this.debugF_.innerHTML = "l";
-    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.debugF_);
+    this.DebugF = window.document.createElement("b");
+    this.DebugF.className = "left";
+    this.DebugF.innerHTML = "l";
+    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.DebugF);
 
     var d = window.document.createElement("div");
     d.className = "circle-debug";
-    this.circle_.DebugElement = d;
-    this.circle_.Render();
+    this.Circle.DebugElement = d;
+    this.Circle.render();
     //(parentElement || window.document.getElementById("pnlStage")).appendChild(d);
-    this.element_.appendChild(d);
+    this.Element.appendChild(d);
     */
 
-    this.debugHit_ = window.document.createElement("b");
-    this.debugHit_.style.display = "none";
-    this.debugHit_.className = "hit";
-    this.debugHit_.innerHTML = "h";
-    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.debugHit_);
+    this.DebugHit = window.document.createElement("b");
+    this.DebugHit.style.display = "none";
+    this.DebugHit.className = "hit";
+    this.DebugHit.innerHTML = "h";
+    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.DebugHit);
 }
 
-Player.prototype.CreateKeysElement =  function()
+Player.prototype.createKeysElement =  function()
 {
-    this.debKeysElement_ = window.document.createElement("div");
-    this.debKeysElement_.className = "show-keys";
-    if(this.team_ == 1)
+    this.DebKeysElement = window.document.createElement("div");
+    this.DebKeysElement.className = "show-keys";
+    if(this.Team == 1)
     {
-        window.document.getElementById("pnlTeam1Keys").appendChild(this.debKeysElement_);
+        window.document.getElementById("pnlTeam1Keys").appendChild(this.DebKeysElement);
     }
     else
     {
-        window.document.getElementById("pnlTeam2Keys").appendChild(this.debKeysElement_);
+        window.document.getElementById("pnlTeam2Keys").appendChild(this.DebKeysElement);
     }
-    this.debKeysElement_.innerHTML = "&nbsp;"
+    this.DebKeysElement.innerHTML = "&nbsp;"
 }
 
 
-Player.prototype.DebugShowKeysHelper = function(bit)
+Player.prototype.debugShowKeysHelper = function(bit)
 {
     var retVal = "";
 
@@ -118,16 +118,16 @@ Player.prototype.DebugShowKeysHelper = function(bit)
 }
 
 
-Player.prototype.DebugShowDirsHelper = function(bit)
+Player.prototype.debugShowDirsHelper = function(bit)
 {
     var retVal = "";
-    if(!!(bit & 1) && !!(bit & 4)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/nw.png' />" : "<img src='images/misc/buttons/ne.png' />";
-    if(!!(bit & 1) && !!(bit & 8)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/sw.png' />" : "<img src='images/misc/buttons/se.png' />";
-    if(!!(bit & 2) && !!(bit & 8)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/se.png' />" : "<img src='images/misc/buttons/sw.png' />";
-    if(!!(bit & 2) && !!(bit & 4)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/ne.png' />" : "<img src='images/misc/buttons/nw.png' />";
+    if(!!(bit & 1) && !!(bit & 4)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/nw.png' />" : "<img src='images/misc/buttons/ne.png' />";
+    if(!!(bit & 1) && !!(bit & 8)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/sw.png' />" : "<img src='images/misc/buttons/se.png' />";
+    if(!!(bit & 2) && !!(bit & 8)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/se.png' />" : "<img src='images/misc/buttons/sw.png' />";
+    if(!!(bit & 2) && !!(bit & 4)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/ne.png' />" : "<img src='images/misc/buttons/nw.png' />";
 
-    if(!(bit & 4) && !(bit & 8) && !!(bit & 1)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/w.png' />" : "<img src='images/misc/buttons/e.png' />";
-    if(!(bit & 4) && !(bit & 8) && !!(bit & 2)) retVal += this.direction_ == 1 ? "<img src='images/misc/buttons/e.png' />" : "<img src='images/misc/buttons/w.png' />";
+    if(!(bit & 4) && !(bit & 8) && !!(bit & 1)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/w.png' />" : "<img src='images/misc/buttons/e.png' />";
+    if(!(bit & 4) && !(bit & 8) && !!(bit & 2)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/e.png' />" : "<img src='images/misc/buttons/w.png' />";
 
     if(!(bit & 1) && !(bit & 2) && !!(bit & 4)) retVal += "<img src='images/misc/buttons/n.png' />";
     if(!(bit & 1) && !(bit & 2) && !!(bit & 8)) retVal += "<img src='images/misc/buttons/s.png' />";
@@ -136,20 +136,20 @@ Player.prototype.DebugShowDirsHelper = function(bit)
 }
 
 
-Player.prototype.DebugShowKeys = function()
+Player.prototype.debugShowKeys = function()
 {
     return;
     var output = "";
     var tmp = "";
-    for(var i = 0, length = this.keyStates_.length; i < length; ++i)
+    for(var i = 0, length = this.KeyStates.length; i < length; ++i)
     {
         tmp = "";
-        var bit = this.keyStates_[i].Bit;
-        var keys = ((((((((this.keyStates_[i].Bit | 1) ^ 1) | 2) ^ 2) | 4) ^ 4) | 8) ^ 8);
-        var dir = ((((((((((((this.keyStates_[i].Bit | 16) ^ 16) | 32) ^ 32) | 64) ^ 64) | 128) ^ 128) | 256) ^ 256) | 512) ^ 512);
+        var bit = this.KeyStates[i].Bit;
+        var keys = ((((((((this.KeyStates[i].Bit | 1) ^ 1) | 2) ^ 2) | 4) ^ 4) | 8) ^ 8);
+        var dir = ((((((((((((this.KeyStates[i].Bit | 16) ^ 16) | 32) ^ 32) | 64) ^ 64) | 128) ^ 128) | 256) ^ 256) | 512) ^ 512);
         
-        tmp += this.DebugShowDirsHelper(dir);
-        tmp += this.DebugShowKeysHelper(keys);
+        tmp += this.debugShowDirsHelper(dir);
+        tmp += this.debugShowKeysHelper(keys);
 
         if(!!tmp)
         {
@@ -163,7 +163,7 @@ Player.prototype.DebugShowKeys = function()
 
     if(!!output)
     {
-        this.debKeysElement_.innerHTML = output;
+        this.DebKeysElement.innerHTML = output;
     }
 }
 

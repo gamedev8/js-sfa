@@ -1,4 +1,4 @@
-﻿/*logic for the energy bar*/
+/*logic for the energy bar*/
 
 var CreateEnergyBar = function(pnlID,team)
 {
@@ -22,92 +22,92 @@ var CreateEnergyBar = function(pnlID,team)
     {
     }
 
-    EnergyBar.prototype.GetAmount = function() { return amount_; }
-    EnergyBar.prototype.SetAmount = function(value) { amount_ = value; }
-    EnergyBar.prototype.GetTeam = function() { return team_; }
-    EnergyBar.prototype.SetTeam = function(value) { team_ = value; }
-    EnergyBar.prototype.GetParentElement = function() { return parentElement_; }
-    EnergyBar.prototype.SetParentElement = function(value) { parentElement_ = value; }
-    EnergyBar.prototype.GetBarElement = function() { return barElement_; }
-    EnergyBar.prototype.SetBarElement = function(value) { barElement_ = value; }
-    EnergyBar.prototype.GetLevel0Element = function() { return level0Element_; }
-    EnergyBar.prototype.SetLevel0Element = function(value) { level0Element_ = value; }
-    EnergyBar.prototype.GetLevel1Element = function() { return level1Element_; }
-    EnergyBar.prototype.SetLevel1Element = function(value) { level1Element_ = value; }
-    EnergyBar.prototype.GetLevel2Element = function() { return level2Element_; }
-    EnergyBar.prototype.SetLevel2Element = function(value) { level2Element_ = value; }
-    EnergyBar.prototype.GetKey = function() { return key_; }
-    EnergyBar.prototype.SetKey = function(value) { key_ = value; }
-    EnergyBar.prototype.GetStartFrame = function() { return startFrame_; }
-    EnergyBar.prototype.SetStartFrame = function(value) { startFrame_ = value; }
-    EnergyBar.prototype.GetAnimation = function(value) { return animations_[value]; }
-    EnergyBar.prototype.SetAnimation = function(index, value) { animations_[index] = value; }
-    EnergyBar.prototype.GetAnimations = function() { return animations_; }
-    EnergyBar.prototype.SetAnimations = function(value) { animations_ = value; }
-    EnergyBar.prototype.GetFrameCount = function() { return frameCount_; }
-    EnergyBar.prototype.SetFrameCount = function(value) { frameCount_ = value; }
-    EnergyBar.prototype.GetCurrentSrc = function() { return currentSrc_; }
-    EnergyBar.prototype.SetCurrentSrc = function(value) { currentSrc_ = value; }
-    EnergyBar.prototype.GetLastSrc = function() { return lastSrc_; }
-    EnergyBar.prototype.SetLastSrc = function(value) { lastSrc_ = value; }
-    EnergyBar.prototype.IsInitialized = function() { return isInitialized_; }
-    EnergyBar.prototype.SetInitialized = function(value) { isInitialized_ = value; }
+    EnergyBar.prototype.getAmount = function() { return amount_; }
+    EnergyBar.prototype.setAmount = function(value) { amount_ = value; }
+    EnergyBar.prototype.getTeam = function() { return team_; }
+    EnergyBar.prototype.setTeam = function(value) { team_ = value; }
+    EnergyBar.prototype.getParentElement = function() { return parentElement_; }
+    EnergyBar.prototype.setParentElement = function(value) { parentElement_ = value; }
+    EnergyBar.prototype.getBarElement = function() { return barElement_; }
+    EnergyBar.prototype.setBarElement = function(value) { barElement_ = value; }
+    EnergyBar.prototype.getLevel0Element = function() { return level0Element_; }
+    EnergyBar.prototype.setLevel0Element = function(value) { level0Element_ = value; }
+    EnergyBar.prototype.getLevel1Element = function() { return level1Element_; }
+    EnergyBar.prototype.setLevel1Element = function(value) { level1Element_ = value; }
+    EnergyBar.prototype.getLevel2Element = function() { return level2Element_; }
+    EnergyBar.prototype.setLevel2Element = function(value) { level2Element_ = value; }
+    EnergyBar.prototype.getKey = function() { return key_; }
+    EnergyBar.prototype.setKey = function(value) { key_ = value; }
+    EnergyBar.prototype.getStartFrame = function() { return startFrame_; }
+    EnergyBar.prototype.setStartFrame = function(value) { startFrame_ = value; }
+    EnergyBar.prototype.getAnimation = function(value) { return animations_[value]; }
+    EnergyBar.prototype.setAnimation = function(index, value) { animations_[index] = value; }
+    EnergyBar.prototype.getAnimations = function() { return animations_; }
+    EnergyBar.prototype.setAnimations = function(value) { animations_ = value; }
+    EnergyBar.prototype.getFrameCount = function() { return frameCount_; }
+    EnergyBar.prototype.setFrameCount = function(value) { frameCount_ = value; }
+    EnergyBar.prototype.getCurrentSrc = function() { return currentSrc_; }
+    EnergyBar.prototype.setCurrentSrc = function(value) { currentSrc_ = value; }
+    EnergyBar.prototype.getLastSrc = function() { return lastSrc_; }
+    EnergyBar.prototype.setLastSrc = function(value) { lastSrc_ = value; }
+    EnergyBar.prototype.isInitialized = function() { return isInitialized_; }
+    EnergyBar.prototype.setInitialized = function(value) { isInitialized_ = value; }
 
-    EnergyBar.prototype.GetNextFrameID = function()
+    EnergyBar.prototype.getNextFrameID = function()
     {
-        this.SetFrameCount(this.GetFrameCount() + 1);
-        return this.GetFrameCount();
+        this.setFrameCount(this.getFrameCount() + 1);
+        return this.getFrameCount();
     }
-    EnergyBar.prototype.AddAnimation = function(key)
+    EnergyBar.prototype.addAnimation = function(key)
     {
         /*use default values for the Animation*/
-        this.SetAnimation(key, CreateAnimation());
-        return this.GetAnimation(key);
+        this.setAnimation(key, CreateAnimation());
+        return this.getAnimation(key);
     }
 
     /**/
-    EnergyBar.prototype.Release = function()
+    EnergyBar.prototype.release = function()
     {
-        utils_.RemoveChildrenFromDOM(parentElement_, true);
+        utils_.removeChildrenFromDOM(parentElement_, true);
     }
 
     /*initialized the energy bar*/
-    EnergyBar.prototype.Init = function()
+    EnergyBar.prototype.init = function()
     {
         /***************************/
         /*initialize the animations*/
         /***************************/
-        if(!this.IsInitialized())
+        if(!this.isInitialized())
         {
             var nbFrames = 8;
 
-            var level0 = this.AddAnimation(ENERGYBAR.LEVEL0_KEY);
-            level0.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-team-" + team_ + ".png",nbFrames)
+            var level0 = this.addAnimation(ENERGYBAR.LEVEL0_KEY);
+            level0.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-team-" + team_ + ".png",nbFrames)
 
-            var level0Maxed = this.AddAnimation(ENERGYBAR.LEVEL0MAXED_KEY);
-            level0Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-1.png",nbFrames)
-            level0Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-2.png",nbFrames)
-            level0Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-3.png",nbFrames)
-            level0Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-4.png",nbFrames)
-            level0Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-3.png",nbFrames)
-            level0Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-2.png",nbFrames)
+            var level0Maxed = this.addAnimation(ENERGYBAR.LEVEL0MAXED_KEY);
+            level0Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-1.png",nbFrames)
+            level0Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-2.png",nbFrames)
+            level0Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-3.png",nbFrames)
+            level0Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-4.png",nbFrames)
+            level0Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-3.png",nbFrames)
+            level0Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl0-full-team-" + team_ + "-2.png",nbFrames)
 
-            var level1Maxed = this.AddAnimation(ENERGYBAR.LEVEL1MAXED_KEY);
-            level1Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-1.png",nbFrames)
-            level1Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-2.png",nbFrames)
-            level1Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-3.png",nbFrames)
-            level1Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-4.png",nbFrames)
-            level1Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-3.png",nbFrames)
-            level1Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-2.png",nbFrames)
+            var level1Maxed = this.addAnimation(ENERGYBAR.LEVEL1MAXED_KEY);
+            level1Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-1.png",nbFrames)
+            level1Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-2.png",nbFrames)
+            level1Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-3.png",nbFrames)
+            level1Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-4.png",nbFrames)
+            level1Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-3.png",nbFrames)
+            level1Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl1-full-team-" + team_ + "-2.png",nbFrames)
 
-            var level2Maxed = this.AddAnimation(ENERGYBAR.LEVEL2MAXED_KEY);
-            level2Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-1.png",nbFrames)
-            level2Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-2.png",nbFrames)
-            level2Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-3.png",nbFrames)
-            level2Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-4.png",nbFrames)
-            level2Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-3.png",nbFrames)
-            level2Maxed.AddFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-2.png",nbFrames)
-            this.SetInitialized(true);
+            var level2Maxed = this.addAnimation(ENERGYBAR.LEVEL2MAXED_KEY);
+            level2Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-1.png",nbFrames)
+            level2Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-2.png",nbFrames)
+            level2Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-3.png",nbFrames)
+            level2Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-4.png",nbFrames)
+            level2Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-3.png",nbFrames)
+            level2Maxed.addFrame(this,0,null,"|images/misc/misc/energy-bar-lvl2-full-team-" + team_ + "-2.png",nbFrames)
+            this.setInitialized(true);
         }
         /******************************/
         /*initialize the html elements*/
@@ -134,108 +134,108 @@ var CreateEnergyBar = function(pnlID,team)
         /*set the initial values*/
 
         /*
-        imageLookup_.GetBgB64(barElement_,"images/misc/bars-sprites.png");
-        imageLookup_.GetBgB64(level0Element_,"images/misc/energy-bar-lvl0.png");
-        imageLookup_.GetBgB64(level1Element_,"images/misc/energy-bar-lvl1.png");
-        imageLookup_.GetBgB64(level2Element_,"images/misc/energy-bar-lvl2.png");
+        imageLookup_.getBgB64(barElement_,"images/misc/bars-sprites.png");
+        imageLookup_.getBgB64(level0Element_,"images/misc/energy-bar-lvl0.png");
+        imageLookup_.getBgB64(level1Element_,"images/misc/energy-bar-lvl1.png");
+        imageLookup_.getBgB64(level2Element_,"images/misc/energy-bar-lvl2.png");
         */
-        this.Change(0);
+        this.change(0);
     }
     /*Resets the energy*/
-    EnergyBar.prototype.Reset = function()
+    EnergyBar.prototype.reset = function()
     {
-        this.SetAmount(-amount_);
-        this.Change(0);
+        this.setAmount(-amount_);
+        this.change(0);
     }
     /**/
-    EnergyBar.prototype.SetCurrentAnimation = function(key,frame)
+    EnergyBar.prototype.setCurrentAnimation = function(key,frame)
     {   
-        this.SetKey(key)
-        this.SetStartFrame(frame);
+        this.setKey(key)
+        this.setStartFrame(frame);
     }
     /*adds to the energy bar*/
-    EnergyBar.prototype.Change = function(amount,frame)
+    EnergyBar.prototype.change = function(amount,frame)
     {
         amount = amount || 0;
         if((amount_ < ENERGYBAR.MAX_LEVEL2) && (amount_ + amount >= ENERGYBAR.MAX_LEVEL2))
-            soundManager_.QueueSound("audio/misc/lvl3.zzz");
+            soundManager_.queueSound("audio/misc/lvl3.zzz");
 
-        this.SetAmount(Math.min(Math.max(amount_ + amount, 0),ENERGYBAR.MAX_LEVEL2));
-        this.HandleAmountChanged(frame || 0);
+        this.setAmount(Math.min(Math.max(amount_ + amount, 0),ENERGYBAR.MAX_LEVEL2));
+        this.handleAmountChanged(frame || 0);
     }
     /*css helper*/
-    EnergyBar.prototype.ShowLevelHelper = function(element,cssDisplay)
+    EnergyBar.prototype.showLevelHelper = function(element,cssDisplay)
     {
         if(element.style.display != cssDisplay)
             element.style.display = cssDisplay;
     }
     /**/
-    EnergyBar.prototype.ShowEnergyLevelBar = function(level)
+    EnergyBar.prototype.showEnergyLevelBar = function(level)
     {
         switch(level)
         {
-            case ENERGYBAR.LEVEL0: { this.ShowLevelHelper(level0Element_,"");     this.ShowLevelHelper(level1Element_,"none"); this.ShowLevelHelper(level2Element_,"none"); break;}
-            case ENERGYBAR.LEVEL1: { this.ShowLevelHelper(level0Element_,"none"); this.ShowLevelHelper(level1Element_,"");     this.ShowLevelHelper(level2Element_,"none"); break;}
-            case ENERGYBAR.LEVEL2: { this.ShowLevelHelper(level0Element_,"none"); this.ShowLevelHelper(level1Element_,"none"); this.ShowLevelHelper(level2Element_,"");     break;}
-            default:               { this.ShowLevelHelper(level0Element_,"none"); this.ShowLevelHelper(level1Element_,"none"); this.ShowLevelHelper(level2Element_,"none"); break;}
+            case ENERGYBAR.LEVEL0: { this.showLevelHelper(level0Element_,"");     this.showLevelHelper(level1Element_,"none"); this.showLevelHelper(level2Element_,"none"); break;}
+            case ENERGYBAR.LEVEL1: { this.showLevelHelper(level0Element_,"none"); this.showLevelHelper(level1Element_,"");     this.showLevelHelper(level2Element_,"none"); break;}
+            case ENERGYBAR.LEVEL2: { this.showLevelHelper(level0Element_,"none"); this.showLevelHelper(level1Element_,"none"); this.showLevelHelper(level2Element_,"");     break;}
+            default:               { this.showLevelHelper(level0Element_,"none"); this.showLevelHelper(level1Element_,"none"); this.showLevelHelper(level2Element_,"none"); break;}
         }
     }
 
     /**/
-    EnergyBar.prototype.HandleAmountChanged = function(frame)
+    EnergyBar.prototype.handleAmountChanged = function(frame)
     {
-        this.ShowEnergyLevelBar();
+        this.showEnergyLevelBar();
         if(amount_ < ENERGYBAR.MAX_LEVEL0)
         {
-            this.ShowEnergyLevelBar(ENERGYBAR.LEVEL0);
+            this.showEnergyLevelBar(ENERGYBAR.LEVEL0);
             level0Element_.style.width = amount_ + "px";
-            this.SetCurrentAnimation(ENERGYBAR.LEVEL0_KEY,frame);
+            this.setCurrentAnimation(ENERGYBAR.LEVEL0_KEY,frame);
         }
         else if(amount_ < ENERGYBAR.MAX_LEVEL1)
         {
-            this.ShowEnergyLevelBar(ENERGYBAR.LEVEL1);
+            this.showEnergyLevelBar(ENERGYBAR.LEVEL1);
             level1Element_.style.width = (amount_ - ENERGYBAR.MAX_LEVEL0) + "px";
-            this.SetCurrentAnimation(ENERGYBAR.LEVEL0MAXED_KEY,frame);
+            this.setCurrentAnimation(ENERGYBAR.LEVEL0MAXED_KEY,frame);
         }
         else if(amount_ < ENERGYBAR.MAX_LEVEL2)
         {
-            this.ShowEnergyLevelBar(ENERGYBAR.LEVEL2);
+            this.showEnergyLevelBar(ENERGYBAR.LEVEL2);
             level2Element_.style.width = (amount_ - ENERGYBAR.MAX_LEVEL1) + "px";
-            this.SetCurrentAnimation(ENERGYBAR.LEVEL1MAXED_KEY,frame);
+            this.setCurrentAnimation(ENERGYBAR.LEVEL1MAXED_KEY,frame);
         }
         else if(amount_ == ENERGYBAR.MAX_LEVEL2)
         {
-            this.ShowEnergyLevelBar(ENERGYBAR.LEVELMAXED);
+            this.showEnergyLevelBar(ENERGYBAR.LEVELMAXED);
             level2Element_.style.width = "0px";
-            this.SetCurrentAnimation(ENERGYBAR.LEVEL2MAXED_KEY,frame);
+            this.setCurrentAnimation(ENERGYBAR.LEVEL2MAXED_KEY,frame);
         }
     }
     /**/
-    EnergyBar.prototype.FrameMove = function(frame)
+    EnergyBar.prototype.frameMove = function(frame)
     {
-        var delta = frame - this.GetStartFrame();
-        var currentFrame = this.GetAnimation(this.GetKey()).GetFrame(delta);
+        var delta = frame - this.getStartFrame();
+        var currentFrame = this.getAnimation(this.getKey()).getFrame(delta);
         /*these animations are continuous, so if we go past the end, reset*/
         if(!currentFrame)
         {
-            this.SetStartFrame(frame);
-            delta = frame - this.GetStartFrame();
-            currentFrame = this.GetAnimation(this.GetKey()).GetFrame(delta);
+            this.setStartFrame(frame);
+            delta = frame - this.getStartFrame();
+            currentFrame = this.getAnimation(this.getKey()).getFrame(delta);
         }
         if(!!currentFrame)
         {
             if(!!currentFrame.LeftSrc)
             {
-                this.SetCurrentSrc(currentFrame.LeftSrc);
+                this.setCurrentSrc(currentFrame.LeftSrc);
             }
         }
     }
     /**/
-    EnergyBar.prototype.Render = function(frame)
+    EnergyBar.prototype.render = function(frame)
     {
-        if(this.GetLastSrc() != this.GetCurrentSrc())
+        if(this.getLastSrc() != this.getCurrentSrc())
         {
-            var data = spriteLookup_.Get(this.GetCurrentSrc());
+            var data = spriteLookup_.get(this.getCurrentSrc());
             if(!!data)
             {
                 barElement_.style.backgroundPosition = data.Left + " " + data.Bottom;

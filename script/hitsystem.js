@@ -1,4 +1,4 @@
-﻿
+
 
 var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,isGrapple,hitX,hitY,attackDirection,who,hitID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
 {
@@ -35,8 +35,8 @@ var MoveOverrideFlags = function(allowOverrideFlags,overrideFlags)
     this.OverrideFlags = overrideFlags || OVERRIDE_FLAGS.NULL;
 }
 
-MoveOverrideFlags.prototype.HasAllowOverrideFlag = function(flag) { return !!flag && !!(this.AllowOverrideFlags & flag); }
-MoveOverrideFlags.prototype.HasOverrideFlag = function(flag) { return !!flag && !!(this.OverrideFlags & flag); }
+MoveOverrideFlags.prototype.hasAllowOverrideFlag = function(flag) { return !!flag && !!(this.AllowOverrideFlags & flag); }
+MoveOverrideFlags.prototype.hasOverrideFlag = function(flag) { return !!flag && !!(this.OverrideFlags & flag); }
 
 
 var ActionDetails = function(overrideFlags,player,otherID,isProjectile,isGrapple,startFrame,frame,otherPlayer)
@@ -45,16 +45,16 @@ var ActionDetails = function(overrideFlags,player,otherID,isProjectile,isGrapple
     this.Frame = frame || 0;
     this.OtherAttackStartFrame = startFrame;
 
-    this.Key = this.GetKey(player.id_,otherID);
+    this.Key = this.getKey(player.Id,otherID);
     this.IsProjectile = isProjectile;
     this.IsGrapple = isGrapple;
     this.Player = player;
     this.OtherPlayer = otherPlayer;
-    this.PlayerID = player.id_;
+    this.PlayerID = player.Id;
 }
 
 
-ActionDetails.prototype.GetKey = function(playerID,otherID)
+ActionDetails.prototype.getKey = function(playerID,otherID)
 {
     var retVal = "";
     /*ensure that the team 1 is always first*/
@@ -74,32 +74,36 @@ var HitSystem = function(actionFrameDelay)
 }
 
 
-HitSystem.prototype.CanOverride = function(key,index)
+HitSystem.prototype.checkPendingHits = function(id,overrideFlags)
+{
+}
+
+HitSystem.prototype.canHit = function(key,index)
 {
     var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
     var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
 
-    var retVal  = false;
-    if(!!first.OtherPlayer && !!first.Player.currentAnimation_.Animation)
+    var retVal  = true;
+    if(!!first.OtherPlayer && !!first.Player.CurrentAnimation.Animation)
     {
-        var a = first.Player.currentAnimation_.Animation.OverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
-        var b = first.OtherPlayer.currentAnimation_.Animation.OverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
-        var c = first.Player.currentAnimation_.Animation.OverrideFlags.HasOverrideFlag(first.OtherPlayer.currentAnimation_.Animation.OverrideFlags.AllowOverrideFlags);
-        var d = first.IsProjectile;
-        var e = !!second && second.IsGrapple;
-        var f = first.IsGrapple;
-        var ignore = first.Player.Flags.Player.Has(PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE);
+        /*grapples can not be overriden*/
+        if(first.IsGrapple || (!!second && second.IsGrapple))
+            return true;
+        if(first.Player.isGrappling())
+            return false;
+        var flags = first.Player.CurrentAnimation.Animation.OverrideFlags;
 
-        retVal = !!ignore && (a || b || (c && first.Player.isInAttackFrame_) || d);
-        if(!!e)
-            return false;
-        if(!!f)
-            return false;
+        var isHitOverriden = flags.hasOverrideFlag(OVERRIDE_FLAGS.ALL) /*overrides all*/
+            || flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags); /*overrides yours*/
+
+        return !isHitOverriden || !!first.Player.IgnoreOverrides;
+
+
     }
     return retVal;
 }
 
-HitSystem.prototype.ClearPendingHit = function(id)
+HitSystem.prototype.clearPendingHit = function(id)
 {
     for(var i in this.Actions)
     {
@@ -119,67 +123,35 @@ HitSystem.prototype.ClearPendingHit = function(id)
     }
 }
 
-HitSystem.prototype.FrameMove = function(frame)
+HitSystem.prototype.frameMove = function(frame)
 {
     for(var i in this.Actions)
     {
         var item = this.Actions[i];
         if(!!item && !!item.ActionFrame && (item.ActionFrame == frame))
         {
-            var canP1Hit = !!item[0] && this.Test(item[0].Key,0);
-            var canP2Hit = !!item[1] && this.Test(item[1].Key,1);
+            var canP1Hit = !!item[0] && this.canHit(item[0].Key,0);
+            var canP2Hit = !!item[1] && this.canHit(item[1].Key,1);
+            var canDoubleHit = !canP1Hit && !canP2Hit
 
-            var canP1HitBeOverriden = !!item[0] && this.CanOverride(item[0].Key,0);
-            var canP2HitBeOverriden = !!item[1] && this.CanOverride(item[1].Key,1);
-
-            if(canP1HitBeOverriden && canP2HitBeOverriden)
-            {
-                canP1Hit = true;
-                canP2Hit = true;
-            }
-            else
-            {
-                if(canP1HitBeOverriden) canP1Hit = false;
-                if(canP2HitBeOverriden) canP2Hit = false;
-            }
-
-            /*if both hits can hit, or if nobody can hit, then allow double hit*/
-            var canDoubleHit =     ((canP1Hit && !canP1HitBeOverriden) && (canP2Hit && !canP2HitBeOverriden))
-                                || ((canP1Hit && canP1HitBeOverriden) && (canP2Hit && canP2HitBeOverriden))
-                                || ((!canP1Hit && !canP1HitBeOverriden) && (!canP2Hit && !canP2HitBeOverriden))
-                                || ((!canP1Hit && canP1HitBeOverriden) && (!canP2Hit && canP2HitBeOverriden));
-
-            /*if nobody can hit, then allow the move executed last to register the hit*/
-            if((!canDoubleHit) && (!canP1Hit && !canP2Hit) && !canP1HitBeOverriden)
-            {
-                if(!!item[0] && !item[1])
-                {
-                    if(item[0].Player.currentAnimation_.StartFrame < item[0].OtherPlayer.currentAnimation_.StartFrame)
-                    {
-                        canP1Hit = true;
-                        canP2Hit = false;
-                        canDoubleHit = false;
-                    }
-                }
-            }
-
-            if(!!item[0] && (canP1Hit || canDoubleHit))
+            if(!!item[0] && canP1Hit)
             {
                 /*player 1 registers action*/
-                item[0].Player.RegisterHit(frame);
+                item[0].Player.registerHit(frame);
             }
             else if(!!item[0])
             {
-                item[0].Player.DidntHit(frame);
+                item[0].Player.didntHit(frame);
             }
-            if(!!item[1] && (canP2Hit || canDoubleHit))
+
+            if(!!item[1] && canP2Hit)
             {
                 /*player 2 registers action*/
-                item[1].Player.RegisterHit(frame);
+                item[1].Player.registerHit(frame);
             }
             else if(!!item[1])
             {
-                item[1].Player.DidntHit(frame);
+                item[1].Player.didntHit(frame);
             }
             /*clear the action*/
             this.Actions[i] = null;
@@ -188,7 +160,7 @@ HitSystem.prototype.FrameMove = function(frame)
     }
 }
 
-HitSystem.prototype.Register = function(details)
+HitSystem.prototype.register = function(details)
 {
     if(!this.Actions[details.Key])
         this.Actions[details.Key] = {ActionFrame:details.Frame + this.ActionFrameDelay}
@@ -196,27 +168,4 @@ HitSystem.prototype.Register = function(details)
         this.Actions[details.Key][0] = details;
     else
         this.Actions[details.Key][1] = details;
-}
-
-HitSystem.prototype.Test = function(key,index)
-{
-    var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
-    var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
-
-
-    if(!second)
-    {
-        return true;
-    }
-    if(first.MoveOverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.NONE))
-    {
-        return false;
-    }
-    return (second.MoveOverrideFlags.HasOverrideFlag(OVERRIDE_FLAGS.ALL)
-        || first.MoveOverrideFlags.HasAllowOverrideFlag(OVERRIDE_FLAGS.ALL)
-        || second.MoveOverrideFlags.HasOverrideFlag(first.MoveOverrideFlags.AllowOverrideFlags)
-        || first.IsProjectile
-        || first.IsGrapple)
-        && !second.IsGrapple
-        ;
 }

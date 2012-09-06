@@ -1,4 +1,4 @@
-﻿var Stage = function(bg0XOffset)
+var Stage = function(bg0XOffset)
 {
     this.BgImg0 =  {xOffset:0,element:window.document.getElementById("bg0")};
     this.BgImg1 = {element:window.document.getElementById("bg1")};
@@ -20,140 +20,140 @@
     this.Params = null;
     this.CanMoveY = true;
 }
-Stage.prototype.GetGame = function() { return game_; }
-Stage.prototype.GetMatch = function() { return game_.match_; }
-Stage.prototype.GetPhysics = function() { return this.GetMatch().GetPhysics(); }
-Stage.prototype.OnAudioLoaded = function()
+Stage.prototype.getGame = function() { return game_; }
+Stage.prototype.getMatch = function() { return game_.Match; }
+Stage.prototype.getPhysics = function() { return this.getMatch().getPhysics(); }
+Stage.prototype.onAudioLoaded = function()
 {
-    this.PlayMusic();
+    this.playMusic();
 }
-Stage.prototype.LoadAssets = function()
+Stage.prototype.loadAssets = function()
 {
-    this.Music = "audio/" + this.Params.name_.toLowerCase() + "/theme.zzz";
-    stuffLoader_.Queue(this.Params.name_.toLowerCase() + "-theme.js",RESOURCE_TYPES.BASE64AUDIO);
-    stuffLoader_.Queue(this.Params.bg0Img_,RESOURCE_TYPES.IMAGE);
-    stuffLoader_.Queue(this.Params.bg1Img_,RESOURCE_TYPES.IMAGE);
+    this.Music = "audio/" + this.Params.Name.toLowerCase() + "/theme.zzz";
+    stuffLoader_.queue(this.Params.Name.toLowerCase() + "-theme.js",RESOURCE_TYPES.BASE64AUDIO);
+    stuffLoader_.queue(this.Params.Bg0Img,RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue(this.Params.Bg1Img,RESOURCE_TYPES.IMAGE);
 }
-Stage.prototype.Setup = function(params)
+Stage.prototype.setup = function(params)
 {
     this.Params = params;
-    this.LoadAssets();
+    this.loadAssets();
 }
-Stage.prototype.Start = function()
+Stage.prototype.start = function()
 {
-    this.BgImg0.xOffset = this.Params.bg0XOffset_;
-    this.BgImg0.yOffset = this.Params.bg0YOffset_;
-    this.BgImg1.yOffset = this.Params.bg1YOffset_;
+    this.BgImg0.xOffset = this.Params.Bg0XOffset;
+    this.BgImg0.yOffset = this.Params.Bg0YOffset;
+    this.BgImg1.yOffset = this.Params.Bg1YOffset;
 
-    this.BgYScrollRate = this.Params.bg0YOffset_ / this.Params.bg1YOffset_;
-    this.MaxScrollY = this.Params.bg1YOffset_ / STAGE.SCROLLY_FACTOR;
+    this.BgYScrollRate = this.Params.Bg0YOffset / this.Params.Bg1YOffset;
+    this.MaxScrollY = this.Params.Bg1YOffset / STAGE.SCROLLY_FACTOR;
 
-    this.BgImg0.element.src = this.Params.bg0Img_;
-    this.BgImg1.element.src = this.Params.bg1Img_;
-    this.BgImg0.element.className = "bg0 " + this.Params.name_ + "-bg0";
-    this.BgImg1.element.className = "bg1 " + this.Params.name_ + "-bg1";
-    this.MaxLeftScroll  = this.Params.maxLeftScroll_; 
-    this.MaxRightScroll = this.Params.maxRightScroll_;
+    this.BgImg0.element.src = this.Params.Bg0Img;
+    this.BgImg1.element.src = this.Params.Bg1Img;
+    this.BgImg0.element.className = "bg0 " + this.Params.Name + "-bg0";
+    this.BgImg1.element.className = "bg1 " + this.Params.Name + "-bg1";
+    this.MaxLeftScroll  = this.Params.MaxLeftScroll; 
+    this.MaxRightScroll = this.Params.MaxRightScroll;
 
     this.CanMoveY = true;
 }
 
-Stage.prototype.RestartMusic = function()
+Stage.prototype.restartMusic = function()
 {
-    soundManager_.Restart(this.Music);
+    soundManager_.restart(this.Music);
 }
 
-Stage.prototype.PlayMusic = function()
+Stage.prototype.playMusic = function()
 {
-    soundManager_.Play(this.Music,true);
+    soundManager_.play(this.Music,true);
 }
 
-Stage.prototype.PauseMusic = function()
+Stage.prototype.pauseMusic = function()
 {
-    soundManager_.Pause(this.Music);
-}
-
-/**/
-Stage.prototype.Pause = function()
-{
-    this.PauseMusic();
+    soundManager_.pause(this.Music);
 }
 
 /**/
-Stage.prototype.Resume = function()
+Stage.prototype.pause = function()
 {
-    soundManager_.Resume(this.Music);
+    this.pauseMusic();
 }
 
 /**/
-Stage.prototype.Release = function()
+Stage.prototype.resume = function()
 {
-    this.PauseMusic();
+    soundManager_.resume(this.Music);
+}
+
+/**/
+Stage.prototype.release = function()
+{
+    this.pauseMusic();
     this.BgImg0.element.src = "";
     this.BgImg1.element.src = "";
     this.BgImg0.element.className = "";
     this.BgImg1.element.className = "";
 }
 
-Stage.prototype.GetDeltaY = function() { return this.GetGroundY() - this.LastGroundY; }
-Stage.prototype.GetDeltaX = function() { return this.X - this.LastX;}
+Stage.prototype.getDeltaY = function() { return this.getGroundY() - this.LastGroundY; }
+Stage.prototype.getDeltaX = function() { return this.X - this.LastX;}
 
-Stage.prototype.GetOffsetY = function(flip)
+Stage.prototype.getOffsetY = function(flip)
 {
     return this.OffsetY;
 }
 
-Stage.prototype.GetGroundY = function()
+Stage.prototype.getGroundY = function()
 {
     return STAGE.FLOORY + this.OffsetY;
 }
 
-Stage.prototype.FrameMove = function(frame)
+Stage.prototype.frameMove = function(frame)
 {
     this.LastX = this.X;
-    this.LastGroundY = this.GetGroundY();
+    this.LastGroundY = this.getGroundY();
     this.DeltaX = 0;
     this.DeltaY = 0;
 }
 
-Stage.prototype.Render = function(frame)
+Stage.prototype.render = function(frame)
 {
     this.BgImg0.element.style.left = this.X0 + "px";
     this.BgImg1.element.style.left = this.X1 + "px";
 
-    var offset = this.BgImg1.yOffset - this.GetOffsetY()
+    var offset = this.BgImg1.yOffset - this.getOffsetY()
 
-    this.BgImg0.element.style.top = this.BgImg0.yOffset - (this.BgYScrollRate * this.GetOffsetY()) + "px";
-    this.BgImg1.element.style.top = this.BgImg1.yOffset - this.GetOffsetY() + "px";
+    this.BgImg0.element.style.top = this.BgImg0.yOffset - (this.BgYScrollRate * this.getOffsetY()) + "px";
+    this.BgImg1.element.style.top = this.BgImg1.yOffset - this.getOffsetY() + "px";
 
     this.CanMoveY = true;
 }
 
 /* Returns true if the stage has been cornered */
-Stage.prototype.IsCornered = function()
+Stage.prototype.isCornered = function()
 {
-    return this.IsRightCornered() || this.IsLeftCornered();
+    return this.isRightCornered() || this.isLeftCornered();
 }
 /* Returns true if the stage has been cornered */
-Stage.prototype.IsRightCornered = function()
+Stage.prototype.isRightCornered = function()
 {
     return this.X <= STAGE.MIN_STAGEX;
 }
 /* Returns true if the stage has been cornered */
-Stage.prototype.IsLeftCornered = function()
+Stage.prototype.isLeftCornered = function()
 {
     return this.X >= STAGE.MAX_STAGEX;
 } 
 
 
 /*Clamps the X value to be between the min and max*/
-Stage.prototype.ClampX = function(x,delta)
+Stage.prototype.clampX = function(x,delta)
 {
-    if(this.IsLeftCornered() && ((x + delta) < STAGE.MIN_STAGEX))
+    if(this.isLeftCornered() && ((x + delta) < STAGE.MIN_STAGEX))
     {
         delta = STAGE.MIN_STAGEX - x;
     }
-    else if(this.IsRightCornered() && ((x + delta) > STAGE.MAX_STAGEX))
+    else if(this.isRightCornered() && ((x + delta) > STAGE.MAX_STAGEX))
     {
         delta = STAGE.MAX_STAGEX - x;
     }
@@ -163,11 +163,11 @@ Stage.prototype.ClampX = function(x,delta)
 }
 
 /*Clamps the Y value to be between the min and max*/
-Stage.prototype.ClampY = function(y,delta)
+Stage.prototype.clampY = function(y,delta)
 {
-    if((y + delta) < this.GetGroundY())
+    if((y + delta) < this.getGroundY())
     {
-        delta = this.GetGroundY() - y;
+        delta = this.getGroundY() - y;
     }
     /*
     TODO: add support for a max Y value!
@@ -181,56 +181,56 @@ Stage.prototype.ClampY = function(y,delta)
 }
 
 /**/
-Stage.prototype.FixX = function(amount)
+Stage.prototype.fixX = function(amount)
 {
-    var stageMovedX = game_.match_.deltaX_;
+    var stageMovedX = game_.Match.DeltaX;
     if(!!stageMovedX)
     {
         /*ensure the directions are the opposite*/
         amount = 0.5 * (Math.abs(amount) * (Math.abs(stageMovedX) / stageMovedX));
-        this.MoveX(amount);
+        this.moveX(amount);
     }
 
 }
 
 /*Aligns the players with the stage.*/
-Stage.prototype.AlignPlayersX = function()
+Stage.prototype.alignPlayersX = function()
 {
-    var match = this.GetMatch();
+    var match = this.getMatch();
 
-    for(var i = 0, length = match.teamA_.GetPlayers().length; i < length; ++i)
-        match.teamA_.players_[i].AlignX(this.DeltaX);
-    for(var i = 0, length = match.teamB_.GetPlayers().length; i < length; ++i)
-        match.teamB_.players_[i].AlignX(this.DeltaX);
+    for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
+        match.TeamA.Players[i].alignX(this.DeltaX);
+    for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
+        match.TeamB.Players[i].alignX(this.DeltaX);
 }
 
 /*Aligns the players with the stage.*/
-Stage.prototype.AlignPlayersY = function()
+Stage.prototype.alignPlayersY = function()
 {
-    var match = this.GetMatch();
+    var match = this.getMatch();
 
-    for(var i = 0, length = match.teamA_.GetPlayers().length; i < length; ++i)
-        match.teamA_.players_[i].AlignY(this.GetGroundY());
-    for(var i = 0, length = match.teamB_.GetPlayers().length; i < length; ++i)
-        match.teamB_.players_[i].AlignY(this.GetGroundY());
+    for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
+        match.TeamA.Players[i].alignY(this.getGroundY());
+    for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
+        match.TeamB.Players[i].alignY(this.getGroundY());
 }
 
 
 /*Scrolls the stage along the X axis*/
-Stage.prototype.MoveX = function(amount)
+Stage.prototype.moveX = function(amount)
 {
     var retVal = amount;
-    var match = this.GetMatch();
-    var left = this.GetPhysics().GetLeftMostPlayer();
-    var right = this.GetPhysics().GetRightMostPlayer();
+    var match = this.getMatch();
+    var left = this.getPhysics().getLeftMostPlayer();
+    var right = this.getPhysics().getRightMostPlayer();
 
-    var isPlayerLeftCornered = left.IsLeftCornered();
-    var isPlayerRightCornered = right.IsRightCornered();
-    var isStageRightCornered = this.IsRightCornered();
-    var isStageLeftCornered = this.IsLeftCornered();
+    var isPlayerLeftCornered = left.isLeftCornered();
+    var isPlayerRightCornered = right.isRightCornered();
+    var isStageRightCornered = this.isRightCornered();
+    var isStageLeftCornered = this.isLeftCornered();
 
-    var farLeftX = left.GetLeftX();
-    var farRightX = right.GetRightX();
+    var farLeftX = left.getLeftX();
+    var farRightX = right.getRightX();
 
     var isLeft = amount < 0;
     var canMove = true;
@@ -270,7 +270,7 @@ Stage.prototype.MoveX = function(amount)
 
         if(canMove)
         {
-            //retVal = match.ScrollX(-amount);
+            //retVal = match.scrollX(-amount);
             retVal = this._MoveX(-amount);
         }
     }
@@ -280,13 +280,13 @@ Stage.prototype.MoveX = function(amount)
 }
 
 /**/
-Stage.prototype.ScrollY = function()
+Stage.prototype.scrollY = function()
 {
     if(!!this.CanMoveY)
     {
         this.CanMoveY = false;
 
-        var y = this.GetMatch().GetHighestY();
+        var y = this.getMatch().getHighestY();
 
         if(y > STAGE.VERT_SCROLL_Y) /*moving up*/
         {
@@ -298,24 +298,24 @@ Stage.prototype.ScrollY = function()
         }
 
 
-        this.AlignPlayersY();
+        this.alignPlayersY();
     }
 }
 
 /*Checks for physics with the stage*/
-Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
+Stage.prototype.scrollX = function(amount,p1,p2,match,dontOverrideSign)
 {
 
     /*p1 must be the leftmost or right most player*/
     var retVal = amount;
 
-    if(this.GetPhysics().IsLeftMostPlayer(p1.id_))
+    if(this.getPhysics().isLeftMostPlayer(p1.Id))
     {
-        p2 = this.GetPhysics().GetRightMostPlayer();
+        p2 = this.getPhysics().getRightMostPlayer();
     }
-    else if(this.GetPhysics().IsRightMostPlayer(p1.id_))
+    else if(this.getPhysics().isRightMostPlayer(p1.Id))
     {
-        p2 = this.GetPhysics().GetLeftMostPlayer();
+        p2 = this.getPhysics().getLeftMostPlayer();
     }
     else
         return retVal * 2;
@@ -324,7 +324,7 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     /*decouple the direction of the amount from the players direction since we are using absolute positions in this function*/
     if(!dontOverrideSign)
     {
-        if(p1.direction_ > 0)
+        if(p1.Direction > 0)
         {
             if(amount > 0) {direction = -1;amount = -Math.abs(amount);} else {direction = 1;amount = Math.abs(amount);}
         } 
@@ -341,20 +341,20 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     }
 
     /*physics with stage*/
-    var p1x0 = p1.GetX();
+    var p1x0 = p1.getX();
     var p1x1 = p1x0 + retVal;
-    var p2x0 = p2.GetX();
+    var p2x0 = p2.getX();
 
 
-    var p1LeftX = p1.GetLeftX();
-    var p1RightX = p1.GetRightX();
+    var p1LeftX = p1.getLeftX();
+    var p1RightX = p1.getRightX();
     var p1NewLeftX = p1LeftX + amount;
     var p1NewRightX = p1RightX + amount;
     var p1MidX = p1LeftX + (p1RightX - p1LeftX)/2;
     var p1NewMidX = p1MidX + amount;
 
-    var p2LeftX = p2.GetLeftX();
-    var p2RightX = p2.GetRightX();
+    var p2LeftX = p2.getLeftX();
+    var p2RightX = p2.getRightX();
     var p2NewLeftX = p2LeftX + amount;
     var p2NewRightX = p2RightX + amount;
     var p2MidX = p2LeftX + (p2RightX - p2LeftX)/2;
@@ -398,13 +398,13 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
     var isLeftPlayer = p1LeftX < p2LeftX;
     var leftCornerGap = isLeftPlayer ? p1LeftX : p2LeftX;
     var rightCornerGap = !isLeftPlayer ? STAGE.MAX_STAGEX - p1RightX : STAGE.MAX_STAGEX - p2RightX;
-    var p2NewX = p2.GetX() + (p2.direction_) * amount;
+    var p2NewX = p2.getX() + (p2.Direction) * amount;
 
     var hasLargerLeftGap = leftCornerGap > rightCornerGap;
     var hasLargerRightGap = !hasLargerLeftGap;
     var isP1InAnyThreshold = isP1InThreshold ||  (isStageLeftCornered && isP1InLeftThreshold) || (isStageRightCornered && isP1InRightThreshold);
-    var isMovingBackwards = !((p1.direction_ == -1 && amount > 0) || (p1.direction_ == 1 && amount < 0));
-    var canIncreaseDeltaX = p1.JumpedOverAPlayer() && this.GetPhysics().IsWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
+    var isMovingBackwards = !((p1.Direction == -1 && amount > 0) || (p1.Direction == 1 && amount < 0));
+    var canIncreaseDeltaX = p1.jumpedOverAPlayer() && this.getPhysics().isWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
     /*if both players are in the threshold, then the stage should not move*/
     if(areBothPlayersInThreshold)
     {
@@ -431,7 +431,7 @@ Stage.prototype.ScrollX = function(amount,p1,p2,match,dontOverrideSign)
 }
 
 
-Stage.prototype.Center = function()
+Stage.prototype.center = function()
 {
     var screenWidth = GetWidth(window.document.body);
     var screenHeight = GetHeight(window.document.body);
@@ -442,7 +442,7 @@ Stage.prototype.Center = function()
 }
 
 /*inits the background images*/
-Stage.prototype.Init = function()
+Stage.prototype.init = function()
 {
     var screenWidth = GetWidth(window.document.body);
     var screenHeight = GetHeight(window.document.body);
@@ -487,21 +487,21 @@ Stage.prototype.Init = function()
     this._MoveX(0,true);
 }
 /* If any two players are at the edges of the screen, then the screen can not be moved */
-Stage.prototype.CanScrollX = function ()
+Stage.prototype.canScrollX = function ()
 {
     var flag = true;
-    var match = this.GetMatch();
-    for(var i = 0; i < match.teamA_.GetPlayers().length; ++i)
+    var match = this.getMatch();
+    for(var i = 0; i < match.TeamA.getPlayers().length; ++i)
     {
-        if(match.teamA_.players_[i].GetX() == STAGE.MIN_X)
+        if(match.TeamA.Players[i].getX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
         }
     }
-    for(var i = 0; i < match.teamB_.GetPlayers().length; ++i)
+    for(var i = 0; i < match.TeamB.getPlayers().length; ++i)
     {
-        if(match.teamB_.players_[i].GetX() == STAGE.MIN_X)
+        if(match.TeamB.Players[i].getX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
@@ -515,7 +515,7 @@ Stage.prototype.CanScrollX = function ()
 /* Scrolls the backgrounds horizontally */
 Stage.prototype._MoveHoriz = function(amount,px)
 {
-    if(!this.CanScrollX())
+    if(!this.canScrollX())
     {
         this.DeltaX = 0;
         return;
@@ -547,13 +547,13 @@ Stage.prototype._MoveHoriz = function(amount,px)
         this.X1 = this.MaxRight;
         this.X = 0;
     }
-    this.AlignPlayersX();
+    this.alignPlayersX();
 }
 
 /* Scrolls the backgrounds horizontally */
 Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
 {
-    if(!this.CanScrollX())
+    if(!this.canScrollX())
     {
         this.DeltaX = 0;
         return 0;
@@ -591,6 +591,6 @@ Stage.prototype._MoveX = function(amount,dontAlignPlayers,px)
         this.X = 0;
     }
     if(!dontAlignPlayers)
-        this.AlignPlayersX();
+        this.alignPlayersX();
     return this.DeltaX;
 }

@@ -1,4 +1,4 @@
-﻿var ManagedText = function(elementID,text,x,y,fontSpacing,fontsPath,charWidth,isLeft)
+var ManagedText = function(elementID,text,x,y,fontSpacing,fontsPath,charWidth,isLeft)
 {
     this.Text = text || "";
     this.CharWidth = charWidth || 16;
@@ -21,14 +21,14 @@
     this.Width = 0;
     this.IsLeft = (isLeft != undefined) ? !!isLeft : true;
     this.UpdateRate = 1;
-    this.Init();
+    this.init();
     this.Indent = 0;
     this.IsVisible = true;
-    this.Change(this.Text);
+    this.change(this.Text);
 }
 
 /*this text element will move toward the passed in X and Y coords*/
-ManagedText.prototype.SetTarget = function(x,y)
+ManagedText.prototype.setTarget = function(x,y)
 {
     x = Math.ceil(+x);
     y = Math.ceil(+y);
@@ -47,26 +47,26 @@ ManagedText.prototype.SetTarget = function(x,y)
 }
 
 /*applies the step function to the startValue until end function is true*/
-ManagedText.prototype.Animate = function(startValue,endFn,stepFn)
+ManagedText.prototype.animate = function(startValue,endFn,stepFn)
 {
     this.AnimateCurrent = startValue;
     this.AnimateFunction = stepFn;
     this.AnimateEndValue = endFn;
 
-    this.Change(this.AnimateCurrent);
+    this.change(this.AnimateCurrent);
 }
 
-ManagedText.prototype.AnimateIncNumber = function(startValue,endValue){this.Animate(startValue,function(value){return value < endValue;},function(value){return ++value;});}
-ManagedText.prototype.AnimateDecNumber = function(startValue,endValue){this.Animate(startValue,function(value){return value > endValue;},function(value){return --value;});}
+ManagedText.prototype.animateIncNumber = function(startValue,endValue){this.animate(startValue,function(value){return value < endValue;},function(value){return ++value;});}
+ManagedText.prototype.animateDecNumber = function(startValue,endValue){this.animate(startValue,function(value){return value > endValue;},function(value){return --value;});}
 
 /*initialize the Text*/
-ManagedText.prototype.Init = function()
+ManagedText.prototype.init = function()
 {
     this.HideFrame = -1;
 }
 
 /*helper to get the source*/
-ManagedText.prototype.GetSrc = function(letter)
+ManagedText.prototype.getSrc = function(letter)
 {
     var value = letter.charCodeAt(0);
     switch(this.FontsPath)
@@ -78,11 +78,11 @@ ManagedText.prototype.GetSrc = function(letter)
 }
 
 /*Changes the managed text*/
-ManagedText.prototype.Change = function(newText,x,hideFrame,showFrame,fadeIn,indent)
+ManagedText.prototype.change = function(newText,x,hideFrame,showFrame,fadeIn,indent)
 {
     x = (x == undefined) ? this.X : x;
-    this.ClearTarget();
-    this.HideNow();
+    this.clearTarget();
+    this.hideNow();
     this.Text = "" + newText;
     this.MustUpdate = true;
     this.Indent = indent || 0;
@@ -98,41 +98,41 @@ ManagedText.prototype.Change = function(newText,x,hideFrame,showFrame,fadeIn,ind
     {
         this.Width += (!!+this.Text.charAt(i) ? 2*this.CharWidth : this.CharWidth) + this.FontSpacing;
         this.Element.children[i].style.marginRight = this.FontSpacing + "px";
-        this.Element.children[i].src = this.GetSrc(this.Text.charAt(i));
+        this.Element.children[i].src = this.getSrc(this.Text.charAt(i));
     }
 
     if(!!hideFrame)
     {
         if(!fadeIn)
         {
-            this.ShowNow(x,hideFrame);
+            this.showNow(x,hideFrame);
         }
         else
         {
-            this.HideFadeNow();
-            this.Show(hideFrame);
+            this.hideFadeNow();
+            this.show(hideFrame);
         }
     }
     else
     {
-        this.ShowNow(x,hideFrame);
+        this.showNow(x,hideFrame);
     }
 }
 
 /*increments the X*/
-ManagedText.prototype.MoveX = function(dx)
+ManagedText.prototype.moveX = function(dx)
 {
     this.X += dx;
     this.MustUpdate = true;
 }
 
 /*increments the Y*/
-ManagedText.prototype.MoveY = function(dy)
+ManagedText.prototype.moveY = function(dy)
 {
     this.Y += dy;
     this.MustUpdate = true;
 }
-ManagedText.prototype.SetVisible = function(value)
+ManagedText.prototype.setVisible = function(value)
 {
     value = (value === undefined) ? false : !!value;
     if(this.IsVisible != value)
@@ -141,41 +141,41 @@ ManagedText.prototype.SetVisible = function(value)
         this.Element.style.display = !!value ? "" : "none";
     }
 }
-ManagedText.prototype.HideNow = function() { this.SetVisible(false);}
-ManagedText.prototype.Hide = function() { this.SetTarget(-this.Width,this.Y); }
-ManagedText.prototype.HideFadeNow = function()
+ManagedText.prototype.hideNow = function() { this.setVisible(false);}
+ManagedText.prototype.hide = function() { this.setTarget(-this.Width,this.Y); }
+ManagedText.prototype.hideFadeNow = function()
 {
     this.X = -this.Width;
 }
 
-ManagedText.prototype.ClearTarget = function() { this.dX = 0;this.dY = 0;this.HideFrame = -1; }
-ManagedText.prototype.ShowNow = function(x,hideFrame) { this.X = (x != 0 ? x : null) || 0; this.MustUpdate = true; if(!!hideFrame) {this.HideFrame = hideFrame;}}
-ManagedText.prototype.Show = function(hideFrame) { this.SetTarget(this.Indent,this.Y); if(!!hideFrame) {this.HideFrame = hideFrame;}}
+ManagedText.prototype.clearTarget = function() { this.dX = 0;this.dY = 0;this.HideFrame = -1; }
+ManagedText.prototype.showNow = function(x,hideFrame) { this.X = (x != 0 ? x : null) || 0; this.MustUpdate = true; if(!!hideFrame) {this.HideFrame = hideFrame;}}
+ManagedText.prototype.show = function(hideFrame) { this.setTarget(this.Indent,this.Y); if(!!hideFrame) {this.HideFrame = hideFrame;}}
 
 /*toggles between using the left and right css properties for horizontal positioning*/
-ManagedText.prototype.ChangeDirection = function()
+ManagedText.prototype.changeDirection = function()
 {
     this.IsLeft = !this.IsLeft;
     this.MustUpdate = true;
 }
 
-ManagedText.prototype.FrameMove = function(frame)
+ManagedText.prototype.frameMove = function(frame)
 {
     if(!!this.IsVisible && this.HideFrame != -1 && (frame >= this.HideFrame))
-        this.HideNow();
+        this.hideNow();
     /*
     if(frame % this.UpdateRate == 0)
     {
         if(!!this.AnimateFunction)
         {
-            if(!this.AnimateEndValue(this.AnimateCurrent))
+            if(!this.animateEndValue(this.AnimateCurrent))
             {
                 this.AnimateFunction = null;
             }
             else
             {
-                this.AnimateCurrent = this.AnimateFunction(this.AnimateCurrent);
-                this.Change(this.AnimateCurrent);
+                this.AnimateCurrent = this.animateFunction(this.AnimateCurrent);
+                this.change(this.AnimateCurrent);
             }
         }
     }
@@ -184,13 +184,13 @@ ManagedText.prototype.FrameMove = function(frame)
     {
         if(!!this.dX)
         {
-            this.MoveX(this.dX);
+            this.moveX(this.dX);
             if(this.X >= this.TargetX)
                 this.dX = 0;
         }
         if(!!this.dY)
         {
-            this.MoveY(this.dY);
+            this.moveY(this.dY);
             if(this.Y >= this.TargetY)
                 this.dY = 0;
         }
@@ -198,7 +198,7 @@ ManagedText.prototype.FrameMove = function(frame)
 }
 
 
-ManagedText.prototype.Render = function(frame)
+ManagedText.prototype.render = function(frame)
 {
     if(!!this.MustUpdate && frame > this.ShowFrame)
     {
@@ -215,15 +215,15 @@ ManagedText.prototype.Render = function(frame)
             this.Element.style.right = this.X + "px";
             this.Element.style.top = this.Y + "px";
         }
-        this.SetVisible(true);
+        this.setVisible(true);
     }
 }
 
-ManagedText.prototype.Reset = function()
+ManagedText.prototype.reset = function()
 {
-    this.Init();
-    this.Change("");
-    this.Hide();
+    this.init();
+    this.change("");
+    this.hide();
 }
 
 var CreateFontSystem = function()
@@ -233,40 +233,40 @@ var CreateFontSystem = function()
         this.Text = [];
     }
 
-    FontSystem.prototype.Preload = function()
+    FontSystem.prototype.preload = function()
     {
     }
 
-    FontSystem.prototype.Reset = function(frame)
+    FontSystem.prototype.reset = function(frame)
     {
         for(var i = 0, length = this.Text.length; i < length; ++i)
-            this.Text[i].Reset();
+            this.Text[i].reset();
     }
 
 
     /*adds some managed text to the system*/
-    FontSystem.prototype.AddText = function(elementID,text,x,y,fontSpacing,fontsPath,isLeft)
+    FontSystem.prototype.addText = function(elementID,text,x,y,fontSpacing,fontsPath,isLeft)
     {
         var ref = new ManagedText(elementID,text,x,y,fontSpacing,fontsPath,0,isLeft);
-        ref.Init();
+        ref.init();
         this.Text[this.Text.length] = ref;
         return ref;
     }
 
 
-    FontSystem.prototype.FrameMove = function(frame)
+    FontSystem.prototype.frameMove = function(frame)
     {
         for(var i = 0, length = this.Text.length; i < length; ++i)
         {
-            this.Text[i].FrameMove(frame);
+            this.Text[i].frameMove(frame);
         }
     }
 
-    FontSystem.prototype.Render = function(frame)
+    FontSystem.prototype.render = function(frame)
     {
         for(var i = 0, length = this.Text.length; i < length; ++i)
         {
-            this.Text[i].Render(frame);
+            this.Text[i].render(frame);
         }
     }
 

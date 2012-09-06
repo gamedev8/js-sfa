@@ -1,4 +1,4 @@
-﻿/* Number-extensions.js - extensions for the Javascript Number object
+/* Number-extensions.js - extensions for the Javascript Number object
  *
  * The author of this program, Safalra (Stephen Morley), irrevocably releases
  * all rights to this program, with the intention of it becoming part of the

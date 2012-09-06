@@ -1,84 +1,84 @@
-﻿
-/**/
-Player.prototype.LoadAssets = function()
-{
-    stuffLoader_.Queue(this.name_.toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
 
-    //stuffLoader_.Queue("script/img/" + this.folder_.toLowerCase() + ".png.js",RESOURCE_TYPES.SCRIPT);
+/**/
+Player.prototype.loadAssets = function()
+{
+    stuffLoader_.queue(this.Name.toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
+
+    //stuffLoader_.queue("script/img/" + this.Folder.toLowerCase() + ".png.js",RESOURCE_TYPES.SCRIPT);
 
     
-    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
-    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-    stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
-    if(this.projectiles_.length > 0)
-        stuffLoader_.Queue("images/misc/" + this.folder_.toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
+    if(this.Projectiles.length > 0)
+        stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
 
 }
 
-Player.prototype.QueueDizzy = function()
+Player.prototype.queueDizzy = function()
 {
-    this.QueueSound("audio/misc/dizzy.zzz");
+    this.queueSound("audio/misc/dizzy.zzz");
 }
 
-Player.prototype.StopDizzyAudio = function()
+Player.prototype.stopDizzyAudio = function()
 {
-    soundManager_.Pause("audio/misc/dizzy.zzz");
+    soundManager_.pause("audio/misc/dizzy.zzz");
 }
 
 /**/
-Player.prototype.QueueSwingSound = function(value)
+Player.prototype.queueSwingSound = function(value)
 {
-    if(!!(value & SWINGSOUND.HP)) this.QueueSound("audio/misc/hp.zzz");
-    else if(!!(value & SWINGSOUND.MP)) this.QueueSound("audio/misc/mp.zzz");
-    else if(!!(value & SWINGSOUND.LP)) this.QueueSound("audio/misc/lp.zzz");
-    else if(!!(value & SWINGSOUND.HK)) this.QueueSound("audio/misc/hk.zzz");
-    else if(!!(value & SWINGSOUND.MK)) this.QueueSound("audio/misc/mk.zzz");
-    else if(!!(value & SWINGSOUND.LK)) this.QueueSound("audio/misc/lk.zzz");
-    else if(!!(value & SWINGSOUND.SLIDE0)) this.QueueSound("audio/misc/slide-0.zzz");
-}
-
-
-/**/
-Player.prototype.QueueHitSound = function(value)
-{
-    if(!!(value & HITSOUND.HP)) this.QueueSound("audio/misc/hit-hp.zzz");
-    else if(!!(value & HITSOUND.MP)) this.QueueSound("audio/misc/hit-mp.zzz");
-    else if(!!(value & HITSOUND.LP)) this.QueueSound("audio/misc/hit-lp.zzz");
-    else if(!!(value & HITSOUND.HP3)) this.QueueSound("audio/misc/hit-hp-3.zzz");
-    else if(!!(value & HITSOUND.HK)) this.QueueSound("audio/misc/hit-hk.zzz");
-    else if(!!(value & HITSOUND.MK)) this.QueueSound("audio/misc/hit-mk.zzz");
-    else if(!!(value & HITSOUND.LK)) this.QueueSound("audio/misc/hit-lk.zzz");
+    if(!!(value & SWINGSOUND.HP)) this.queueSound("audio/misc/hp.zzz");
+    else if(!!(value & SWINGSOUND.MP)) this.queueSound("audio/misc/mp.zzz");
+    else if(!!(value & SWINGSOUND.LP)) this.queueSound("audio/misc/lp.zzz");
+    else if(!!(value & SWINGSOUND.HK)) this.queueSound("audio/misc/hk.zzz");
+    else if(!!(value & SWINGSOUND.MK)) this.queueSound("audio/misc/mk.zzz");
+    else if(!!(value & SWINGSOUND.LK)) this.queueSound("audio/misc/lk.zzz");
+    else if(!!(value & SWINGSOUND.SLIDE0)) this.queueSound("audio/misc/slide-0.zzz");
 }
 
 
 /**/
-Player.prototype.QueueBlockSound = function()
+Player.prototype.queueHitSound = function(value)
 {
-    this.QueueSound("audio/misc/block.zzz");
+    if(!!(value & HITSOUND.HP)) this.queueSound("audio/misc/hit-hp.zzz");
+    else if(!!(value & HITSOUND.MP)) this.queueSound("audio/misc/hit-mp.zzz");
+    else if(!!(value & HITSOUND.LP)) this.queueSound("audio/misc/hit-lp.zzz");
+    else if(!!(value & HITSOUND.HP3)) this.queueSound("audio/misc/hit-hp-3.zzz");
+    else if(!!(value & HITSOUND.HK)) this.queueSound("audio/misc/hit-hk.zzz");
+    else if(!!(value & HITSOUND.MK)) this.queueSound("audio/misc/hit-mk.zzz");
+    else if(!!(value & HITSOUND.LK)) this.queueSound("audio/misc/hit-lk.zzz");
 }
 
 
 /**/
-Player.prototype.QueueBlockProjectileSound = function()
+Player.prototype.queueBlockSound = function()
 {
-    this.QueueSound("audio/misc/block-projectile.zzz");
+    this.queueSound("audio/misc/block.zzz");
+}
+
+
+/**/
+Player.prototype.queueBlockProjectileSound = function()
+{
+    this.queueSound("audio/misc/block-projectile.zzz");
 }
 
 /**/
-Player.prototype.QueueGrappleSound = function()
+Player.prototype.queueGrappleSound = function()
 {
-    this.QueueSound("audio/misc/grapple.zzz");
+    this.queueSound("audio/misc/grapple.zzz");
 }
 
 
-Player.prototype.QueueSuperMoveChargeSound = function()
+Player.prototype.queueSuperMoveChargeSound = function()
 {
-    this.QueueSound("audio/misc/super-charge.zzz");
+    this.queueSound("audio/misc/super-charge.zzz");
 }
 
 /**/
-Player.prototype.QueueSound = function(value,volume)
+Player.prototype.queueSound = function(value,volume)
 {
-    //this.sounds_[this.sounds_.length] = {Value:value, Volume:volume||1};
-    soundManager_.QueueSound(value,volume);
+    //this.Sounds[this.Sounds.length] = {Value:value, Volume:volume||1};
+    soundManager_.queueSound(value,volume);
 }

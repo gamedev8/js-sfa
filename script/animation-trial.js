@@ -1,4 +1,4 @@
-﻿var CreateAnimationTrail = function(animations,zIndex,delay)
+var CreateAnimationTrail = function(animations,zIndex,delay)
 {
     var AnimationTrail = function()
     {
@@ -10,18 +10,18 @@
         this.StageDeltaY = 0;
     }
 
-    AnimationTrail.prototype.Id = 0;
-    AnimationTrail.prototype.GetNextId = function() { return AnimationTrail.prototype.Id++; }
+    AnimationTrail.prototype.id = 0;
+    AnimationTrail.prototype.getNextId = function() { return AnimationTrail.prototype.id++; }
 
-    AnimationTrail.prototype.Release = function()
+    AnimationTrail.prototype.release = function()
     {
         for(var i = 0, length = this.Trail.length; i < length; ++i)
         {
-            utils_.RemoveFromDOM(this.Trail[i].Element);
+            utils_.removeFromDOM(this.Trail[i].Element);
         }
     }
 
-    AnimationTrail.prototype.Add = function(animation,followElement,folder)
+    AnimationTrail.prototype.add = function(animation,followElement,folder)
     {
         var img = window.document.createElement("div");
         img.className = "player-sprite";
@@ -46,7 +46,7 @@
     }
 
 
-    AnimationTrail.prototype.Disable = function()
+    AnimationTrail.prototype.disable = function()
     {
         if(!!this.Enabled)
         {
@@ -65,7 +65,7 @@
     }
 
 
-    AnimationTrail.prototype.Enable = function(frame,followElement,direction)
+    AnimationTrail.prototype.enable = function(frame,followElement,direction)
     {
         if(!this.Enabled)
         {
@@ -79,12 +79,12 @@
                 /*
                 if(!this.Trail[i].HasB64)
                 {
-                    imageLookup_.GetBgB64(this.Trail[i].Element, this.B64Key);
+                    imageLookup_.getBgB64(this.Trail[i].Element, this.B64Key);
                     this.Trail[i].HasB64 = true;
                 }
                 */
                 AutoApplyFlip(this.Trail[i].Element,direction == -1);
-                this.Trail[i].Animation.ClearAllFrameUserData();
+                this.Trail[i].Animation.clearAllFrameUserData();
                 /*
                 if(container.children.length == 0)
                     container.appendChild(this.Trail[i].Element);
@@ -99,19 +99,19 @@
     }
 
     /*returns the current frame for the trail*/
-    AnimationTrail.prototype.GetCurrentFrame = function(index)
+    AnimationTrail.prototype.getCurrentFrame = function(index)
     {
-        return this.Trail[index].Animation.BaseAnimation.frames_[this.Trail[index].FrameIndex];
+        return this.Trail[index].Animation.BaseAnimation.Frames[this.Trail[index].FrameIndex];
     }
     /**/
-    AnimationTrail.prototype.FrameMove = function(frame,index,direction,stageX,stageY)
+    AnimationTrail.prototype.frameMove = function(frame,index,direction,stageX,stageY)
     {
         if(this.Enabled)
         {
-            this.direction_ = direction;
+            this.Direction = direction;
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
-                this.Trail[i].Animation.AddUserDataToFrame(index, 
+                this.Trail[i].Animation.addUserDataToFrame(index, 
                     {
                         Frame:frame
                         ,Left:this.FollowElement.style.left
@@ -119,7 +119,7 @@
                         /*Must remove the stage offsetY from the cordinate and apply it on the current frame.*/
                         /*Remember that recording it here will apply the coordinate after a certain number of frames,*/
                         /*and if the screen Y changes then it will mess up the trail - so we must remove the screen offset*/
-                        ,Bottom:parseInt(this.FollowElement.style.bottom) - game_.match_.stage_.OffsetY + "px"
+                        ,Bottom:parseInt(this.FollowElement.style.bottom) - game_.Match.Stage.OffsetY + "px"
                         ,Top:this.FollowElement.style.top
                         ,DeltaX:0
                         ,DeltaY:0
@@ -130,15 +130,15 @@
 
 
     /*The trail is applying the exact coords of the player, but the screen may move, which must be applied to all trail coords!*/
-    AnimationTrail.prototype.ApplyStageOffset = function(stageDiffX,stageDiffY)
+    AnimationTrail.prototype.applyStageOffset = function(stageDiffX,stageDiffY)
     {
         if(!!stageDiffX)
         {
             for(var trailIndex = 0, nbTrails = this.Trail.length; trailIndex < nbTrails; trailIndex++)
             {
-                for(var frameIndex = 0, nbFrames = this.Trail[trailIndex].Animation.BaseAnimation.frames_.length; frameIndex < nbFrames; ++frameIndex)
+                for(var frameIndex = 0, nbFrames = this.Trail[trailIndex].Animation.BaseAnimation.Frames.length; frameIndex < nbFrames; ++frameIndex)
                 {
-                    var frame = this.Trail[trailIndex].Animation.BaseAnimation.frames_[frameIndex];
+                    var frame = this.Trail[trailIndex].Animation.BaseAnimation.Frames[frameIndex];
                     var coords = frame.UserData;
                     for(var coordIndex = 0, nbCoords = coords.length; coordIndex < nbCoords; coordIndex++)
                     {
@@ -152,9 +152,9 @@
         {
             for(var trailIndex = 0, nbTrails = this.Trail.length; trailIndex < nbTrails; trailIndex++)
             {
-                for(var frameIndex = 0, nbFrames = this.Trail[trailIndex].Animation.BaseAnimation.frames_.length; frameIndex < nbFrames; ++frameIndex)
+                for(var frameIndex = 0, nbFrames = this.Trail[trailIndex].Animation.BaseAnimation.Frames.length; frameIndex < nbFrames; ++frameIndex)
                 {
-                    var frame = this.Trail[trailIndex].Animation.BaseAnimation.frames_[frameIndex];
+                    var frame = this.Trail[trailIndex].Animation.BaseAnimation.Frames[frameIndex];
                     var coords = frame.UserData;
                     for(var coordIndex = 0, nbCoords = coords.length; coordIndex < nbCoords; coordIndex++)
                     {
@@ -166,11 +166,11 @@
     }
 
     /*returns the first coordinate at the requested frame index*/
-    AnimationTrail.prototype.GetNextCoord = function(index)
+    AnimationTrail.prototype.getNextCoord = function(index)
     {
         /*get the current frame*/
         var retVal =  null;
-        var frameToRender = this.GetCurrentFrame(index);
+        var frameToRender = this.getCurrentFrame(index);
         if(!!frameToRender)
         {
             var tmp = frameToRender.UserData.splice(0,1);
@@ -179,19 +179,19 @@
         return retVal;
     }
 
-    AnimationTrail.prototype.Render = function(frame,stageDiffX,stageDiffY)
+    AnimationTrail.prototype.render = function(frame,stageDiffX,stageDiffY)
     {
         if(this.Enabled)
         {
             /*The trail is applying the exact coords of the player, but the screen may move, which must be applied to all trail coords!*/
-            this.ApplyStageOffset(stageDiffX,stageDiffY);
-            var stageOffsetY = game_.match_.stage_.OffsetY;
+            this.applyStageOffset(stageDiffX,stageDiffY);
+            var stageOffsetY = game_.Match.Stage.OffsetY;
             
             for(var i = 0, length = this.Trail.length; i < length; i++)
             {
                 if(frame > this.Trail[i].StartFrame)
                 {
-                    var coords = this.GetNextCoord(i);
+                    var coords = this.getNextCoord(i);
                     if(!!coords)
                     {
                         this.Trail[i].Element.style.left = (!!coords.Left) ? coords.DeltaX + parseInt(coords.Left) + "px" : "";
@@ -204,13 +204,13 @@
                 {
                     var currentItem = this.Trail[i];
 
-                    if(!currentItem.Animation.HasUserData(currentItem.FrameIndex))
+                    if(!currentItem.Animation.hasUserData(currentItem.FrameIndex))
                         ++currentItem.FrameIndex;
 
-                    var frameToRender = this.GetCurrentFrame(i);
+                    var frameToRender = this.getCurrentFrame(i);
                     if(!!frameToRender)
                     {
-                        spriteLookup_.Set(currentItem.Element,frameToRender.RightSrc);
+                        spriteLookup_.set(currentItem.Element,frameToRender.RightSrc);
                     }
                 }
             }
