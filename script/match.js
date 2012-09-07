@@ -643,8 +643,8 @@ var CreateMatch = function(team1,team2,stage)
 
         Faceoff.prototype.reset = function()
         {
-            showedFaceoff_ = false;
-            announcedNewRound_ = false;
+            showedFaceoff_ = true;
+            announcedNewRound_ = true;
             startedRound_ = false;
             this.Scale = 0;
             this.Angle = 0;

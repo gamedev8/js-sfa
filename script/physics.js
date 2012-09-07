@@ -921,6 +921,20 @@
         return Math.abs(p1.getMidX() - p2.getMidX());
     }
 
+    /*returns the initial velocity need to make up the distance between the 2 players*/
+    Physics.prototype.getInitialCloseGapVelocityX = function(p1,p2,vy)
+    {
+        var x1 = !!p1 ? p1.getMidX() : 0;
+        var x2 = !!p2 ? p2.getMidX() : 0;
+        return this.getVx(x1,x2,vy);
+    }
+
+    /*returns the initial velocity need to make up the distance between the 2 coordinates*/
+    Physics.prototype.getVx = function(x1,x2,vy)
+    {
+        return (Math.abs(x1 - x2) * CONSTANTS.G) / (2 * vy) * (6);
+    }
+
     /*Returns true if any player from the other team is on the left*/
     Physics.prototype.isAnyPlayerFromOtherTeamMoreLeft = function(x,team)
     {

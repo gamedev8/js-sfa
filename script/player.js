@@ -618,8 +618,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
 
                     if(!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1))
                     {
-                        this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE_FB);
-                        this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE);
+                        this.clearAirborneFlags();
                         this.Flags.Pose.add(POSE_FLAGS.AIR_COMBO_1);
                     }
                 }

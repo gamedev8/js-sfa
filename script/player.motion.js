@@ -93,10 +93,12 @@ Player.prototype.setImageX = function(value) {if(this.Direction > 0){this.Sprite
 Player.prototype.setImageY = function(value) { this.SpriteElement.style.bottom = value+"px"; }
 Player.prototype.isCrouching = function() { return this.Flags.Pose.has(POSE_FLAGS.CROUCHING); }
 Player.prototype.isOnGround = function() { return this.y_ == game_.Match.Stage.getGroundY(); }
-Player.prototype.isAirborne = function() { return this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE_FB) || this.y_ > game_.Match.Stage.getGroundY(); }
+Player.prototype.hasAirborneFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE_FB) }
+Player.prototype.hasAirborneComboFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1) || this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_2); }
+Player.prototype.isAirborne = function() { return this.hasAirborneComboFlag() || this.hasAirborneFlag() || this.y_ > game_.Match.Stage.getGroundY(); }
 Player.prototype.alignY = function(groundY)
 {
-    if(this.y_ != groundY && !(this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE_FB)))
+    if(this.y_ != groundY && !(this.hasAirborneFlag() || this.hasAirborneComboFlag()))
     {
         this.y_ = groundY;
     }
@@ -602,9 +604,7 @@ Player.prototype.advanceJump = function(ignoreYCheck)
 
     if(!ignoreYCheck && this.getY() <= game_.Match.Stage.getGroundY())
     {
-        this.Flags.Pose.remove(POSE_FLAGS.AIR_COMBO_1);
-        this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE);
-        this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE_FB);
+        this.clearAirborneFlags();
         this.vxFn = null;
         this.vyFn = null;
         this.JumpT = 0;
@@ -612,6 +612,15 @@ Player.prototype.advanceJump = function(ignoreYCheck)
     }
     return true;
 }
+
+Player.prototype.clearAirborneFlags = function()
+{
+    this.Flags.Pose.remove(POSE_FLAGS.AIR_COMBO_2);
+    this.Flags.Pose.remove(POSE_FLAGS.AIR_COMBO_1);
+    this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE);
+    this.Flags.Pose.remove(POSE_FLAGS.AIRBORNE_FB);
+}
+
 
 Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpeed)
 {
@@ -629,7 +638,7 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
     this.JumpT = jumpT || 0;
     /*store the velocity*/
     /*store a timer*/
-    if(!this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1))
+    if(!this.hasAirborneComboFlag())
     {
         if(!!vx)
         {

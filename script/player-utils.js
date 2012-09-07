@@ -842,6 +842,8 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
     }
     Frame.prototype.getEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
     Frame.prototype.getImageSrc = function(direction){ return this.RightSrc; }
+    Frame.prototype.isSettingAirborneFlag = function()  { return !!(this.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_2) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB) }
+    Frame.prototype.isClearingAirborneFlag = function() { return !!(this.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_2) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB) }
     return new Frame();
 }
 /************************************************************************/

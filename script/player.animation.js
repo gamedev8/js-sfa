@@ -538,8 +538,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
     {
         if(!!this.CurrentAnimation.Animation.Flags.Player && !!(this.CurrentAnimation.Animation.Flags.Player & PLAYER_FLAGS.MOVE_TO_ENEMY))
         {
-            var r = this.getPhysics().getDistanceX(this,this.getTarget());
-            this.CurrentAnimation.Animation.Vx = (r * CONSTANTS.G) / (2 * this.CurrentAnimation.Animation.Vy) * (6);
+            this.CurrentAnimation.Animation.Vx = this.getPhysics().getInitialCloseGapVelocityX(this,this.getTarget(),this.CurrentAnimation.Animation.Vy);
         }
 
         this.IgnoreOverrides = false;
@@ -609,6 +608,28 @@ Player.prototype.showFirstAnimationFrame = function()
     this.setCurrentFrame(firstFrame,game_.getCurrentFrame(),0,0,true);
 }
 
+Player.prototype.AirborneFlags = POSE_FLAGS.AIR_COMBO_1 | POSE_FLAGS.AIR_COMBO_2 | POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB;
+
+/*flags that should be ignore when a frame's pose flags are cleared*/
+Player.prototype.PoseFlagsToIgnore = POSE_FLAGS.AIR_COMBO_1
+                    | POSE_FLAGS.AIR_COMBO_2
+                    | POSE_FLAGS.AIRBORNE
+                    | POSE_FLAGS.AIRBORNE_FB
+                    | POSE_FLAGS.ALLOW_INTERUPT_1
+                    | POSE_FLAGS.ALLOW_INTERUPT_2
+                    | POSE_FLAGS.ALLOW_INTERUPT_3
+                    | POSE_FLAGS.ALLOW_INTERUPT_4
+                    | POSE_FLAGS.ALLOW_INTERUPT_5
+                    | POSE_FLAGS.ALLOW_INTERUPT_6;
+
+/*flags that should be ignore when a frame's combat flags are cleared*/
+Player.prototype.CombatFlagsToIgnore = COMBAT_FLAGS.PROJECTILE_ACTIVE
+                    | COMBAT_FLAGS.CAN_BE_BLOCKED
+                    | COMBAT_FLAGS.CAN_BE_AIR_BLOCKED;
+
+/*flags that should be ignore when a frame's player flags are cleared*/
+Player.prototype.PlayerFlagsToIgnore = PLAYER_FLAGS.MOBILE;
+
 /*Sets the current frame*/
 Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreTranslation)
 {
@@ -631,40 +652,11 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         /*Remove the flags that were set by the current frame*/
         /*Except for the ones that must be cleared at a later time.*/
 
-        this.Flags.Player.remove((this.CurrentFrame.FlagsToSet.Player
-                    | PLAYER_FLAGS.MOBILE)
-                    ^ PLAYER_FLAGS.MOBILE);
+        this.Flags.Player.remove((this.CurrentFrame.FlagsToSet.Player | Player.prototype.PlayerFlagsToIgnore) ^ Player.prototype.PlayerFlagsToIgnore);
 
-        this.Flags.Pose.remove((this.CurrentFrame.FlagsToSet.Pose
-                    | POSE_FLAGS.AIR_COMBO_1
-                    | POSE_FLAGS.AIRBORNE
-                    | POSE_FLAGS.AIRBORNE_FB
-                    | POSE_FLAGS.ALLOW_INTERUPT_1
-                    | POSE_FLAGS.ALLOW_INTERUPT_2
-                    | POSE_FLAGS.ALLOW_INTERUPT_3
-                    | POSE_FLAGS.ALLOW_INTERUPT_4
-                    | POSE_FLAGS.ALLOW_INTERUPT_5
-                    | POSE_FLAGS.ALLOW_INTERUPT_6
-                    )
-                    ^ POSE_FLAGS.AIR_COMBO_1
-                    ^ POSE_FLAGS.AIRBORNE
-                    ^ POSE_FLAGS.AIRBORNE_FB
-                    ^ POSE_FLAGS.ALLOW_INTERUPT_1
-                    ^ POSE_FLAGS.ALLOW_INTERUPT_2
-                    ^ POSE_FLAGS.ALLOW_INTERUPT_3
-                    ^ POSE_FLAGS.ALLOW_INTERUPT_4
-                    ^ POSE_FLAGS.ALLOW_INTERUPT_5
-                    ^ POSE_FLAGS.ALLOW_INTERUPT_6
-                    );
+        this.Flags.Pose.remove((this.CurrentFrame.FlagsToSet.Pose | Player.prototype.PoseFlagsToIgnore ) ^ Player.prototype.PoseFlagsToIgnore);
 
-
-        this.Flags.Combat.remove((this.CurrentFrame.FlagsToSet.Combat
-                    | COMBAT_FLAGS.PROJECTILE_ACTIVE
-                    | COMBAT_FLAGS.CAN_BE_BLOCKED
-                    | COMBAT_FLAGS.CAN_BE_AIR_BLOCKED)
-                    ^ COMBAT_FLAGS.PROJECTILE_ACTIVE
-                    ^ COMBAT_FLAGS.CAN_BE_BLOCKED
-                    ^ COMBAT_FLAGS.CAN_BE_AIR_BLOCKED);
+        this.Flags.Combat.remove((this.CurrentFrame.FlagsToSet.Combat | Player.prototype.CombatFlagsToIgnore) ^ Player.CombatFlagsToIgnore);
 
 
         this.Flags.SwingSound.remove(this.CurrentFrame.FlagsToSet.SwingSound);
@@ -744,7 +736,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.MOVE_TO_FRONT))
             this.moveToFront();
 
-        ignoredFlags = POSE_FLAGS.AIR_COMBO_1 | POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB; /*flags to be set in the OnFrame function*/
+        ignoredFlags = Player.prototype.AirborneFlags; /*flags to be set in the OnFrame function*/
         this.Flags.Pose.add((newFrame.FlagsToSet.Pose | ignoredFlags) ^ ignoredFlags);
         this.Flags.Combat.add(newFrame.FlagsToSet.Combat);
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
@@ -756,7 +748,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         //this.Flags.BlockSound.add(newFrame.FlagsToSet.BlockSound);
 
 
-        if(!!this.CanHoldAirborne && (!!(newFrame.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(newFrame.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(newFrame.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB)))
+        if(!!this.CanHoldAirborne && newFrame.isClearingAirborneFlag())
             this.stopJump();
 
         this.Flags.Pose.remove(newFrame.FlagsToClear.Pose);

@@ -93,9 +93,9 @@ u4_.IsAlternateChar = true;
 function StartQuickMatch()
 {
     u1_.setChar(CHARACTERS.MBISON);
-    u2_.setChar(CHARACTERS.KEN);
+    /*u2_.setChar(CHARACTERS.KEN);*/
 
-    game_.startMatch(false,[u1_],[u2_], stages_["ken"]);
+    game_.startMatch(false,[u1_],[], stages_["ken"]);
 }
 
 /* multi player battle */
@@ -110,7 +110,7 @@ function StartDramaticBattle()
 
 function StartBattle()
 {
-    StartDramaticBattle();
+    StartQuickMatch();
 }
 
 function StartDramaticBattleAI()
