@@ -197,8 +197,14 @@
         {
             //return;
         }
+        else if(p2.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE) && !!(attackFlags & ATTACK_FLAGS.BLUE_FIRE))
+        {
+            //moves such as M Bison psycho crusher will override invulnerable
+        }
         else if(p2.Flags.Player.has(PLAYER_FLAGS.INVULNERABLE))
+        {
             return;
+        }
         var isGrapple = !!(behaviorFlags & BEHAVIOR_FLAGS.THROW);
         var p1Left = p1.getLeftX(true);
         var p1Right = p1.getRightX(true);
@@ -217,8 +223,8 @@
         {
             for(var i = 0; i < points.length; ++i)
             {
-                fx = points[i].Fx || fx;
-                fy = points[i].Fy || fy;
+                fx = !!isNaN(+points[i].Fx) ? fx : +points[i].Fx;
+                fy = !!isNaN(+points[i].Fy) ? fy : +points[i].Fy;
 
                 var x = p1Left + points[i].x;
                 var y = p1Bottom + points[i].y;
@@ -565,7 +571,7 @@
                             amountPushed = this.moveX(!!doubleImpededAmount ? impededAmount : impededAmount/2,collisions[i],true,false,true);
                         }
                         /*if a player is on the ground, then they can not push each other - unless room needs to be made for the airborne player to land*/
-                        else if(player.y_ != collisions[i].y_)
+                        else if(player.Y != collisions[i].Y)
                         {
                             amountPushed = 0;
                             //unimpededAmount = 0;
@@ -630,7 +636,7 @@
                             amountPushed = this.moveX(!!doubleImpededAmount ? impededAmount : impededAmount/2,collisions[i],true,false,true);
                         }
                         /*if a player is on the ground, then they can not push each other - unless room needs to be made for the airborne player to land*/
-                        else if(player.y_ != collisions[i].y_)
+                        else if(player.Y != collisions[i].Y)
                         {
                             amountPushed = 0;
                             //unimpededAmount = 0;
@@ -783,7 +789,10 @@
             }
             amount = player.warpY(amount);
         }
-        GetStage_().scrollY(amount);
+        //GetStage_().scrollY();
+
+        if(!!amount)
+            GetStage_().requestScrollY(amount > 0, player.Y);
         return amount;
     }
 

@@ -432,9 +432,10 @@ Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
     {
         this.KeyStateChanged = true;
         
-        /*the last key in the keySequence must be the required key*/
+        //the last key in the keySequence must be the required key
         var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
-        if(this.isKeyDown(key)) /*... and was the key pressed?*/
+        //... and was the key pressed?
+        if(this.isKeyDown(key))
         {
             this.CurrentAnimation.StartFrame = frame;
             //var firstFrame = this.CurrentAnimation.Animation.BaseAnimation.Frames[0];
@@ -451,7 +452,7 @@ Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
     else if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.ChainAnimation)
     {
         var chained = this.CurrentAnimation.Animation.ChainAnimation;
-        /*dont allow chaining to getup if the player is dead*/
+        //dont allow chaining to getup if the player is dead
         if(chained.BaseAnimation.Name == "bounce" && this.isDead())
             chained = this.Moves._0_hr_deadbounce;
         var move = chained;
@@ -492,13 +493,25 @@ Player.prototype.clearInterupt = function()
                     ;
 }
 
+Player.prototype.clearUnclearedFlags = function()
+{
+    this.Flags.Player.remove(PLAYER_FLAGS.BULLDOZE);
+    this.Flags.Player.remove(PLAYER_FLAGS.BLUE_FIRE);
+}
+
 /*Sets the current move*/
 Player.prototype.setCurrentAnimation = function(newAnimation)
 {
     ++this.MoveCount;
+    this.NbHits = 0;
+    this.MaintainYPosition = false;
+    this.clearUnclearedFlags();
     if(!!this.CurrentAnimation && this.CurrentAnimation.Animation)
     {
+        //this.LastAnimation = this.CurrentAnimation.Animation;
+
         this.CurrentAnimation.Animation.hideChildren();
+        //maintain the same velocity if required
         if(!!newAnimation && !!this.CurrentAnimation.Animation.ChainAnimation)
         {
             if(!!(this.CurrentAnimation.Animation.ChainAnimation.Flags.Player & PLAYER_FLAGS.USE_CURRENT_VX))
@@ -510,7 +523,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
         if(!!this.CurrentAnimation.Animation.Trail)
             this.CurrentAnimation.Animation.Trail.disable();
 
-        /*it is possible that the player was attacked before clearing the block state*/
+        //it is possible that the player was attacked before clearing the block state
         if(!!this.MustClearAllowBlock)
         {
             this.MustClearAllowBlock = false;
@@ -521,7 +534,6 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
             this.MustClearAllowAirBlock = false;
             this.onEndAirAttackFn(this.CurrentAnimation.ID);
         }
-        this.LastAnimation = this.CurrentAnimation.Animation;
 
         this.CurrentAnimation.Animation.ControllerAnimation = null;
         if(!!(this.CurrentAnimation.Animation.IgnoresCollisions))
@@ -536,9 +548,18 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
     this.CurrentAnimation = newAnimation;
     if(!!newAnimation && !!newAnimation.Animation)
     {
-        if(!!this.CurrentAnimation.Animation.Flags.Player && !!(this.CurrentAnimation.Animation.Flags.Player & PLAYER_FLAGS.MOVE_TO_ENEMY))
+        this.MaintainYPosition = newAnimation.Animation.MaintainYPosition;
+        if(!!this.CurrentAnimation.Animation.Flags.Player)
         {
-            this.CurrentAnimation.Animation.Vx = this.getPhysics().getInitialCloseGapVelocityX(this,this.getTarget(),this.CurrentAnimation.Animation.Vy);
+            //used for moves like MBison's head stomp - where you need to jump to the enemy's position
+            if(!!(this.CurrentAnimation.Animation.Flags.Player & PLAYER_FLAGS.MOVE_TO_ENEMY))
+                this.CurrentAnimation.Animation.Vx = this.getPhysics().getInitialCloseGapVelocityX(this,this.getTarget(),this.CurrentAnimation.Animation.Vy);
+            //turn around if required
+            if(!!(this.CurrentAnimation.Animation.Flags.Player & PLAYER_FLAGS.FACE_ENEMY))
+            {
+                if(!!this.MustChangeDirection)
+                    this.changeDirection(true);
+            }
         }
 
         this.IgnoreOverrides = false;
@@ -559,7 +580,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
         }
 
 
-        /*must start a move on the ground to hold airborne*/
+        //must start a move on the ground to hold airborne (unless FORCE_START_AIRBORNE is set on a frame in the move)
         if(this.isAirborne())
             this.CanHoldAirborne = false;
         else
@@ -567,7 +588,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
 
         if(!this.CurrentAnimation.Animation.KeepAirborneFunctions)
         {
-            if(this.CurrentAnimation.Vx === undefined)
+            if(this.CurrentAnimation.Vx === undefined) 
                 this.CurrentAnimation.Vx = this.CurrentAnimation.Animation.Vx;
             if(this.CurrentAnimation.Vy === undefined)
                 this.CurrentAnimation.Vy = this.CurrentAnimation.Animation.Vy;
@@ -628,7 +649,7 @@ Player.prototype.CombatFlagsToIgnore = COMBAT_FLAGS.PROJECTILE_ACTIVE
                     | COMBAT_FLAGS.CAN_BE_AIR_BLOCKED;
 
 /*flags that should be ignore when a frame's player flags are cleared*/
-Player.prototype.PlayerFlagsToIgnore = PLAYER_FLAGS.MOBILE;
+Player.prototype.PlayerFlagsToIgnore = PLAYER_FLAGS.MOBILE | PLAYER_FLAGS.BULLDOZE;
 
 /*Sets the current frame*/
 Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreTranslation)
@@ -638,7 +659,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         if(!!newFrame && (newFrame.ID == this.CurrentFrame.ID))
             return;
 
-        /*must remove the yOffset each frame*/
+        //must remove the yOffset each frame
         if(this.Flags.Player.has(PLAYER_FLAGS.SMALLER_AABB))
         {
             this.YBottomOffset = 0;
@@ -649,8 +670,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             this.Element.style.display = "";
             this.ShadowContainer.style.display = "";
         }
-        /*Remove the flags that were set by the current frame*/
-        /*Except for the ones that must be cleared at a later time.*/
+        //Remove the flags that were set by the current frame, except for the ones that must be cleared at a later time.
 
         this.Flags.Player.remove((this.CurrentFrame.FlagsToSet.Player | Player.prototype.PlayerFlagsToIgnore) ^ Player.prototype.PlayerFlagsToIgnore);
 
@@ -668,12 +688,9 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     var isNewFrame = false;
     
     if(!!newFrame && !!this.CurrentFrame && newFrame.ID != this.CurrentFrame.ID)
-    {
         if(!!newFrame.RightSrc && !!this.CurrentFrame.RightSrc && spriteLookup_.getLeft(newFrame.RightSrc) != spriteLookup_.getLeft(this.CurrentFrame.RightSrc))
-        {
             isNewFrame = true;
-        }
-    }
+
     var isNewSound = !!newFrame
                 && ((!!newFrame.SoundFilename && ((!this.CurrentFrame) || (!!this.CurrentFrame && (this.CurrentFrame.SoundFilename != newFrame.SoundFilename))))
                 || !!newFrame.FlagsToSet.SwingSound);
@@ -682,10 +699,10 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     this.CurrentFrame = newFrame;
     if(!!newFrame)
     {
-        /*During an attack - after the attack frames the player is vulernable and we should ignore the overrides*/
+        //During an attack - after the attack frames the player is vulernable and we should ignore the overrides
         this.IgnoreOverrides = this.CurrentFrame.Vulernable;
 
-        /*used to force the other player to change frames during a throw*/
+        //used to force the other player to change frames during a throw
         if(!!isNewFrame)
         {
             if(!!__debugMode)
@@ -716,18 +733,18 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         if(!!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.TELEPORT_BACK))
             this.setTeleportTarget(COMBAT_FLAGS.TELEPORT_BACK,newFrame.Frames);
 
-        /*if the new frame spawns a projectile, handle that here*/
+        //if the new frame spawns a projectile, handle that here
         if(!this.Flags.Combat.has(COMBAT_FLAGS.PROJECTILE_ACTIVE) && !!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.SPAWN_PROJECTILE))
-            this.Projectiles[newFrame.ChainProjectile].throw(frame,stageX,stageY);
+            this.Projectiles[newFrame.ChainProjectile].execute(frame,stageX,stageY);
         if(!!this.IsSliding && !!(newFrame.FlagsToSet.Combat & COMBAT_FLAGS.STOP_SLIDE_BACK))
             this.stopSlide();
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.RESET_Y_FUNC))
             this.resetVyFn();
         if(!!(newFrame.FlagsToSet.Player & PLAYER_FLAGS.RESET_X_FUNC))
             this.resetVxFn();
+
         if(!!(newFrame.FlagsToSet.Spawn & SPAWN_FLAGS.SPAWN_BIGDIRT))
             this.showBigDirt(frame);
-        /*StartSlide will show the dirt animations, but we set the amount to 0 so the player itself does not move.*/
         else if(!!(newFrame.FlagsToSet.Spawn & SPAWN_FLAGS.SPAWN_SMALLDIRT))
             this.showSmallDirt(frame);
 
@@ -741,11 +758,6 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Combat.add(newFrame.FlagsToSet.Combat);
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
         this.Flags.Spawn.add(newFrame.FlagsToSet.Spawn);
-
-        //this.Flags.MotionSound.add(newFrame.FlagsToSet.MotionSound);
-        //this.Flags.SwingSound.add(newFrame.FlagsToSet.SwingSound);
-        //this.Flags.HitSound.add(newFrame.FlagsToSet.HitSound);
-        //this.Flags.BlockSound.add(newFrame.FlagsToSet.BlockSound);
 
 
         if(!!this.CanHoldAirborne && newFrame.isClearingAirborneFlag())
@@ -774,7 +786,6 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                 this.moveY(newFrame.Y);
         }
 
-        /*this must run before SetSprite*/
         if((!!newFrame.SoundFilename || !!newFrame.FlagsToSet.SwingSound) && !!isNewSound)
         {
             this.queueSwingSound(newFrame.FlagsToSet.SwingSound);
@@ -879,13 +890,14 @@ Player.prototype.setSprite = function(frame)
     if(this.CurrentFrame.ImageOffsetY != undefined)
         this.offsetImageY(this.CurrentFrame.ImageOffsetY);
     if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation)
-        this.CurrentAnimation.Animation.renderChildren(frame,this.CurrentAnimation.StartFrame,this.CurrentAnimation.Direction,parseInt(this.Element.style.zIndex) + 1,this.x_,this.y_);
+        this.CurrentAnimation.Animation.renderChildren(frame,this.CurrentAnimation.StartFrame,this.CurrentAnimation.Direction,parseInt(this.Element.style.zIndex) + 1,this.X,this.Y);
 }
 
 /*Sets the x and y on the element*/
 Player.prototype.render = function(frame,stageDiffX,stageDiffY)
 {
     this.checkZOrder();
+    this.setAirborneY();
     if(!this.IsPaused)
     {
         if(!!this.CurrentFrame)
@@ -900,10 +912,10 @@ Player.prototype.render = function(frame,stageDiffX,stageDiffY)
 
 
         if(this.Direction > 0)
-            this.setRight(this.x_);
+            this.setRight(this.X);
         else
-            this.setLeft(this.x_);
-        this.Element.style.bottom = Math.max(this.y_,game_.Match.Stage.getGroundY()) + "px";
+            this.setLeft(this.X);
+        this.Element.style.bottom = Math.max(this.Y,game_.Match.Stage.getGroundY()) + "px";
         this.renderShadow();
         this.renderTrail(frame,stageDiffX,stageDiffY);
         this.renderDebugInfo();
@@ -923,7 +935,7 @@ Player.prototype.renderShadow = function()
 
     if(this.Direction > 0)
     {
-        this.ShadowContainer.style.right = this.x_ + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
+        this.ShadowContainer.style.right = this.X + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
 
         if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
         {
@@ -932,7 +944,7 @@ Player.prototype.renderShadow = function()
     }
     else
     {
-        this.ShadowContainer.style.left = this.x_ + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
+        this.ShadowContainer.style.left = this.X + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
 
         if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
         {

@@ -12,6 +12,7 @@ body div.select {height:100%;width:100%;background:url(../images/misc/misc/playe
 .vs{position:relative;width:50px;height:50px;display:inline-block;top:285px;background-image:url(../images/misc/misc/head-sprites.png);}
 .team1-faceoff{left:66px;}
 .team2-faceoff{right:66px;}
+.player-rect{position:absolute;border:solid 1px #fff;}
 
 .menu{position:absolute;bottom:5px;left:5px;}
 .player-select {position:absolute;left:240px;top:30px;z-index:10;}

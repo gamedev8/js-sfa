@@ -1,5 +1,4 @@
-﻿var __debugMode = false;
-
+﻿
 
 var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0YOffset, bg1YOffset)
 {
@@ -78,11 +77,11 @@ function OnStageImagesLoaded()
 }
 
 /*Human users*/
-//var u1_ = game_.addUser1(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,0);
 var u1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,0);
 var u2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
 var val = 10000000;
-var u3_ = game_.addUser(val+1,val+2,val+3,val+4,val+5,val+6,val+7,val+8,val+9,val+10,val+11);
+var u3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,0);
+//var u3_ = game_.addUser(val+1,val+2,val+3,val+4,val+5,val+6,val+7,val+8,val+9,val+10,val+11);
 var u4_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
 
 //u3_.IsAlternateChar = true;
@@ -92,10 +91,11 @@ u4_.IsAlternateChar = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    u1_.setChar(CHARACTERS.MBISON);
-    /*u2_.setChar(CHARACTERS.KEN);*/
+    u1_.setChar(CHARACTERS.KEN,true);
+    u2_.setChar(CHARACTERS.RYU);
+    u3_.setChar(CHARACTERS.KEN);
 
-    game_.startMatch(false,[u1_],[], stages_["ken"]);
+    game_.startMatch(false,[u1_],[u2_,u3_], stages_["sodom"]);
 }
 
 /* multi player battle */
@@ -110,7 +110,10 @@ function StartDramaticBattle()
 
 function StartBattle()
 {
-    StartQuickMatch();
+    if(!__debugMode)
+        StartDramaticBattle();
+    else
+        StartQuickMatch();
 }
 
 function StartDramaticBattleAI()

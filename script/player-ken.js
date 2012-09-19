@@ -811,6 +811,7 @@ Player.prototype.createKen = function(user)
         spinkick.AdjustShadowPosition = (false);
         spinkick.IsSpecialMove = true;
         spinkick.IgnoreDepressedKeys = true;
+        spinkick.MaintainYPosition = true;
         spinkick.UserData = { Type: USER_DATA_TYPES.OFFSET,topOffset: 0,bottomOffset: 120 };
         spinkick.Vy = (100);
         spinkick.Vx = (15);
@@ -827,6 +828,7 @@ Player.prototype.createKen = function(user)
         var hitDelayFactor = 1.3333;
         var baseDamage = 10;
         var rearFlags = ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2|ATTACK_FLAGS.HARD;
+
         spinkick.addFrameWithSound(player,1,"audio/ken/spinkick.zzz",0,"",folder + "/x-hk-0.png",4,{ Player: PLAYER_FLAGS.SMALLER_AABB,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HK },{ Player: PLAYER_FLAGS.MOBILE },0,0,0,10,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD,[{ state: HIT_FLAGS.FAR,x: 170,y: 177}],rearFlags,CONSTANTS.FIRST_HIT,0.75,1,2);
         spinkick.addFrame(player,0,"",folder + "/x-hk-0.png",2,{ Player: PLAYER_FLAGS.SMALLER_AABB },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD,[{ state: HIT_FLAGS.NEAR,x: 170,y: 177}],rearFlags,CONSTANTS.FIRST_HIT,hitDelayFactor);
         spinkick.addFrame(player,0,"",folder + "/x-hk-1.png",2,{ Player: PLAYER_FLAGS.SMALLER_AABB },0,0,70);
@@ -845,7 +847,7 @@ Player.prototype.createKen = function(user)
         }
 
         spinkick.endBlock();
-        spinkick.addFrameWithSound(player,1,"audio/misc/spinkick-0.zzz",0,"",folder + "/x-hk-7.png",nbFrames+3,{Player:PLAYER_FLAGS.RESET_Y_FUNC},{ Pose: POSE_FLAGS.AIRBORNE,Combat: COMBAT_FLAGS.CAN_BE_AIR_BLOCKED },0,0);
+        spinkick.addFrameWithSound(player,1,"audio/misc/spinkick-0.zzz",0,"",folder + "/x-hk-7.png",nbFrames+3,{Player:PLAYER_FLAGS.RESET_Y_FUNC},{ Combat: COMBAT_FLAGS.CAN_BE_AIR_BLOCKED },0,0);
         spinkick.addFrame(player,0,"",folder + "/x-hk-8.png",nbFrames+3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
         spinkick.addFrame(player,0,"",folder + "/x-hk-9.png",nbFrames+3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
         spinkick.addFrame(player,0,"",folder + "/x-hk-10.png",nbFrames+3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
@@ -926,7 +928,7 @@ Player.prototype.createKenSuperMoves = function(player)
         s_uppercut.addFrameWithSound(player,1,"audio/ken/shoryuepa.zzz" ,0,"",folder + "/x-uppercut-p1-0.png",1,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},{Player:PLAYER_FLAGS.MOBILE,Combat:COMBAT_FLAGS.SUPER_MOVE_PAUSE},dx);
         for(var i = 0; i < maxIter; ++i)
         {
-            s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-0.png",3,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},{Player:PLAYER_FLAGS.MOBILE,Combat:COMBAT_FLAGS.SUPER_MOVE_PAUSE},dx);
+            s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-0.png",3,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},MISC_FLAGS.NONE,dx);
             s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-1.png",4,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},MISC_FLAGS.NONE,dx);
             s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-2.png",4,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,dx,0,0,25,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE,[{state:HIT_FLAGS.NEAR,x:170,y:177}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,CONSTANTS.SINGLE,5);
             s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-3.png",4,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,dx,0,0,25,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE,[{state:HIT_FLAGS.FAR,x:130,y:127},{state:HIT_FLAGS.FAR,x:110,y:227},{state:HIT_FLAGS.FAR,x:100,y:322}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL3,CONSTANTS.SECOND_HIT,CONSTANTS.SINGLE,5);

@@ -138,7 +138,7 @@ var CreateStuffLoader = function()
             img.style.display = "none";
             img.style.top = "10000px";
             img.src = stuff_[index].Src;
-            window.document.body.appendChild(img);
+            //window.document.body.appendChild(img);
         }
         else
         {

@@ -65,15 +65,23 @@
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div class="menu">
-        <input type="button" onclick="StartBattle()" value="" />
+        <input type="button" onclick="StartBattle()" value="2 vs 1" />
     </div>
-    <div class="animation-debug">
+    <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
         <input type="button" onclick="debug_.p1StepFrame();" value=">>"/>
         <br />X: <input id="txtX" />
         <br />Y: <input id="txtY" />
         <input type="button" onclick="debug_.p1SetFrameOffsets()" value="Set"/>
     </div>
+    <script type="text/javascript">
+        var __debugMode = false;
+        if(!__debugMode)
+        {
+            window.document.getElementById("pnlAnimationDebug").style.display = "none";
+        }
+    </script>
+
     <script type="text/javascript" src="script/api/gamepad.js"></script>
     <script type="text/javascript" src="script/fonts.js"></script>
     <script type="text/javascript" src="script/stuff-loader.js"></script>

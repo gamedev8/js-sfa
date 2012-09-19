@@ -6,6 +6,8 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     user.Player = this;
     this.Mass = 1;
     this.JumpSpeed = 1;
+    this.DefaultJumpSpeed = 1;
+    this.NbHits = 0;
     this.TmpState = {Y:0,V:0};
     this.Name = name;
     this.Folder = user.Folder;
@@ -114,7 +116,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.OffsetWidth = 0;
     this.OffsetHeight = 0;
     this.IgnoreOverrides = false;
-
+    this.ComboCount = 0;
 
     this.loadAssets();
     this.createElement();
@@ -180,12 +182,14 @@ Player.prototype.resetCombo = function()
 {
     if(!!this.onDecComboRefCountFn)    
         this.onDecComboRefCountFn();
+    this.ComboCount = 0;
 }
 Player.prototype.incCombo = function()
 {
     if(!this.getCurrentComboCountFn())
         this.onIncComboRefCountFn();
     this.onIncComboFn();
+    ++this.ComboCount;
 }
 
 Player.prototype.reset = function(ignoreDirection)
@@ -236,8 +240,9 @@ Player.prototype.reset = function(ignoreDirection)
     this.giveHitFn = null;
     this.IsBeingThrown = false;
     this.GrappledPlayer = null;
-    this.x_ = 0;
-    this.y_ = STAGE.FLOORY;
+    this.X = 0;
+    this.Y = STAGE.FLOORY;
+    this.LastY = STAGE.FLOORY;
     this.LastFrameY = 0;
     this.ConstY = 0;
     this.YBottomOffset = 0;
@@ -252,7 +257,7 @@ Player.prototype.reset = function(ignoreDirection)
     this.ZOrder = null;
     this.Sounds = [];
     /**/
-    this.t_ = 0;
+    this.T = 0;
     this.FrameFreeze = 0;
     this.IsSliding = false;
     this.SlideCount = 0;
@@ -357,7 +362,7 @@ Player.prototype.getNextFrameID = function()
 /*If the move is a projectile, and a projectile is already active, then this returns true;*/
 Player.prototype.isProjectileInUse = function(move)
 {
-    return (!!(move.Flags.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE)) && !!this.Flags.Combat.has(COMBAT_FLAGS.PROJECTILE_ACTIVE);
+    return !!this.HasActiveProjectiles && (!!(move.Flags.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE));
 }
 
 /*Gets the direction of the attack relative to the current player*/
@@ -418,7 +423,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     while(++fhrIndex < this.FrontHitReport.length)
     {
         var item = this.FrontHitReport[fhrIndex];
-        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.FrontHitReport.splice(fhrIndex,1);
     }
     /*rear hit report images*/
@@ -426,7 +431,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     while(++rhrIndex < this.RearHitReport.length)
     {
         var item = this.RearHitReport[rhrIndex];
-        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.RearHitReport.splice(rhrIndex,1);
     }
     /*dirt images*/
@@ -434,7 +439,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     while(++dirtIndex < this.DirtIndices.length)
     {
         var item = this.OtherAnimations.Dirt[this.DirtIndices[dirtIndex]];
-        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.DirtIndices.splice(dirtIndex,1);
     }
     /*big dirt images*/
@@ -442,24 +447,15 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     while(++bigDirtIndex < this.BigDirtIndices.length)
     {
         var item = this.OtherAnimations.BigDirt[this.BigDirtIndices[bigDirtIndex]];
-        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.x_,this.y_))
+        if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.BigDirtIndices.splice(bigDirtIndex,1);
     }
     /*dizzy*/
     if(this.isDizzy())
     {
         var item = this.OtherAnimations.Dizzy[this.DizzyIndex];
-        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.x_,this.y_,this.getBoxWidth()))
+        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
             item.StartFrame = frame;
-    }
-}
-/*Prevents the animation from continuing for one frame*/
-Player.prototype.holdFrame = function(frame)
-{
-    this.FrameFreeze = Math.max(this.FrameFreeze - 1, 0);
-    if(!!this.CurrentFrame)
-    {
-        ++this.CurrentAnimation.StartFrame;
     }
 }
 /*Moves the animation back one frame*/
@@ -469,10 +465,21 @@ Player.prototype.reverseFrame = function(frame)
         this.CurrentAnimation.StartFrame += 2;
 }
 /*Prevents the animation from continuing for one frame*/
+Player.prototype.holdFrame = function(frame)
+{
+    this.FrameFreeze = Math.max(this.FrameFreeze - 1, 0);
+    if(!!this.CurrentFrame)
+        ++this.CurrentAnimation.StartFrame;
+    if(this.isAirborne())
+        this.getStage().holdFrame();
+}
+/*Prevents the animation from continuing for one frame*/
 Player.prototype.forceHoldFrame = function(frame)
 {
     if(!!this.CurrentFrame)
         ++this.CurrentAnimation.StartFrame;
+    if(this.isAirborne())
+        this.getStage().holdFrame();
 }
 /*Prevents the animation from continuing for one frame*/
 Player.prototype.forceNextFrame = function(frame)
@@ -515,7 +522,7 @@ Player.prototype.onPreFrameMove = function(frame)
 Player.prototype.onRenderComplete = function(frame)
 {
     this.LastFrameY = this.ConstY;
-    this.ConstY = this.y_;
+    this.ConstY = this.Y;
 }
 
 
@@ -573,9 +580,14 @@ Player.prototype.setPendingFrame = function(pendingFrame)
     }
 }
 
+Player.prototype.preRender = function(frame)
+{
+}
+
 /*Show the image at the current frame in the current animation*/
 Player.prototype.frameMove = function(frame,stageX,stageY)
 {
+    this.LastY = this.Y;
     this.checkDirection();
     if(this.IsSliding)
         this.slide(frame);
@@ -604,30 +616,44 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
             }
 
             /*check to see if the new frame needs to be airborne*/
-            if((!!currentFrame && (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1)
-                        || (!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE)
-                        || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB)))))
+            if(!!currentFrame)
             {
-                if(!this.isAirborne() || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.FORCE_START_AIRBORNE))
+                if(currentFrame.isSettingAirborneFlag())
                 {
-                    var direction = 1;
-                    if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
-                        direction = this.CurrentAnimation.AttackDirection;
-                    //this.performJump(direction * this.CurrentAnimation.Animation.Vx,this.CurrentAnimation.Animation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier());
-                    this.performJump(direction * this.CurrentAnimation.Vx,this.CurrentAnimation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.StartAirborneAt,this.CurrentAnimation.Animation.UseJumpSpeed);
+                    if(!this.isAirborne() || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.FORCE_START_AIRBORNE))
+                    {
+                        var direction = 1;
+                        if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
+                            direction = this.CurrentAnimation.AttackDirection;
+                        //this.performJump(direction * this.CurrentAnimation.Animation.Vx,this.CurrentAnimation.Animation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier());
+                        this.performJump(direction * this.CurrentAnimation.Vx,this.CurrentAnimation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.AirborneStartDeltaY,this.CurrentAnimation.Animation.UseJumpSpeed);
+                    }
+                    else
+                    {
+                        this.setVxFn(this.CurrentAnimation.Animation.getAirXModifier());
+                        this.setVyFn(this.CurrentAnimation.Animation.getAirYModifier());
+                    }
 
                     if(!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1))
                     {
                         this.clearAirborneFlags();
                         this.Flags.Pose.add(POSE_FLAGS.AIR_COMBO_1);
                     }
+                    else if(!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_2))
+                    {
+                        this.clearAirborneFlags();
+                        this.Flags.Pose.add(POSE_FLAGS.AIR_COMBO_2);
+                    }
                 }
-                else
+                else if(currentFrame.isClearingAirborne())
                 {
-                    this.setVxFn(this.CurrentAnimation.Animation.getAirXModifier());
-                    this.setVyFn(this.CurrentAnimation.Animation.getAirYModifier());
+                    if(!!(currentFrame.FlagsToClear.Pose & POSE_FLAGS.AIR_BRAKES))
+                        this.stopJump(true);
+                    else
+                        this.stopJump();
                 }
             }
+
             if(!this.FrameFreeze)
             {
                 /*if the player is still airborne then apply next step*/

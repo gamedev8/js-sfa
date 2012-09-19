@@ -170,7 +170,7 @@ Player.prototype.tryStartGrapple = function(move,frame)
 
     var retVal = false;
 
-    var grappledPlayer = this.getPhysics().getGrappledPlayer(this.Team,this.getAbsFrontX(),this.y_,distance,airborneFlags,this.isAirborne());
+    var grappledPlayer = this.getPhysics().getGrappledPlayer(this.Team,this.getAbsFrontX(),this.Y,distance,airborneFlags,this.isAirborne());
     if(!!grappledPlayer)
     {
         retVal = true;
@@ -206,7 +206,7 @@ Player.prototype.canBeGrappled = function(x,y,distance,airborneFlags,isAirborne)
     var retVal = false;
 
     if((Math.abs(x - this.getMidX()) < distance)
-        && (Math.abs(y - this.y_) < distance)
+        && (Math.abs(y - this.Y) < distance)
         && (!(this.Flags.Player.has(PLAYER_FLAGS.INVULNERABLE)))
         && (!this.GrappledPlayer
         && (!this.CurrentAnimation.Animation.OverrideFlags.hasOverrideFlag(OVERRIDE_FLAGS.THROW)))
@@ -235,8 +235,8 @@ Player.prototype.handleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
             }
 
 
-            var x = this.convertX(this.x_ + offsetX);
-            var y = this.convertY(this.y_ + offsetY);
+            var x = this.convertX(this.X + offsetX);
+            var y = this.convertY(this.Y + offsetY);
 
             this.GrappledPlayer.setX(x);
             this.GrappledPlayer.setY(y);
@@ -257,22 +257,17 @@ Player.prototype.clearProjectiles = function()
 /*Allows the players projectile to advance*/
 Player.prototype.handleProjectiles = function(frame,stageX,stageY)
 {
-    var i = 0;
-    var hasActiveProjectiles = false;
-    while(i < this.Projectiles.length)
+    this.HasActiveProjectiles = false;
+    for(var i = 0; i < this.Projectiles.length; ++i)
     {
         if(this.Projectiles[i].getIsActive())
         {
-            hasActiveProjectiles = true;
+            this.HasActiveProjectiles = true;
             this.projectileAttackFn(frame,this.Projectiles[i].advance(frame,stageX,stageY));
         }
         else if(this.Projectiles[i].getIsDisintegrating())
             this.projectileAttackFn(frame,this.Projectiles[i].advance(frame,stageX,stageY));
-        ++i;
     }
-    /*No projectiles are active, clear the projectile state and allow the player to throw another projectile*/
-    if(!hasActiveProjectiles)
-        this.Flags.Combat.remove(COMBAT_FLAGS.PROJECTILE_ACTIVE);
 }
 
 /*Handles attacking players on the opposing team*/
@@ -321,8 +316,8 @@ Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,da
     this.RegisteredHit.AttackDirection = attackDirection;
     this.RegisteredHit.HitID = hitID;
     this.RegisteredHit.MoveOverrideFlags = moveOverrideFlags;
-    this.RegisteredHit.AttackForceX = fx || 1;
-    this.RegisteredHit.AttackForceY = fy || 1;
+    this.RegisteredHit.AttackForceX = fx || 0;
+    this.RegisteredHit.AttackForceY = fy || 0;
     this.RegisteredHit.BehaviorFlags = behaviorFlags;
     this.RegisteredHit.InvokedAnimationName = invokedAnimationName;
     this.RegisteredHit.HitSound = hitSound || 0;
@@ -466,7 +461,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     if(!!otherPlayer)
     {
         otherPlayer.giveHitFn(frame);
-        if(otherPlayer.isAirborne() && this.isAirborne())
+        if(otherPlayer.isAirborne() && this.isAirborne() && !this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE))
             fx = 1;
     }
     this.LastHitFrame[who] = hitID;
@@ -534,7 +529,9 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         }
 
         if(!!damage)
+        {
             this.incCombo();
+        }
 
         if(!!energyToAdd && !(!!(attackFlags & ATTACK_FLAGS.THROW_EJECT)))
             energyToAdd = Math.ceil(energyToAdd/2);
@@ -644,6 +641,13 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
         this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
     }
+    else if(!!(attackFlags & ATTACK_FLAGS.BLUE_FIRE))
+    {
+        attackDirection = this.getRelativeDirection(attackDirection);
+        if(!!flags)
+            this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
+        this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+    }
     else if(!!(attackFlags & ATTACK_FLAGS.KNOCKDOWN) || (!!(attackFlags & ATTACK_FLAGS.FLOOR_AIRBORNE) && !!this.isAirborne()))
     {
         attackDirection = this.getRelativeDirection(attackDirection);
@@ -670,7 +674,11 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     if(!!(attackFlags & ATTACK_FLAGS.NO_HIT_DELAY))
         hitDelayFactor_ = 0;
 
-    this.setHoldFrame(this.BaseTakeHitDelay * hitDelayFactor_);
+    if(this.ComboCount > 2)
+        this.setHoldFrame(1);
+    else
+        this.setHoldFrame(this.BaseTakeHitDelay * hitDelayFactor_);
+
     if(!this.isBlocking())
         this.queueHitSound(hitSound);
 
@@ -826,6 +834,20 @@ Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,is
         this.performJump(direction * move.Vx * fx,move.Vy * fy);
     }
 }
+/*Player turns blue and gets knocked down*/
+Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
+{
+    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_dead")];
+    if(!!move)
+    {
+        this.stopGettingDizzy();
+        var direction = this.getAttackDirection(attackDirection);
+        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
+        this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
+        this.performJump(direction * move.Vx * fx,move.Vy * fy);
+        this.Flags.Player.add(PLAYER_FLAGS.BLUE_FIRE);
+    }
+}
 /*Player takes a hit while in the air*/
 Player.prototype.takeAirborneHit = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
@@ -840,7 +862,7 @@ Player.prototype.takeAirborneHit = function(attackFlags,hitState,flags,frame,dam
 }
 Player.prototype.slideBack =  function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
 {
-    var x = STAGE.MAX_STAGEX - this.x_;
+    var x = STAGE.MAX_STAGEX - this.X;
     if(x < CONSTANTS.SLIDE_BACK_RANGE_FAR)
     {
         var slideAmount = CONSTANTS.DEFAULT_SLIDE_BACK_AMOUNT;
@@ -903,8 +925,18 @@ Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
     }
     else
     {
-        this.setHoldFrame(this.BaseGiveHitDelay * hitDelayFactor);
+        if(!!this.Flags.Player.has(PLAYER_FLAGS.BULLDOZE))
+            this.setHoldFrame(0);
+        else
+            this.setHoldFrame(this.BaseGiveHitDelay * hitDelayFactor);
     }
+
+    
+    if(++this.NbHits >= this.CurrentAnimation.Animation.MaxNbHits)
+    {
+        this.tryChainAnimation(frame);
+    }
+
 }
 
 Player.prototype.isGrappling = function(id)
@@ -930,7 +962,7 @@ Player.prototype.setLastHit = function(animation,type,offsetX,offsetY)
         case CONSTANTS.USE_PLAYER_BOTTOM:
         {
             animation.InitialX = this.getX() + (this.Width/Math.ceil(Math.random() * 8));
-            animation.InitialY = this.y_ + 20;
+            animation.InitialY = this.Y + 20;
             break;
         };
         case CONSTANTS.USE_PLAYER_XY:
@@ -947,8 +979,8 @@ Player.prototype.setLastHit = function(animation,type,offsetX,offsetY)
         }
 
     };
-    animation.InitialPlayerX = this.x_;
-    animation.InitialPlayerY = this.y_;
+    animation.InitialPlayerX = this.X;
+    animation.InitialPlayerY = this.Y;
     animation.InitialStageX = this.getStage().X;
     animation.InitialStageY = this.getStage().getGroundY();
 }

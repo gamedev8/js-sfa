@@ -10,6 +10,7 @@ var Stage = function(bg0XOffset)
     this.DeltaX = 0;
     this.Y = STAGE.FLOORY;
     this.OffsetY = 0;
+    this.DeltaOffsetY = 0;
     this.DeltaY = 0;
 
     this.Bg0XOffset = bg0XOffset;
@@ -19,6 +20,15 @@ var Stage = function(bg0XOffset)
     this.Music = null;
     this.Params = null;
     this.CanMoveY = true;
+
+    this.YIncMultiplier = 40;
+    this.YDecMultiplier = 20;
+    this.YCount = 0;
+    this.YMax = Math.PI;
+    this.YInc = this.YMax / 40;
+    this.TempY = 0;
+    this.IsIncrementingY = undefined;
+    this.HoldFrame = false;
 }
 Stage.prototype.getGame = function() { return game_; }
 Stage.prototype.getMatch = function() { return game_.Match; }
@@ -114,10 +124,18 @@ Stage.prototype.frameMove = function(frame)
     this.LastGroundY = this.getGroundY();
     this.DeltaX = 0;
     this.DeltaY = 0;
+    this.DeltaOffsetY = 0;
+    this.HoldFrame = false;
+}
+
+Stage.prototype.preRender = function(frame)
+{
 }
 
 Stage.prototype.render = function(frame)
 {
+    this.handleYIncrement();
+
     this.BgImg0.element.style.left = this.X0 + "px";
     this.BgImg1.element.style.left = this.X1 + "px";
 
@@ -205,14 +223,14 @@ Stage.prototype.alignPlayersX = function()
 }
 
 /*Aligns the players with the stage.*/
-Stage.prototype.alignPlayersY = function()
+Stage.prototype.fixPlayersGroundY = function()
 {
     var match = this.getMatch();
 
     for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
-        match.TeamA.Players[i].alignY(this.getGroundY());
+        match.TeamA.Players[i].setGroundY(this.getGroundY());
     for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
-        match.TeamB.Players[i].alignY(this.getGroundY());
+        match.TeamB.Players[i].setGroundY(this.getGroundY());
 }
 
 
@@ -280,26 +298,89 @@ Stage.prototype.moveX = function(amount)
 }
 
 /**/
-Stage.prototype.scrollY = function()
+Stage.prototype.resetYOffset = function()
 {
-    if(!!this.CanMoveY)
+    this.YCount = 0;
+    //this.OffsetY = 0;
+    this.DeltaOffsetY = 0;
+    this.TempY = 0;
+}
+
+/**/
+Stage.prototype.requestScrollY = function(isUp,y,forceDown)
+{
+    if(this.IsIncrementingY === undefined || !this.IsIncrementingY || !!forceDown)
     {
-        this.CanMoveY = false;
-
-        var y = this.getMatch().getHighestY();
-
-        if(y > STAGE.VERT_SCROLL_Y) /*moving up*/
-        {
-            this.OffsetY = Math.max(STAGE.VERT_SCROLL_Y - y, this.MaxScrollY) * STAGE.SCROLLY_FACTOR;
-        }
-        else
-        {
-            this.OffsetY = 0;
-        }
-
-
-        this.alignPlayersY();
+        y = y || 0;
+        if(!!isUp && (y > STAGE.VERT_SCROLL_Y))
+            this.IsIncrementingY = true;
+        else if(!isUp)
+            this.IsIncrementingY = false;
     }
+}
+
+/**/
+Stage.prototype.handleYIncrement = function()
+{
+    if(this.IsIncrementingY !== undefined)
+    {
+        if(!!this.HoldFrame)
+        {
+            return;
+        }
+
+        if(!!this.IsIncrementingY)
+        {
+            this.incYOffset();
+            var offsetY = Math.sin(this.YCount) * -this.YIncMultiplier;
+
+            this.DeltaOffsetY = offsetY - this.OffsetY;
+            this.OffsetY = offsetY;
+        }
+        else if(!!this.OffsetY)
+        {
+            this.decYOffset();
+
+            var offsetY = Math.sin(this.YCount) * -this.YIncMultiplier;
+
+            this.DeltaOffsetY = offsetY - this.OffsetY;
+            this.OffsetY = offsetY;
+
+            if(!this.YCount)
+                this.IsIncrementingY = undefined;
+        }
+
+        this.fixPlayersGroundY();
+    }
+}
+
+/*increments the Y offset so that the screen can move in reaction to a player jumping, 
+or any action that would require the screen to move vertically.*/
+Stage.prototype.incYOffset = function()
+{
+    this.YCount = Math.min(this.YCount + this.YInc, this.YMax / 2);
+
+    //if the Y hits the ceiling value, then we wait for a request to decrement
+    if(this.YCount == (this.YMax / 2))
+    {
+        this.IsIncrementingY = undefined;
+    }
+}
+
+/*decrements the Y offset so that the screen can move in reaction to a player jumping, 
+or any action that would require the screen to move vertically.*/
+Stage.prototype.decYOffset = function()
+{
+    //incrementing always overrides decrementing
+    if(!this.IsIncrementingY)
+    {
+        this.YCount = Math.max(this.YCount - this.YInc, 0);
+    }
+}
+/**/
+Stage.prototype.holdFrame = function(frame)
+{
+    this.HoldFrame = true;
 }
 
 /*Checks for physics with the stage*/

@@ -833,6 +833,7 @@ Player.prototype.createRyu = function(user)
         spinkick.EnergyToAdd = (5);
         spinkick.IsSpecialMove = true;
         spinkick.IgnoreDepressedKeys = true;
+        spinkick.MaintainYPosition = true;
         spinkick.AdjustShadowPosition = (false);
         spinkick.UserData = { Type: USER_DATA_TYPES.OFFSET,topOffset: 0,bottomOffset: 120 };
         spinkick.Vy = (100);
@@ -868,7 +869,7 @@ Player.prototype.createRyu = function(user)
         }
 
         spinkick.endBlock();
-        spinkick.addFrameWithSound(player,1,"audio/misc/spinkick-0.zzz",0,"",folder + "/x-hk-7.png",4,MISC_FLAGS.NONE,{Pose: POSE_FLAGS.AIRBORNE,Combat:COMBAT_FLAGS.CAN_BE_AIR_BLOCKED},0,0);
+        spinkick.addFrameWithSound(player,1,"audio/misc/spinkick-0.zzz",0,"",folder + "/x-hk-7.png",4,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.CAN_BE_AIR_BLOCKED},0,0);
         spinkick.addFrame(player,0,"",folder + "/x-hk-8.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
         spinkick.addFrame(player,0,"",folder + "/x-hk-9.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);
         spinkick.addFrame(player,0,"",folder + "/x-hk-10.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0);

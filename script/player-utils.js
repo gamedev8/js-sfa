@@ -56,6 +56,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.IsThrow = false;
         this.IsSuperMove = false;
         this.IsSpecialMove = false;
+        this.MaxNbHits = CONSTANTS.MAX_NBHITS;
 
         this.Flags = {};
         this.RequiredFlags = requiredFlags;
@@ -76,7 +77,8 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         /*by setting the following value, the jump will start at a different point. It is almost like skipping frames to a certain point in a jump.*/
         this.NbFramesAirborneAdvance = 0;
         /*by setting the following value the initial jump Y position will be set*/
-        this.StartAirborneAt = 0;
+        this.AirborneStartDeltaY = 0;
+        this.MaintainYPosition = false;
     }
 
     Animation.prototype.getAlternateKeySequencesLength = function() { return this.AlternateKeySequences.length; }
@@ -844,6 +846,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
     Frame.prototype.getImageSrc = function(direction){ return this.RightSrc; }
     Frame.prototype.isSettingAirborneFlag = function()  { return !!(this.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_2) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB) }
     Frame.prototype.isClearingAirborneFlag = function() { return !!(this.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_2) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB) }
+    Frame.prototype.isClearingAirborne = function() { return !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB) }
     return new Frame();
 }
 /************************************************************************/
@@ -860,8 +863,8 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.OffsetY = yOffset;
         this.InitialX = xOffset;
         this.InitialY = yOffset;
-        this.x_ = xOffset;
-        this.y_ = yOffset;
+        this.X = xOffset;
+        this.Y = yOffset;
         this.XSpeed = xSpeed || 1;
         this.YSpeed = ySpeed || 0;
         this.XFunc = xFunc || function(y){return this.XSpeed * 3;}
@@ -878,7 +881,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.BaseDamage = baseDamage || 0;
         this.FlagsToSend = MISC_FLAGS.NONE;
         this.IsDisintegrating = false;
-        this.t_ = 0;
+        this.T = 0;
         this.vxFn = null;
         this.vyFn = null;
         this.NbHits = 0;
@@ -903,9 +906,9 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     Projectile.prototype.cancel = function(ignoreOnGoneEvent)
     {
         this.Element.style.display="none";
-        this.x_ = this.OffsetX;
-        this.y_ = this.OffsetY;
-        this.t_ = 0;
+        this.X = this.OffsetX;
+        this.Y = this.OffsetY;
+        this.T = 0;
         this.IsActive = false;
         this.IsDisintegrating = false;
         if(!ignoreOnGoneEvent)
@@ -918,12 +921,12 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     }
 
     /*Fires the projectile*/
-    Projectile.prototype.throw = function(frame,stageX,stageY)
+    Projectile.prototype.execute = function(frame,stageX,stageY)
     {
         if(!!this.IsDisintegrating)
             this.cancel();
         this.StartFrame = frame;
-        this.t_ = 0;
+        this.T = 0;
         this.Element.style.display="none";
         this.Direction = this.Owner.Direction;
         if(this.Direction == -1)
@@ -931,8 +934,8 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         else
             this.Element.className="projectile";
 
-        this.x_ += this.Owner.getX();
-        this.y_ += this.Owner.getY();
+        this.X += this.Owner.getX();
+        this.Y += this.Owner.getY();
         this.StageX = stageX;
         this.StageY = stageY;
         this.IsActive = true;
@@ -968,8 +971,8 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         else
             return (STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + parseInt(this.Element.style.width) - this.TrimX));
     }
-    Projectile.prototype.getLeftX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.x_ + parseInt(this.Element.style.width);}else{return this.x_;}}
-    Projectile.prototype.getRightX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.x_;}else{return this.x_ + parseInt(this.Element.style.width);}}
+    Projectile.prototype.getLeftX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.X + parseInt(this.Element.style.width);}else{return this.X;}}
+    Projectile.prototype.getRightX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.X;}else{return this.X + parseInt(this.Element.style.width);}}
     Projectile.prototype.getMidX = function()
     {
         var left = this.getBackX();
@@ -1002,7 +1005,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     /*Is the projectile still visible?*/
     Projectile.prototype.isVisible = function(stageX,stageY)
     {
-        return (this.x_ < STAGE.MAX_STAGEX && this.x_ > -100) && (this.y_ > 0 && this.y_ < 1000);
+        return (this.X < STAGE.MAX_STAGEX && this.X > -100) && (this.Y > 0 && this.Y < 1000);
     }
 
 
@@ -1026,7 +1029,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
             return null;
         }
         //this.Element.style.display = "none";
-        ++this.t_;
+        ++this.T;
         this.IsActive = true;
 
 
@@ -1035,22 +1038,22 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         {
             if(!this.IsDisintegrating)
             {
-                var xSpeed = this.vxFn(this.XSpeed,this.t_);
-                var ySpeed = this.vyFn(this.YSpeed,this.t_);
+                var xSpeed = this.vxFn(this.XSpeed,this.T);
+                var ySpeed = this.vyFn(this.YSpeed,this.T);
 
                 var dx = (xSpeed) + (this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX));
                 var dy = (ySpeed) + (stageY - this.StageY);
 
 
-                this.x_ += dx;
-                this.y_ += dy;
+                this.X += dx;
+                this.Y += dy;
             }
 
         }
         if(!!this.IsDisintegrating)
         {
-            this.x_ += this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX);
-            this.y_ += stageY - this.StageY;
+            this.X += this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX);
+            this.Y += stageY - this.StageY;
         }
 
 
@@ -1112,12 +1115,12 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         {
             if(this.Direction > 0)
             {
-                this.Element.style.left = (offsetX + FlipCoord(this.x_,parseInt(this.Element.style.width))) + "px";
+                this.Element.style.left = (offsetX + FlipCoord(this.X,parseInt(this.Element.style.width))) + "px";
                 this.Element.style.right = "";
             }
             else
             {
-                this.Element.style.right = (offsetX + FlipCoord(this.x_,parseInt(this.Element.style.width))) + "px";
+                this.Element.style.right = (offsetX + FlipCoord(this.X,parseInt(this.Element.style.width))) + "px";
                 this.Element.style.left = "";
             }
         }
@@ -1126,15 +1129,15 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
             if(this.Direction > 0)
             {
                 this.Element.style.left = "";
-                this.Element.style.right = (offsetX + this.x_) + "px";
+                this.Element.style.right = (offsetX + this.X) + "px";
             }
             else
             {
                 this.Element.style.right = "";
-                this.Element.style.left = (offsetX + this.x_) + "px";
+                this.Element.style.left = (offsetX + this.X) + "px";
             }
         }
-        var imgOffsetY = this.y_ - (parseInt(this.Element.style.height)/2);
+        var imgOffsetY = this.Y - (parseInt(this.Element.style.height)/2);
         this.Element.style.bottom = imgOffsetY + "px";
         if(this.Element.style.display != "")
             this.Element.style.display="";

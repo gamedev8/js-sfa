@@ -21,6 +21,7 @@ var CreateMatch = function(team1,team2,stage)
     var teamsVisible_ = false;
     var startedTheme_ = false;
     var faceoff_ = null;
+    var nbAirborne_ = 0;
 
     var Match = function()
     {
@@ -31,6 +32,14 @@ var CreateMatch = function(team1,team2,stage)
         this.Stage.setup(stage);
 
         faceoff_ = CreateFaceoff(this);
+    }
+    Match.prototype.incAirborne = function() { ++nbAirborne_; }
+    Match.prototype.getNbAirborne = function() { return nbAirborne_; }
+    Match.prototype.decAirborne = function()
+    {
+        nbAirborne_ = Math.max(nbAirborne_ - 1, 0);
+        if(!nbAirborne_)
+            this.Stage.requestScrollY(false,0,true);
     }
     Match.prototype.getPhysics = function() { return physics_; }
     Match.prototype.getTeamA = function() { return this.TeamA; }
@@ -136,9 +145,9 @@ var CreateMatch = function(team1,team2,stage)
     {
         var retVal = 0;
         for(var i = 0; i < this.TeamA.Players.length; ++i)
-            retVal = this.TeamA.Players[i].y_ > retVal ? this.TeamA.Players[i].y_ : retVal;
+            retVal = this.TeamA.Players[i].Y > retVal ? this.TeamA.Players[i].Y : retVal;
         for(var i = 0; i < this.TeamB.Players.length; ++i)
-            retVal = this.TeamB.Players[i].y_ > retVal ? this.TeamB.Players[i].y_ : retVal;
+            retVal = this.TeamB.Players[i].Y > retVal ? this.TeamB.Players[i].Y : retVal;
         return retVal;
     }
     /*Gets the current frame*/
@@ -496,7 +505,7 @@ var CreateMatch = function(team1,team2,stage)
         faceoff_.handleOtherRounds(frame);
     }
 
-    /*pre-render calculations to be performed here*/
+    /*calculations to be performed here*/
     Match.prototype.frameMove = function(frame,keyboardState)
     {
         this.Stage.frameMove(frame);
@@ -512,6 +521,14 @@ var CreateMatch = function(team1,team2,stage)
             this.handleRound1(frame);
             faceoff_.frameMove(frame);
         }
+    }
+
+    /*pre-render calculations to be performed here*/
+    Match.prototype.preRender = function(frame)
+    {
+        this.Stage.preRender(frame);
+        this.TeamA.preRender(frame);
+        this.TeamB.preRender(frame);
     }
 
     /*All rendering and CSS manipulation to be done here*/
@@ -643,8 +660,8 @@ var CreateMatch = function(team1,team2,stage)
 
         Faceoff.prototype.reset = function()
         {
-            showedFaceoff_ = true;
-            announcedNewRound_ = true;
+            showedFaceoff_ = !!__debugMode;
+            announcedNewRound_ = !!__debugMode;
             startedRound_ = false;
             this.Scale = 0;
             this.Angle = 0;

@@ -28,11 +28,11 @@ Player.prototype.getRightX = function(useImageWidth)  { if(this.Direction > 0){r
 Player.prototype.getAbsFrontX = function(useImageWidth) { if(this.Direction > 0){ return this.getLeftX(useImageWidth); } else { return this.getRightX(useImageWidth); } }
 Player.prototype.getAbsBackX = function(useImageWidth)  { if(this.Direction > 0){ return this.getRightX(useImageWidth); } else { return this.getLeftX(useImageWidth); } }
 
-Player.prototype.getBoxTop = function() { return this.y_ + (this.getBoxHeight()); }
+Player.prototype.getBoxTop = function() { return this.Y + (this.getBoxHeight()); }
 Player.prototype.getConstOffsetTop = function() { return this.Height + game_.Match.Stage.getGroundY(); }
-Player.prototype.getOffsetBoxTop = function() { return this.y_ + (this.getBoxHeight()) + this.YTopOffset; }
-Player.prototype.getBoxBottom = function() { return this.y_; }
-Player.prototype.getOffsetBoxBottom = function() { return this.y_ + this.YBottomOffset; }
+Player.prototype.getOffsetBoxTop = function() { return this.Y + (this.getBoxHeight()) + this.YTopOffset; }
+Player.prototype.getBoxBottom = function() { return this.Y; }
+Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.YBottomOffset; }
 /*Player.prototype.getConstWidth = function() { return (!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.isAttack()) ? this.getBoxWidth() : this.Width; }*/
 Player.prototype.getConstHeight = function() { return this.Height; }
 Player.prototype.getConstWidth = function() { return this.Width; }
@@ -50,26 +50,28 @@ Player.prototype.getLeft = function() { return parseInt(this.Element.style.left 
 Player.prototype.getY = function() { return parseInt(this.Element.style.bottom) || 0; }
 Player.prototype.getX = function() { if(this.Direction > 0){return this.getRight();} else {return this.getLeft();} }
 */
-Player.prototype.getRight = function() { return this.x_; }
-Player.prototype.getLeft = function() { return this.x_; }
-Player.prototype.getY = function() { return this.y_ || 0; }
-Player.prototype.getX = function() { return this.x_ || 0; }
+Player.prototype.getRight = function() { return this.X; }
+Player.prototype.getLeft = function() { return this.X; }
+Player.prototype.getY = function() { return this.Y || 0; }
+Player.prototype.getX = function() { return this.X || 0; }
 
 Player.prototype.setRight = function(value) { this.Element.style.right = (value) + "px";}
 Player.prototype.setLeft = function(value) { this.Element.style.left = (value) + "px";}
 
 Player.prototype.setY = function(value)
 {
-    this.y_ = Math.max(value,game_.Match.Stage.getGroundY());
+    this.Y = Math.max(value,game_.Match.Stage.getGroundY());
     this.moveCircle();
 }
 Player.prototype.setX = function(value)
 {
-    if(this.y_ == game_.Match.Stage.getGroundY())
-        value = Math.min(Math.max(value,0),STAGE.MAX_STAGEX - (this.PendingWidth || 0));
-    else
-        value = Math.min(Math.max(value,0),STAGE.MAX_STAGEX - (this.PendingWidth || 0) * 0.8);
-    this.x_ = value;
+    value = value || 0;
+    var r = this.getRect();
+    var maxX = STAGE.MAX_STAGEX - (r.Right - r.Left);
+
+    value = Math.max(Math.min(value, maxX),0);
+
+    this.X = value;
     this.moveCircle();
 }
 Player.prototype.show = function() { this.setDisplay(true); }
@@ -87,21 +89,32 @@ Player.prototype.setDisplay = function(isVisible)
         this.ShadowContainer.style.display = "none";
     }
 }
-Player.prototype.alignX = function(deltaX) { this.x_ += (deltaX * -this.Direction); }
+Player.prototype.alignX = function(deltaX) { this.X += (deltaX * -this.Direction); }
 
 Player.prototype.setImageX = function(value) {if(this.Direction > 0){this.SpriteElement.style.right = value+"px"; } else {this.SpriteElement.style.left = value+"px";}}
 Player.prototype.setImageY = function(value) { this.SpriteElement.style.bottom = value+"px"; }
 Player.prototype.isCrouching = function() { return this.Flags.Pose.has(POSE_FLAGS.CROUCHING); }
-Player.prototype.isOnGround = function() { return this.y_ == game_.Match.Stage.getGroundY(); }
+Player.prototype.isOnGround = function() { return this.Y == game_.Match.Stage.getGroundY(); }
 Player.prototype.hasAirborneFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE_FB) }
 Player.prototype.hasAirborneComboFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1) || this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_2); }
-Player.prototype.isAirborne = function() { return this.hasAirborneComboFlag() || this.hasAirborneFlag() || this.y_ > game_.Match.Stage.getGroundY(); }
-Player.prototype.alignY = function(groundY)
+Player.prototype.isAirborne = function() { return this.hasAirborneComboFlag() || this.hasAirborneFlag() || this.Y > game_.Match.Stage.getGroundY(); }
+Player.prototype.setGroundY = function(groundY)
 {
-    if(this.y_ != groundY && !(this.hasAirborneFlag() || this.hasAirborneComboFlag()))
+    if(!this.hasAirborneFlag() && !this.hasAirborneComboFlag())
     {
-        this.y_ = groundY;
+        this.setY(groundY);
     }
+
+    var offsetY = this.getStage().DeltaOffsetY;
+    var isAirborne = this.hasAirborneFlag() || this.hasAirborneComboFlag();
+    if(!!this.MaintainYPosition)
+    {
+        this.setY(this.Y + offsetY);
+    }
+}
+Player.prototype.setAirborneY = function(groundY)
+{
+    //else if(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE))
 }
 Player.prototype.isDescending = function() { return this.LastFrameY > this.ConstY; }
 Player.prototype.isVisible = function() { return !this.Flags.Player.has(PLAYER_FLAGS.INVISIBLE); }
@@ -139,7 +152,7 @@ Player.prototype.changeDirection = function(quick)
 {
     this.MustChangeDirection = 0;
     var pnlStageWidth = STAGE.CSSWIDTH;
-    var imgWidth = parseInt(this.SpriteElement.style.width) || 0;
+    var imgWidth = this.getBoxWidth(); //parseInt(this.SpriteElement.style.width) || 0;
 
 
     /*facing left*/
@@ -220,7 +233,7 @@ Player.prototype.changeDirection = function(quick)
 Player.prototype.moveCircleToBottom = function()
 {
     this.moveCircle();
-    this.Circle.RenderY = this.y_ + this.Circle.OffsetY;
+    this.Circle.RenderY = this.Y + this.Circle.OffsetY;
 }
 Player.prototype.moveCircleToTop = function()
 {
@@ -234,10 +247,11 @@ Player.prototype.moveCircle = function()
         x = this.getX();
     else
         x = STAGE.MAX_STAGEX - this.getX();
-    if(!!this.CurrentFrame && !!this.PendingWidth)
+    if(!!this.CurrentFrame)
     {
-        //this.Circle.R = (this.PendingWidth + (this.CurrentFrame.ImageOffsetX || 0)) / 2;
-        //this.Circle.RSq = this.Circle.R * this.Circle.R;
+        var r = this.getRect();
+        this.Circle.R = (r.Right - r.Left) / 2;
+        this.Circle.RSq = this.Circle.R * this.Circle.R;
     }
     if(this.Direction == -1)
         this.Circle.RenderX = x + this.Circle.R;
@@ -275,10 +289,10 @@ Player.prototype.setTeleportTarget = function(flag,nbFrames)
         this.TeleportX = 0;
         switch(flag)
         {
-            case COMBAT_FLAGS.TELEPORT_BEHIND:  { this.TeleportX = (STAGE.MAX_STAGEX - foe.x_) / nbFrames; this.Teleport0GapX = "b"; break; }
-            case COMBAT_FLAGS.TELEPORT_INFRONT: { this.TeleportX = (STAGE.MAX_STAGEX - foe.x_ - foe.OffsetWidth - this.OffsetWidth) / nbFrames; this.Teleport0GapX = "f"; break; }
-            case COMBAT_FLAGS.TELEPORT_MIDDLE:  { this.TeleportX = ((STAGE.MAX_STAGEX - foe.x_ - foe.OffsetWidth - this.OffsetWidth) / nbFrames)/2; this.Teleport0GapX = "m"; break; }
-            case COMBAT_FLAGS.TELEPORT_BACK:    { this.TeleportX = (0 - this.x_) / nbFrames; this.Teleport0GapX = "bw"; break; }
+            case COMBAT_FLAGS.TELEPORT_BEHIND:  { this.TeleportX = (STAGE.MAX_STAGEX - foe.X) / nbFrames; this.Teleport0GapX = "b"; break; }
+            case COMBAT_FLAGS.TELEPORT_INFRONT: { this.TeleportX = (STAGE.MAX_STAGEX - foe.X - foe.OffsetWidth - this.OffsetWidth) / nbFrames; this.Teleport0GapX = "f"; break; }
+            case COMBAT_FLAGS.TELEPORT_MIDDLE:  { this.TeleportX = ((STAGE.MAX_STAGEX - foe.X - foe.OffsetWidth - this.OffsetWidth) / nbFrames)/2; this.Teleport0GapX = "m"; break; }
+            case COMBAT_FLAGS.TELEPORT_BACK:    { this.TeleportX = (0 - this.X) / nbFrames; this.Teleport0GapX = "bw"; break; }
         }
         this.TeleportX /= 2;
     }
@@ -301,7 +315,7 @@ Player.prototype.advanceTeleportation = function()
                     var otherRect = foe.getRect();
                     var buffer = 1.5;
                     var midBuffer = 0.35;
-                    var x = this.x_;
+                    var x = this.X;
                     switch(this.Teleport0GapX)
                     {
                         case "f": /*must end up infront of the enemy*/
@@ -430,16 +444,16 @@ Player.prototype.warpX = function(amount,autoDir)
         }
     }
     var oldX = this.getMidX();
-    this.setX(this.x_ + amount);
+    this.setX(this.X + amount);
     return this.getMidX() - oldX;
 }
 
 Player.prototype.warpY = function(amount)
 {
-    var oldY = this.y_;
-    this.setY(this.y_ + amount);
+    var oldY = this.Y;
+    this.setY(this.Y + amount);
 
-    return this.y_ - oldY;
+    return this.Y - oldY;
 }
 
 Player.prototype.convertX = function(x)
@@ -512,8 +526,8 @@ Player.prototype.startSlide = function(frame,amount,direction,fx,hideSlideDirt,f
 
     if(this.IsSliding)
     {
-        this.t_ = 0;
-        this.Fx = Math.sin(this.t_) * amount;
+        this.T = 0;
+        this.Fx = Math.sin(this.T) * amount;
     }
 
     if(!!hideSlideDirt)
@@ -532,14 +546,14 @@ Player.prototype.slide = function(frame)
 {
     if(!!this.FrameFreeze && !this.isBlocking())
         return;
-    if(this.t_ >= CONSTANTS.HALF_PI || !this.IsSliding || !!this.isBeingGrappled())
+    if(this.T >= CONSTANTS.HALF_PI || !this.IsSliding || !!this.isBeingGrappled())
     {
         this.stopSlide();
         return;
     }
-    this.t_ = Math.min(this.t_ + (CONSTANTS.SLIDE_INC), CONSTANTS.HALF_PI);
+    this.T = Math.min(this.T + (CONSTANTS.SLIDE_INC), CONSTANTS.HALF_PI);
     this.LastFx = this.Fx;
-    this.Fx =  Math.sin(this.t_) * this.SlideFactor;
+    this.Fx =  Math.sin(this.T) * this.SlideFactor;
     ++this.SlideCount;
 
     if(!!this.ShowSlideDirt)
@@ -563,7 +577,7 @@ Player.prototype.stopSlide = function()
 {
     if(!!this.IsSliding)
     {
-        this.t_ = 0;
+        this.T = 0;
         this.Fx = 0;
         this.SlideCount = 0;
         this.IsSliding = false;
@@ -587,9 +601,9 @@ Player.prototype.advanceJump = function(ignoreYCheck)
             return true;
     }
 
-    this.JumpT += this.JumpSpeed_;
+    this.JumpT += this.JumpSpeed;
 
-    var dx = this.JumpVelocityX * CONSTANTS.X_DAMPING * this.JumpSpeed_;
+    var dx = this.JumpVelocityX * CONSTANTS.X_DAMPING * this.JumpSpeed;
     var dy = y - this.OldY;
 
     if(!!this.vxFn)
@@ -602,12 +616,15 @@ Player.prototype.advanceJump = function(ignoreYCheck)
     this.moveX(dx);
     this.moveY(dy);
 
-    if(!ignoreYCheck && this.getY() <= game_.Match.Stage.getGroundY())
+    if((this.JumpT > this.JumpSpeed) && this.getY() <= game_.Match.Stage.getGroundY() && !(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE)))
     {
         this.clearAirborneFlags();
         this.vxFn = null;
         this.vyFn = null;
         this.JumpT = 0;
+        //lets the stage move back down to the ground (just in case it wasnt triggered already)
+        this.getStage().requestScrollY(false,this.Y);
+        this.getMatch().decAirborne();
         return false;
     }
     return true;
@@ -624,15 +641,16 @@ Player.prototype.clearAirborneFlags = function()
 
 Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpeed)
 {
-    this.JumpSpeed_ = !!useJumpSpeed ? this.JumpSpeed : 1;
+    this.getMatch().incAirborne();
+    this.JumpSpeed = !!useJumpSpeed ? this.DefaultJumpSpeed : 1;
 
     /*store the X and Y modifier functions*/
     this.setVxFn(vxFn);
     this.setVyFn(vyFn);
     /*store the initial position*/
-    this.X0 = this.x_;
-    this.Y0 = this.y_ + (deltaY || 0);
-    this.OldY = this.y_ + (deltaY || 0);
+    this.X0 = this.X;
+    this.Y0 = this.Y + (deltaY || 0);
+    this.OldY = this.Y;
     this.JumpVelocityX = vx;
     this.JumpVelocityY = vy;
     this.JumpT = jumpT || 0;
@@ -649,12 +667,12 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
             this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
         }
     }
-    this.advanceJump(true);
+    //this.advanceJump(true);
 }
 
-Player.prototype.stopJump = function()
+Player.prototype.stopJump = function(ignoreX)
 {
-    this.performJump(this.JumpVelocityX,0);
+    this.performJump(!!ignoreX ? 0 : this.JumpVelocityX,0);
 }
 
 

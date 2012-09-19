@@ -47,6 +47,21 @@ Player.prototype.renderDebugInfo = function()
             this.DebugHit.style.display = "none";
     }
 
+//    var rect = this.getRect();
+//    this.Rect.style.bottom = rect.Bottom + "px";
+//    if(this.Direction < 0)
+//    {
+//        this.Rect.style.right = "";
+//        this.Rect.style.left = rect.Left + "px";
+//    }
+//    else
+//    {
+//        this.Rect.style.left = "";
+//        this.Rect.style.right = (STAGE.MAX_STAGEX - rect.Right) + "px";
+//    }
+//    this.Rect.style.width = (rect.Right - rect.Left) + "px";
+//    this.Rect.style.height = (rect.Top - rect.Bottom) + "px";
+
 }
 
 
@@ -85,6 +100,10 @@ Player.prototype.createDebugElements = function(parentElement)
     this.DebugHit.className = "hit";
     this.DebugHit.innerHTML = "h";
     (parentElement || window.document.getElementById("pnlStage")).appendChild(this.DebugHit);
+
+    this.Rect = window.document.createElement("div");
+    this.Rect.className = "player-rect";
+    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.Rect);
 }
 
 Player.prototype.createKeysElement =  function()

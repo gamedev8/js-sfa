@@ -3,6 +3,7 @@ Player.prototype.createMBison = function(user)
 {
     var player = new Player("mbison",201,247,user);
     var folder = "images/misc/" + player.Folder;
+    player.DefaultJumpSpeed = 1.5;
     player.ForceNoAdjustShadowPosition = true;
     player.DefaultShadowImageSrc = "200"
     player.Circle.OffsetY = 0;
@@ -376,8 +377,8 @@ Player.prototype.createMBison = function(user)
     crouch_p3.Flags = ({Player:PLAYER_FLAGS.MOVE_TO_BACK});
     crouch_p3.setHardAttack();
     crouch_p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING | OVERRIDE_FLAGS.AIRBORNE);
-    crouch_p3.addFrame(player,0,"",folder + "/crouch_p3-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-60,-11);
-    crouch_p3.addFrame(player,0,"",folder + "/crouch_p3-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
+    crouch_p3.addFrame(player,0,"",folder + "/crouch_p3-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-120,-11);
+    crouch_p3.addFrame(player,0,"",folder + "/crouch_p3-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-120,-11);
     crouch_p3.addFrame(player,0,"",folder + "/p3-0.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
     crouch_p3.addFrame(player,0,"",folder + "/p3-1.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
     crouch_p3.addFrame(player,0,"",folder + "/p3-2.png",2,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,-25,-11,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:130,y:181},{state:HIT_FLAGS.FAR,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
@@ -507,7 +508,6 @@ Player.prototype.createMBison = function(user)
     var jumpX = 36;
     var jumpY = 250;
 
-    player.JumpSpeed = 1.5;
 
     var psychoGlove = player.addAnimation(POSE_FLAGS.AIR_COMBO_1,"psycho glove",0,[BUTTONS.HARD_PUNCH],0,true,true);
     psychoGlove.KeepAirborneFunctions = true;
@@ -572,8 +572,52 @@ Player.prototype.createMBison = function(user)
     headStompJump.chain(jump_land);
 
 
+    var psychoGloveDismount = player.addAnimation(POSE_FLAGS.AIR_COMBO_2, "head stomp dismount", 10, [BUTTONS.HARD_PUNCH],0,true, true);
+    psychoGloveDismount.Flags = {Player:PLAYER_FLAGS.FACE_ENEMY};
+    psychoGloveDismount.UseJumpSpeed = true;
+    psychoGloveDismount.Vy = 175;
+    psychoGloveDismount.Vx = -100;
+
+    /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+    psychoGloveDismount.VxFnArgs = {};
+    /*the following function will be executed each frame to compute the X coordinate of this move*/
+    psychoGloveDismount.vxFn = (function(args)
+    {
+        var max = 40;
+        var boost = 0.1;
+        return function(dx,t)
+        {
+            var rate = Math.sin(Math.PI/2 + Math.PI*(Math.min(t,max)/max)) * (boost);
+            return dx * rate;
+        }
+    });
+
+
+    psychoGloveDismount.addRepeatingFrame(player,0,"",folder + "/head_stomp-2.png",1,{Pose:POSE_FLAGS.AIR_COMBO_1|POSE_FLAGS.FORCE_START_AIRBORNE},MISC_FLAGS.NONE);
+    psychoGloveDismount.addRepeatingFrame(player,0,"",folder + "/head_stomp-2.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    psychoGloveDismount.addRepeatingFrame(player,0,"",folder + "/head_stomp-4.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    psychoGloveDismount.addRepeatingFrame(player,0,"",folder + "/head_stomp-5.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    psychoGloveDismount.addRepeatingFrame(player,0,"",folder + "/head_stomp-6.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    psychoGloveDismount.addRepeatingFrame(player,0,"",folder + "/head_stomp-7.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    psychoGloveDismount.chain(psychoGlove);
+
+
+    var psychoGloveJump = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"head stomp",CONSTANTS.MAX_FRAME,[BUTTONS.CROUCH|BUTTONS.CHARGE,0,BUTTONS.JUMP,BUTTONS.JUMP|BUTTONS.HARD_PUNCH],0,true,true);
+    psychoGloveJump.UseJumpSpeed = true;
+    psychoGloveJump.Flags = {Player:PLAYER_FLAGS.MOVE_BEYOND_ENEMY};
+    psychoGloveJump.Vy = (jumpY);
+    psychoGloveJump.Vx = 100;
+    psychoGloveJump.UserData = { Type: USER_DATA_TYPES.OFFSET,topOffset: 0,bottomOffset: 80 };
+    psychoGloveJump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,-38,-18,0,0,0,0,0,0);
+    psychoGloveJump.addRepeatingFrame(player,-11,"168",folder + "/jump-1.png",6,{Pose:POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,0,0,0,0,0,0,0,0,0);
+    psychoGloveJump.addRepeatingFrame(player,-11,"168",folder + "/jump-2.png",6,{Player:PLAYER_FLAGS.SMALLER_AABB},MISC_FLAGS.NONE,0,0,0,0,-62,0,0,0,0,0,0,0);
+    psychoGloveJump.addRepeatingFrame(player,10,"136",folder + "/jump-3.png",20,{Player:PLAYER_FLAGS.SMALLER_AABB|PLAYER_FLAGS.MOBILE,Pose:POSE_FLAGS.AIR_COMBO_2},MISC_FLAGS.NONE,0,0,0,0,-84,0);
+    psychoGloveJump.addRepeatingFrame(player,10,"136",folder + "/jump-3.png",CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SMALLER_AABB},{Pose:POSE_FLAGS.AIR_COMBO_2},0,0,0,0,-84,0);
+    psychoGloveJump.chain(jump_land);
+
+
     var xSpeed = 0;
-    for(var x = 0; x < 3; ++x)
+    for(var x = 4; x < 3; ++x)
     {
         xSpeed = x + 10;
         var projectile = player.addProjectile("projectile",160,190,xSpeed);
@@ -667,7 +711,7 @@ Player.prototype.createMBison = function(user)
         flipKick.IsSpecialMove = true;
         flipKick.EnergyToAdd = (5);
         //flipKick.Flags = {};
-        flipKick.StartAirborneAt = deltaY0;
+        flipKick.AirborneStartDeltaY = deltaY0;
         flipKick.Vy = vy;
         flipKick.Vx = vx;
         flipKick.NbFramesAirborneAdvance = nb;
@@ -717,5 +761,65 @@ Player.prototype.createMBison = function(user)
     }
 
 
+    var psycho_crusher_end = player.addAnimation(0,"psycho crusher end", 0,["psycho_crusher_end"],0,false);
+    psycho_crusher_end.IsImplicit = true;
+    psycho_crusher_end.addFrame(player,0,"",folder+"/jump-3.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE,Pose:POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIR_BRAKES});
+    psycho_crusher_end.addFrame(player,0,"",folder+"/jump-4.png",CONSTANTS.MAX_FRAME,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+    psycho_crusher_end.chain(jump_land);
+
+    for(var x = 0; x < 3; ++x)
+    {
+        var button = BUTTONS.LIGHT_PUNCH;
+        if(x == 1) {button = BUTTONS.MEDIUM_PUNCH;}
+        else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
+
+        var psycho_crusher = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"psycho crusher p"+ (x+1), CONSTANTS.MAX_FRAME,[BUTTONS.BACK|BUTTONS.CHARGE,0,BUTTONS.FORWARD,BUTTONS.FORWARD|button],0,true, true);
+        psycho_crusher.MaxNbHits = x == 2 ? 6 : x == 1 ? 3 : 3;
+        psycho_crusher.IsSuperMove = true;
+        psycho_crusher.IgnoreDepressedKeys = true;
+        psycho_crusher.MaintainYPosition = true;
+
+        psycho_crusher.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.NONE);
+        psycho_crusher.Vy = 50;
+        psycho_crusher.Vx = 50;
+        psycho_crusher.AirborneStartDeltaY = 30;
+
+        //psycho_crusher.EnergyToSubtract = CONSTANTS.ONE_LEVEL * (x + 1);
+        psycho_crusher.EnergyToAdd = 5;
+
+        /*the following object will be passed in to the function that will be used to compute the X coordinate*/
+        psycho_crusher.VxFnArgs = {};
+        /*the following function will be executed each frame to compute the X coordinate of this move*/
+        psycho_crusher.vxFn = (function(args) { return function(dx,t) { return dx * 2; } });
+
+        psycho_crusher.vxAirFn = (function(args) { return function(dx,t) { return (!dx ? 1 : dx) * 1.5; } });
+        psycho_crusher.vyAirFn = (function(args) { return function(dy,t) { return dy; } });
+
+        psycho_crusher.addFrame(player,0,"",folder+"/block-0.png",4,{Player:PLAYER_FLAGS.BULLDOZE},{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-34,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-1.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-68,-23,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/p2-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
+        psycho_crusher.addFrameWithSound(player,1,"audio/mbison/psycho-crusher.zzz",0,"",folder+"/psycho-crusher-3.png",2,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.SUPER_MOVE_PAUSE},0,0,0,0,null,-26,-11,0,0,0,0,0,0);
+        psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-4.png",1,{Player:PLAYER_FLAGS.MOVE_TO_BACK,Pose:POSE_FLAGS.AIRBORNE,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,1,null,-180,20,ATTACK_FLAGS.BLUE_FIRE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:-70,y:120},{state:HIT_FLAGS.NEAR,x:130,y:120},{state:HIT_FLAGS.NEAR,x:320,y:120}],ATTACK_FLAGS.HARD,CONSTANTS.FIRST_HIT,1,20);
+
+        var hit = 0;
+        var fy = 0.33333333333;
+        var fx = 2;
+        for(var i = 0; i < 3 + (x*2); ++i)
+        {
+            psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-4.png",3,{Pose:POSE_FLAGS.HOLD_AIRBORNE,Player:PLAYER_FLAGS.IGNORE_COLLISIONS,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,1,null,-180,20,ATTACK_FLAGS.BLUE_FIRE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:-70,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:130,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:320,y:120,Fx:fx,Fy:fy}],ATTACK_FLAGS.HARD,++hit,1,20);
+            psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-5.png",3,{Pose:POSE_FLAGS.HOLD_AIRBORNE,Player:PLAYER_FLAGS.IGNORE_COLLISIONS,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,1,null,-100,0, ATTACK_FLAGS.BLUE_FIRE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:-70,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:130,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:320,y:120,Fx:fx,Fy:fy}],ATTACK_FLAGS.HARD,++hit,1,20);
+            psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-6.png",3,{Pose:POSE_FLAGS.HOLD_AIRBORNE,Player:PLAYER_FLAGS.IGNORE_COLLISIONS,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,1,null,-76, 0, ATTACK_FLAGS.BLUE_FIRE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:-70,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:130,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:320,y:120,Fx:fx,Fy:fy}],ATTACK_FLAGS.HARD,++hit,1,20);
+            psycho_crusher.addFrame(player,0,"",folder+"/psycho-crusher-7.png",3,{Pose:POSE_FLAGS.HOLD_AIRBORNE,Player:PLAYER_FLAGS.IGNORE_COLLISIONS,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,1,null,-105,0, ATTACK_FLAGS.BLUE_FIRE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.NEAR,x:-70,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:130,y:120,Fx:fx,Fy:fy},{state:HIT_FLAGS.NEAR,x:320,y:120,Fx:fx,Fy:fy}],ATTACK_FLAGS.HARD,++hit,1,20);
+        }
+
+        psycho_crusher.chain(psycho_crusher_end);
+
+    }
     return player;
 }

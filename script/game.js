@@ -516,6 +516,8 @@ var CreateGame = function()
             if(!this.Match.isSuperMoveActive())
                 fontSystem_.frameMove(frame_);
 
+            this.Match.preRender(frame_);
+
             this.Match.render(frame_);
             if(!this.Match.isSuperMoveActive())
                 fontSystem_.render(frame_);

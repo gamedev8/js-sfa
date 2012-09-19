@@ -201,6 +201,11 @@ var CreateTeam = function(num)
         energybar_.frameMove(frame);
     }
 
+    Team.prototype.preRender = function(frame)
+    {
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
+            this.getPlayer(i).preRender(frame);
+    }
 
     /* Shows details about the players on the team */
     Team.prototype.render = function(frame,deltaX)
