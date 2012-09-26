@@ -55,7 +55,7 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
             currentFrame.FlagsToSet.Player = (currentFrame.FlagsToSet.Player || MISC_FLAGS.NONE) | PLAYER_FLAGS.INVULNERABLE;
         }
         /*ensure that isAttack_ is set properly*/
-        if(!!(currentFrame.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
+        if(hasFlag(currentFrame.FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
         {
             this.IsAttack = true;
         }

@@ -99,7 +99,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
             var thisAtackKeys = this.stripDirectionKeys(thisKey);
 
             /*attack keys must match*/
-            if((!!userAtackKeys || !!thisAtackKeys) && !(userAtackKeys & thisAtackKeys))
+            if((!!userAtackKeys || !!thisAtackKeys) && !hasFlag(userAtackKeys,thisAtackKeys))
             {
                 return false;
             }
@@ -225,29 +225,29 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     }
     Animation.prototype.hasAttackKeys = function(index)
     {
-        return !!(this.KeySequence[index] & BUTTONS.LIGHT_PUNCH) 
-            ? true : !!(this.KeySequence[index] & BUTTONS.MEDIUM_PUNCH) 
-            ? true : !!(this.KeySequence[index] & BUTTONS.HARD_PUNCH) 
-            ? true : !!(this.KeySequence[index] & BUTTONS.LIGHT_KICK) 
-            ? true : !!(this.KeySequence[index] & BUTTONS.MEDIUM_KICK) 
-            ? true : !!(this.KeySequence[index] & BUTTONS.HARD_KICK) 
+        return hasFlag(this.KeySequence[index],BUTTONS.LIGHT_PUNCH) 
+            ? true : hasFlag(this.KeySequence[index],BUTTONS.MEDIUM_PUNCH) 
+            ? true : hasFlag(this.KeySequence[index],BUTTONS.HARD_PUNCH) 
+            ? true : hasFlag(this.KeySequence[index],BUTTONS.LIGHT_KICK) 
+            ? true : hasFlag(this.KeySequence[index],BUTTONS.MEDIUM_KICK) 
+            ? true : hasFlag(this.KeySequence[index],BUTTONS.HARD_KICK) 
             ;
     }
     Animation.prototype.keyHasAttackKeys = function(key)
     {
-        return !!(key.Bit & BUTTONS.LIGHT_PUNCH) 
-            ? true : !!(key.Bit & BUTTONS.MEDIUM_PUNCH) 
-            ? true : !!(key.Bit & BUTTONS.HARD_PUNCH) 
-            ? true : !!(key.Bit & BUTTONS.LIGHT_KICK) 
-            ? true : !!(key.Bit & BUTTONS.MEDIUM_KICK) 
-            ? true : !!(key.Bit & BUTTONS.HARD_KICK) 
+        return hasFlag(key.Bit,BUTTONS.LIGHT_PUNCH) 
+            ? true : hasFlag(key.Bit,BUTTONS.MEDIUM_PUNCH) 
+            ? true : hasFlag(key.Bit,BUTTONS.HARD_PUNCH) 
+            ? true : hasFlag(key.Bit,BUTTONS.LIGHT_KICK) 
+            ? true : hasFlag(key.Bit,BUTTONS.MEDIUM_KICK) 
+            ? true : hasFlag(key.Bit,BUTTONS.HARD_KICK) 
             ;
     }
     Animation.prototype.getKey = function(index) { return !!+this.KeySequence[index] ? ((this.KeySequence[index] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.KeySequence[index]; }
-    Animation.prototype.mustChargeKey = function(index) { return !!+this.KeySequence[index] ? (!!(this.KeySequence[index] & BUTTONS.CHARGE)) : false; }
-    Animation.prototype.mustChargeAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (!!(this.AlternateKeySequences[i][j] & BUTTONS.CHARGE)) : false; }
-    Animation.prototype.mustMatchExactKey = function(index) { return !!+this.KeySequence[index] ? (!!(this.KeySequence[index] & BUTTONS.EXACT)) : false; }
-    Animation.prototype.mustMatchExactAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (!!(this.AlternateKeySequences[i][j] & BUTTONS.EXACT)) : false; }
+    Animation.prototype.mustChargeKey = function(index) { return !!+this.KeySequence[index] ? (hasFlag(this.KeySequence[index],BUTTONS.CHARGE)) : false; }
+    Animation.prototype.mustChargeAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (hasFlag(this.AlternateKeySequences[i][j],BUTTONS.CHARGE)) : false; }
+    Animation.prototype.mustMatchExactKey = function(index) { return !!+this.KeySequence[index] ? (hasFlag(this.KeySequence[index],BUTTONS.EXACT)) : false; }
+    Animation.prototype.mustMatchExactAlternateKey = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? (hasFlag(this.AlternateKeySequences[i][j],BUTTONS.EXACT)) : false; }
 
     Animation.prototype.getXModifier = function() { return this.xModifier(this.VxFnArgs); }
     Animation.prototype.getYModifier = function() { return this.yModifier(this.VyFnArgs); }
@@ -299,13 +299,13 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 
     Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
-        this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+        this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         return this.BaseAnimation.addFrameWithSound.apply(this.BaseAnimation,arguments);
     }
 
     Animation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
-        this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+        this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         return this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
     }
     Animation.prototype.addOffsetFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,x,y)
@@ -314,12 +314,12 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     }
     Animation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
-        this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+        this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         return this.BaseAnimation.addRepeatingFrameWithSound.apply(this.BaseAnimation,arguments);
     }
     Animation.prototype.addRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
-        this.IgnoresCollisions = !!flagsToSet && !!(flagsToSet.Player & PLAYER_FLAGS.IGNORE_COLLISIONS);
+        this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         return this.BaseAnimation.addRepeatingFrame.apply(this.BaseAnimation,arguments);
     }
     Animation.prototype.getNextFrameOffset = function(id) { return this.BaseAnimation.getNextFrameOffset.apply(this.BaseAnimation,arguments); }
@@ -490,12 +490,12 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
                 offsetY -= (parseInt(element.style.height)/2);
             }
 
-            if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_TO_PLAYER))
+            if(hasFlag(this.MoveFlags,MOVE_FLAGS.MOVE_TO_PLAYER))
             {
                 offsetX += playerX;
                 offsetY += playerY;
             }
-            else if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            else if(hasFlag(this.MoveFlags,MOVE_FLAGS.MOVE_WITH_PLAYER))
             {
                 offsetX += playerX - this.InitialPlayerX;
                 offsetY += playerY - this.InitialPlayerY;
@@ -506,9 +506,9 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
         if(this.Direction > 0)
         {
             element.style.left = "";
-            if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_TO_PLAYER))
+            if(hasFlag(this.MoveFlags,MOVE_FLAGS.MOVE_TO_PLAYER))
                 element.style.right = offsetX + "px";
-            else if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            else if(hasFlag(this.MoveFlags,MOVE_FLAGS.MOVE_WITH_PLAYER))
                 element.style.right = (offsetX + this.InitialX) + "px";
             else
                 element.style.right = (offsetX + this.InitialX + (this.InitialStageX - stageX)) + "px";
@@ -516,9 +516,9 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
         else
         {
             element.style.right = "";
-            if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_TO_PLAYER))
+            if(hasFlag(this.MoveFlags,MOVE_FLAGS.MOVE_TO_PLAYER))
                 element.style.left = offsetX + "px";
-            else if(!!(this.MoveFlags & MOVE_FLAGS.MOVE_WITH_PLAYER))
+            else if(hasFlag(this.MoveFlags,MOVE_FLAGS.MOVE_WITH_PLAYER))
                 element.style.left = (offsetX + this.InitialX) + "px";
             else
                 element.style.left = (offsetX + this.InitialX  - (this.InitialStageX - stageX)) + "px";
@@ -810,6 +810,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FrameOffset = frameOffset || 0;
 
         this.FlagsToSet = new FrameFlags();
+        this.FlagsToSet.Clip = !!flagsToSet ? (flagsToSet.Clip || null) : null;
         this.FlagsToSet.Player = !!flagsToSet ? (flagsToSet.Player || 0) : 0;
         this.FlagsToSet.Pose = !!flagsToSet ? (flagsToSet.Pose || 0) : 0;
         this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
@@ -844,9 +845,9 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
     }
     Frame.prototype.getEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
     Frame.prototype.getImageSrc = function(direction){ return this.RightSrc; }
-    Frame.prototype.isSettingAirborneFlag = function()  { return !!(this.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_2) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToSet.Pose & POSE_FLAGS.AIRBORNE_FB) }
-    Frame.prototype.isClearingAirborneFlag = function() { return !!(this.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_1) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIR_COMBO_2) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB) }
-    Frame.prototype.isClearingAirborne = function() { return !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE) || !!(this.FlagsToClear.Pose & POSE_FLAGS.AIRBORNE_FB) }
+    Frame.prototype.isSettingAirborneFlag = function()  { return hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_1) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_2) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE_FB) }
+    Frame.prototype.isClearingAirborneFlag = function() { return hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIR_COMBO_1) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIR_COMBO_2) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE_FB) }
+    Frame.prototype.isClearingAirborne = function() { return hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE_FB) }
     return new Frame();
 }
 /************************************************************************/
@@ -1159,8 +1160,8 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     /*The projectile has hit another projectile*/
     Projectile.prototype.hitProjectile = function(frame,otherProjectile)
     {
-        var isSuper = !!(this.FlagsToSend & ATTACK_FLAGS.SUPER);
-        var isOtherSuper = !!(otherProjectile.FlagsToSend & ATTACK_FLAGS.SUPER);
+        var isSuper = hasFlag(this.FlagsToSend,ATTACK_FLAGS.SUPER);
+        var isOtherSuper = hasFlag(otherProjectile.FlagsToSend,ATTACK_FLAGS.SUPER);
         var areBothSupers = isSuper && isOtherSuper;
 
         if(!isSuper || areBothSupers)

@@ -28,26 +28,26 @@ Player.prototype.stopDizzyAudio = function()
 /**/
 Player.prototype.queueSwingSound = function(value)
 {
-    if(!!(value & SWINGSOUND.HP)) this.queueSound("audio/misc/hp.zzz");
-    else if(!!(value & SWINGSOUND.MP)) this.queueSound("audio/misc/mp.zzz");
-    else if(!!(value & SWINGSOUND.LP)) this.queueSound("audio/misc/lp.zzz");
-    else if(!!(value & SWINGSOUND.HK)) this.queueSound("audio/misc/hk.zzz");
-    else if(!!(value & SWINGSOUND.MK)) this.queueSound("audio/misc/mk.zzz");
-    else if(!!(value & SWINGSOUND.LK)) this.queueSound("audio/misc/lk.zzz");
-    else if(!!(value & SWINGSOUND.SLIDE0)) this.queueSound("audio/misc/slide-0.zzz");
+    if(hasFlag(value,SWINGSOUND.HP)) this.queueSound("audio/misc/hp.zzz");
+    else if(hasFlag(value,SWINGSOUND.MP)) this.queueSound("audio/misc/mp.zzz");
+    else if(hasFlag(value,SWINGSOUND.LP)) this.queueSound("audio/misc/lp.zzz");
+    else if(hasFlag(value,SWINGSOUND.HK)) this.queueSound("audio/misc/hk.zzz");
+    else if(hasFlag(value,SWINGSOUND.MK)) this.queueSound("audio/misc/mk.zzz");
+    else if(hasFlag(value,SWINGSOUND.LK)) this.queueSound("audio/misc/lk.zzz");
+    else if(hasFlag(value,SWINGSOUND.SLIDE0)) this.queueSound("audio/misc/slide-0.zzz");
 }
 
 
 /**/
 Player.prototype.queueHitSound = function(value)
 {
-    if(!!(value & HITSOUND.HP)) this.queueSound("audio/misc/hit-hp.zzz");
-    else if(!!(value & HITSOUND.MP)) this.queueSound("audio/misc/hit-mp.zzz");
-    else if(!!(value & HITSOUND.LP)) this.queueSound("audio/misc/hit-lp.zzz");
-    else if(!!(value & HITSOUND.HP3)) this.queueSound("audio/misc/hit-hp-3.zzz");
-    else if(!!(value & HITSOUND.HK)) this.queueSound("audio/misc/hit-hk.zzz");
-    else if(!!(value & HITSOUND.MK)) this.queueSound("audio/misc/hit-mk.zzz");
-    else if(!!(value & HITSOUND.LK)) this.queueSound("audio/misc/hit-lk.zzz");
+    if(hasFlag(value,HITSOUND.HP)) this.queueSound("audio/misc/hit-hp.zzz");
+    else if(hasFlag(value,HITSOUND.MP)) this.queueSound("audio/misc/hit-mp.zzz");
+    else if(hasFlag(value,HITSOUND.LP)) this.queueSound("audio/misc/hit-lp.zzz");
+    else if(hasFlag(value,HITSOUND.HP3)) this.queueSound("audio/misc/hit-hp-3.zzz");
+    else if(hasFlag(value,HITSOUND.HK)) this.queueSound("audio/misc/hit-hk.zzz");
+    else if(hasFlag(value,HITSOUND.MK)) this.queueSound("audio/misc/hit-mk.zzz");
+    else if(hasFlag(value,HITSOUND.LK)) this.queueSound("audio/misc/hit-lk.zzz");
 }
 
 

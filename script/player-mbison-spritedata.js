@@ -10,6 +10,34 @@ CreatembisonSpriteData = function(player)
 	spriteLookup_.load("images/misc/mbison/projectile-3.png","images/misc/mbison/projectiles.png", "-186px", "-166px", "114px", "115px");
 	spriteLookup_.load("images/misc/mbison/projectile-4.png","images/misc/mbison/projectiles.png", "-300px", "-142px", "118px", "139px");
 
+	spriteLookup_.load("images/misc/mbison/pc-0-0.png","images/misc/mbison/trail-sprites.png", "0px", "-69px", "228px", "234px");
+	spriteLookup_.load("images/misc/mbison/pc-0-1.png","images/misc/mbison/trail-sprites.png", "-228px", "-49px", "268px", "254px");
+	spriteLookup_.load("images/misc/mbison/pc-0-2.png","images/misc/mbison/trail-sprites.png", "-496px", "-53px", "220px", "250px");
+	spriteLookup_.load("images/misc/mbison/pc-0-3.png","images/misc/mbison/trail-sprites.png", "-716px", "-56px", "362px", "247px");
+	spriteLookup_.load("images/misc/mbison/pc-0-4.png","images/misc/mbison/trail-sprites.png", "-1078px", "-56px", "362px", "247px");
+	spriteLookup_.load("images/misc/mbison/pc-0-5.png","images/misc/mbison/trail-sprites.png", "-1440px", "-36px", "404px", "267px");
+	spriteLookup_.load("images/misc/mbison/pc-0-6.png","images/misc/mbison/trail-sprites.png", "-1844px", "0px", "396px", "303px");
+	spriteLookup_.load("images/misc/mbison/pc-0-7.png","images/misc/mbison/trail-sprites.png", "-2240px", "-20px", "442px", "283px");
+	spriteLookup_.load("images/misc/mbison/pc-0-8.png","images/misc/mbison/trail-sprites.png", "-2682px", "-82px", "508px", "221px");
+	spriteLookup_.load("images/misc/mbison/pc-1-0.png","images/misc/mbison/trail-sprites.png", "-3190px", "-69px", "228px", "234px");
+	spriteLookup_.load("images/misc/mbison/pc-1-1.png","images/misc/mbison/trail-sprites.png", "-3418px", "-49px", "268px", "254px");
+	spriteLookup_.load("images/misc/mbison/pc-1-2.png","images/misc/mbison/trail-sprites.png", "-3686px", "-53px", "220px", "250px");
+	spriteLookup_.load("images/misc/mbison/pc-1-3.png","images/misc/mbison/trail-sprites.png", "-3906px", "-56px", "362px", "247px");
+	spriteLookup_.load("images/misc/mbison/pc-1-4.png","images/misc/mbison/trail-sprites.png", "0px", "-359px", "362px", "247px");
+	spriteLookup_.load("images/misc/mbison/pc-1-5.png","images/misc/mbison/trail-sprites.png", "-362px", "-339px", "404px", "267px");
+	spriteLookup_.load("images/misc/mbison/pc-1-6.png","images/misc/mbison/trail-sprites.png", "-766px", "-303px", "396px", "303px");
+	spriteLookup_.load("images/misc/mbison/pc-1-7.png","images/misc/mbison/trail-sprites.png", "-1162px", "-323px", "442px", "283px");
+	spriteLookup_.load("images/misc/mbison/pc-1-8.png","images/misc/mbison/trail-sprites.png", "-1604px", "-385px", "508px", "221px");
+	spriteLookup_.load("images/misc/mbison/pc-2-0.png","images/misc/mbison/trail-sprites.png", "-2112px", "-372px", "228px", "234px");
+	spriteLookup_.load("images/misc/mbison/pc-2-1.png","images/misc/mbison/trail-sprites.png", "-2340px", "-352px", "268px", "254px");
+	spriteLookup_.load("images/misc/mbison/pc-2-2.png","images/misc/mbison/trail-sprites.png", "-2608px", "-356px", "220px", "250px");
+	spriteLookup_.load("images/misc/mbison/pc-2-3.png","images/misc/mbison/trail-sprites.png", "-2828px", "-359px", "362px", "247px");
+	spriteLookup_.load("images/misc/mbison/pc-2-4.png","images/misc/mbison/trail-sprites.png", "-3190px", "-359px", "362px", "247px");
+	spriteLookup_.load("images/misc/mbison/pc-2-5.png","images/misc/mbison/trail-sprites.png", "-3552px", "-385px", "508px", "221px");
+	spriteLookup_.load("images/misc/mbison/pc-2-6.png","images/misc/mbison/trail-sprites.png", "-4060px", "-339px", "404px", "267px");
+	spriteLookup_.load("images/misc/mbison/pc-2-7.png","images/misc/mbison/trail-sprites.png", "-4464px", "-303px", "396px", "303px");
+	spriteLookup_.load("images/misc/mbison/pc-2-8.png","images/misc/mbison/trail-sprites.png", "-4860px", "-323px", "442px", "283px");
+
 
 	spriteLookup_.load("images/misc/mbison/ablock-0.png","images/misc/mbison/sprites.png", "0px", "-116px", "240px", "221px");
 	spriteLookup_.load("images/misc/mbison/b_walk-0.png","images/misc/mbison/sprites.png", "-240px", "-41px", "268px", "296px");

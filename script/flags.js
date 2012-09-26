@@ -1,4 +1,9 @@
-﻿var Flags = function(owner)
+﻿var hasFlag = function(flags,flag)
+{
+    return !!(flags & flag);
+}
+
+var Flags = function(owner)
 {
     this.Value = 0;
     this.IsPlayer = false;
@@ -8,12 +13,12 @@
 Flags.prototype.clear = function() { this.set(0); }
 Flags.prototype.set = function(value) { this.Value = value || MISC_FLAGS.NONE; return this.Value; }
 Flags.prototype.get = function()      { return this.Value; }
-Flags.prototype.has = function(value) { return !!(this.Value & value); }
+Flags.prototype.has = function(value) { return hasFlag(this.Value,value); }
 Flags.prototype.add = function(value)
 {
     if(this.IsPlayer && !!this.Owner)
     {
-        if(!!(value & PLAYER_FLAGS.MOBILE) && !this.has(PLAYER_FLAGS.MOBILE))
+        if(hasFlag(value,PLAYER_FLAGS.MOBILE) && !this.has(PLAYER_FLAGS.MOBILE))
             this.Owner.resetCombo();
     }
     return this.Value |= (value || MISC_FLAGS.NONE);
@@ -181,6 +186,7 @@ var POSE_FLAGS =
     ,AIR_COMBO_2:1 << 19
     ,AIR_COMBO_3:1 << 20
     ,AIR_BRAKES:1 << 21
+    ,ALLOW_OVERLAP:1 << 22
 }
 
 
@@ -236,6 +242,7 @@ var ATTACK_FLAGS =
     ,FLOOR_AIRBORNE_HARD:1 << 23
     ,CAN_AIR_JUGGLE:1 << 24
     ,BLUE_FIRE:1 << 25
+    ,NO_DELAY:1 << 26
 };
 var MOVE_FLAGS = 
 {

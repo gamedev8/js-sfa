@@ -122,6 +122,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.createElement();
     this.reset();
     this.addGenericAnimations();
+    this.setImgRect();
 }
 Player.prototype.setIndex = function(index) { this.Index = index; }
 Player.prototype.getIndex = function() { return this.Index; }
@@ -245,8 +246,16 @@ Player.prototype.reset = function(ignoreDirection)
     this.LastY = STAGE.FLOORY;
     this.LastFrameY = 0;
     this.ConstY = 0;
-    this.YBottomOffset = 0;
-    this.YTopOffset = 0;
+    this.ClipBottom = 0;
+    this.ClipTop = 0;
+    this.ClipLeft = 0;
+    this.ClipRight = 0;
+
+    this.LeftOffset = 0;
+    this.RightOffset = 0;
+    this.TopOffset = 0;
+    this.BottomOffset = 0;
+
     this.Fx = 0;
     this.Fy = 0;
     this.LastFx = 0;
@@ -362,7 +371,7 @@ Player.prototype.getNextFrameID = function()
 /*If the move is a projectile, and a projectile is already active, then this returns true;*/
 Player.prototype.isProjectileInUse = function(move)
 {
-    return !!this.HasActiveProjectiles && (!!(move.Flags.Combat & COMBAT_FLAGS.PROJECTILE_ACTIVE));
+    return !!this.HasActiveProjectiles && (hasFlag(move.Flags.Combat,COMBAT_FLAGS.PROJECTILE_ACTIVE));
 }
 
 /*Gets the direction of the attack relative to the current player*/
@@ -504,7 +513,7 @@ Player.prototype.checkForInterupt = function(frame)
     else if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.InteruptAnimation)
     {
         var poseFlags = this.CurrentAnimation.Animation.InteruptAnimationFlags.Pose
-        if(!!(poseFlags & this.Flags.Pose.Value))
+        if(hasFlag(poseFlags,this.Flags.Pose.Value))
         {
             var key = this.CurrentAnimation.Animation.InteruptAnimation.getKey(this.CurrentAnimation.Animation.InteruptAnimation.getKeySequenceLength() - 1);
             if(this.isKeyDown(key))
@@ -513,10 +522,6 @@ Player.prototype.checkForInterupt = function(frame)
             }
         }
     }
-}
-
-Player.prototype.onPreFrameMove = function(frame)
-{
 }
 
 Player.prototype.onRenderComplete = function(frame)
@@ -532,6 +537,11 @@ Player.prototype.playSounds = function()
         soundManager_.play(this.Sounds.splice(0,1)[0]);
 }
 
+
+Player.prototype.onPreFrameMove = function(frame)
+{
+}
+
 Player.prototype.onFrameMove = function(frame,stageX,stageY)
 {
     if(!this.IsPaused)
@@ -543,9 +553,10 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
             this.Ai.frameMove(frame);
         this.checkForInterupt(frame);
         this.frameMove(frame,stageX,stageY);
-        this.IsInAttackFrame = false;
-        if(!!this.CurrentFrame && !!(this.CurrentFrame.FlagsToSet.Combat & COMBAT_FLAGS.ATTACK))
+        if(!!this.CurrentFrame && hasFlag(this.CurrentFrame.FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
             this.handleAttack(frame, this.CurrentFrame);
+        else
+            this.IsInAttackFrame = false;
         if(!!this.GrappledPlayer)
             this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)
@@ -605,11 +616,11 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
     {
         var delta = frame - this.CurrentAnimation.StartFrame;
         var currentFrame = this.CurrentAnimation.Animation.getFrame(delta);
-        if(!!currentFrame || (!!this.CurrentFrame && (!!(this.CurrentFrame.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME))))
+        if(!!currentFrame || (!!this.CurrentFrame && (hasFlag(this.CurrentFrame.FlagsToSet.Player,PLAYER_FLAGS.HOLD_FRAME))))
         {
             this.setPendingFrame(currentFrame);
             /*check to see if the move allows you to change direction mid-move*/
-            if(!!this.MustChangeDirection && !!(this.CurrentAnimation.Animation.Flags.Player & PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
+            if(!!this.MustChangeDirection && hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {
                 this.changeDirection();
                 return;
@@ -620,10 +631,10 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
             {
                 if(currentFrame.isSettingAirborneFlag())
                 {
-                    if(!this.isAirborne() || !!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.FORCE_START_AIRBORNE))
+                    if(!this.isAirborne() || hasFlag(currentFrame.FlagsToSet.Pose,POSE_FLAGS.FORCE_START_AIRBORNE))
                     {
                         var direction = 1;
-                        if(!!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.USE_ATTACK_DIRECTION))
+                        if(hasFlag(currentFrame.FlagsToSet.Player,PLAYER_FLAGS.USE_ATTACK_DIRECTION))
                             direction = this.CurrentAnimation.AttackDirection;
                         //this.performJump(direction * this.CurrentAnimation.Animation.Vx,this.CurrentAnimation.Animation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier());
                         this.performJump(direction * this.CurrentAnimation.Vx,this.CurrentAnimation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.AirborneStartDeltaY,this.CurrentAnimation.Animation.UseJumpSpeed);
@@ -634,12 +645,12 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                         this.setVyFn(this.CurrentAnimation.Animation.getAirYModifier());
                     }
 
-                    if(!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_1))
+                    if(hasFlag(currentFrame.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_1))
                     {
                         this.clearAirborneFlags();
                         this.Flags.Pose.add(POSE_FLAGS.AIR_COMBO_1);
                     }
-                    else if(!!(currentFrame.FlagsToSet.Pose & POSE_FLAGS.AIR_COMBO_2))
+                    else if(hasFlag(currentFrame.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_2))
                     {
                         this.clearAirborneFlags();
                         this.Flags.Pose.add(POSE_FLAGS.AIR_COMBO_2);
@@ -647,7 +658,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                 }
                 else if(currentFrame.isClearingAirborne())
                 {
-                    if(!!(currentFrame.FlagsToClear.Pose & POSE_FLAGS.AIR_BRAKES))
+                    if(hasFlag(currentFrame.FlagsToClear.Pose,POSE_FLAGS.AIR_BRAKES))
                         this.stopJump(true);
                     else
                         this.stopJump();
@@ -672,7 +683,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                 }
             }
             /*some moves (crouch) require frame to not change, this simulates that.*/
-            if(!!this.CurrentFrame && !!(this.CurrentFrame.FlagsToSet.Player & PLAYER_FLAGS.HOLD_FRAME) && !this.IgnoreHoldFrame)
+            if(!!this.CurrentFrame && hasFlag(this.CurrentFrame.FlagsToSet.Player,PLAYER_FLAGS.HOLD_FRAME) && !this.IgnoreHoldFrame)
             {
                 /*get the key that must be pressed*/
                 var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
@@ -684,7 +695,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                     this.setCurrentFrame(null,frame);
                 }
             }
-            else if(!!currentFrame && !!(currentFrame.FlagsToSet.Player & PLAYER_FLAGS.MUST_HOLD_KEY)) /*Does the move require the key to be held? ... */
+            else if(!!currentFrame && hasFlag(currentFrame.FlagsToSet.Player,PLAYER_FLAGS.MUST_HOLD_KEY)) /*Does the move require the key to be held? ... */
             {
                 /*the last key in the keySequence must be the required key*/
                 var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);

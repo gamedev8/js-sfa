@@ -47,20 +47,13 @@ Player.prototype.renderDebugInfo = function()
             this.DebugHit.style.display = "none";
     }
 
-//    var rect = this.getRect();
-//    this.Rect.style.bottom = rect.Bottom + "px";
-//    if(this.Direction < 0)
-//    {
-//        this.Rect.style.right = "";
-//        this.Rect.style.left = rect.Left + "px";
-//    }
-//    else
-//    {
-//        this.Rect.style.left = "";
-//        this.Rect.style.right = (STAGE.MAX_STAGEX - rect.Right) + "px";
-//    }
-//    this.Rect.style.width = (rect.Right - rect.Left) + "px";
-//    this.Rect.style.height = (rect.Top - rect.Bottom) + "px";
+    var rect = this.getImgRect();
+    this.Rect.style.bottom = rect.Bottom + "px";
+
+    this.Rect.style.left = rect.Left + "px";
+
+    this.Rect.style.width = (rect.Right - rect.Left) + "px";
+    this.Rect.style.height = (rect.Top - rect.Bottom) + "px";
 
 }
 
@@ -126,12 +119,12 @@ Player.prototype.debugShowKeysHelper = function(bit)
 {
     var retVal = "";
 
-    if(!!(bit & 16)) retVal += "+<img src='images/misc/buttons/lp.png' />";
-    if(!!(bit & 32))  retVal += "+<img src='images/misc/buttons/mp.png' />";
-    if(!!(bit & 64))  retVal += "+<img src='images/misc/buttons/hp.png' />";
-    if(!!(bit & 128)) retVal += "+<img src='images/misc/buttons/lk.png' />";
-    if(!!(bit & 256)) retVal += "+<img src='images/misc/buttons/mk.png' />";
-    if(!!(bit & 512)) retVal += "+<img src='images/misc/buttons/hk.png' />";
+    if(hasFlag(bit,16)) retVal += "+<img src='images/misc/buttons/lp.png' />";
+    if(hasFlag(bit,32))  retVal += "+<img src='images/misc/buttons/mp.png' />";
+    if(hasFlag(bit,64))  retVal += "+<img src='images/misc/buttons/hp.png' />";
+    if(hasFlag(bit,128)) retVal += "+<img src='images/misc/buttons/lk.png' />";
+    if(hasFlag(bit,256)) retVal += "+<img src='images/misc/buttons/mk.png' />";
+    if(hasFlag(bit,512)) retVal += "+<img src='images/misc/buttons/hk.png' />";
     
     return retVal;
 }
@@ -140,16 +133,16 @@ Player.prototype.debugShowKeysHelper = function(bit)
 Player.prototype.debugShowDirsHelper = function(bit)
 {
     var retVal = "";
-    if(!!(bit & 1) && !!(bit & 4)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/nw.png' />" : "<img src='images/misc/buttons/ne.png' />";
-    if(!!(bit & 1) && !!(bit & 8)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/sw.png' />" : "<img src='images/misc/buttons/se.png' />";
-    if(!!(bit & 2) && !!(bit & 8)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/se.png' />" : "<img src='images/misc/buttons/sw.png' />";
-    if(!!(bit & 2) && !!(bit & 4)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/ne.png' />" : "<img src='images/misc/buttons/nw.png' />";
+    if(hasFlag(bit,1) && hasFlag(bit,4)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/nw.png' />" : "<img src='images/misc/buttons/ne.png' />";
+    if(hasFlag(bit,1) && hasFlag(bit,8)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/sw.png' />" : "<img src='images/misc/buttons/se.png' />";
+    if(hasFlag(bit,2) && hasFlag(bit,8)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/se.png' />" : "<img src='images/misc/buttons/sw.png' />";
+    if(hasFlag(bit,2) && hasFlag(bit,4)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/ne.png' />" : "<img src='images/misc/buttons/nw.png' />";
 
-    if(!(bit & 4) && !(bit & 8) && !!(bit & 1)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/w.png' />" : "<img src='images/misc/buttons/e.png' />";
-    if(!(bit & 4) && !(bit & 8) && !!(bit & 2)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/e.png' />" : "<img src='images/misc/buttons/w.png' />";
+    if(!hasFlag(bit,4) && !hasFlag(bit,8) && hasFlag(bit,1)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/w.png' />" : "<img src='images/misc/buttons/e.png' />";
+    if(!hasFlag(bit,4) && !hasFlag(bit,8) && hasFlag(bit,2)) retVal += this.Direction == 1 ? "<img src='images/misc/buttons/e.png' />" : "<img src='images/misc/buttons/w.png' />";
 
-    if(!(bit & 1) && !(bit & 2) && !!(bit & 4)) retVal += "<img src='images/misc/buttons/n.png' />";
-    if(!(bit & 1) && !(bit & 2) && !!(bit & 8)) retVal += "<img src='images/misc/buttons/s.png' />";
+    if(!hasFlag(bit,1) && !hasFlag(bit,2) && hasFlag(bit,4)) retVal += "<img src='images/misc/buttons/n.png' />";
+    if(!hasFlag(bit,1) && !hasFlag(bit,2) && hasFlag(bit,8)) retVal += "<img src='images/misc/buttons/s.png' />";
 
     return retVal;
 }

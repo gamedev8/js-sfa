@@ -30,19 +30,52 @@ Player.prototype.getAbsBackX = function(useImageWidth)  { if(this.Direction > 0)
 
 Player.prototype.getBoxTop = function() { return this.Y + (this.getBoxHeight()); }
 Player.prototype.getConstOffsetTop = function() { return this.Height + game_.Match.Stage.getGroundY(); }
-Player.prototype.getOffsetBoxTop = function() { return this.Y + (this.getBoxHeight()) + this.YTopOffset; }
+Player.prototype.getOffsetBoxTop = function() { return this.Y + (this.getBoxHeight()) + this.ClipTop; }
 Player.prototype.getBoxBottom = function() { return this.Y; }
-Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.YBottomOffset; }
+Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.ClipBottom; }
 /*Player.prototype.getConstWidth = function() { return (!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.isAttack()) ? this.getBoxWidth() : this.Width; }*/
 Player.prototype.getConstHeight = function() { return this.Height; }
 Player.prototype.getConstWidth = function() { return this.Width; }
 Player.prototype.getConstFrontX = function() { return this.getX() + this.getConstWidth(); }
 Player.prototype.getFrontX = function() { return this.getX() + this.getBoxWidth(); }
-Player.prototype.getBoxWidth = function() { return parseInt(this.Element.style.width); }
-Player.prototype.getBoxHeight = function() { return parseInt(this.SpriteElement.style.height); }
+Player.prototype.getBoxWidth = function() { return this.SpriteWidth; }
+Player.prototype.getBoxHeight = function() { return this.SpriteHeight; }
 Player.prototype.getRect = function(useImageWidth)
 {
     return {Left:this.getLeftX(useImageWidth),Right:this.getRightX(useImageWidth),Top:this.getOffsetBoxTop(),Bottom:this.getOffsetBoxBottom()};
+}
+Player.prototype.getImgRect = function(useImageWidth)
+{
+    return {Left:this.LeftOffset,Right:this.RightOffset,Top:this.TopOffset,Bottom:this.BottomOffset,BottomNoOffset:this.BottomNoOffset};
+}
+/*records the image coordinates so that they can be used intead of going to the DOM every time.*/
+Player.prototype.setImgRect = function()
+{
+    var bottom = parseInt(this.Element.style.bottom) || 0;
+
+    this.SpriteHeight = parseInt(this.SpriteElement.style.height) || 0;
+    this.SpriteWidth = parseInt(this.Element.style.width) || 0;
+
+    this.TopOffset = bottom + this.SpriteHeight - this.ClipTop;
+    this.BottomOffset = bottom + this.ClipBottom;
+    this.BottomNoOffset = bottom;
+
+    if(this.Direction > 0)
+    {
+        var right = STAGE.MAX_STAGEX - parseInt(this.Element.style.right) || 0;
+
+        this.LeftOffset = right - this.SpriteWidth;
+        this.RightOffset = right;
+    }
+    else
+    {
+        var left = parseInt(this.Element.style.left) || 0;
+
+        this.LeftOffset = left;
+        this.RightOffset = left + this.SpriteWidth;
+    }
+    this.LeftOffset += this.ClipLeft;
+    this.RightOffset -= this.ClipRight;
 }
 /*
 Player.prototype.getRight = function() { return parseInt(this.Element.style.right || 0); }
@@ -66,7 +99,7 @@ Player.prototype.setY = function(value)
 Player.prototype.setX = function(value)
 {
     value = value || 0;
-    var r = this.getRect();
+    var r = this.getRect(true);
     var maxX = STAGE.MAX_STAGEX - (r.Right - r.Left);
 
     value = Math.max(Math.min(value, maxX),0);
@@ -119,8 +152,8 @@ Player.prototype.setAirborneY = function(groundY)
 Player.prototype.isDescending = function() { return this.LastFrameY > this.ConstY; }
 Player.prototype.isVisible = function() { return !this.Flags.Player.has(PLAYER_FLAGS.INVISIBLE); }
 Player.prototype.isTeleporting = function() { return !!this.isTeleportingStarting() || !!this.isTeleportingEnding(); }
-Player.prototype.isTeleportingStarting = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!(this.CurrentAnimation.Animation.Flags.Combat & COMBAT_FLAGS.TELEPORT_START); }
-Player.prototype.isTeleportingEnding = function()   { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!(this.CurrentAnimation.Animation.Flags.Combat & COMBAT_FLAGS.TELEPORT_END); }
+Player.prototype.isTeleportingStarting = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_START); }
+Player.prototype.isTeleportingEnding = function()   { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_END); }
 Player.prototype.jumpedOverAPlayer = function() { return this.isAirborne() && this.isDescending() && !!this.MustChangeDirection; }
 Player.prototype.canBeJuggled = function()
 {
@@ -220,25 +253,25 @@ Player.prototype.changeDirection = function(quick)
 
     for(var i = 0; i < this.KeyStates.length; ++i)
     {
-        if(!!(this.KeyStates[i].Bit & (1 << 0)))
+        if(hasFlag(this.KeyStates[i].Bit,(1 << 0)))
             this.KeyStates[i].Bit = this.KeyStates[i].Bit ^ (1 << 0) | (1 << 1);
-        else if(!!(this.KeyStates[i].Bit & (1 << 1)))
+        else if(hasFlag(this.KeyStates[i].Bit,(1 << 1)))
             this.KeyStates[i].Bit = this.KeyStates[i].Bit ^ (1 << 1) | (1 << 0);
     }
-    if(!!(this.KeyState & (1 << 0)))
+    if(hasFlag(this.KeyState,(1 << 0)))
         this.KeyState ^= (1 << 0) | (1 << 1);
-    else if(!!(this.KeyState & (1 << 1)))
+    else if(hasFlag(this.KeyState,(1 << 1)))
         this.KeyState ^= (1 << 1) | (1 << 0);
 }
 Player.prototype.moveCircleToBottom = function()
 {
     this.moveCircle();
-    this.Circle.RenderY = this.Y + this.Circle.OffsetY;
+    this.Circle.RenderY = this.Y + this.ClipBottom + this.Circle.OffsetY;
 }
 Player.prototype.moveCircleToTop = function()
 {
     this.moveCircle();
-    this.Circle.RenderY = this.getBoxTop() - this.Circle.R*2 - this.Circle.OffsetY;
+    this.Circle.RenderY = this.getBoxTop() - this.ClipTop - this.Circle.R*2 - this.Circle.OffsetY;
 }
 Player.prototype.moveCircle = function()
 {
@@ -308,7 +341,7 @@ Player.prototype.advanceTeleportation = function()
         if(this.TeleportFramesLeft <= 0)
         {
             this.TeleportX = 0;
-            if(!!(this.CurrentAnimation.Animation.Flags.Combat & COMBAT_FLAGS.TELEPORT_END) && !!this.Teleport0GapX)
+            if(hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_END) && !!this.Teleport0GapX)
             {
                 if(foe)
                 {
@@ -521,7 +554,7 @@ Player.prototype.showSmallDirt = function(frame)
 /*Puts a player in sliding motion*/
 Player.prototype.startSlide = function(frame,amount,direction,fx,hideSlideDirt,forceSlide)
 {
-    if(!forceSlide && !!this.CurrentAnimation.Animation.Flags.Combat && !!(this.CurrentAnimation.Animation.Flags.Combat & COMBAT_FLAGS.NO_SLIDE_BACK))
+    if(!forceSlide && !!this.CurrentAnimation.Animation.Flags.Combat && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.NO_SLIDE_BACK))
         return this.stopSlide();
 
     if(this.IsSliding)
@@ -616,6 +649,7 @@ Player.prototype.advanceJump = function(ignoreYCheck)
     this.moveX(dx);
     this.moveY(dy);
 
+
     if((this.JumpT > this.JumpSpeed) && this.getY() <= game_.Match.Stage.getGroundY() && !(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE)))
     {
         this.clearAirborneFlags();
@@ -627,6 +661,7 @@ Player.prototype.advanceJump = function(ignoreYCheck)
         this.getMatch().decAirborne();
         return false;
     }
+
     return true;
 }
 
@@ -641,7 +676,8 @@ Player.prototype.clearAirborneFlags = function()
 
 Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpeed)
 {
-    this.getMatch().incAirborne();
+    if(!this.isAirborne())
+        this.getMatch().incAirborne();
     this.JumpSpeed = !!useJumpSpeed ? this.DefaultJumpSpeed : 1;
 
     /*store the X and Y modifier functions*/
@@ -653,7 +689,9 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
     this.OldY = this.Y;
     this.JumpVelocityX = vx;
     this.JumpVelocityY = vy;
-    this.JumpT = jumpT || 0;
+    if(this.getCurrentComboCountFn() < 2 || !!jumpT)
+        this.JumpT = jumpT || 0;
+    this.JumpT = this.JumpT || 0;
     /*store the velocity*/
     /*store a timer*/
     if(!this.hasAirborneComboFlag())
@@ -672,7 +710,7 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
 
 Player.prototype.stopJump = function(ignoreX)
 {
-    this.performJump(!!ignoreX ? 0 : this.JumpVelocityX,0);
+    this.performJump(0,0,function(){return 0;},this.vyFn,this.JumpT);
 }
 
 

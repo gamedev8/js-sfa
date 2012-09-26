@@ -224,6 +224,7 @@ var CreateMatch = function(team1,team2,stage)
             this.TeamA.setCursor(0);
             this.TeamB.setCursor(0);
             this.setSuperMoveActive(false);
+            nbAirborne_ = 0;
 
 
             game_.resetFrame();
@@ -521,6 +522,14 @@ var CreateMatch = function(team1,team2,stage)
             this.handleRound1(frame);
             faceoff_.frameMove(frame);
         }
+    }
+
+    /*pre-frame move calculations to be performed here*/
+    Match.prototype.preFrameMove = function(frame)
+    {
+        this.Stage.preFrameMove(frame);
+        this.TeamA.preFrameMove(frame);
+        this.TeamB.preFrameMove(frame);
     }
 
     /*pre-render calculations to be performed here*/

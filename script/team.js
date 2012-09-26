@@ -186,6 +186,12 @@ var CreateTeam = function(num)
             this.getPlayer(i).resume();
     }
 
+    Team.prototype.preFrameMove = function(frame)
+    {
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
+            this.getPlayer(i).onPreFrameMove(frame);
+    }
+
     /**/
     Team.prototype.frameMove = function(frame, keyboardState, x, y)
     {

@@ -23,6 +23,7 @@ var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,ene
     this.AttackForceY = fy;
     this.OtherPlayer = otherPlayer;
     this.InvokedAnimationName = invokedAnimationName;
+    this.NoFrameDelay = false;
 }
 
 
@@ -35,8 +36,8 @@ var MoveOverrideFlags = function(allowOverrideFlags,overrideFlags)
     this.OverrideFlags = overrideFlags || OVERRIDE_FLAGS.NULL;
 }
 
-MoveOverrideFlags.prototype.hasAllowOverrideFlag = function(flag) { return !!flag && !!(this.AllowOverrideFlags & flag); }
-MoveOverrideFlags.prototype.hasOverrideFlag = function(flag) { return !!flag && !!(this.OverrideFlags & flag); }
+MoveOverrideFlags.prototype.hasAllowOverrideFlag = function(flag) { return !!flag && hasFlag(this.AllowOverrideFlags,flag); }
+MoveOverrideFlags.prototype.hasOverrideFlag = function(flag) { return !!flag && hasFlag(this.OverrideFlags,flag); }
 
 
 var ActionDetails = function(overrideFlags,player,otherID,isProjectile,isGrapple,startFrame,frame,otherPlayer)
@@ -94,7 +95,7 @@ HitSystem.prototype.canHit = function(key,index)
         var flags = first.Player.CurrentAnimation.Animation.OverrideFlags;
 
         var isHitOverriden = flags.hasOverrideFlag(OVERRIDE_FLAGS.ALL) /*overrides all*/
-            || flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags); /*overrides yours*/
+            || (!flags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) && flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)); /*overrides yours*/
 
         return !isHitOverriden || !!first.Player.IgnoreOverrides;
 
@@ -128,7 +129,7 @@ HitSystem.prototype.frameMove = function(frame)
     for(var i in this.Actions)
     {
         var item = this.Actions[i];
-        if(!!item && !!item.ActionFrame && (item.ActionFrame == frame))
+        if(!!item && !!item.ActionFrame && (item.ActionFrame <= frame))
         {
             var canP1Hit = !!item[0] && this.canHit(item[0].Key,0);
             var canP2Hit = !!item[1] && this.canHit(item[1].Key,1);
@@ -163,9 +164,15 @@ HitSystem.prototype.frameMove = function(frame)
 HitSystem.prototype.register = function(details)
 {
     if(!this.Actions[details.Key])
-        this.Actions[details.Key] = {ActionFrame:details.Frame + this.ActionFrameDelay}
+        this.Actions[details.Key] = {ActionFrame:details.Frame + (!!details.NoFrameDelay ? 0 : this.ActionFrameDelay)}
     if(!this.Actions[details.Key][0] || (this.Actions[details.Key][0].PlayerID == details.PlayerID))
         this.Actions[details.Key][0] = details;
     else
         this.Actions[details.Key][1] = details;
+
+    if(!!details.NoFrameDelay)
+    {
+        this.frameMove(details.Frame);
+    }
+
 }

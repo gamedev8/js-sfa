@@ -1,7 +1,7 @@
 /*Some moves require the key to be held, this function can be used to check that.*/
 Player.prototype.isKeyDown = function(key)
 {
-    return !!(this.KeyState & key);
+    return hasFlag(this.KeyState,key);
 }
 
 
@@ -72,7 +72,7 @@ Player.prototype.addKeyStateChange = function(frame,keyCode,isDown)
     {
         for(var i = this.KeyStates.length-1; i > -1; --i)
         {
-            if(this.KeyStates[i].KeyCode == keyCode && !!(this.KeyStates[i].Bit & this.Buttons[keyCode].Bit))
+            if(this.KeyStates[i].KeyCode == keyCode && hasFlag(this.KeyStates[i].Bit,this.Buttons[keyCode].Bit))
             {
                 this.KeyStates[i].NbFrames = frame - this.KeyStates[i].Frame;
                 return;
@@ -91,12 +91,12 @@ Player.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
         var oldState = this.KeyState;
 
         /*key state just changed to pressed*/
-        if(!!isDown &&  !(this.KeyState & this.Buttons[keyCode].Bit))
+        if(!!isDown &&  !hasFlag(this.KeyState,this.Buttons[keyCode].Bit))
         {
             this.KeyState |= this.Buttons[keyCode].Bit;
         }
         /*key state just changed to released*/
-        else if(!isDown && !!(this.KeyState & this.Buttons[keyCode].Bit))
+        else if(!isDown && hasFlag(this.KeyState,this.Buttons[keyCode].Bit))
         {
             this.KeyState = (this.KeyState | this.Buttons[keyCode].Bit) ^ this.Buttons[keyCode].Bit;
         }

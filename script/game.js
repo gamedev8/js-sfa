@@ -509,21 +509,28 @@ var CreateGame = function()
         {
             this.removeState(GAME_STATES.STEP_FRAME);
             ++frame_;
-            //this.Match.preFrameMove(frame_);
+
+            //pre fame move
+            this.Match.preFrameMove(frame_);
+
+            //frame move
             this.Match.frameMove(frame_, keyboardState_);
             announcer_.frameMove(frame_);
             soundManager_.frameMove(frame_);
             if(!this.Match.isSuperMoveActive())
                 fontSystem_.frameMove(frame_);
 
+            //pre render
             this.Match.preRender(frame_);
 
+            //render
             this.Match.render(frame_);
             if(!this.Match.isSuperMoveActive())
                 fontSystem_.render(frame_);
             announcer_.render(frame_);
             soundManager_.render(frame_);
 
+            //done
             this.Match.renderComplete(frame_);
             this.showFPS();
         }

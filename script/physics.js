@@ -173,7 +173,7 @@
         if(!p2)
             return;
         /*is p1 ejecting p2 from a grapple?*/
-        if(!!(attackFlags & ATTACK_FLAGS.THROW_EJECT) && !p1.isGrappling(p2.Id))
+        if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT) && !p1.isGrappling(p2.Id))
             return;
         /*is p2 being grappled by p1?*/
         if(p2.isBeingGrappled() && !p1.isGrappling(p2.Id))
@@ -183,7 +183,7 @@
         if(!p2.isVisible() && !p2.isTeleporting())
             return;
         /*need to reform the "invulernable" flags - there are too many*/
-        if(p2.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !(behaviorFlags & BEHAVIOR_FLAGS.THROW))
+        if(p2.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !hasFlag(behaviorFlags,BEHAVIOR_FLAGS.THROW))
             return;
         /*frame can not hit more than once*/
         if(p2.LastHitFrame[p1.Id] == p1.getHitFrameID(hitID))
@@ -193,11 +193,11 @@
             return;
         if(p2.isGrappling())
             return;
-        if(p2.isAirborne() && !!(attackFlags & ATTACK_FLAGS.CAN_AIR_JUGGLE))
+        if(p2.isAirborne() && hasFlag(attackFlags,ATTACK_FLAGS.CAN_AIR_JUGGLE))
         {
             //return;
         }
-        else if(p2.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE) && !!(attackFlags & ATTACK_FLAGS.BLUE_FIRE))
+        else if(p2.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE) && hasFlag(attackFlags,ATTACK_FLAGS.BLUE_FIRE))
         {
             //moves such as M Bison psycho crusher will override invulnerable
         }
@@ -205,16 +205,20 @@
         {
             return;
         }
-        var isGrapple = !!(behaviorFlags & BEHAVIOR_FLAGS.THROW);
-        var p1Left = p1.getLeftX(true);
-        var p1Right = p1.getRightX(true);
-        var p1Top = p1.getBoxTop();
-        var p1Bottom = p1.getBoxBottom();
+        var isGrapple = hasFlag(behaviorFlags,BEHAVIOR_FLAGS.THROW);
 
-        var p2Left = p2.getLeftX(true);
-        var p2Right = p2.getRightX(true);
-        var p2Top = p2.getOffsetBoxTop();
-        var p2Bottom = p2.getOffsetBoxBottom();
+        var p1Rect = p1.getImgRect();
+        var p2Rect = p2.getImgRect();
+
+        var p1Left = p1Rect.Left; //p1.getLeftX(true);
+        var p1Right = p1Rect.Right; //p1.getRightX(true);
+        var p1Top = p1Rect.Top; //p1.getBoxTop();
+        var p1Bottom = p1Rect.BottomNoOffset; //p1.getBoxBottom();
+
+        var p2Left = p2Rect.Left; //p2.getLeftX(true);
+        var p2Right = p2Rect.Right; //p2.getRightX(true);
+        var p2Top = p2Rect.Top; //p2.getOffsetBoxTop();
+        var p2Bottom = p2Rect.Bottom; //p2.getOffsetBoxBottom();
 
         var fx = 1;
         var fy = 1;
@@ -272,7 +276,7 @@
         //    return;
         if(p2.Flags.Player.has(PLAYER_FLAGS.IGNORE_PROJECTILES))
             return;
-        if(p2.isAirborne() && !!projectile && !!(projectile.FlagsToSend & ATTACK_FLAGS.SUPER) && !!projectile.CanJuggle)
+        if(p2.isAirborne() && !!projectile && hasFlag(projectile.FlagsToSend,ATTACK_FLAGS.SUPER) && !!projectile.CanJuggle)
         {
             /*allows super fireballs to hit multiple times in the air*/
         }
@@ -281,10 +285,13 @@
             return;
         if(!projectile.canHit(frame))
             return;
-        var p2Left = p2.getLeftX(true);
-        var p2Right = p2.getRightX(true);
-        var p2Top = p2.getOffsetBoxTop();
-        var p2Bottom = p2.getOffsetBoxBottom();
+
+        var p2Rect = p2.getImgRect();
+
+        var p2Left = p2Rect.Left; //p2.getLeftX(true);
+        var p2Right = p2Rect.Right; //p2.getRightX(true);
+        var p2Top = p2Rect.Top; //p2.getOffsetBoxTop();
+        var p2Bottom = p2Rect.Bottom; //p2.getOffsetBoxBottom();
 
         var y0 = projectile.getTop();
         var y1 = projectile.getBottom();
@@ -537,7 +544,7 @@
 
             player.moveCircleToBottom();
             var match = GetMatch_();
-            var myRect = player.getRect();
+            var myRect = !!player.IsInAttackFrame ? player.getImgRect() : player.getRect();
             var stageFixX = 0;
 
             if(amount > 0) /*moving right*/
@@ -551,8 +558,11 @@
                 var collisions = GetPlayersAtPosition_(myRect,player,CONSTANTS.RIGHT);
                 for(var i = 0, length = collisions.length; i < length; ++i)
                 {
+                    if(player.Flags.Pose.has(POSE_FLAGS.ALLOW_OVERLAP))
+                        continue;
                     if(!!ignoredPlayer && (ignoredPlayer == collisions[i].Id))
                         continue;
+
                     collisions[i].moveCircleToTop();
                     var otherRect = collisions[i].getRect();
 
@@ -560,6 +570,7 @@
                     var unimpededAmount = otherRect.Left - myRect.OldRight;
 
                     var amountPushed = 0;
+
                     if(!!impededAmount)
                     {
                         if(collisions[i].isRightCornered())
@@ -617,6 +628,8 @@
                 var collisions = GetPlayersAtPosition_(myRect,player,CONSTANTS.LEFT);
                 for(var i = 0, length = collisions.length; i < length; ++i)
                 {
+                    if(player.Flags.Pose.has(POSE_FLAGS.ALLOW_OVERLAP))
+                        continue;
                     if(!!ignoredPlayer && (ignoredPlayer == collisions[i].Id))
                         continue;
                     collisions[i].moveCircleToTop();
@@ -703,7 +716,7 @@
                     var otherPlayer = collisions[i];
                     otherPlayer.moveCircleToBottom();
                     var otherMidX = otherPlayer.getMidX();
-                    var amountRejected = player.Circle.rejectX(otherPlayer.Circle);
+                    var amountRejected = player.Flags.Pose.has(POSE_FLAGS.ALLOW_OVERLAP) ? 0 : player.Circle.rejectX(otherPlayer.Circle);
                 
                 
                     if(!!amountRejected)
@@ -746,7 +759,7 @@
                     var otherRect = otherPlayer.getRect();
                     otherPlayer.moveCircleToTop();
                     var otherMidX = otherPlayer.getMidX();
-                    var amountRejected = player.Circle.rejectX(otherPlayer.Circle);
+                    var amountRejected = player.Flags.Pose.has(POSE_FLAGS.ALLOW_OVERLAP) ? 0 : player.Circle.rejectX(otherPlayer.Circle);
                 
                     if(!!amountRejected)
                     {
@@ -941,7 +954,7 @@
     /*returns the initial velocity need to make up the distance between the 2 coordinates*/
     Physics.prototype.getVx = function(x1,x2,vy)
     {
-        return (Math.abs(x1 - x2) * CONSTANTS.G) / (2 * vy) * (6);
+        return (Math.abs(x1 - x2) * CONSTANTS.G) / (2 * vy) * 5;
     }
 
     /*Returns true if any player from the other team is on the left*/

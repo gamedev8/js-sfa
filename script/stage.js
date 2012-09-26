@@ -8,7 +8,6 @@ var Stage = function(bg0XOffset)
     this.X0 = 0;
     this.X1 = 0;
     this.DeltaX = 0;
-    this.Y = STAGE.FLOORY;
     this.OffsetY = 0;
     this.DeltaOffsetY = 0;
     this.DeltaY = 0;
@@ -116,6 +115,10 @@ Stage.prototype.getOffsetY = function(flip)
 Stage.prototype.getGroundY = function()
 {
     return STAGE.FLOORY + this.OffsetY;
+}
+
+Stage.prototype.preFrameMove = function(frame)
+{
 }
 
 Stage.prototype.frameMove = function(frame)
