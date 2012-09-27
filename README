@@ -4,22 +4,3 @@ Street Fighter Alpha
 * Chrome/Safari users - If when starting a match you get very slow performance - bring up the developer tools window (press F12). Go to settings and then check "Disable Cache", then uncheck it. It seems like an issue with WebKit browsers trying to cache large images, but I am looking in to it. *
 
 * Currently only Ken and Ryu are playable *
-
-Keys:
-
-Coin: Control
-Start: Enter
-
-Jump: Up arrow
-Crouch: Down arrow
-Left: Left arrow
-Right: Right arrow
-
-Light punch: A
-Medium punch: S
-Hard punch: D
-Light kick: Z
-Medium kick: X
-Hard kick: C
-
-Turn around: Q
