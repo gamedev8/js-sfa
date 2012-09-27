@@ -34,7 +34,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.ForceNoAdjustShadowPosition = false;
 
     this.Moves = {};
-    this.JumpAnimation = {};
+    this.Throws = {};
 
     this.OtherAnimations = {};
     this.OtherAnimations.Dirt = [];
@@ -234,7 +234,6 @@ Player.prototype.reset = function(ignoreDirection)
     this.ClearKeyStateCount = 0;
     this.AdjustShadowPosition = true;
     this.MustChangeDirection = 0;
-    this.BlockedProjectiles = {};
     this.BlockedAttacks = [];
     this.BlockedAirAttacks = [];
 

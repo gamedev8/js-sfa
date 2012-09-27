@@ -50,21 +50,21 @@ var FrameFlags = function()
 
 var BUTTONS = 
 {
-    FORWARD:1
-    ,BACK:2
-    ,JUMP:4
-    ,CROUCH:8
-    ,LIGHT_PUNCH:16
-    ,MEDIUM_PUNCH:32
-    ,HARD_PUNCH:64
-    ,LIGHT_KICK:128
-    ,MEDIUM_KICK:256
-    ,HARD_KICK:512
-    ,TURN_AROUND:1024
-    ,SELECT:2048
-    ,START:4096
-    ,CHARGE:8192
-    ,EXACT:16384
+    FORWARD:1 << 0
+    ,BACK:1 << 1
+    ,JUMP:1 << 2
+    ,CROUCH:1 << 3
+    ,LIGHT_PUNCH:1 << 4
+    ,MEDIUM_PUNCH:1 << 5
+    ,HARD_PUNCH:1 << 6
+    ,LIGHT_KICK:1 << 7
+    ,MEDIUM_KICK:1 << 8
+    ,HARD_KICK:1 << 9
+    ,TURN_AROUND:1 << 10
+    ,SELECT:1 << 11
+    ,START:1 << 12
+    ,CHARGE:1 << 13
+    ,EXACT:1 << 14
 }
 
 var MAX = 

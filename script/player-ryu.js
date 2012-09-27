@@ -358,11 +358,12 @@ Player.prototype.createRyu = function(user)
 
 
     var throw1X = -4;
-    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_shoulder_throw");
+    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_shoulder_throw");
+    throw1.NbChargeFrames = 5;
     throw1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
-    throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
-    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.HARD_PUNCH]);
-    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.MEDIUM_PUNCH]);
+    throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
+    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.HARD_PUNCH]);
+    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.MEDIUM_PUNCH]);
     throw1.setGrappleDistance(100);
     throw1.setOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw1.addFrame(player,0,"",folder + "/x-throw-0-0.png",10,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
@@ -373,11 +374,12 @@ Player.prototype.createRyu = function(user)
 
 
     var throw2X = -4;
-    var throw2 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_fk_throw");
+    var throw2 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_fk_throw");
+    throw2.NbChargeFrames = 5;
     throw2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
-    throw2.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
-    throw2.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.HARD_KICK]);
-    throw2.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.MEDIUM_KICK]);
+    throw2.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
+    throw2.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.HARD_KICK]);
+    throw2.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.MEDIUM_KICK]);
     throw2.setGrappleDistance(100);
     throw2.setOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw2.addFrame(player,0,"",folder + "/x-throw-0-0.png",7,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);

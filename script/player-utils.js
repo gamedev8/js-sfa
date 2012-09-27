@@ -79,6 +79,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         /*by setting the following value the initial jump Y position will be set*/
         this.AirborneStartDeltaY = 0;
         this.MaintainYPosition = false;
+        this.NbChargeFrames = CONSTANTS.NBCHARGE_FRAMES
     }
 
     Animation.prototype.getAlternateKeySequencesLength = function() { return this.AlternateKeySequences.length; }
@@ -86,11 +87,15 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     Animation.prototype.getAlternateKeySequence = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? ((this.AlternateKeySequences[i][j] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.AlternateKeySequences[i][j]; }
     Animation.prototype.setAlternateKeySequence = function(i,value) { return this.AlternateKeySequences[i] = value; }
     Animation.prototype.getKeySequenceLength = function() { return this.KeySequence.length; }
-    Animation.prototype.checkKey = function(index, userKey, userKeys)
+    Animation.prototype.checkKey = function(index, userKey, userKeys, nbChargeFrames)
     {
         var thisKey = this.getKey(index);
-        var chargeCheck = this.mustChargeKey(index);
-        if(!chargeCheck || (userKey.NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+        var mustChargeKey = this.mustChargeKey(index);
+        var mustMatchExact = this.mustMatchExactKey(index);
+
+
+
+        if(!mustChargeKey || (userKey.NbFrames > nbChargeFrames))
         {
             var userKeyStripped = this.stripAttackKeys(userKey.Bit);
             var thisKeyStripped = this.stripAttackKeys(thisKey);
@@ -100,18 +105,17 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 
             /*attack keys must match*/
             if((!!userAtackKeys || !!thisAtackKeys) && !hasFlag(userAtackKeys,thisAtackKeys))
-            {
                 return false;
-            }
+
+            //check if the directional keys must match
+            if(!!mustMatchExact && userKeyStripped != thisKeyStripped)
+                return false;
 
             if(!userKey.Bit && !thisKey)
-            {
                 return true;
-            }
             else if((thisKey & userKey.Bit) == thisKey)
-            {
                 return true;
-            }
+
         }
 
         return false;
@@ -120,13 +124,13 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     {
         return (this.KeySequence.length == length) || (!!this.IgnoreDepressedKeys && (this.KeySequence.length <= length));
     }
-    Animation.prototype.filterKeySequence = function(userKeys)
+    Animation.prototype.filterKeySequence = function(userKeys,nbChargeFrames)
     {
         if(!!this.IgnoreDepressedKeys && (userKeys.length > 0))
         {
             /*there must be enough keys in the array to see if every key is there*/
             /*the first and last keys must match*/
-            if((userKeys.length == this.KeySequence.length || userKeys.length > this.KeySequence.length) && this.checkKey(0,userKeys[0],userKeys) && (this.checkKey(keySequence.length-1,userKeys[userKeys.length - 1],userKeys)))
+            if((userKeys.length == this.KeySequence.length || userKeys.length > this.KeySequence.length) && this.checkKey(0,userKeys[0],userKeys,nbChargeFrames) && (this.checkKey(keySequence.length-1,userKeys[userKeys.length - 1],userKeys,nbChargeFrames)))
             {
                 var retVal = [];
                 var keysIndex = -1;
@@ -140,7 +144,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
                 {
                     /*if the user key is not equal to the current keySequence, then check the next user key against the key in this move's sequence*/
                     /*if they are equal, then move on to the next key in both sequences*/
-                    if(this.checkKey(keysSequenceIndex,userKeys[keysIndex],userKeys))
+                    if(this.checkKey(keysSequenceIndex,userKeys[keysIndex],userKeys,nbChargeFrames))
                     {
                         dirKey = this.stripAttackKeys(this.getKey(keysSequenceIndex));
                         userDirKey = this.stripAttackKeys(userKeys[keysIndex].Bit);
@@ -945,6 +949,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.vyFn = (this.Animation.getYModifier());
         this.NbHits = 0;
         this.LastHitFrame = 0;
+        this.Id = this.Owner.Id + "-" + frame;
     }
 
     Projectile.prototype.getTop = function()

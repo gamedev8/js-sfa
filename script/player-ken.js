@@ -319,17 +319,14 @@ Player.prototype.createKen = function(user)
     p1.addFrame(player,0,"",folder + "/x-p1-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
 
     var throw1X = -6;
-    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.AIRBORNE_FB,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_roll_throw");
+    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.AIRBORNE_FB,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_roll_throw");
+    throw1.NbChargeFrames = 5;
     throw1.Vy = (90);
     throw1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
     throw1.setOtherPlayerAirborneFlags(AIRBORNE_FLAGS.EQUAL);
-    throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
-    throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
-    throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK]);
-    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.HARD_KICK]);
-    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.HARD_PUNCH]);
-    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.MEDIUM_KICK]);
-    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.MEDIUM_PUNCH]);
+    throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
+    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.HARD_PUNCH]);
+    throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.MEDIUM_PUNCH]);
     throw1.setGrappleDistance(100);
     throw1.addFrameWithSound(player,1,"audio/ken/thrust-0.zzz",0,"",folder + "/x-throw-0-0.png",10,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{ state: HIT_FLAGS.NEAR,x: 130,y: 145 },{ state: HIT_FLAGS.FAR,x: 170,y: 185}],ATTACK_FLAGS.NONE,1);
     throw1.addFrame(player,0,"",folder + "/x-throw-0-1.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
@@ -873,14 +870,14 @@ Player.prototype.createKen = function(user)
         roll.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NULL,OVERRIDE_FLAGS.THROW);
         roll.IsSpecialMove = true;
         roll.IgnoreDepressedKeys = true;
-        roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-0.png",2,{ Clip:{Top:75} | PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX + 2);
-        roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-1.png",2,{ Clip:{Top:75} | PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX + 2);
+        roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-0.png",2,{ Clip:{Top:75}, Player:PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX + 2);
+        roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-1.png",2,{ Clip:{Top:75}, Player:PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX + 2);
         for (var i = 0; i < x; ++i)
         {
-            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-2.png",2,{ Clip:{Top:75} | PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
-            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-3.png",2,{ Clip:{Top:75} | PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
-            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-4.png",2,{ Clip:{Top:75} | PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
-            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-5.png",2,{ Clip:{Top:75} | PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
+            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-2.png",2,{ Clip:{Top:75}, Player:PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
+            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-3.png",2,{ Clip:{Top:75}, Player:PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
+            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-4.png",2,{ Clip:{Top:75}, Player:PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
+            roll.addRepeatingFrame(player,0,"",folder + "/x-roll-p1-5.png",2,{ Clip:{Top:75}, Player:PLAYER_FLAGS.IGNORE_COLLISIONS },{ Player: PLAYER_FLAGS.MOBILE },rollX);
         }
         roll.chain(crouch,2);
     }

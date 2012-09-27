@@ -65,9 +65,9 @@ Player.prototype.addKeyStateChange = function(frame,keyCode,isDown)
     {
         frameOffset = frame - this.KeyStates[this.KeyStates.length-1].Frame + this.KeyStates[this.KeyStates.length-1].FrameOffset;
     }
-    this.KeyStates[this.KeyStates.length] = {Bit:this.KeyState,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode,NbFrames:1};
+    this.KeyStates[this.KeyStates.length] = {Bit:this.KeyState,Frame:frame,FrameOffset:frameOffset,KeyCode:keyCode};
     
-    /*if the key was let go calculate the number frames it was pressed*/
+    /*if the key was let go calculate the number frames it was pressed
     if(!isDown)
     {
         for(var i = this.KeyStates.length-1; i > -1; --i)
@@ -78,7 +78,7 @@ Player.prototype.addKeyStateChange = function(frame,keyCode,isDown)
                 return;
             }
         }
-    }
+    }*/
 }
 
 
@@ -142,16 +142,19 @@ Player.prototype.compareKeySequence = function(move,keys)
             }
         }
 
-        if(!(!move.mustChargeKey(keyIndex) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+        if(!(!move.mustChargeKey(keyIndex) || keys[keyIndex].NbFrames > move.NbChargeFrames))
         {
             return 0;
         }
+        //check if an exact match was required
+        if(!!move.mustMatchExactKey(keyIndex) && moveDirKeys != userDirKeys)
+            return 0;
 
         if(moveKey != userKey)
         {
             isExactMatch = false;
         }
-        /*check if the key was pressed at all*/
+        //check if the key was pressed at all
         if((moveKey & userKey) != moveKey)
         {
             isMatch = false;
@@ -179,7 +182,7 @@ Player.prototype.compareAlternateKeySequences = function(move,keys)
 
         inner : for(var j = 0, iLength = move.getAlternateKeySequenceLength(i); j < iLength; ++j)
         {
-            if(!(!move.mustChargeAlternateKey(i,j) || keys[keyIndex].NbFrames > CONSTANTS.NBCHARGE_FRAMES))
+            if(!(!move.mustChargeAlternateKey(i,j) || keys[j].NbFrames > move.NbChargeFrames))
                 return 0;
 
             if(move.getAlternateKeySequence(i,j) != keys[j].Bit)
@@ -207,7 +210,7 @@ Player.prototype.cutKey = function(keys,frame)
     var retVal = {Duration:keys[keys.length-1].FrameOffset - keys[0].FrameOffset,Keys:[],Key:""};
     while(keys.length > 0)
     {
-        retVal.Keys[retVal.Keys.length] = {Bit:keys[0].Bit,NbFrames:keys[0].NbFrames};
+        retVal.Keys[retVal.Keys.length] = {Bit:keys[0].Bit,NbFrames:frame - keys[0].Frame};
         retVal.Key += "_" + keys[0].Bit;
         keys = keys.slice(1);
     }
@@ -237,15 +240,19 @@ Player.prototype.checkForAnimation = function(frame)
     if(this.Flags.Player.has(PLAYER_FLAGS.MOBILE) || (this.allowInterupt() && !this.InteruptAnimation))
     {
         this.KeyStateChanged = false;
+        var throwKeys = [];
         var keys = [];
         for(var i = 0; i < this.KeyStates.length; ++i)
+        {
             keys[keys.length] = this.KeyStates[i];
+            throwKeys[throwKeys.length] = this.KeyStates[i];
+        }
 
         var cb = 0;
         while(keys.length > 0)
         {
             var value = this.cutKey(keys,frame);
-            var move = this.findAnimation(value,frame);
+            var move = this.findThrow(value,frame);
             if(!!move && (!move.Duration || (value.Duration <= move.Duration)))
             {
                 /*is there no current move, or is the user executing a new move*/
@@ -262,7 +269,33 @@ Player.prototype.checkForAnimation = function(frame)
             else
             {
                 keys = keys.slice(1);
-                key = keys.join("_");
+            }
+
+            if(++cb > 100)
+                break;
+        }
+
+        cb = 0;
+        while(throwKeys.length > 0)
+        {
+            var value = this.cutKey(throwKeys,frame);
+            var move = this.findAnimation(value,true,frame);
+            if(!!move && (!move.Duration || (value.Duration <= move.Duration)))
+            {
+                /*is there no current move, or is the user executing a new move*/
+                if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
+                {
+                    if(this.allowInterupt())
+                        this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
+                    else
+                        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
+                }
+                return;
+            }
+            /*Nope, so lets check the next key sequence*/
+            else
+            {
+                throwKeys = throwKeys.slice(1);
             }
 
             if(++cb > 100)

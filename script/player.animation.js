@@ -14,10 +14,10 @@ Player.prototype.addThrow = function(requiredState,name,duration,keySequence,pri
     var key = "_" + (requiredState == undefined ? "" : requiredState);
     for(var i = 0; i < keySequence.length; ++i)
         key += "_" + keySequence[i].toString();
-    this.Moves[key] = CreateAnimation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
-    this.Moves[key].BaseAnimation.IsThrow = true;
+    this.Throws[key] = CreateAnimation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
+    this.Throws[key].BaseAnimation.IsThrow = true;
 
-    return this.Moves[key];
+    return this.Throws[key];
 }
 
 /* Helper function - adds a move for the player */
@@ -142,6 +142,39 @@ Player.prototype.executeAnimation = function(name)
     }
     return false;
 }
+//looks up a throw
+Player.prototype.findThrow = function(value,frame)
+{
+    var keys = value.Keys;
+
+    /*check if the player wants to turn around*/
+    if(frame % 10 == 0)
+    {
+        for(var i = 0; i < keys.length; ++i)
+        {
+            if(hasFlag(keys[i].Bit,BUTTONS.TURN_AROUND))
+            {
+                this.turnAround();
+                return null;
+            }
+        }
+    }
+
+    var matches = [];
+    var retVal = {Priority:-999999,Move:null};
+    var val = 0;
+    var currentEnergy = this.getEnergyFn();
+
+    //check for a throw first
+    for(var i in this.Throws)
+    {
+        if(-1 != this.testAnimation(frame,currentEnergy,keys,value.Duration,this.Throws[i],retVal))
+            break;
+    }
+
+    return retVal.Move;
+}
+
 /* Looks up a move */
 Player.prototype.findAnimation = function(value,frame)
 {
@@ -155,78 +188,90 @@ Player.prototype.findAnimation = function(value,frame)
             if(hasFlag(keys[i].Bit,BUTTONS.TURN_AROUND))
             {
                 this.turnAround();
-                return;
+                return null;
             }
         }
     }
 
     var matches = [];
-    var retVal = null;
-    var priority = -99999;
+    var retVal = {Priority:-999999,Move:null};
+    var val = 0;
     var currentEnergy = this.getEnergyFn();
+
     for(var i in this.Moves)
     {
-        var move = this.Moves[i];
+        if(-1 != this.testAnimation(frame,currentEnergy,keys,value.Duration,this.Moves[i],retVal))
+            break;
+    }
+    return retVal.Move;
+}
 
-        if(!!move.IsImplicit)
-            continue;
+//
+Player.prototype.testAnimation = function(frame,currentEnergy,keys,keyDuration,move,retVal)
+{
+    var continueCode = -1;
 
-        var tmp = move.filterKeySequence(keys,this.allowInterupt());
-        var tmpKeys = tmp.Keys;
+    if(!!move.IsImplicit)
+        return continueCode;
 
-        if(!(move.compareKeySequenceLength(tmpKeys.length))
-            ||(!!move.Duration && (value.Duration > move.Duration
-            ||(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract))))
-            continue;
-        var pstate = (move.RequiredFlags | POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK) ^ (POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK);
-        var mustAllowBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_BLOCK);
-        var mustAllowAirBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_AIR_BLOCK);
-        if(!pstate || !!(this.Flags.Pose.has(pstate)))
-        {
+    var tmp = move.filterKeySequence(keys,this.allowInterupt(),move.NbChargeFrames);
+    var tmpKeys = tmp.Keys;
+
+    if(!(move.compareKeySequenceLength(tmpKeys.length))
+        ||(!!move.Duration && (keyDuration > move.Duration)
+        ||(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract)))
+        return continueCode;
+    var pstate = (move.RequiredFlags | POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK) ^ (POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK);
+    var mustAllowBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_BLOCK);
+    var mustAllowAirBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_AIR_BLOCK);
+    if(!pstate || !!(this.Flags.Pose.has(pstate)))
+    {
             
-            if(!!mustAllowBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK)))
-                continue;
-            if(!!mustAllowAirBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK)))
-                continue;
+        if(!!mustAllowBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK)))
+            return continueCode;
+        if(!!mustAllowAirBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK)))
+            return continueCode;
 
-            if(!!this.isProjectileInUse(move))
-                continue;
+        if(!!this.isProjectileInUse(move))
+            return continueCode;
 
-            /*the move may have already been an exact match from the FilterKeySequence function call*/
-            var cmpValue = tmp.Match || this.compareKeySequence(move,tmpKeys);
-            if(!cmpValue)
-                cmpValue = this.compareAlternateKeySequences(move,tmpKeys);
+        /*the move may have already been an exact match from the FilterKeySequence function call*/
+        var cmpValue = tmp.Match || this.compareKeySequence(move,tmpKeys);
+        if(!cmpValue)
+            cmpValue = this.compareAlternateKeySequences(move,tmpKeys);
 
 
-            if(cmpValue == CONSTANTS.EXACT_MATCH)
+        if(cmpValue == CONSTANTS.EXACT_MATCH)
+        {
+            if(!!move.GrappleDistance)
             {
-                if(!!move.GrappleDistance)
-                {
-                    if(!!this.RegisteredHit.HitID)
-                        continue;
-                    if(!this.tryStartGrapple(move,frame))
-                        continue;
-                }
-
-                return move;
-            }
-            else
-            {
-                if(!!move.GrappleDistance)
-                    continue;
+                if(!!this.RegisteredHit.HitID)
+                    return continueCode;
+                if(!this.tryStartGrapple(move,frame))
+                    return continueCode;
             }
 
-            if(cmpValue == 0)
-                continue;
-            if((cmpValue == CONSTANTS.PRIORITY_MATCH) && move.Priority > priority)
-            {
-                priority = move.Priority;
-                retVal = move;
-            }
+            retVal.Move = move;
+            return null;
+        }
+        else
+        {
+            if(!!move.GrappleDistance)
+                return continueCode;
+        }
+
+        if(cmpValue == 0)
+            return continueCode;
+        if((cmpValue == CONSTANTS.PRIORITY_MATCH) && move.Priority > retVal.Priority)
+        {
+            retVal.Priority = move.Priority;
+            retVal.Move = move;
         }
     }
-    return retVal;
+
+    return continueCode;
 }
+//
 Player.prototype.goToStance = function(frame)
 {
     if(this.Flags.Player.has(PLAYER_FLAGS.DEAD))
@@ -289,7 +334,7 @@ Player.prototype.getFreeDirtIndex = function()
         }
     }
 
-    return -1;
+    return continueCode;
 }
 /*returns the first free dirt image*/
 Player.prototype.getFreeBigDirtIndex = function()
@@ -303,7 +348,7 @@ Player.prototype.getFreeBigDirtIndex = function()
         }
     }
 
-    return -1;
+    return continueCode;
 }
 
 Player.prototype.spawnDizzy = function(frame)
