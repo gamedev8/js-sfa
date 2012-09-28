@@ -214,7 +214,7 @@ Player.prototype.testAnimation = function(frame,currentEnergy,keys,keyDuration,m
     if(!!move.IsImplicit)
         return continueCode;
 
-    var tmp = move.filterKeySequence(keys,this.allowInterupt(),move.NbChargeFrames);
+    var tmp = move.filterKeySequence(keys,move.NbChargeFrames);
     var tmpKeys = tmp.Keys;
 
     if(!(move.compareKeySequenceLength(tmpKeys.length))

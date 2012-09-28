@@ -54,7 +54,7 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.setPlayerCount = function(value) { playerCount_ = value; }
     Match.prototype.getHitSystem = function() { return actionSystem_; }
     Match.prototype.isSuperMoveActive = function() { return isSuperMoveActive_; }
-    Match.prototype.setSuperMoveActive = function(value) { isSuperMoveActive_ = value; }
+    Match.prototype.setSuperMoveActive = function(value) { isSuperMoveActive_ = value; if(!!value) {actionSystem_.pause();} else {actionSystem_.resume();}}
     Match.prototype.getDimBackgroundElement = function() { return dimBackground_; }
     Match.prototype.getRound = function() { return round_; }
     Match.prototype.setRound = function(value) { round_ = value; }

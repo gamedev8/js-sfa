@@ -71,9 +71,19 @@ ActionDetails.prototype.getKey = function(playerID,otherID)
 var HitSystem = function(actionFrameDelay)
 {
     this.Actions = {};
+    this.HoldFrame = false;
     this.ActionFrameDelay = actionFrameDelay || CONSTANTS.DEFAULT_ACTION_FRAME_DELAY;
 }
 
+HitSystem.prototype.pause = function()
+{
+    this.HoldFrame = true;
+}
+
+HitSystem.prototype.resume = function()
+{
+    this.HoldFrame = false;
+}
 
 HitSystem.prototype.checkPendingHits = function(id,overrideFlags)
 {
@@ -129,6 +139,14 @@ HitSystem.prototype.frameMove = function(frame)
     for(var i in this.Actions)
     {
         var item = this.Actions[i];
+
+        if(!!this.HoldFrame)
+        {
+            if(!!item && !!item.ActionFrame)
+                ++item.ActionFrame;
+            continue;
+        }
+
         if(!!item && !!item.ActionFrame && (item.ActionFrame <= frame))
         {
             var canP1Hit = !!item[0] && this.canHit(item[0].Key,0);

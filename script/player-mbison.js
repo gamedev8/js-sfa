@@ -713,6 +713,7 @@ Player.prototype.createMBison = function(user)
         psycho_crusher.IsSuperMove = true;
         psycho_crusher.IgnoreDepressedKeys = true;
         psycho_crusher.MaintainYPosition = true;
+        psycho_crusher.EnergyToSubtract = CONSTANTS.ONE_LEVEL * (x + 1);
 
         psycho_crusher.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.NONE);
         psycho_crusher.Vy = 50;
