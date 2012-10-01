@@ -905,7 +905,7 @@
     }
 
     /*checks if any player from ther other team is within the given distance*/
-    Physics.prototype.getGrappledPlayer = function(team,x,y,distance,airborneFlags,isAirborne)
+    Physics.prototype.getGrappledPlayer = function(team,x,y,distance,airborneFlags,isAirborne,grappleDirection)
     {
         var match = GetMatch_();
         switch(team)
@@ -913,14 +913,14 @@
             case CONSTANTS.TEAM1:
             {
                 for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
-                    if(match.TeamB.Players[i].canBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                    if(match.TeamB.Players[i].canBeGrappled(x,y,distance,airborneFlags,isAirborne,grappleDirection))
                         return match.TeamB.Players[i];
                 break;
             }
             case CONSTANTS.TEAM2:
             {
                 for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
-                    if(match.TeamA.Players[i].canBeGrappled(x,y,distance,airborneFlags,isAirborne))
+                    if(match.TeamA.Players[i].canBeGrappled(x,y,distance,airborneFlags,isAirborne,grappleDirection))
                         return match.TeamA.Players[i];
                 break;
             }

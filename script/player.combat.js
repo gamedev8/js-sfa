@@ -85,18 +85,45 @@ Player.prototype.removeBlockableAirAttack = function(attackId)
     return false;
 }
 /*Allows/disallows blocking*/
-Player.prototype.setAllowBlock = function(attackId,frame,isAllowed,x,y)
+Player.prototype.setAllowBlock = function(attackId,frame,isAllowed,x,y,hitPoints)
 {
     if(!!isAllowed)
     {
         /*the attack must be within a certain distance for the block animation to be allowed*/
-        var dist = this.getDistanceFromSq(x,y);
-        if(dist > CONSTANTS.MAX_BLOCK_DISTANCE_SQ)
+        if(!!hitPoints)
         {
-            if(!this.isBlocking())
-                return this.setAllowBlock(attackId,frame,false,x,y);
-            else if(dist > (CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
-                return this.setAllowBlock(attackId,frame,false,x,y);
+            var canBlock = false;
+            for(var i = 0; i < hitPoints.length; ++i)
+            {
+                var x1 = hitPoints[i].x;
+                var y1 = hitPoints[i].y;
+
+                var dist = this.getDistanceFromSq(x1,y1);
+                if(dist < (this.BlockDistanceSq || CONSTANTS.MAX_BLOCK_DISTANCE_SQ))
+                {
+                    canBlock = true;
+                    break;
+                }
+            }
+
+            if(!canBlock)
+            {
+                if(!this.isBlocking())
+                    return this.setAllowBlock(attackId,frame,false,x1,y1);
+                else if(dist > (this.BlockDistanceSq2 || CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
+                    return this.setAllowBlock(attackId,frame,false,x1,y1);
+            }
+        }
+        else
+        {
+            var dist = this.getDistanceFromSq(x,y);
+            if(dist > (this.BlockDistanceSq || CONSTANTS.MAX_BLOCK_DISTANCE_SQ))
+            {
+                if(!this.isBlocking())
+                    return this.setAllowBlock(attackId,frame,false,x,y);
+                else if(dist > (this.BlockDistanceSq2 || CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
+                    return this.setAllowBlock(attackId,frame,false,x,y);
+            }
         }
 
         /*Check if the move is already blockable*/
@@ -123,18 +150,46 @@ Player.prototype.setAllowBlock = function(attackId,frame,isAllowed,x,y)
     }
 }
 /*Allows/disallows air blocking*/
-Player.prototype.setAllowAirBlock = function(attackId,frame,isAllowed,x,y)
+Player.prototype.setAllowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints)
 {
     if(!!isAllowed)
     {
-        /*the attack must be within a certain distance for the block animation to be allowed*/
-        var dist = this.getDistanceFromSq(x,y);
-        if(dist > (this.BlockDistanceSq || CONSTANTS.MAX_BLOCK_DISTANCE_SQ))
+        if(!!hitPoints)
         {
-            if(!this.isBlocking())
-                return this.setAllowAirBlock(attackId,frame,false,x,y);
-            else if(dist > (this.BlockDistanceSq || CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
-                return this.setAllowAirBlock(attackId,frame,false,x,y);
+            /*the attack must be within a certain distance for the block animation to be allowed*/
+            var canBlock = false;
+            for(var i = 0; i < hitPoints.length; ++i)
+            {
+                var x1 = hitPoints[i].x;
+                var y1 = hitPoints[i].y;
+
+                var dist = this.getDistanceFromSq(x1,y1);
+                if(dist < (this.BlockDistanceSq || CONSTANTS.MAX_BLOCK_DISTANCE_SQ))
+                {
+                    canBlock = true;
+                    break;
+                }
+            }
+
+            if(!canBlock)
+            {
+                if(!this.isBlocking())
+                    return this.setAllowAirBlock(attackId,frame,false,x1,y1);
+                else if(dist > (this.BlockDistanceSq2 || CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
+                    return this.setAllowAirBlock(attackId,frame,false,x1,y1);
+            }
+        }
+        else
+        {
+            /*the attack must be within a certain distance for the block animation to be allowed*/
+            var dist = this.getDistanceFromSq(x,y);
+            if(dist > (this.BlockDistanceSq || CONSTANTS.MAX_BLOCK_DISTANCE_SQ))
+            {
+                if(!this.isBlocking())
+                    return this.setAllowAirBlock(attackId,frame,false,x,y);
+                else if(dist > (this.BlockDistanceSq2 || CONSTANTS.MAX_BLOCK_DISTANCE_SQ2))
+                    return this.setAllowAirBlock(attackId,frame,false,x,y);
+            }
         }
 
         /*Check if the move is already blockable*/
@@ -143,7 +198,7 @@ Player.prototype.setAllowAirBlock = function(attackId,frame,isAllowed,x,y)
         /*allow block*/
         this.Flags.Pose.add(POSE_FLAGS.ALLOW_AIR_BLOCK);
         /*air attacks can also be blocked on the ground*/
-        this.setAllowBlock(attackId,frame,isAllowed,x,y);
+        this.setAllowBlock(attackId,frame,isAllowed,x,y,hitPoints);
     }
     else
     {
@@ -170,7 +225,7 @@ Player.prototype.tryStartGrapple = function(move,frame)
 
     var retVal = false;
 
-    var grappledPlayer = this.getPhysics().getGrappledPlayer(this.Team,this.getAbsFrontX(),this.Y,distance,airborneFlags,this.isAirborne());
+    var grappledPlayer = this.getPhysics().getGrappledPlayer(this.Team,this.getAbsFrontX(),this.Y,distance,airborneFlags,this.isAirborne(),this.Direction);
     if(!!grappledPlayer)
     {
         retVal = true;
@@ -186,7 +241,7 @@ Player.prototype.tryStartGrapple = function(move,frame)
 }
 
 /*returns true if this player can be grappled*/
-Player.prototype.canBeGrappled = function(x,y,distance,airborneFlags,isAirborne)
+Player.prototype.canBeGrappled = function(x,y,distance,airborneFlags,isAirborne,grappleDirection)
 {
     /*visible will be false during teleportation moves*/
     if(!this.isVisible())
@@ -205,7 +260,7 @@ Player.prototype.canBeGrappled = function(x,y,distance,airborneFlags,isAirborne)
 
     var retVal = false;
 
-    if((Math.abs(x - this.getMidX()) < distance)
+    if((Math.abs(x - (grappleDirection < 1 ? this.LeftOffset : this.RightOffset)) < distance)
         && (Math.abs(y - this.Y) < distance)
         && (!(this.Flags.Player.has(PLAYER_FLAGS.INVULNERABLE)))
         && (!this.GrappledPlayer
@@ -274,10 +329,21 @@ Player.prototype.handleProjectiles = function(frame,stageX,stageY)
 Player.prototype.handleAttack = function(frame, moveFrame)
 {
     this.IsInAttackFrame = true;
+    var hitPoints = [];
+    var rect = this.getImgRect();
+
+    for(var i = 0; i < moveFrame.HitPoints.length; ++i)
+    {
+        if(this.Direction < 0)
+            hitPoints.push({x:rect.Left + moveFrame.HitPoints[i].x,y:rect.Bottom + moveFrame.HitPoints[i].y});
+        else
+            hitPoints.push({x:rect.Right - moveFrame.HitPoints[i].x,y:rect.Bottom + moveFrame.HitPoints[i].y});
+    }
+
     if(hasFlag(moveFrame.FlagsToSet.Combat,COMBAT_FLAGS.CAN_BE_BLOCKED))
     {
         this.MustClearAllowBlock = true;
-        this.onStartAttackFn(this.CurrentAnimation.ID);
+        this.onStartAttackFn(this.CurrentAnimation.ID,hitPoints);
     }
     if(hasFlag(moveFrame.FlagsToClear.Combat,COMBAT_FLAGS.CAN_BE_BLOCKED))
     {
@@ -287,7 +353,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
     if(hasFlag(moveFrame.FlagsToSet.Combat,COMBAT_FLAGS.CAN_BE_AIR_BLOCKED))
     {
         this.MustClearAllowAirBlock = true;
-        this.onStartAirAttackFn(this.CurrentAnimation.ID);
+        this.onStartAirAttackFn(this.CurrentAnimation.ID,hitPoints);
     }
     if(hasFlag(moveFrame.FlagsToClear.Combat,COMBAT_FLAGS.CAN_BE_AIR_BLOCKED))
     {

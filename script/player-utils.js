@@ -81,7 +81,6 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.MaintainYPosition = false;
         this.NbChargeFrames = CONSTANTS.NBCHARGE_FRAMES
     }
-
     Animation.prototype.getAlternateKeySequencesLength = function() { return this.AlternateKeySequences.length; }
     Animation.prototype.getAlternateKeySequenceLength = function(i) { return this.AlternateKeySequences[i].length; }
     Animation.prototype.getAlternateKeySequence = function(i,j) { return !!+this.AlternateKeySequences[i][j] ? ((this.AlternateKeySequences[i][j] | BUTTONS.CHARGE | BUTTONS.EXACT) ^ (BUTTONS.CHARGE | BUTTONS.EXACT)) : this.AlternateKeySequences[i][j]; }
@@ -310,7 +309,8 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     Animation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
-        return this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
+        this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
     Animation.prototype.addOffsetFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,x,y)
     {
@@ -847,6 +847,17 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.SoundVolume = 1;
 
     }
+    Frame.prototype.set = function(params)
+    {
+        for(var i in params)
+        {
+            if(this.hasOwnProperty(i))
+            {
+                this[i] = params[i];
+            }
+        }
+    }
+
     Frame.prototype.getEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
     Frame.prototype.getImageSrc = function(direction){ return this.RightSrc; }
     Frame.prototype.isSettingAirborneFlag = function()  { return hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_1) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_2) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE_FB) }

@@ -884,30 +884,6 @@ Player.prototype.setBgBase64Helper = function(arr,attrib,key)
 
 Player.prototype.setSprite = function(frame)
 {
-    /*
-    if(this.CurrentAnimation.Direction > 0)
-    {
-        data = spriteLookup_.get(this.CurrentFrame.RightSrc);
-        if(!!data)
-        {
-            this.SpriteElement.style.backgroundPosition = data.Left + " " + data.Bottom;
-            this.SpriteElement.style.width = data.Width;
-            this.SpriteElement.style.height = data.Height;
-            this.Element.style.width = data.Width;
-        }
-    }
-    else
-    {
-        data = spriteLookup_.get(this.CurrentFrame.LeftSrc);
-        if(!!data)
-        {
-            this.SpriteElement.style.backgroundPosition = data.Left + " " + data.Bottom;
-            this.SpriteElement.style.width = data.Width;
-            this.SpriteElement.style.height = data.Height;
-            this.Element.style.width = data.Width;
-        }
-    }
-    */
     data = spriteLookup_.get(this.CurrentFrame.RightSrc);
     if(!!data)
     {
@@ -998,7 +974,8 @@ Player.prototype.renderShadow = function()
     {
         this.ShadowContainer.style.right = this.X + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
         this.Shadow.style.left = "";
-
+        if(!this.Shadow.style.right)
+            this.Shadow.style.right = "0px";
         if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
         {
             this.Shadow.style.right = this.SpriteElement.style.right;
@@ -1007,7 +984,9 @@ Player.prototype.renderShadow = function()
     else
     {
         this.ShadowContainer.style.left = this.X + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
-
+        this.Shadow.style.right = "";
+        if(!this.Shadow.style.left)
+            this.Shadow.style.left = "0px";
         if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
         {
             this.Shadow.style.left = this.SpriteElement.style.left;

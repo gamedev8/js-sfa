@@ -260,6 +260,16 @@ Player.prototype.createRyu = function(user)
     hitReact_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-shn-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,-100,100,0,0,0,0,0);
 
 
+    var hitReact_bison_shoulder_throw = player.addAnimation(POSE_FLAGS.ANY,"bison shoulder throw",0,["bison_shoulder_throw"],0,false);
+    hitReact_bison_shoulder_throw.IsImplicit = true;
+    hitReact_bison_shoulder_throw.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/x-hit-slf-0.png",8,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },{ Player: PLAYER_FLAGS.MOBILE });
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/x-hit-sln-0.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,0,0,0,0,0,0,47);
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-shf-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABL },MISC_FLAGS.NONE,0,0,0,0,0,28,174);
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-smn-0a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,0,0,0,0,0,102,169);
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-shn-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,-102,170,0,0,0,0,0);
+
+
     var hitReact_fk_throw = player.addAnimation(POSE_FLAGS.ANY,"flip kick throw",0,["fk_throw"],0,false);
     hitReact_fk_throw.IsImplicit = true;
     hitReact_fk_throw.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });

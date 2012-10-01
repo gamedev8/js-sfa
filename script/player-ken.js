@@ -195,7 +195,7 @@ Player.prototype.createKen = function(user)
     hitReact_trip.addFrame(player,0,"",folder + "/x-hit-air-6.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.INVULNERABLE });
     hitReact_trip.chain(hitReact_bounce);
 
-    var hitReact_air = player.addAnimation(POSE_FLAGS.AIRBORNE,"clocked",0,["hr_air"],0,false);
+    var hitReact_air = player.addAnimation(POSE_FLAGS.AIRBORNE,"hit in air",0,["hr_air"],0,false);
     hitReact_air.AllowJuggle = true;
     hitReact_air.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
     hitReact_air.Vx = (-50);
@@ -208,7 +208,7 @@ Player.prototype.createKen = function(user)
     hitReact_air.addFrame(player,0,"",folder + "/x-jump-1.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
     hitReact_air.chain(jump_land);
 
-    var hitReact_knockDown = player.addAnimation(POSE_FLAGS.STANDING,"clocked",0,["hr_knockdown"],0,false);
+    var hitReact_knockDown = player.addAnimation(POSE_FLAGS.STANDING,"knock down",0,["hr_knockdown"],0,false);
     hitReact_knockDown.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
     hitReact_knockDown.Vx = (25);
     hitReact_knockDown.Vy = (150);
@@ -247,6 +247,16 @@ Player.prototype.createKen = function(user)
     hitReact_eject.addFrame(player,0,"",folder + "/x-hit-air-0.png",32,{ Player: PLAYER_FLAGS.INVULNERABLE },{ Player: PLAYER_FLAGS.MOBILE },0,1);
     hitReact_eject.addFrame(player,0,"",folder + "/x-hit-air-1.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
     hitReact_eject.chain(hitReact_bounce);
+
+
+    var hitReact_bison_shoulder_throw = player.addAnimation(POSE_FLAGS.ANY,"bison shoulder throw",0,["bison_shoulder_throw"],0,false);
+    hitReact_bison_shoulder_throw.IsImplicit = true;
+    hitReact_bison_shoulder_throw.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/x-hit-b-2.png",8,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },{ Player: PLAYER_FLAGS.MOBILE });
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/x-hit-b-2.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,0,0,0,0,0,0,47);
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-a-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABL },MISC_FLAGS.NONE,0,0,0,0,0,28,174);
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-c-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,0,0,0,0,0,102,169);
+    hitReact_bison_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-b-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,-102,170,0,0,0,0,0);
 
 
     var hitReact_shoulder_throw = player.addAnimation(POSE_FLAGS.ANY,"shoulder throw",0,["shoulder_throw"],0,false);
