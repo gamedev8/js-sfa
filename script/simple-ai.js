@@ -4,6 +4,22 @@ var CreateSimpleRyuAI = function(player)
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
 
+    var CreateAction = function(frame,flags,input,action)
+    {
+        return {Flags:flags||0,Action:action||0,Frame:frame||0,Input:input||[]}
+    }
+
+    var RYU_FLAGS =  {
+        DONE: 1 << 1
+        ,MOVE_TO_ENEMY: 1 << 2
+        ,MOBILE_ME: 1 << 3
+        ,GROUNDED_ENEMY: 1 << 4
+        ,CLEAR_INPUT: 1 << 5
+    };
+
+    var RYU_ACTIONS =  {
+        ATTACK_SUPER_FB: 1
+    };
 
     /*private member*/
     var lightSuperFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:16} ];
@@ -14,6 +30,11 @@ var CreateSimpleRyuAI = function(player)
     var lightFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:16} ];
     var mediumFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:32} ];
     var hardFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:64} ];
+
+    /*private member*/
+    var lightSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.LIGHT_KICK} ];
+    var mediumSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.MEDIUM_KICK} ];
+    var hardSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.HARD_KICK} ];
 
     /*private member*/
     var lightUppercutInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:16} ];
@@ -31,6 +52,9 @@ var CreateSimpleRyuAI = function(player)
 
     /*private member*/
     var inputToSend_ = [];
+
+    /*private member*/
+    var combo_ = [];
 
     /*private function*/
     var GetOtherTeam_ = function()
@@ -60,7 +84,7 @@ var CreateSimpleRyuAI = function(player)
         {
             if(otherPlayers[i].isAirborne() && otherPlayers[i].isVulnerable())
             {
-                if(player_.getPhysics().isWithinDistanceX(player_,otherPlayers[i],distance))
+                if(player_.getPhysics().isWithinDistanceX(player_,otherPlayers[i],distance, true))
                 {
                     return otherPlayers[i];
                 }
@@ -71,14 +95,17 @@ var CreateSimpleRyuAI = function(player)
     }
 
     /*private member*/
-    var GetCloseEnemy_ = function(distance)
+    var GetCloseEnemy_ = function(distance,isAirborne,isVulernable)
     {
         var otherPlayers = GetOtherTeam_();
         for(var i = 0; i < otherPlayers.length; ++i)
         {
-            if(player_.getPhysics().isWithinDistanceX(player_,otherPlayers[i],distance))
+            if(player_.getPhysics().isWithinDistanceX(player_,otherPlayers[i],distance,true))
             {
-                return otherPlayers[i];
+                if((isAirborne === undefined || isAirborne == otherPlayers[i].isAirborne()) && (isVulernable === undefined || isVulernable == otherPlayers[i].isVulnerable()))
+                {
+                    return otherPlayers[i];
+                }
             }
         }
 
@@ -86,12 +113,12 @@ var CreateSimpleRyuAI = function(player)
     }
 
 
-    var ThrowSuperFireball_ = function()
+    var ThrowSuperFireball_ = function(chance)
     {
         var energyLevel = player_.getEnergyLevel();
         if(energyLevel > 0)
         {
-            if(Math.floor(Math.random() * 10) > 8)
+            if(Math.floor(Math.random() * 10) > chance)
             {
                 var which = Math.floor(Math.random() * energyLevel) + 1
                 switch(which)
@@ -108,44 +135,72 @@ var CreateSimpleRyuAI = function(player)
         return false;
     }
 
-    var SendInput_ = function(frame, input)
+    var SendAction_ = function(action, frame)
     {
-        inputToSend_.push({Frame:frame,Input:input});
+        //inputToSend_.push({Frame:frame,Input:input});
+        combo_.push(CreateAction(frame,null,null,action));
     }
 
-    /**/
-    var DoThrow_ = function(frame)
+    var SendInput_ = function(flags, frame, input)
     {
-        SendInput_(frame,[{IsDown:true,Button:BUTTONS.FORWARD}]);
-        SendInput_(frame+1,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:true,Button:BUTTONS.HARD_PUNCH}]);
+        //combo_.push({Flags:flags,Frame:pressFrame,Input:input});
+        combo_.push(CreateAction(frame,flags,input));
     }
 
-    /*private member*/
-    var ThrowFireball_ = function(frame)
+    var PressBlock_ = function()
     {
-        if(ThrowSuperFireball_())
-            return;
-        if(GetCloseEnemy_(200))
-            SendInput_(frame,lightFireballInput_);
+        var blockKey = player_.MustChangeDirection ? BUTTONS.FORWARD : BUTTONS.BACK;
+        PressButton_(RYU_FLAGS.NONE,blockKey);
+    }
+
+    var PressButton_ = function(flags, button, pressFrame, releaseFrame)
+    {
+        //combo_.push({Flags:flags,Frame:pressFrame,Input:[{IsDown:true,Button:button}]});
+        combo_.push(CreateAction(pressFrame,flags,[{IsDown:true,Button:button}]));
+        ReleaseButton_(button,releaseFrame);
+    }
+
+    var ReleaseButton_ = function(button, releaseFrame)
+    {
+        if(!!releaseFrame)
+        {
+            //combo_.push({Action:0,Frame:releaseFrame,Input:[{IsDown:false,Button:button}]});
+            combo_.push(CreateAction(releaseFrame,null,[{IsDown:false,Button:button}]));
+        }
+    }
+    /*AI player will move to the enemy it is facing*/
+    var MoveToEnemy_ = function(flags)
+    {
+        //combo_.push({Flags:flags||0,Action:RYU_ACTIONS.MOVE_TO_ENEMY,Frame:1,Input:[{IsDown:true,Button:BUTTONS.FORWARD}]});
+        combo_.push(CreateAction(null,RYU_FLAGS.MOVE_TO_ENEMY|flags,[{IsDown:true,Button:BUTTONS.FORWARD}]));
+    }
+    /*AI player will move to the enemy it is facing*/
+    var StopCombo_ = function()
+    {
+        //combo_.push({Action:RYU_FLAGS.DONE,Frame:1,Input:[]});
+        combo_.push(CreateAction(null,RYU_FLAGS.DONE));
+    }
+    /*AI player will move to the enemy it is facing*/
+    var ClearInput_ = function()
+    {
+        //combo_.push({Action:RYU_FLAGS.DONE,Frame:1,Input:[]});
+        combo_.push(CreateAction(null,RYU_FLAGS.CLEAR_INPUT));
+    }
+
+    var ParseAndSendInput_ = function()
+    {
+        var action = combo_[0].Action;
+        if(action == RYU_ACTIONS.ATTACK_SUPER_FB)
+        {
+            ThrowSuperFireball_(1);
+        }
         else
-            SendInput_(frame,hardFireballInput_);
+        {
+            player_.sendInput(combo_[0].Input);
+        }
+        combo_.splice(0,1);
     }
 
-    /*private member*/
-    var DoUppercut_ = function(frame)
-    {
-        if(!!GetAirborneEnemy_(200))
-        {
-            SendInput_(frame,lightUppercutInput_);
-            return true;
-        }
-        else if(!!GetAirborneEnemy_(300))
-        {
-            SendInput_(frame,hardUppercutInput_);
-            return true;
-        }
-        return false;
-    }
 
     /*******************************************************/
     /*******************  PUBLIC  STATE    *****************/
@@ -157,54 +212,145 @@ var CreateSimpleRyuAI = function(player)
     {
     }
 
+    SimpleRyuAI.prototype.reset = function()
+    {
+        combo_ = [];
+        inputToSend_ = [];
+        player_.clearInput();
+    }
 
+    SimpleRyuAI.prototype.clearInput = function()
+    {
+        player_.clearInput();
+    }
+
+    SimpleRyuAI.prototype.onStartNonAttack = function(frame, attacker)
+    {
+    }
+    //fired when any enemy attack ends
+    SimpleRyuAI.prototype.onEnemyEndAttack = function(frame, attacker)
+    {
+        player_.clearInput();
+    }
+    //fired when any enemy attack ends
+    SimpleRyuAI.prototype.onEnemyVulnerable = function(frame, attacker)
+    {
+        player_.clearInput();
+    }
+    //fired every frame an ememy projectile is active
+    SimpleRyuAI.prototype.onProjectileMoved = function(frame,id,x,y,projectile)
+    {
+        if(player_.canBlock())
+        {
+            PressBlock_();
+        }
+    }
+    //fired when a projectile is off screen
+    SimpleRyuAI.prototype.onProjectileGone = function(frame, id)
+    {
+        this.reset();
+    }
+    //fired every attack frame
+    SimpleRyuAI.prototype.onEnemyContinueAttack = function(frame, attacker, hitPoints)
+    {
+        var blockKey = player_.MustChangeDirection ?  BUTTONS.FORWARD : BUTTONS.BACK;
+        if(player_.canBlock())
+        {
+            if(attacker.isCrouching() && (!player_.isBlockingLow() || (!!player_.isBlockingLow() && !player.isKeyDown(blockKey))))
+            {
+                if(player_.isKeyDown(BUTTONS.BACK))
+                {
+                    PressButton_(RYU_FLAGS.NONE,BUTTONS.CROUCH);
+                }
+                else if(!player_.isKeyDown(BUTTONS.CROUCH))
+                {
+                    this.reset();
+                    PressButton_(RYU_FLAGS.NONE,BUTTONS.CROUCH);
+                    PressBlock_();
+                }
+            }
+            else if(!player_.isBlocking() || (!!player_.isBlocking() && !player.isKeyDown(blockKey)))
+            {
+                if(!player_.isKeyDown(BUTTONS.BACK))
+                {
+                    this.reset();
+                    PressBlock_();
+                }
+            }
+        }
+    }
+    //fired at the start of any enemy attack
+    SimpleRyuAI.prototype.onEnemyStartAttack = function(frame, attacker)
+    {
+    }
+
+    SimpleRyuAI.prototype.combo1 = function()
+    {
+        this.reset();
+        MoveToEnemy_(RYU_FLAGS.GROUNDED_ENEMY);
+        PressButton_(RYU_FLAGS.NONE,BUTTONS.LIGHT_PUNCH,1,5);
+        PressButton_(RYU_FLAGS.MOBILE_ME,BUTTONS.CROUCH);
+        PressButton_(RYU_FLAGS.NONE,BUTTONS.LIGHT_KICK,1,5);
+        PressButton_(RYU_FLAGS.MOBILE_ME,BUTTONS.MEDIUM_KICK,-1,5);
+        PressButton_(RYU_FLAGS.NONE,BUTTONS.HARD_KICK,5,5);
+        ReleaseButton_(BUTTONS.CROUCH,1);
+        ClearInput_();
+        SendAction_(RYU_ACTIONS.ATTACK_SUPER_FB,15);
+        StopCombo_();
+    }
 
     SimpleRyuAI.prototype.frameMove = function(frame)
     {
-        
-        if(inputToSend_.length == 0)
-        {
-            player_.clearInput();
-            if((frame % 20) == 0)
-                player.targetLastAttacker(frame);
 
-            if(player_.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK))
+        if(combo_.length > 0)
+        {
+            if((combo_[0].Flags == RYU_FLAGS.CLEAR_INPUT))
             {
-                if(!DoUppercut_(frame))
-                {
-                    SendInput_(frame,blockInput_);
-                }
+                this.clearInput();
+                combo_.splice(0,1);
             }
-            else
+            else if(hasFlag(combo_[0].Flags,RYU_FLAGS.MOVE_TO_ENEMY))
             {
-                /*are all players on the other team on the ground?*/
-                if(IsOtherTeamOnGround_(frame))
+                //wait until the player is mobile
+                if(player_.isMobile())
                 {
-                    ThrowFireball_(frame);
-                }
-                else
-                {
-                    if(!DoUppercut_(frame))
+                    var isAirborne = undefined;
+                    if(hasFlag(combo_[0].Flags,RYU_FLAGS.GROUNDED_ENEMY))
+                        isAirborne = false;
+
+                    if(!GetCloseEnemy_(-60,isAirborne))
                     {
-                        ThrowFireball_(frame);
+                        player_.sendInput(combo_[0].Input);
+                    }
+                    else
+                    {
+                        combo_.splice(0,1);
                     }
                 }
             }
-        }
-
-        var i = 0;
-        while(i < inputToSend_.length)
-        {
-            if(inputToSend_[i].Frame == frame)
+            else if(combo_[0].Flags == RYU_FLAGS.MOBILE_ME)
             {
-                player_.sendInput(inputToSend_[i].Input);
-                inputToSend_.splice(i,1);
+                //wait until the player is mobile
+                if(player_.isMobile())
+                {
+                    player_.sendInput(combo_[0].Input);
+                    combo_.splice(0,1);
+                }
+            }
+            else if(hasFlag(combo_[0].Flags,RYU_FLAGS.DONE))
+            {
+                this.reset();
+            }
+            else if((combo_[0].Frame == 0))
+            {
+                ParseAndSendInput_();
             }
             else
             {
-                ++i;
+                combo_[0].Frame = Math.max(combo_[0].Frame - 1,0);
             }
         }
+
     }
 
     return new SimpleRyuAI();

@@ -91,11 +91,11 @@ u4_.IsAlternateChar = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    u1_.setChar(CHARACTERS.MBISON);
+    //u1_.setChar(CHARACTERS.MBISON);
+    u1_.setChar(CHARACTERS.RYU,true);
     u2_.setChar(CHARACTERS.RYU);
-    u3_.setChar(CHARACTERS.KEN);
 
-    game_.startMatch(false,[u2_,u3_],[u1_], stages_["mbison"]);
+    game_.startMatch(false,[u1_],[u2_], stages_["sodom"],StartTestAI);
 }
 
 /* multi player battle */
@@ -114,6 +114,11 @@ function StartBattle()
         StartDramaticBattle();
     else
         StartQuickMatch();
+}
+
+function StartTestAI()
+{
+    debug_.t2TestAI(0);
 }
 
 function StartDramaticBattleAI()

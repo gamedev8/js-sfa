@@ -1,4 +1,8 @@
+Player.prototype.canBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK); }
+Player.prototype.canAirBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK); }
+Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
 Player.prototype.hasRegisteredHit = function() { return !!this.RegisteredHit.HitID; }
+
 
 Player.prototype.isVulnerable = function()
 {
@@ -16,14 +20,14 @@ Player.prototype.canHit = function(otherFlags)
     return true;
 }
 
-Player.prototype.onProjectileMoved = function(id,x,y)
+Player.prototype.onProjectileMoved = function(frame,id,x,y)
 {
-    this.onProjectileMovedFn(id,x,y);
+    this.onProjectileMovedFn(frame,id,x,y);
 }
 
-Player.prototype.onProjectileGone = function(id)
+Player.prototype.onProjectileGone = function(frame,id)
 {
-    this.onProjectileGoneFn(id);
+    this.onProjectileGoneFn(frame,id);
 }
 
 /*Allows blocking from a projectile, if the projectile is within range*/
@@ -84,12 +88,32 @@ Player.prototype.removeBlockableAirAttack = function(attackId)
     }
     return false;
 }
-/*Allows/disallows blocking*/
+Player.prototype.removeBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
+{
+    this.setAllowBlock(attackId,frame,isAllowed,x,y,hitPoints);
+    this.onEnemyEndAttack(frame);
+}
+Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
+{
+    this.setAllowBlock(attackId,frame,isAllowed,x,y,hitPoints);
+    //update AI
+}
+Player.prototype.removeAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
+{
+    this.setAllowAirBlock(attackId,frame,isAllowed,x,y,hitPoints);
+    this.onEnemyEndAttack(frame);
+}
+Player.prototype.allowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
+{
+    this.setAllowAirBlock(attackId,frame,isAllowed,x,y,hitPoints);
+    //update AI
+}
+//Allows/disallows blocking
 Player.prototype.setAllowBlock = function(attackId,frame,isAllowed,x,y,hitPoints)
 {
     if(!!isAllowed)
     {
-        /*the attack must be within a certain distance for the block animation to be allowed*/
+        //the attack must be within a certain distance for the block animation to be allowed
         if(!!hitPoints)
         {
             var canBlock = false;
@@ -126,30 +150,33 @@ Player.prototype.setAllowBlock = function(attackId,frame,isAllowed,x,y,hitPoints
             }
         }
 
-        /*Check if the move is already blockable*/
+        //Check if the move is already blockable
         if(!this.addBlockableAttack(attackId))
             this.BlockedAttacks[this.BlockedAttacks.length] = {AttackId:attackId};
         
-        /*allow the block animation*/
+        //allow the block animation
         this.Flags.Pose.add(POSE_FLAGS.ALLOW_BLOCK);
     }
     else
     {
-        /*remove the attack from the array of blocked attacks*/
+        //remove the attack from the array of blocked attacks
         if(this.removeBlockableAttack(attackId))
         {
-            /*if there are no more attacks, remove the ability to block*/
+            //if there are no more attacks, remove the ability to block
             if(this.BlockedAttacks.length == 0)
             {
                 this.Flags.Pose.remove(POSE_FLAGS.ALLOW_BLOCK);
-                /*if the player is blocking, then remove it*/
+                //if the player is blocking, then remove it
                 if(this.Flags.Player.has(PLAYER_FLAGS.BLOCKING))
-                    this.IgnoreHoldFrame = true; /*ignores the hold frame on the current animation, which then causes the animation to continue, and then end*/
+                {
+                    this.IgnoreHoldFrame = true;
+                    this.ForceEndAnimation = true;
+                }
             }
         }
     }
 }
-/*Allows/disallows air blocking*/
+//Allows/disallows air blocking
 Player.prototype.setAllowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints)
 {
     if(!!isAllowed)
@@ -328,18 +355,29 @@ Player.prototype.handleProjectiles = function(frame,stageX,stageY)
 /*Handles attacking players on the opposing team*/
 Player.prototype.handleAttack = function(frame, moveFrame)
 {
-    this.IsInAttackFrame = true;
-    var hitPoints = [];
+    var hitPoints = null;
     var rect = this.getImgRect();
 
-    for(var i = 0; i < moveFrame.HitPoints.length; ++i)
+    if(moveFrame.HitPoints.length > 0)
     {
-        if(this.Direction < 0)
-            hitPoints.push({x:rect.Left + moveFrame.HitPoints[i].x,y:rect.Bottom + moveFrame.HitPoints[i].y});
-        else
-            hitPoints.push({x:rect.Right - moveFrame.HitPoints[i].x,y:rect.Bottom + moveFrame.HitPoints[i].y});
+        hitPoints = [];
+        for(var i = 0; i < moveFrame.HitPoints.length; ++i)
+        {
+            if(this.Direction < 0)
+                hitPoints.push({x:rect.Left + moveFrame.HitPoints[i].x,y:rect.Bottom + moveFrame.HitPoints[i].y});
+            else
+                hitPoints.push({x:rect.Right - moveFrame.HitPoints[i].x,y:rect.Bottom + moveFrame.HitPoints[i].y});
+        }
     }
-
+    if(!!moveFrame.IsPendingAttack)
+    {
+        hitPoints = [];
+        if(this.Direction < 0)
+            hitPoints.push({x:rect.Right,y:rect.Bottom});
+        else
+            hitPoints.push({x:rect.Left,y:rect.Bottom});
+    }
+    
     if(hasFlag(moveFrame.FlagsToSet.Combat,COMBAT_FLAGS.CAN_BE_BLOCKED))
     {
         this.MustClearAllowBlock = true;
@@ -348,7 +386,9 @@ Player.prototype.handleAttack = function(frame, moveFrame)
     if(hasFlag(moveFrame.FlagsToClear.Combat,COMBAT_FLAGS.CAN_BE_BLOCKED))
     {
         this.MustClearAllowBlock = false;
+        this.IsInAttackFrame = false;
         this.onEndAttackFn(this.CurrentAnimation.ID);
+        this.onVulnerableFn(frame);
     }
     if(hasFlag(moveFrame.FlagsToSet.Combat,COMBAT_FLAGS.CAN_BE_AIR_BLOCKED))
     {
@@ -358,14 +398,16 @@ Player.prototype.handleAttack = function(frame, moveFrame)
     if(hasFlag(moveFrame.FlagsToClear.Combat,COMBAT_FLAGS.CAN_BE_AIR_BLOCKED))
     {
         this.MustClearAllowAirBlock = false;
+        this.IsInAttackFrame = false;
         this.onEndAirAttackFn(this.CurrentAnimation.ID);
+        this.onVulnerableFn(frame);
     }
-
-    this.attackFn(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,moveFrame.BaseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound);
+    this.onContinueAttackEnemiesFn(frame,hitPoints);
+    this.attackFn(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,moveFrame.BaseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound,moveFrame.NbFramesToFreeze);
 }
 
 /*If the player gets hit - this function must be called to set all of the details of the hit*/
-Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,damage,energyToAdd,isGrapple,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName,hitSound,blockSound)
+Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,damage,energyToAdd,isGrapple,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze)
 {
     this.LastHitFrame[who] = hitID;
     this.RegisteredHit.AttackFlags = attackFlags;
@@ -389,6 +431,7 @@ Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,da
     this.RegisteredHit.HitSound = hitSound || 0;
     this.RegisteredHit.BlockSound = blockSound || 0;
     this.RegisteredHit.OtherPlayer = otherPlayer;
+    this.RegisteredHit.NbFreeze = nbFreeze;
 
     if(!!isGrapple)
         this.setPendingGrapple(true);
@@ -441,6 +484,7 @@ Player.prototype.registerHit = function(frame)
                 ,this.RegisteredHit.InvokedAnimationName
                 ,this.RegisteredHit.HitSound
                 ,this.RegisteredHit.BlockSound
+                ,this.RegisteredHit.NbFreeze
                 );
 
 }
@@ -522,16 +566,17 @@ Player.prototype.decreaseDizziness = function(frame)
 }
 
 /*The player was just hit and must react*/
-Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound)
+Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze)
 {
     if(this.isDizzy())
         this.clearDizzy();
 
     this.RegisteredHit.HitID = null;
     this.FreezeUntilFrame = 0;
+    var slideValue = 0;
     if(!!otherPlayer)
     {
-        otherPlayer.giveHitFn(frame);
+        slideValue = otherPlayer.giveHitFn(frame);
         if(otherPlayer.isAirborne() && this.isAirborne() && !this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE))
             fx = 1;
     }
@@ -587,7 +632,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE / 2;}
-        this.FreezeUntilFrame = frame + CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT;
+        this.FreezeUntilFrame = frame + (nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
     }
     else
     {
@@ -748,7 +793,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     if(this.ComboCount > 2)
         this.setHoldFrame(1);
     else
-        this.setHoldFrame(this.BaseTakeHitDelay * hitDelayFactor_);
+        this.setHoldFrame(nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
 
     if(!this.isBlocking())
         this.queueHitSound(hitSound);
@@ -931,9 +976,9 @@ Player.prototype.takeAirborneHit = function(attackFlags,hitState,flags,frame,dam
     }
     
 }
-Player.prototype.slideBack =  function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
+Player.prototype.slideBack = function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
 {
-    var x = STAGE.MAX_STAGEX - this.X;
+    var x = otherPlayer.X;//STAGE.MAX_STAGEX - this.X;
     if(x < CONSTANTS.SLIDE_BACK_RANGE_FAR)
     {
         var slideAmount = CONSTANTS.DEFAULT_SLIDE_BACK_AMOUNT;
@@ -951,8 +996,9 @@ Player.prototype.slideBack =  function(frame,attackFlags,hitDelayFactor,energyTo
         else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD))  {slideAmount *= CONSTANTS.HARD_SLIDE_BACK_RATE;}
 
         this.stopSlide();
-        this.startSlide(frame,slideAmount,-this.Direction,1,true);
+        return this.startSlide(frame,slideAmount,-this.Direction,1,true);
     }
+    return 0;
 }
 /*Sets up the closure to be called later*/
 Player.prototype.setGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2)
@@ -964,7 +1010,7 @@ Player.prototype.setGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,be
     {
         return function (frame)
         {
-            thisValue.giveHit(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
+            return thisValue.giveHit(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
         }
     })(this,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
     this.setHoldFrame(this.BaseGiveHitDelay * hitDelayFactor);
@@ -972,6 +1018,7 @@ Player.prototype.setGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,be
 /*This player just hit the other player*/
 Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
 {
+    var slideRemainder = 0;
     this.stopGettingDizzy();
     if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_START))
     {
@@ -986,7 +1033,7 @@ Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
     }
     else
     {
-        this.slideBack(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer);
+        slideRemainder = this.slideBack(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer);
     }
 
     this.changeEnergy(energyToAdd);
@@ -1007,7 +1054,7 @@ Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
     {
         this.tryChainAnimation(frame);
     }
-
+    return slideRemainder;
 }
 
 Player.prototype.isGrappling = function(id)

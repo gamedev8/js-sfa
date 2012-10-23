@@ -198,6 +198,19 @@ Player.prototype.findAnimation = function(value,frame)
     var val = 0;
     var currentEnergy = this.getEnergyFn();
 
+    //check for a chain move
+    if(!!this.CurrentAnimation.Animation.ChainOnKeyAnimation)
+    {
+        if(!this.FreezeFrame 
+            && keys.length == 1 
+            && keys[0].Bit == this.CurrentAnimation.Animation.ChainOnKeyKey 
+            && this.CurrentFrame.FrameOffset >= this.CurrentAnimation.Animation.ChainOnKeyMinOffset)
+        {
+            this.chainToAnimation(frame, this.CurrentAnimation.Animation.ChainOnKeyAnimation,this.CurrentAnimation.Animation.ChainOnKeyAnimationFrame);
+            return -1;
+        }
+    }
+
     for(var i in this.Moves)
     {
         if(-1 != this.testAnimation(frame,currentEnergy,keys,value.Duration,this.Moves[i],retVal))
@@ -492,7 +505,12 @@ Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
     if(!!this.CurrentAnimation && !!this.MustChangeDirection && !this.isDead() && (!this.CurrentAnimation.Animation || (!!this.CurrentAnimation.Animation && !this.CurrentAnimation.Animation.ChainAnimation)))
     {
         if(this.getMustChangeDirection(true))
-            this.changeDirection();
+        {
+            if(!!this.CurrentAnimation.Animation.Flags.Pose && hasFlag(this.CurrentAnimation.Animation.Flags.Pose,POSE_FLAGS.QUICK_CHANGE_DIRECTION))
+                this.changeDirection(true);
+            else
+                this.changeDirection();
+        }
     }
     else if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.ChainAnimation)
     {
@@ -509,9 +527,9 @@ Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
     }
 }
 
-Player.prototype.chainToAnimation = function(frame,move,stageX,stageY)
+Player.prototype.chainToAnimation = function(frame,move,frameOffset,stageX,stageY)
 {
-    var newFrame = move.BaseAnimation.Frames[this.CurrentAnimation.Animation.ChainAnimationFrame];
+    var newFrame = move.BaseAnimation.Frames[frameOffset || this.CurrentAnimation.Animation.ChainAnimationFrame];
     var attackDirection = this.CurrentAnimation.AttackDirection;
 
     var tmp = {Animation:move,StartFrame:frame - newFrame.FrameOffset,Direction:this.Direction,AttackDirection:attackDirection};
@@ -554,6 +572,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
     if(!!this.CurrentAnimation && this.CurrentAnimation.Animation)
     {
         //this.LastAnimation = this.CurrentAnimation.Animation;
+        //this.onEndAttackEnemiesFn(0);
 
         this.CurrentAnimation.Animation.hideChildren();
         //maintain the same velocity if required
@@ -607,6 +626,8 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
             }
         }
 
+
+        this.IsInAttackFrame = false;
         this.IgnoreOverrides = false;
         this.clearInterupt();
         this.checkPendingHit();
@@ -668,6 +689,13 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
             this.CurrentAnimation.Animation.Trail.enable(newAnimation.StartFrame,this.Element,this.Direction);
 
         this.showFirstAnimationFrame();
+
+        //if this move is an attack, then raise the event
+        if(!!this.CurrentAnimation.Animation.BaseAnimation.IsAttack)
+        {
+            this.IsInAttackFrame = true;
+            this.onStartAttackEnemiesFn(0);
+        }
     }
 }
 
@@ -699,6 +727,18 @@ Player.prototype.CombatFlagsToIgnore = COMBAT_FLAGS.PROJECTILE_ACTIVE
 /*flags that should be ignore when a frame's player flags are cleared*/
 Player.prototype.PlayerFlagsToIgnore = PLAYER_FLAGS.MOBILE | PLAYER_FLAGS.BULLDOZE;
 
+Player.prototype.ResetClip = function()
+{
+    this.ClipMoveFront = 0;
+    this.ClipMoveBack = 0;
+    this.ClipMoveTop = 0;
+    this.ClipHitBottom = 0;
+    this.ClipHitFront = 0;
+    this.ClipHitBack = 0;
+    this.ClipHitTop = 0;
+    this.ClipHitBottom = 0;
+}
+
 /*Sets the current frame*/
 Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreTranslation)
 {
@@ -708,10 +748,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             return;
 
         //must remove the clip values each frame
-        this.ClipBottom = 0;
-        this.ClipTop = 0;
-        this.ClipLeft = 0;
-        this.ClipRight = 0;
+        this.ResetClip();
 
         if(this.Flags.Player.has(PLAYER_FLAGS.INVISIBLE))
         {
@@ -733,11 +770,11 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         
     }
 
-    var isNewFrame = false;
+    this.IsNewFrame = false;
     
     if(!!newFrame && !!this.CurrentFrame && newFrame.ID != this.CurrentFrame.ID)
         if(!!newFrame.RightSrc && !!this.CurrentFrame.RightSrc && spriteLookup_.getLeft(newFrame.RightSrc) != spriteLookup_.getLeft(this.CurrentFrame.RightSrc))
-            isNewFrame = true;
+            this.IsNewFrame = true;
 
     var isNewSound = !!newFrame
                 && ((!!newFrame.SoundFilename && ((!this.CurrentFrame) || (!!this.CurrentFrame && (this.CurrentFrame.SoundFilename != newFrame.SoundFilename))))
@@ -751,7 +788,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.IgnoreOverrides = this.CurrentFrame.Vulernable;
 
         //used to force the other player to change frames during a throw
-        if(!!isNewFrame)
+        if(!!this.IsNewFrame)
         {
             if(!!__debugMode)
                 debug_.setOffsets(this.CurrentFrame.ImageOffsetX,this.CurrentFrame.ImageOffsetY);
@@ -760,6 +797,8 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             if(!!this.CurrentFrame.SlideForce)
                 this.startSlide(frame,this.CurrentFrame.SlideForce,this.Direction,this.CurrentFrame.SlideFactor,true,true);
         }
+
+        this.IgnoreHoldFrame = hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.IGNORE_HOLD_FRAME);
 
         if(hasFlag(newFrame.FlagsToClear.Combat,COMBAT_FLAGS.SUPER_MOVE_PAUSE))
         {
@@ -816,24 +855,15 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Player.remove(newFrame.FlagsToClear.Player);
         this.Flags.Spawn.remove(newFrame.FlagsToClear.Spawn);
 
-        if(!!newFrame.FlagsToSet.Clip)
-        {
-            this.ClipBottom = newFrame.FlagsToSet.Clip.Bottom || 0;
-            this.ClipTop = newFrame.FlagsToSet.Clip.Top || 0;
-            this.ClipLeft = newFrame.FlagsToSet.Clip.Left || 0;
-            this.ClipRight = newFrame.FlagsToSet.Clip.Right || 0;
-        }
-        else if(hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.SMALLER_AABB))
-        {
-            var offsetData = this.CurrentAnimation.Animation.UserData;
-            if(!!offsetData)
-            {
-                this.ClipBottom = offsetData.clipBottom || 0;
-                this.ClipTop = offsetData.clipTop || 0;
-                this.ClipLeft = offsetData.clipLeft || 0;
-                this.ClipRight = offsetData.clipRight || 0;
-            }
-        }
+        this.ClipHitFront = newFrame.ClipHitFront || 0;
+        this.ClipHitBack = newFrame.ClipHitBack || 0;
+        this.ClipHitBottom = newFrame.ClipHitBottom || 0;
+        this.ClipHitTop = newFrame.ClipHitTop || 0;
+
+        this.ClipMoveFront = newFrame.ClipMoveFront || 0;
+        this.ClipMoveBack = newFrame.ClipMoveBack || 0;
+        this.ClipMoveBottom = newFrame.ClipMoveBottom || 0;
+        this.ClipMoveTop = newFrame.ClipMoveTop || 0;
 
         if(!ignoreTranslation)
         {
@@ -884,24 +914,27 @@ Player.prototype.setBgBase64Helper = function(arr,attrib,key)
 
 Player.prototype.setSprite = function(frame)
 {
-    data = spriteLookup_.get(this.CurrentFrame.RightSrc);
-    if(!!data)
+    if(!!this.IsNewFrame)
     {
-        this.SpriteElement.style.backgroundPosition = data.Left + " " + data.Bottom;
-        this.SpriteElement.style.width = data.Width;
-        this.SpriteElement.style.height = data.Height;
-        this.Element.style.width = data.Width;
-        if(this.CurrentFrame.ImageOffsetX != undefined)
+        data = spriteLookup_.get(this.CurrentFrame.RightSrc);
+        if(!!data)
         {
-            this.OffsetWidth = data.WidthInt+ this.CurrentFrame.ImageOffsetX;
-            this.OffsetHeight = data.HeightInt+ this.CurrentFrame.ImageOffsetY;
-            this.Element.style.width = this.OffsetWidth + "px";
-        }
-        else
-        {
-            this.OffsetWidth = data.WidthInt;
-            this.OffsetHeight = data.HeightInt;
-            this.Element.style.width = this.OffsetWidth + "px";
+            this.SpriteElement.style.backgroundPosition = data.Left + " " + data.Bottom;
+            this.SpriteElement.style.width = data.Width;
+            this.SpriteElement.style.height = data.Height;
+            this.Element.style.width = data.Width;
+            if(this.CurrentFrame.ImageOffsetX != undefined)
+            {
+                this.OffsetWidth = data.WidthInt+ this.CurrentFrame.ImageOffsetX;
+                this.OffsetHeight = data.HeightInt+ this.CurrentFrame.ImageOffsetY;
+                this.Element.style.width = this.OffsetWidth + "px";
+            }
+            else
+            {
+                this.OffsetWidth = data.WidthInt;
+                this.OffsetHeight = data.HeightInt;
+                this.Element.style.width = this.OffsetWidth + "px";
+            }
         }
     }
     if(!!this.CurrentFrame.IsFlipped)
@@ -958,6 +991,7 @@ Player.prototype.render = function(frame,stageDiffX,stageDiffY)
         if(!!__debugMode)
             this.renderDebugInfo();
     }
+    this.IsNewFrame = false;
 }
 
 /*renders the trail, if there is one*/

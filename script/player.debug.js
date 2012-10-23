@@ -26,33 +26,45 @@ Player.prototype.renderDebugInfo = function()
     {
         var points = this.CurrentFrame.HitPoints;
         var x = this.getX();
-        this.DebugHit.style.bottom = (this.getY() + points[0].y) + "px";
+        var i = 0;
+        for(; (i < 3) && (i < points.length); ++i)
+        {
+            this.DebugHit[i].style.bottom = (this.getY() + points[i].y) + "px";
 
-        if(this.Direction < 0)
-        {
-            this.DebugHit.style.right = "";
-            this.DebugHit.style.left = (x + points[0].x) + "px";
+            if(this.Direction < 0)
+            {
+                this.DebugHit[i].style.right = "";
+                this.DebugHit[i].style.left = (x + points[i].x) + "px";
+            }
+            else
+            {
+                this.DebugHit[i].style.left = "";
+                this.DebugHit[i].style.right = (x + points[i].x) + "px";
+            }
+            if(this.DebugHit[i].style.display != "")
+                this.DebugHit[i].style.display = "";
         }
-        else
+        for(; i < 3; ++i)
         {
-            this.DebugHit.style.left = "";
-            this.DebugHit.style.right = (x + points[0].x) + "px";
+            if(this.DebugHit[i].style.display != "none")
+                this.DebugHit[i].style.display = "none";
         }
-        if(this.DebugHit.style.display != "")
-            this.DebugHit.style.display = "";
     }
     else
     {
-        if(this.DebugHit.style.display != "none")
-            this.DebugHit.style.display = "none";
+        for(var i = 0; i < 3; ++i)
+        {
+            if(this.DebugHit[i].style.display != "none")
+                this.DebugHit[i].style.display = "none";
+        }
     }
 
     var rect = this.getImgRect();
     this.Rect.style.bottom = rect.Bottom + "px";
 
-    this.Rect.style.left = rect.Left + "px";
+    this.Rect.style.left = rect.LeftOffset + "px";
 
-    this.Rect.style.width = (rect.Right - rect.Left) + "px";
+    this.Rect.style.width = (rect.RightOffset - rect.LeftOffset) + "px";
     this.Rect.style.height = (rect.Top - rect.Bottom) + "px";
 
 }
@@ -61,7 +73,9 @@ Player.prototype.renderDebugInfo = function()
 /**/
 Player.prototype.releaseDebugElements = function()
 {
-    utils_.removeFromDOM(this.DebugHit);
+    utils_.removeFromDOM(this.DebugHit[0]);
+    utils_.removeFromDOM(this.DebugHit[1]);
+    utils_.removeFromDOM(this.DebugHit[2]);
     utils_.removeFromDOM(this.DebKeysElement);
 }
 
@@ -87,12 +101,15 @@ Player.prototype.createDebugElements = function(parentElement)
     //(parentElement || window.document.getElementById("pnlStage")).appendChild(d);
     this.Element.appendChild(d);
     */
-
-    this.DebugHit = window.document.createElement("b");
-    this.DebugHit.style.display = "none";
-    this.DebugHit.className = "hit";
-    this.DebugHit.innerHTML = "h";
-    (parentElement || window.document.getElementById("pnlStage")).appendChild(this.DebugHit);
+    this.DebugHit = [];
+    for(var i = 0; i < 3; ++i)
+    {
+        this.DebugHit[i] = window.document.createElement("b");
+        this.DebugHit[i].style.display = "none";
+        this.DebugHit[i].className = "hit";
+        this.DebugHit[i].innerHTML = i+1;
+        (parentElement || window.document.getElementById("pnlStage")).appendChild(this.DebugHit[i]);
+    }
 
     this.Rect = window.document.createElement("div");
     this.Rect.className = "player-rect";

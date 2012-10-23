@@ -249,14 +249,45 @@ Player.prototype.checkForAnimation = function(frame)
         }
 
         var cb = 0;
+        while(throwKeys.length > 0)
+        {
+            var value = this.cutKey(throwKeys,frame);
+            var move = this.findThrow(value,frame);
+            if(!!move)// && (!move.Duration || (value.Duration <= move.Duration)))
+            {
+                //is there no current move, or is the user executing a new move
+                if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
+                {
+                    if(this.allowInterupt())
+                        this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
+                    else
+                        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
+                }
+                return;
+            }
+            //Nope, so lets check the next key sequence
+            else
+            {
+                throwKeys = throwKeys.slice(1);
+            }
+
+            if(++cb > 100)
+                break;
+        }
+
+        cb = 0;
         while(keys.length > 0)
         {
             var value = this.cutKey(keys,frame);
-            var move = this.findThrow(value,frame);
+            var move = this.findAnimation(value,frame);
             if(!!move && (!move.Duration || (value.Duration <= move.Duration)))
             {
                 /*is there no current move, or is the user executing a new move*/
-                if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
+                if(move == -1)
+                {
+                    //do nothing for now, the move was already chained
+                }
+                else if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
                 {
                     if(this.allowInterupt())
                         this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
@@ -269,33 +300,6 @@ Player.prototype.checkForAnimation = function(frame)
             else
             {
                 keys = keys.slice(1);
-            }
-
-            if(++cb > 100)
-                break;
-        }
-
-        cb = 0;
-        while(throwKeys.length > 0)
-        {
-            var value = this.cutKey(throwKeys,frame);
-            var move = this.findAnimation(value,true,frame);
-            if(!!move && (!move.Duration || (value.Duration <= move.Duration)))
-            {
-                /*is there no current move, or is the user executing a new move*/
-                if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
-                {
-                    if(this.allowInterupt())
-                        this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
-                    else
-                        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
-                }
-                return;
-            }
-            /*Nope, so lets check the next key sequence*/
-            else
-            {
-                throwKeys = throwKeys.slice(1);
             }
 
             if(++cb > 100)

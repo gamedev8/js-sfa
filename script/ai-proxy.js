@@ -8,21 +8,17 @@ var CreateAIProxy = function(player,createAiFn)
     {
     }
 
-    AIProxy.prototype.setAI = function(createAiFn)
-    {
-        managed_ = !!createAiFn ? createAiFn(player_) : null;
-    }
-
-    AIProxy.prototype.isRunning = function()
-    {
-        return !!managed_;
-    }
-
-
-    AIProxy.prototype.frameMove = function(frame)
-    {
-        managed_.frameMove(frame);
-    }
+    AIProxy.prototype.reset = function() { managed_.reset(); }
+    AIProxy.prototype.setAI = function(createAiFn) { managed_ = !!createAiFn ? createAiFn(player_) : null; }
+    AIProxy.prototype.isRunning = function() { return !!managed_; }
+    AIProxy.prototype.onEnemyStartAttack = function(frame, who) { managed_.onEnemyStartAttack(frame,who); }
+    AIProxy.prototype.onEnemyContinueAttack = function(frame, who) { managed_.onEnemyContinueAttack(frame,who); }
+    AIProxy.prototype.onEnemyEndAttack = function(frame, who) { managed_.onEnemyEndAttack(frame,who); }
+    AIProxy.prototype.onEnemyVulnerable = function(frame, who) { managed_.onEnemyVulnerable(frame,who); }
+    AIProxy.prototype.onProjectileMoved = function(frame, id,x,y) { managed_.onProjectileMoved(frame,id,x,y); }
+    AIProxy.prototype.onProjectileGone = function(frame,id) { managed_.onProjectileGone(id); }
+    AIProxy.prototype.frameMove = function(frame) { managed_.frameMove(frame); }
+    AIProxy.prototype.go = function(name) { managed_[name].apply(managed_,arguments); }
 
     return new AIProxy();
 }

@@ -3,6 +3,7 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
     var AnimationTrail = function()
     {
         this.FollowElement = null;
+        this.Player = null;
         this.Trail = [];
         this.Delay = delay || 12;
         this.Enabled = false;
@@ -21,8 +22,9 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
         }
     }
 
-    AnimationTrail.prototype.add = function(animation,followElement,folder)
+    AnimationTrail.prototype.add = function(animation,followElement,folder,player)
     {
+        this.Player = player;
         var img = window.document.createElement("div");
         img.className = "player-sprite";
 
@@ -76,21 +78,8 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
             var container = this.FollowElement.parentNode;
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
-                /*
-                if(!this.Trail[i].HasB64)
-                {
-                    imageLookup_.getBgB64(this.Trail[i].Element, this.B64Key);
-                    this.Trail[i].HasB64 = true;
-                }
-                */
                 AutoApplyFlip(this.Trail[i].Element,direction == -1);
                 this.Trail[i].Animation.clearAllFrameUserData();
-                /*
-                if(container.children.length == 0)
-                    container.appendChild(this.Trail[i].Element);
-                else
-                    container.insertBefore(this.Trail[i].Element,container.children[0]);
-                */
                 this.Trail[i].StartFrame = frame + (this.Delay * (i + 1));
                 this.Trail[i].FrameIndex = 0;
             }
@@ -109,17 +98,40 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
         if(this.Enabled)
         {
             this.Direction = direction;
+            var bottom = parseInt(this.FollowElement.style.bottom);
+            var left = this.FollowElement.style.left;
+            var right = this.FollowElement.style.right;
+
+            if(!!this.Player)
+            {
+                var rect = this.Player.getImgRect();
+                bottom = rect.BottomNoOffset;
+                if(right == "")
+                    left = rect.LeftOffset;
+                else
+                    right = rect.RightOffset;
+            }
+
+            if(right == "")
+            {
+                left = left + "px";
+            }
+            else
+            {
+                right = right + "px";
+            }
+
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {
                 this.Trail[i].Animation.addUserDataToFrame(index, 
                     {
                         Frame:frame
-                        ,Left:this.FollowElement.style.left
-                        ,Right:this.FollowElement.style.right
+                        ,Left:left
+                        ,Right:right
                         /*Must remove the stage offsetY from the cordinate and apply it on the current frame.*/
                         /*Remember that recording it here will apply the coordinate after a certain number of frames,*/
                         /*and if the screen Y changes then it will mess up the trail - so we must remove the screen offset*/
-                        ,Bottom:parseInt(this.FollowElement.style.bottom) - game_.Match.Stage.OffsetY + "px"
+                        ,Bottom:bottom - game_.Match.Stage.OffsetY + "px"
                         ,Top:this.FollowElement.style.top
                         ,DeltaX:0
                         ,DeltaY:0

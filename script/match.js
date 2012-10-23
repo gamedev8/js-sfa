@@ -64,15 +64,15 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.getStage = function() { return this.Stage; }
     Match.prototype.resetKeys = function()
     {
-        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamA.Players.length; ++i)
             this.TeamA.getPlayer(i).clearInput();
-        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamB.Players.length; ++i)
             this.TeamB.getPlayer(i).clearInput();
     }
     Match.prototype.playerCount = function()
     {
         if(this.getPlayerCount())
-            this.setPlayerCount(this.TeamA.getPlayers().length + this.TeamB.getPlayers().length);
+            this.setPlayerCount(this.TeamA.Players.length + this.TeamB.Players.length);
 
         return this.getPlayerCount();
         
@@ -169,19 +169,19 @@ var CreateMatch = function(team1,team2,stage)
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                for(var i = 0; i < this.TeamA.Players.length; ++i)
                     if(this.TeamA.getPlayer(i).Id != loseIgnoreId)
                         this.TeamA.getPlayer(i).forceLose(attackDirection);
-                for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                for(var i = 0; i < this.TeamB.Players.length; ++i)
                     this.TeamB.getPlayer(i).justWon(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+                for(var i = 0; i < this.TeamB.Players.length; ++i)
                     if(this.TeamB.getPlayer(i).Id != loseIgnoreId)
                         this.TeamB.getPlayer(i).forceLose(attackDirection);
-                for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+                for(var i = 0; i < this.TeamA.Players.length; ++i)
                     this.TeamA.getPlayer(i).justWon(frame);
                 break;
             }
@@ -238,13 +238,13 @@ var CreateMatch = function(team1,team2,stage)
                 this.TeamB.getPlayer(0).setX(STAGE.START_X);
 
             /*set the starting locations for each player*/
-            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamA.Players.length; ++i)
             {
                 this.TeamA.getPlayer(i).reset(true);
                 this.TeamA.getPlayer(i).setDirection(-1);
                 this.TeamA.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
-            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamB.Players.length; ++i)
             {
                 this.TeamB.getPlayer(i).reset(true);
                 this.TeamB.getPlayer(i).setDirection(1);
@@ -282,29 +282,34 @@ var CreateMatch = function(team1,team2,stage)
     /*sets up the player to take part in the match*/
     Match.prototype.setupPlayer = function(player,team)
     {
-        var moveStageX          = function(thisValue,otherTeam) { return function(amount,dontOverrideSign) { for(var i = 0; i < otherTeam.getPlayers().length;++i) {amount = thisValue.getStage().scrollX(amount,this,otherTeam.getPlayers()[i],thisValue,dontOverrideSign);}; return amount; } };
-        /*var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().fixX(amount,this,false,true);  return 0; } };*/
-        var fixX                = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().moveOtherPlayers(this);  return 0; } };
-        var moveX               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getStage().scrollX(amount,this,null,thisValue); thisValue.getPhysics().moveX(amount,this,false,true); return 0; } };
-        var moveY               = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getPhysics().moveY(amount,this); return 0; } };
-        var moveToBack          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayers()[i].moveToBack(true);} } }
-        var moveToFront         = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayers()[i].moveToFront(true);} } }
-        var projectileMoved     = function(thisValue,otherTeam) { return function(id,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
-        var projectileGone      = function(thisValue,otherTeam) { return function(id)     { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),false,id); } } }
-        var startAttack         = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints); } } }
-        var endAttack           = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.getPlayers()[i].setAllowBlock(id,thisValue.getGame().getCurrentFrame(),false); } } }
-        var startAirAttack      = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayers()[i].setAllowAirBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints); } } }
-        var endAirAttack        = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.getPlayers()[i].setAllowAirBlock(id,thisValue.getGame().getCurrentFrame(),false); } } }
-        var attack              = function(thisValue,otherTeam) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,otherTeam.getPlayers()[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound); } } }
-        var projectileAttack    = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryProjectileAttack(frame,projectile,this,otherTeam.getPlayers()[i]); } } }
-        var changeHealth        = function(thisValue)         { return function(amount) { thisValue.changeHealth(this.Team,amount); } }
-        var getHealth           = function(thisValue)         { return function() { return thisValue.getHealth(this.Team); } }
-        var changeEnergy        = function(thisValue)         { return function(amount) { thisValue.changeEnergy(this.Team,amount); } }
-        var getEnergy           = function(thisValue)         { return function() { return thisValue.getEnergy(this.Team); } }
-        var incCombo            = function(thisValue,team)    { return function() { return team.incCombo(); } }
-        var incComboRefCount    = function(thisValue,team)    { return function() { return team.incComboRefCount(); } }
-        var decComboRefCount    = function(thisValue,team)    { return function() { return team.decComboRefCount(); } }
-        var getCurrentComboCount= function(thisValue,team)    { return function() { return team.getCurrentCombo(); } }
+        var moveStageX           = function(thisValue,otherTeam) { return function(amount,dontOverrideSign) { for(var i = 0; i < otherTeam.Players.length;++i) {amount = thisValue.getStage().scrollX(amount,this,otherTeam.Players[i],thisValue,dontOverrideSign);}; return amount; } };
+        /*var fixX               = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().fixX(amount,this,false,true);  return 0; } };*/
+        var fixX                 = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().moveOtherPlayers(this);  return 0; } };
+        var moveX                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getStage().scrollX(amount,this,null,thisValue); thisValue.getPhysics().moveX(amount,this,false,true); return 0; } };
+        var moveY                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getPhysics().moveY(amount,this); return 0; } };
+        var moveToBack           = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.Players.length;++i) {otherTeam.Players[i].moveToBack(true);} } }
+        var moveToFront          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.Players.length;++i) {otherTeam.Players[i].moveToFront(true);} } }
+        var projectileMoved      = function(thisValue,otherTeam) { return function(frame,id,x,y) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyProjectileMoved(frame,id,x,y,this); otherTeam.Players[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
+        var projectileGone       = function(thisValue,otherTeam) { return function(frame,id)     { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyProjectileGone(frame,id); otherTeam.Players[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),false,id); } } }
+        var startAttack          = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].allowBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints,this); } } }
+        var endAttack            = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.Players.length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.Players[i].removeBlock(id,thisValue.getGame().getCurrentFrame(),false,undefined,undefined,undefined,this); } } }
+        var startAirAttack       = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].allowAirBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints); } } }
+        var endAirAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.Players.length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.Players[i].removeAirBlock(id,thisValue.getGame().getCurrentFrame(),false); } } }
+        var attack               = function(thisValue,otherTeam) { return function(hitDelayFactor, hitID, frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze) { for(var i = 0; i < otherTeam.Players.length;++i) { thisValue.getPhysics().tryAttack(hitDelayFactor, hitID,frame,points,flags,state,this,otherTeam.Players[i],damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze); } } }
+        var projectileAttack     = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.Players.length;++i) { thisValue.getPhysics().tryProjectileAttack(frame,projectile,this,otherTeam.Players[i]); } } }
+        var changeHealth         = function(thisValue)           { return function(amount) { thisValue.changeHealth(this.Team,amount); } }
+        var getHealth            = function(thisValue)           { return function() { return thisValue.getHealth(this.Team); } }
+        var changeEnergy         = function(thisValue)           { return function(amount) { thisValue.changeEnergy(this.Team,amount); } }
+        var getEnergy            = function(thisValue)           { return function() { return thisValue.getEnergy(this.Team); } }
+        var incCombo             = function(thisValue,team)      { return function() { return team.incCombo(); } }
+        var incComboRefCount     = function(thisValue,team)      { return function() { return team.incComboRefCount(); } }
+        var decComboRefCount     = function(thisValue,team)      { return function() { return team.decComboRefCount(); } }
+        var getCurrentComboCount = function(thisValue,team)      { return function() { return team.getCurrentCombo(); } }
+
+        var onStartAttackEnemies   = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyStartAttack(frame,this); } } }
+        var onContinueAttackEnemies= function(thisValue,otherTeam) { return function(frame,hitPoints) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyContinueAttack(frame,this,hitPoints); } } }
+        var onVulnerable           = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyVulerable(frame,this); } } }
+        var onEndAttackEnemies     = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyEndAttack(frame,this); } } }
 
         var otherTeam = null;
         var myTeam = null;
@@ -332,6 +337,12 @@ var CreateMatch = function(team1,team2,stage)
         player.setupInfo(team,dir);
         player.getHealthFn = getHealth(this);
         player.getEnergyFn = getEnergy(this);
+
+        player.onStartAttackEnemiesFn = onStartAttackEnemies(this,otherTeam);
+        player.onContinueAttackEnemiesFn = onContinueAttackEnemies(this,otherTeam);
+        player.onVulnerableFn = onVulnerable(this,otherTeam);
+        player.onEndAttackEnemiesFn = onEndAttackEnemies(this,otherTeam);
+
         player.onStartAttackFn = startAttack(this,otherTeam);
         player.onEndAttackFn = endAttack(this,otherTeam);
         player.onStartAirAttackFn = startAirAttack(this,otherTeam);
@@ -360,9 +371,9 @@ var CreateMatch = function(team1,team2,stage)
         this.TeamB.setPlayers(team2);
         this.initText();
         /*init team 1*/
-        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamA.Players.length; ++i)
         {
-            this.setupPlayer(this.TeamA.getPlayers()[i],CONSTANTS.TEAM1);
+            this.setupPlayer(this.TeamA.Players[i],CONSTANTS.TEAM1);
         }
         if(!!this.TeamA.getPlayer(0))
         {
@@ -371,9 +382,9 @@ var CreateMatch = function(team1,team2,stage)
         }
 
         /*init team 2*/
-        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamB.Players.length; ++i)
         {
-            this.setupPlayer(this.TeamB.getPlayers()[i],CONSTANTS.TEAM2);
+            this.setupPlayer(this.TeamB.Players[i],CONSTANTS.TEAM2);
         }
         if(!!this.TeamB.getPlayer(0))
         {
@@ -382,9 +393,9 @@ var CreateMatch = function(team1,team2,stage)
         }
 
         /*set the starting locations for each player*/
-        for(var i = 1, length = this.TeamA.getPlayers().length; i < length; ++i)
+        for(var i = 1, length = this.TeamA.Players.length; i < length; ++i)
             this.TeamA.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
-        for(var i = 1, length = this.TeamB.getPlayers().length; i < length; ++i)
+        for(var i = 1, length = this.TeamB.Players.length; i < length; ++i)
             this.TeamB.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
         this.Stage.init();
@@ -396,9 +407,9 @@ var CreateMatch = function(team1,team2,stage)
     {
         //if(this.getAllowInput())
         //{
-            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamA.Players.length; ++i)
                 this.TeamA.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
-            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamB.Players.length; ++i)
                 this.TeamB.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
         //}
     }
@@ -420,10 +431,10 @@ var CreateMatch = function(team1,team2,stage)
         {
             this.setBackgroundTransparent(player);
             this.setSuperMoveActive(true);
-            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamA.Players.length; ++i)
                 if(this.TeamA.getPlayer(i).Id != player.Id)
                     this.TeamA.getPlayer(i).onSuperMoveStarted();
-            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamB.Players.length; ++i)
                 if(this.TeamB.getPlayer(i).Id != player.Id)
                     this.TeamB.getPlayer(i).onSuperMoveStarted();
         }
@@ -433,10 +444,10 @@ var CreateMatch = function(team1,team2,stage)
         if(this.isSuperMoveActive())
         {
             this.setBackgroundTransparent();
-            for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamA.Players.length; ++i)
                 if(this.TeamA.getPlayer(i).Id != player.Id)
                     this.TeamA.getPlayer(i).onSuperMoveCompleted();
-            for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+            for(var i = 0; i < this.TeamB.Players.length; ++i)
                 if(this.TeamB.getPlayer(i).Id != player.Id)
                     this.TeamB.getPlayer(i).onSuperMoveCompleted();
             this.setSuperMoveActive(false);
@@ -444,16 +455,16 @@ var CreateMatch = function(team1,team2,stage)
     }
     Match.prototype.preFrameMove = function(frame)
     {
-        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamA.Players.length; ++i)
             this.TeamA.getPlayer(i).onPreFrameMove(frame);
-        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamB.Players.length; ++i)
             this.TeamB.getPlayer(i).onPreFrameMove(frame);
     }
     Match.prototype.renderComplete = function(frame)
     {
-        for(var i = 0; i < this.TeamA.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamA.Players.length; ++i)
             this.TeamA.getPlayer(i).onRenderComplete(frame);
-        for(var i = 0; i < this.TeamB.getPlayers().length; ++i)
+        for(var i = 0; i < this.TeamB.Players.length; ++i)
             this.TeamB.getPlayer(i).onRenderComplete(frame);
     }
 

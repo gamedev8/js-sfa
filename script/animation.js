@@ -54,16 +54,27 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
         {
             currentFrame.FlagsToSet.Player = (currentFrame.FlagsToSet.Player || MISC_FLAGS.NONE) | PLAYER_FLAGS.INVULNERABLE;
         }
-        /*ensure that isAttack_ is set properly*/
+        //ensure that isAttack_ is set properly
         if(hasFlag(currentFrame.FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
         {
             this.IsAttack = true;
         }
 
+        if(hasFlag(currentFrame.FlagsToSet.Combat,COMBAT_FLAGS.PENDING_ATTACK))
+        {
+            currentFrame.IsPendingAttack = true;
+        }
+
         if(!!this.IsAttack)
         {
+            if(hasFlag(currentFrame.FlagsToSend, ATTACK_FLAGS.LIGHT))
+                currentFrame.NbFramesToFreeze = 8;
+            else if(hasFlag(currentFrame.FlagsToSend, ATTACK_FLAGS.MEDIUM))
+                currentFrame.NbFramesToFreeze = 9;
+            else if(hasFlag(currentFrame.FlagsToSend, ATTACK_FLAGS.HARD))
+                currentFrame.NbFramesToFreeze = 10;
 
-            /*Moves that can be air blocked (jump attacks), can ALSO be blocked on the ground, but not in the crouch*/
+            //Moves that can be air blocked (jump attacks), can ALSO be blocked on the ground, but not in the crouch
             var flags = MISC_FLAGS.NONE;
             if(!!this.AllowAirBlock)
                 flags = COMBAT_FLAGS.CAN_BE_AIR_BLOCKED;

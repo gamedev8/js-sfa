@@ -197,6 +197,7 @@ Player.prototype.reset = function(ignoreDirection)
 {
     this.TeleportX = 0;
     this.TeleportFramesLeft = 0;
+    this.IgnoreHoldFrame = false;
 
     this.DizzyIndex = 0;
     this.DizzyValue = 0;
@@ -245,15 +246,24 @@ Player.prototype.reset = function(ignoreDirection)
     this.LastY = STAGE.FLOORY;
     this.LastFrameY = 0;
     this.ConstY = 0;
-    this.ClipBottom = 0;
-    this.ClipTop = 0;
-    this.ClipLeft = 0;
-    this.ClipRight = 0;
+
+    this.ClipMoveBottom = 0;
+    this.ClipMoveTop = 0;
+    this.ClipMoveFront = 0;
+    this.ClipMoveBack = 0;
+
+    this.ClipHitBottom = 0;
+    this.ClipHitTop = 0;
+    this.ClipHitFront = 0;
+    this.ClipHitBack = 0;
+
 
     this.LeftOffset = 0;
     this.RightOffset = 0;
     this.TopOffset = 0;
     this.BottomOffset = 0;
+    this.LeftAbsOffset = 0;
+    this.RightAbsOffset = 0;
 
     this.Fx = 0;
     this.Fy = 0;
@@ -552,10 +562,9 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
             this.Ai.frameMove(frame);
         this.checkForInterupt(frame);
         this.frameMove(frame,stageX,stageY);
-        if(!!this.CurrentFrame && hasFlag(this.CurrentFrame.FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
+        //if(!!this.CurrentFrame && hasFlag(this.CurrentFrame.FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
+        if(!!this.IsInAttackFrame)
             this.handleAttack(frame, this.CurrentFrame);
-        else
-            this.IsInAttackFrame = false;
         if(!!this.GrappledPlayer)
             this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)
@@ -608,8 +617,15 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
     if(!!this.isBeingGrappled())
         return;
 
-    if(!!this.FrameFreeze)
+    if(!!this.FrameFreeze && !this.IgnoreHoldFrame)
         this.holdFrame(frame);
+
+    if(!!this.ForceEndAnimation)
+    {
+        this.ForceEndAnimation = false;
+        this.tryChainAnimation(frame);
+        return;
+    }
 
     if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation)
     {

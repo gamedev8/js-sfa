@@ -168,7 +168,7 @@
 
 
     /*Test each player to see if the hit region intersects with them*/
-    Physics.prototype.tryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound)
+    Physics.prototype.tryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze)
     {
         if(!p2)
             return;
@@ -182,7 +182,7 @@
             return;
         if(!p2.isVisible() && !p2.isTeleporting())
             return;
-        /*need to reform the "invulernable" flags - there are too many*/
+        /*need to reform the "invulernable" flags - there are too many*/  
         if(p2.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !hasFlag(behaviorFlags,BEHAVIOR_FLAGS.THROW))
             return;
         /*frame can not hit more than once*/
@@ -213,7 +213,7 @@
         var p1Left = p1Rect.Left; //p1.getLeftX(true);
         var p1Right = p1Rect.Right; //p1.getRightX(true);
         var p1Top = p1Rect.Top; //p1.getBoxTop();
-        var p1Bottom = p1Rect.BottomNoOffset; //p1.getBoxBottom();
+        var p1Bottom = p1.getY(); //p1Rect.BottomNoOffset; //p1.getBoxBottom();
 
         var p2Left = p2Rect.Left; //p2.getLeftX(true);
         var p2Right = p2Rect.Right; //p2.getRightX(true);
@@ -235,7 +235,7 @@
                 if(((points[i].x == -1) && !!p2.isBeingGrappled()) || (x >= p2Left && x < p2Right && y >= p2Bottom && y < p2Top))
                 {
                     p1.setGiveHit(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
-                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,STAGE.MAX_STAGEX - x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
+                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,STAGE.MAX_STAGEX - x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze);
                     break;
                 }
             }
@@ -252,7 +252,7 @@
                 if(((points[i].x == -1) && !!p2.isBeingGrappled()) || ((x <= p2Right && x > p2Left && y >= p2Bottom && y < p2Top)))
                 {
                     p1.setGiveHit(attackFlags,hitDelayFactor,energyToAdd, behaviorFlags,p2);
-                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound);
+                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze);
                     break;
                 }
             }
@@ -262,6 +262,8 @@
     /*Handles projectiles hitting a player*/
     Physics.prototype.tryProjectileAttack = function(frame,projectile,p1,p2)
     {
+        if(!!projectile && !!projectile.IsDisintegrating)
+            return;
         if(!p2)
             return;
         if(p2.isGrappling())
@@ -310,7 +312,7 @@
                 if(p2.Direction > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,projectile.OverrideFlags,null,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,projectile.OverrideFlags,null,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -332,7 +334,7 @@
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,projectile.OverrideFlags,null,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,projectile.OverrideFlags,null,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -929,12 +931,31 @@
     }
 
     /*checks if players are within the given distance*/
-    Physics.prototype.isWithinDistanceX = function(p1,p2,distance)
+    Physics.prototype.isWithinDistanceX = function(p1,p2,distance,useFront)
     {
-        var x = p1.getMidX();
-        return (
-               (Math.abs(x - p2.getMidX()) < distance)
-            );
+        if(!useFront)
+        {
+            var x = p1.getMidX();
+            return (
+                   (Math.abs(x - p2.getMidX()) < distance)
+                );
+        }
+        else
+        {
+            var p1Rect = p1.getImgRect();
+            var p2Rect = p2.getImgRect();
+
+            if(p1Rect.Left < p2Rect.Left)
+            {
+                //on left side
+                return (p2Rect.Left - p1Rect.Right) < distance;
+            }
+            else
+            {
+                //on right side
+                return (p1Rect.Left - p2Rect.Right) < distance;
+            }
+        }
     }
 
     /*returns the distance between the 2 players*/

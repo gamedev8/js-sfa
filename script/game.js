@@ -453,6 +453,7 @@ var CreateGame = function()
         managed_.kill()
         managed_ = null;
         announcer_.release();
+        this.stop();
     }
 
     Game.prototype.addUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)

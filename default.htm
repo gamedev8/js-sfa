@@ -65,7 +65,7 @@
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div class="menu">
-        <input type="button" onclick="StartBattle()" value="2 vs 1" />
+        <input type="button" onclick="StartBattle()" value="go" />
     </div>
     <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
@@ -75,7 +75,7 @@
         <input type="button" onclick="debug_.p1SetFrameOffsets()" value="Set"/>
     </div>
     <script type="text/javascript">
-        var __debugMode = false;
+        var __debugMode = true;
         if(!__debugMode)
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "none";
@@ -115,6 +115,7 @@
     <script type="text/javascript" src="script/player.motion.js"></script>
     <script type="text/javascript" src="script/player.debug.js"></script>
     <script type="text/javascript" src="script/player-common.js"></script>
+    <script type="text/javascript" src="script/player.ai.js"></script>
     <!--<script type="text/javascript" src="script/player-ken.js"></script>
     <script type="text/javascript" src="script/player-ken-spritedata.js"></script>
     <script type="text/javascript" src="script/player-ken2-spritedata.js"></script>

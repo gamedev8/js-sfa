@@ -30,9 +30,9 @@ Player.prototype.getAbsBackX = function(useImageWidth)  { if(this.Direction > 0)
 
 Player.prototype.getBoxTop = function() { return this.Y + (this.getBoxHeight()); }
 Player.prototype.getConstOffsetTop = function() { return this.Height + game_.Match.Stage.getGroundY(); }
-Player.prototype.getOffsetBoxTop = function() { return this.Y + (this.getBoxHeight()) + this.ClipTop; }
+Player.prototype.getOffsetBoxTop = function() { return this.Y + (this.getBoxHeight()) - this.ClipMoveTop; }
 Player.prototype.getBoxBottom = function() { return this.Y; }
-Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.ClipBottom; }
+Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.ClipMoveBottom; }
 /*Player.prototype.getConstWidth = function() { return (!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.isAttack()) ? this.getBoxWidth() : this.Width; }*/
 Player.prototype.getConstHeight = function() { return this.Height; }
 Player.prototype.getConstWidth = function() { return this.Width; }
@@ -42,40 +42,61 @@ Player.prototype.getBoxWidth = function() { return this.SpriteWidth; }
 Player.prototype.getBoxHeight = function() { return this.SpriteHeight; }
 Player.prototype.getRect = function(useImageWidth)
 {
-    return {Left:this.getLeftX(useImageWidth),Right:this.getRightX(useImageWidth),Top:this.getOffsetBoxTop(),Bottom:this.getOffsetBoxBottom()};
+    return {
+        Left:this.getLeftX(useImageWidth) + (this.Direction > 0 ? this.ClipMoveFront : this.ClipMoveBack)
+        ,Right:this.getRightX(useImageWidth) - (this.Direction > 0 ? this.ClipMoveBack : this.ClipMoveFront)
+        ,Top:this.getOffsetBoxTop()
+        ,Bottom:this.getOffsetBoxBottom()
+    };
 }
 Player.prototype.getImgRect = function(useImageWidth)
 {
-    return {Left:this.LeftOffset,Right:this.RightOffset,Top:this.TopOffset,Bottom:this.BottomOffset,BottomNoOffset:this.BottomNoOffset};
+    return {
+        Left:this.LeftOffset
+        ,Right:this.RightOffset
+        ,Top:this.TopOffset
+        ,Bottom:this.BottomOffset
+        ,BottomNoOffset:this.BottomNoOffset
+        ,LeftOffset:this.LeftAbsOffset
+        ,RightOffset:this.RightAbsOffset
+    };
 }
 /*records the image coordinates so that they can be used intead of going to the DOM every time.*/
 Player.prototype.setImgRect = function()
 {
-    var bottom = parseInt(this.Element.style.bottom) || 0;
+    var imageOffsetY = (!!this.CurrentFrame ? this.CurrentFrame.ImageOffsetY : 0);
+    var imageOffsetX = (!!this.CurrentFrame ? this.CurrentFrame.ImageOffsetX : 0);
+
+    var bottom = (parseInt(this.Element.style.bottom) || 0) + imageOffsetY;
 
     this.SpriteHeight = parseInt(this.SpriteElement.style.height) || 0;
     this.SpriteWidth = parseInt(this.Element.style.width) || 0;
 
-    this.TopOffset = bottom + this.SpriteHeight - this.ClipTop;
-    this.BottomOffset = bottom + this.ClipBottom;
+    this.TopOffset = bottom + this.SpriteHeight - this.ClipHitTop;
+    this.BottomOffset = bottom + this.ClipHitBottom;
     this.BottomNoOffset = bottom;
 
     if(this.Direction > 0)
     {
-        var right = STAGE.MAX_STAGEX - parseInt(this.Element.style.right) || 0;
+        var right = STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) || 0);
 
-        this.LeftOffset = right - this.SpriteWidth;
-        this.RightOffset = right;
+        this.LeftOffset = right - this.SpriteWidth + this.ClipHitFront;
+        this.RightOffset = right - this.ClipHitBack;
+
+        this.LeftAbsOffset = this.LeftOffset;
+        this.RightAbsOffset = this.RightOffset + imageOffsetX;
     }
     else
     {
-        var left = parseInt(this.Element.style.left) || 0;
+        var left = (parseInt(this.Element.style.left) || 0);
 
-        this.LeftOffset = left;
-        this.RightOffset = left + this.SpriteWidth;
+        this.LeftOffset = left + this.ClipHitBack;
+        this.RightOffset = left + this.SpriteWidth - this.ClipHitFront;
+
+        this.LeftAbsOffset = this.LeftOffset + imageOffsetX;
+        this.RightAbsOffset = this.RightOffset;
     }
-    this.LeftOffset += this.ClipLeft;
-    this.RightOffset -= this.ClipRight;
+
 }
 /*
 Player.prototype.getRight = function() { return parseInt(this.Element.style.right || 0); }
@@ -88,8 +109,22 @@ Player.prototype.getLeft = function() { return this.X; }
 Player.prototype.getY = function() { return this.Y || 0; }
 Player.prototype.getX = function() { return this.X || 0; }
 
-Player.prototype.setRight = function(value) { this.Element.style.right = (value) + "px";}
-Player.prototype.setLeft = function(value) { this.Element.style.left = (value) + "px";}
+Player.prototype.setRight = function(value)
+{
+    if(value != this.LastRight)
+    {
+        this.Element.style.right = (value) + "px";
+        this.LastRight = value;
+    }
+}
+Player.prototype.setLeft = function(value)
+{
+    if(value != this.LastLeft)
+    {
+        this.Element.style.left = (value) + "px";
+        this.LastLeft = value;
+    }
+}
 
 Player.prototype.setY = function(value)
 {
@@ -128,6 +163,7 @@ Player.prototype.setImageX = function(value) {if(this.Direction > 0){this.Sprite
 Player.prototype.setImageY = function(value) { this.SpriteElement.style.bottom = value+"px"; }
 Player.prototype.isCrouching = function() { return this.Flags.Pose.has(POSE_FLAGS.CROUCHING); }
 Player.prototype.isOnGround = function() { return this.Y == game_.Match.Stage.getGroundY(); }
+Player.prototype.isMobile = function() { return this.Flags.Player.has(PLAYER_FLAGS.MOBILE); }
 Player.prototype.hasAirborneFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE_FB) }
 Player.prototype.hasAirborneComboFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1) || this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_2); }
 Player.prototype.isAirborne = function() { return this.hasAirborneComboFlag() || this.hasAirborneFlag() || this.Y > game_.Match.Stage.getGroundY(); }
@@ -246,7 +282,7 @@ Player.prototype.changeDirection = function(quick)
         }
         else
         {
-            var move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
+            var move = this.Moves[_c3("_",POSE_FLAGS.ANY),"_quick_turn"] || this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
             this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
         }
     }
@@ -266,12 +302,12 @@ Player.prototype.changeDirection = function(quick)
 Player.prototype.moveCircleToBottom = function()
 {
     this.moveCircle();
-    this.Circle.RenderY = this.Y + this.ClipBottom + this.Circle.OffsetY;
+    this.Circle.RenderY = this.Y + this.ClipMoveBottom + this.Circle.OffsetY;
 }
 Player.prototype.moveCircleToTop = function()
 {
     this.moveCircle();
-    this.Circle.RenderY = this.getBoxTop() - this.ClipTop - this.Circle.R*2 - this.Circle.OffsetY;
+    this.Circle.RenderY = this.getBoxTop() - this.ClipMoveTop - this.Circle.R*2 - this.Circle.OffsetY;
 }
 Player.prototype.moveCircle = function()
 {
@@ -282,7 +318,7 @@ Player.prototype.moveCircle = function()
         x = STAGE.MAX_STAGEX - this.getX();
     if(!!this.CurrentFrame)
     {
-        var r = this.getRect();
+        var r = this.getImgRect();
         this.Circle.R = (r.Right - r.Left) / 2;
         this.Circle.RSq = this.Circle.R * this.Circle.R;
     }
@@ -305,11 +341,19 @@ Player.prototype.moveY = function(amount,forced)
 }
 Player.prototype.offsetImageX = function(amount)
 {
-    this.setImageX(amount);
+    if(amount != this.LastImageOffsetX)
+    {
+        this.setImageX(amount);
+        this.LastImageOffsetX = amount;
+    }
 }
 Player.prototype.offsetImageY = function(amount)
 {
-    this.setImageY(amount);
+    if(amount != this.LastImageOffsetY)
+    {
+        this.setImageY(amount);
+        this.LastImageOffsetY = amount;
+    }
 }
 /*sets the target to which the player will teleport*/
 Player.prototype.setTeleportTarget = function(flag,nbFrames)
@@ -388,6 +432,10 @@ Player.prototype.getMustChangeDirection = function(recheck)
 {
     if(!this.MustChangeDirection || !!recheck)
     {
+        if((this.Direction == 1) && this.isRightCornered())
+            return false;
+        if((this.Direction == -1) && this.isLeftCornered())
+            return false;
         if((this.Direction == 1) && this.getPhysics().isAnyPlayerFromOtherTeamMoreLeft(this.getMidX(),this.Team) === false)
             return true;
         else if((this.Direction == -1) && this.getPhysics().isAnyPlayerFromOtherTeamMoreRight(this.getMidX(true),this.Team) === false)
@@ -577,7 +625,7 @@ Player.prototype.startSlide = function(frame,amount,direction,fx,hideSlideDirt,f
 /*Handles the player sliding*/
 Player.prototype.slide = function(frame)
 {
-    if(!!this.FrameFreeze && !this.isBlocking())
+    if(!!this.FrameFreeze)
         return;
     if(this.T >= CONSTANTS.HALF_PI || !this.IsSliding || !!this.isBeingGrappled())
     {
