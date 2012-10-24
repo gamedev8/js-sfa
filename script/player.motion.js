@@ -57,8 +57,8 @@ Player.prototype.getImgRect = function(useImageWidth)
         ,Top:this.TopOffset
         ,Bottom:this.BottomOffset
         ,BottomNoOffset:this.BottomNoOffset
-        ,LeftOffset:this.LeftAbsOffset
-        ,RightOffset:this.RightAbsOffset
+        ,LeftNoOffset:this.LeftNoOffset
+        ,RightNoOffset:this.RightNoOffset
     };
 }
 /*records the image coordinates so that they can be used intead of going to the DOM every time.*/
@@ -81,20 +81,20 @@ Player.prototype.setImgRect = function()
         var right = STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) || 0);
 
         this.LeftOffset = right - this.SpriteWidth + this.ClipHitFront;
-        this.RightOffset = right - this.ClipHitBack;
+        this.RightOffset = right - this.ClipHitBack - imageOffsetX;
 
-        this.LeftAbsOffset = this.LeftOffset;
-        this.RightAbsOffset = this.RightOffset + imageOffsetX;
+        this.LeftNoOffset = this.LeftOffset;
+        this.RightNoOffset = this.RightOffset + imageOffsetX;
     }
     else
     {
         var left = (parseInt(this.Element.style.left) || 0);
 
-        this.LeftOffset = left + this.ClipHitBack;
+        this.LeftOffset = left + this.ClipHitBack + imageOffsetX;
         this.RightOffset = left + this.SpriteWidth - this.ClipHitFront;
 
-        this.LeftAbsOffset = this.LeftOffset + imageOffsetX;
-        this.RightAbsOffset = this.RightOffset;
+        this.LeftNoOffset = this.LeftOffset - imageOffsetX;
+        this.RightNoOffset = this.RightOffset;
     }
 
 }

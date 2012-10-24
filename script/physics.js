@@ -210,15 +210,15 @@
         var p1Rect = p1.getImgRect();
         var p2Rect = p2.getImgRect();
 
-        var p1Left = p1Rect.Left; //p1.getLeftX(true);
-        var p1Right = p1Rect.Right; //p1.getRightX(true);
-        var p1Top = p1Rect.Top; //p1.getBoxTop();
-        var p1Bottom = p1.getY(); //p1Rect.BottomNoOffset; //p1.getBoxBottom();
+        var p1Left = p1Rect.LeftNoOffset;
+        var p1Right = p1Rect.RightNoOffset;
+        var p1Top = p1Rect.Top;
+        var p1Bottom = p1.getY(); //p1Rect.BottomNoOffset;
 
-        var p2Left = p2Rect.Left; //p2.getLeftX(true);
-        var p2Right = p2Rect.Right; //p2.getRightX(true);
-        var p2Top = p2Rect.Top; //p2.getOffsetBoxTop();
-        var p2Bottom = p2Rect.Bottom; //p2.getOffsetBoxBottom();
+        var p2Left = p2Rect.Left;
+        var p2Right = p2Rect.Right;
+        var p2Top = p2Rect.Top;
+        var p2Bottom = p2Rect.Bottom;
 
         var fx = 1;
         var fy = 1;

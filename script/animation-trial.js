@@ -107,19 +107,15 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
                 var rect = this.Player.getImgRect();
                 bottom = rect.BottomNoOffset;
                 if(right == "")
-                    left = rect.LeftOffset;
+                    left = rect.Left;
                 else
-                    right = rect.RightOffset;
+                    right = STAGE.MAX_STAGEX - rect.Right;
             }
 
             if(right == "")
-            {
                 left = left + "px";
-            }
             else
-            {
                 right = right + "px";
-            }
 
             for(var i = 0, length = this.Trail.length; i < length; ++i)
             {

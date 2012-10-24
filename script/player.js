@@ -262,8 +262,8 @@ Player.prototype.reset = function(ignoreDirection)
     this.RightOffset = 0;
     this.TopOffset = 0;
     this.BottomOffset = 0;
-    this.LeftAbsOffset = 0;
-    this.RightAbsOffset = 0;
+    this.LeftNoOffset = 0;
+    this.RightNoOffset = 0;
 
     this.Fx = 0;
     this.Fy = 0;

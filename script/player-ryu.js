@@ -1040,7 +1040,7 @@ Player.prototype.createRyuSuperMoves = function(player)
             s_fireball_trail.addTrailFrame(player,folder + "/x-fb-3-shadow-" + trailIndex + ".png",1);
             s_fireball_trail.addTrailFrame(player,folder + "/x-fb-3-shadow-" + trailIndex + ".png",CONSTANTS.FRAME_MAX);
 
-            trail.add(s_fireball_trail,player.Element,player.Folder);
+            trail.add(s_fireball_trail,player.Element,player.Folder,player);
         }
         
         s_fireball.Trail = trail;

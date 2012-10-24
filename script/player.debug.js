@@ -62,9 +62,18 @@ Player.prototype.renderDebugInfo = function()
     var rect = this.getImgRect();
     this.Rect.style.bottom = rect.Bottom + "px";
 
-    this.Rect.style.left = rect.LeftOffset + "px";
+    if(this.Direction == -1)
+    {
+        this.Rect.style.left = rect.Left + "px";
+        this.Rect.style.right = "";
+    }
+    else
+    {
+        this.Rect.style.right = (STAGE.MAX_STAGEX - rect.Right) + "px";
+        this.Rect.style.left = "";
+    }
 
-    this.Rect.style.width = (rect.RightOffset - rect.LeftOffset) + "px";
+    this.Rect.style.width = (rect.Right - rect.Left) + "px";
     this.Rect.style.height = (rect.Top - rect.Bottom) + "px";
 
 }

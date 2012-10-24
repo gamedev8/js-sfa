@@ -1036,7 +1036,7 @@ Player.prototype.createKenSuperMoves = function(player)
             s_uppercut_trail.addTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-4.png",6);
             s_uppercut_trail.addTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-5.png",CONSTANTS.MAX_FRAME);
 
-            trail.add(s_uppercut_trail,player.Element,player.Folder);
+            trail.add(s_uppercut_trail,player.Element,player.Folder,player);
         }
 
 
