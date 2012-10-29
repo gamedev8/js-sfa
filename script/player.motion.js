@@ -318,7 +318,7 @@ Player.prototype.moveCircle = function()
         x = STAGE.MAX_STAGEX - this.getX();
     if(!!this.CurrentFrame)
     {
-        var r = this.getImgRect();
+        var r = this.getRect();
         this.Circle.R = (r.Right - r.Left) / 2;
         this.Circle.RSq = this.Circle.R * this.Circle.R;
     }
@@ -544,7 +544,10 @@ Player.prototype.convertX = function(x)
     else
         return STAGE.MAX_STAGEX - this.getBoxWidth() - x;
 }
-
+Player.prototype.pushOtherPlayers = function()
+{
+    this.getPhysics().moveOtherPlayers(this);
+}
 Player.prototype.convertY = function(y)
 {
     return y;

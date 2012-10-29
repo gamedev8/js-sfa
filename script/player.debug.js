@@ -59,7 +59,7 @@ Player.prototype.renderDebugInfo = function()
         }
     }
 
-    var rect = this.getImgRect();
+    var rect = this.getRect();
     this.Rect.style.bottom = rect.Bottom + "px";
 
     if(this.Direction == -1)

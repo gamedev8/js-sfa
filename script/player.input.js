@@ -1,7 +1,13 @@
-/*Some moves require the key to be held, this function can be used to check that.*/
+//returns true if the passed in keys are pressed
 Player.prototype.isKeyDown = function(key)
 {
     return hasFlag(this.KeyState,key);
+}
+
+//returns true if the passed in key state match the current key state
+Player.prototype.isKeyState = function(key)
+{
+    return this.KeyState == key;
 }
 
 

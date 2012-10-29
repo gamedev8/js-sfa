@@ -198,18 +198,22 @@ Player.prototype.findAnimation = function(value,frame)
     var val = 0;
     var currentEnergy = this.getEnergyFn();
 
-    //check for a chain move
-    if(!!this.CurrentAnimation.Animation.ChainOnKeyAnimation)
+    //check for block chaining
+    if(!!this.isBlockingHigh() && keys.length == 1 && (keys[0].NbFrames > 2) && (keys[0].Bit == (BUTTONS.CROUCH|BUTTONS.BACK)))
     {
-        if(!this.FreezeFrame 
-            && keys.length == 1 
-            && keys[0].Bit == this.CurrentAnimation.Animation.ChainOnKeyKey 
-            && this.CurrentFrame.FrameOffset >= this.CurrentAnimation.Animation.ChainOnKeyMinOffset)
-        {
-            this.chainToAnimation(frame, this.CurrentAnimation.Animation.ChainOnKeyAnimation,this.CurrentAnimation.Animation.ChainOnKeyAnimationFrame);
-            return -1;
-        }
+        //this.chainToAnimation(frame, this.CurrentAnimation.Animation.ChainOnKeyAnimation,this.CurrentAnimation.Animation.ChainOnKeyAnimationFrame);
+        this.chainToAnimation(frame, this.Moves["_160_10"],2);
+        return -1;
     }
+
+    //check for block chaining
+    else if(!!this.isBlockingLow() && keys.length == 1 && (keys[0].NbFrames > 2) && (keys[0].Bit == (BUTTONS.BACK)) && !this.isKeyDown(BUTTONS.CROUCH))
+    {
+        //this.chainToAnimation(frame, this.CurrentAnimation.Animation.ChainOnKeyAnimation,this.CurrentAnimation.Animation.ChainOnKeyAnimationFrame);
+        this.chainToAnimation(frame, this.Moves["_198_2"],2);
+        return -1;
+    }
+
 
     for(var i in this.Moves)
     {
@@ -510,6 +514,10 @@ Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
                 this.changeDirection(true);
             else
                 this.changeDirection();
+        }
+        else
+        {
+            this.goToStance(frame);
         }
     }
     else if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.ChainAnimation)

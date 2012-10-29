@@ -112,7 +112,7 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
                     right = STAGE.MAX_STAGEX - rect.Right;
             }
 
-            if(right == "")
+            if(right === "")
                 left = left + "px";
             else
                 right = right + "px";

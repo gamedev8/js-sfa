@@ -546,7 +546,7 @@
 
             player.moveCircleToBottom();
             var match = GetMatch_();
-            var myRect = !!player.IsInAttackFrame ? player.getImgRect() : player.getRect();
+            var myRect = player.getRect(); //!!player.IsInAttackFrame ? player.getImgRect() : player.getRect();
             var stageFixX = 0;
 
             if(amount > 0) /*moving right*/
