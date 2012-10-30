@@ -6,7 +6,6 @@ Player.prototype.loadAssets = function()
 
     //stuffLoader_.queue("script/img/" + this.Folder.toLowerCase() + ".png.js",RESOURCE_TYPES.SCRIPT);
 
-    
     stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
     stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
     stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);

@@ -583,7 +583,7 @@ var CreateMatch = function(team1,team2,stage)
 
     Match.prototype.loadAssets = function()
     {
-        stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
+        //stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
     }
 
     /**********************************************************************************/
