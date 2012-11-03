@@ -502,7 +502,6 @@ var CreateCharSelect = function(user1,user2)
         this.Element = null;
         this.PlayerSelectImg = null;
         this.Music = "audio/misc/player-select.zzz";
-        this.Sounds = [];
         this.LastPicked = "";
         this.loadAssets();
     }

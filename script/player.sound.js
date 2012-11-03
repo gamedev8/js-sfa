@@ -78,6 +78,5 @@ Player.prototype.queueSuperMoveChargeSound = function()
 /**/
 Player.prototype.queueSound = function(value,volume)
 {
-    //this.Sounds[this.Sounds.length] = {Value:value, Volume:volume||1};
     soundManager_.queueSound(value,volume);
 }

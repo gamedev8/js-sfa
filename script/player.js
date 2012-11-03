@@ -273,7 +273,6 @@ Player.prototype.reset = function(ignoreDirection)
     this.JumpVelocityX = 0;
     this.JumpVelocityY = 0;
     this.ZOrder = null;
-    this.Sounds = [];
     /**/
     this.T = 0;
     this.FrameFreeze = 0;
@@ -537,13 +536,6 @@ Player.prototype.onRenderComplete = function(frame)
 {
     this.LastFrameY = this.ConstY;
     this.ConstY = this.Y;
-}
-
-
-Player.prototype.playSounds = function()
-{
-    while(this.Sounds.length > 0)
-        soundManager_.play(this.Sounds.splice(0,1)[0]);
 }
 
 

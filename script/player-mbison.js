@@ -295,15 +295,15 @@ Player.prototype.createMBison = function(user)
 
     var blockRelease = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_BLOCK,"block",0,["block_relase"],-2,false);
     blockRelease.Flags = ({Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MOVE_TO_BACK});
-    blockRelease.addFrame(player,0,"",folder+"/block-1.png",2,{Player:PLAYER_FLAGS.BLOCKING},MISC_FLAGS.NONE,0,0,0,0,null,-74,-23,0,0,0,0,0,0).clipMove({Front:80});
-    blockRelease.addFrame(player,0,"",folder+"/block-0.png",2,{Player:PLAYER_FLAGS.BLOCKING},MISC_FLAGS.NONE,0,0,0,0,null,-34,-23,0,0,0,0,0,0).clipMove({Front:80});
+    blockRelease.addFrame(player,0,"",folder+"/block-1.png",2,{Player:PLAYER_FLAGS.BLOCKING},MISC_FLAGS.NONE,0,0,0,0,null,-74,-23,0,0,0,0,0,0).clip({Front:50});
+    blockRelease.addFrame(player,0,"",folder+"/block-0.png",2,{Player:PLAYER_FLAGS.BLOCKING},MISC_FLAGS.NONE,0,0,0,0,null,-34,-23,0,0,0,0,0,0).clip({Front:50});
     /*The POSE_FLAGS.ALLOW_BLOCK is checked seperately,it absolutely must be there,or else the move will not be found!
     Only one of the other flags need to match*/
     var block = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_BLOCK,"block",0,[BUTTONS.BACK],-2,false);
     block.Flags = ({Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MOVE_TO_BACK});
-    block.addFrame(player,0,"",folder+"/block-0.png",1,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.IGNORE_HOLD_FRAME},MISC_FLAGS.NONE,0,0,0,0,null,-34,-23).clipMove({Front:80});
-    block.addFrame(player,0,"",folder+"/block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MUST_HOLD_KEY},MISC_FLAGS.NONE,0,0,0,0,null,-74,-23).clipMove({Front:80});
-    block.addFrame(player,0,"",folder+"/block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.HOLD_FRAME},MISC_FLAGS.NONE,0,0,0,0,null,-74,-23).clipMove({Front:80});
+    block.addFrame(player,0,"",folder+"/block-0.png",1,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.IGNORE_HOLD_FRAME},MISC_FLAGS.NONE,0,0,0,0,null,-34,-23).clip({Front:50});
+    block.addFrame(player,0,"",folder+"/block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MUST_HOLD_KEY},MISC_FLAGS.NONE,0,0,0,0,null,-74,-23).clip({Front:50});
+    block.addFrame(player,0,"",folder+"/block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.HOLD_FRAME},MISC_FLAGS.NONE,0,0,0,0,null,-74,-23).clip({Front:50});
     block.chain(blockRelease);
     blockRelease.allowInterupt(block,1,{Pose: POSE_FLAGS.ALLOW_BLOCK});
 
@@ -324,15 +324,15 @@ Player.prototype.createMBison = function(user)
     var f_walk = player.addAnimation(POSE_FLAGS.STANDING,"f-walk",0,[BUTTONS.FORWARD],90,false);
     f_walk.AdjustShadowPosition = (false);
     f_walk.Flags = ({Player:PLAYER_FLAGS.LOOP_IF_KEYDOWN | PLAYER_FLAGS.HOLD_ZINDEX,Pose:POSE_FLAGS.WALKING_FORWARD});
-    f_walk.addRepeatingFrame(player,50,"168",folder + "/f_walk-0.png",3,{Player:PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE,walkSpeed,0,0,0,0,0,0,0,0,0,0,0);
-    f_walk.addRepeatingFrame(player,50,"168",folder + "/f_walk-1.png",3,{Player:PLAYER_FLAGS.MUST_HOLD_KEY},MISC_FLAGS.NONE,walkSpeed,0,0,0,-14,0,0,0,0,0,0,0);
+    f_walk.addRepeatingFrame(player,50,"168",folder + "/f_walk-0.png",3,{Player:PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE,walkSpeed,0,0,0,0,0,0,0,0,0,0,0).clipMove({Top:80});
+    f_walk.addRepeatingFrame(player,50,"168",folder + "/f_walk-1.png",3,{Player:PLAYER_FLAGS.MUST_HOLD_KEY},MISC_FLAGS.NONE,walkSpeed,0,0,0,-14,0,0,0,0,0,0,0).clipMove({Top:80});
 
     var backpeddleSpeed = 5;
     var b_walk = player.addAnimation(POSE_FLAGS.STANDING,"b-walk",0,[BUTTONS.BACK],80,false);
     b_walk.AdjustShadowPosition = (false);
     b_walk.Flags = ({Player:PLAYER_FLAGS.LOOP_IF_KEYDOWN | PLAYER_FLAGS.HOLD_ZINDEX,Pose:POSE_FLAGS.WALKING_BACKWARD});
-    b_walk.addRepeatingFrame(player,30,"168",folder + "/b_walk-0.png",3,{Player:PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE,-backpeddleSpeed,0,0,0,0,0,0,0,0,0,0,0);
-    b_walk.addRepeatingFrame(player,30,"168",folder + "/b_walk-1.png",3,{Player:PLAYER_FLAGS.MUST_HOLD_KEY},MISC_FLAGS.NONE,-backpeddleSpeed,0,0,0,0,0,0,0,0,0,0,0);
+    b_walk.addRepeatingFrame(player,30,"168",folder + "/b_walk-0.png",3,{Player:PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE,-backpeddleSpeed,0,0,0,0,0,0,0,0,0,0,0).clipMove({Top:80});
+    b_walk.addRepeatingFrame(player,30,"168",folder + "/b_walk-1.png",3,{Player:PLAYER_FLAGS.MUST_HOLD_KEY},MISC_FLAGS.NONE,-backpeddleSpeed,0,0,0,0,0,0,0,0,0,0,0).clipMove({Top:80});
 
     //////////////////////////////
     //////////////////////////////

@@ -994,7 +994,6 @@ Player.prototype.render = function(frame,stageDiffX,stageDiffY)
 
         this.renderShadow();
         this.renderTrail(frame,stageDiffX,stageDiffY);
-        this.playSounds();
 
         if(!!__debugMode)
             this.renderDebugInfo();

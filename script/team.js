@@ -123,7 +123,15 @@ var CreateTeam = function(num)
         else if(nbHits == 11) return "FANTASTIC !!";
         else if(nbHits == 12) return "MARVELOUS !";
         else if(nbHits == 13) return "MARVELOUS !!";
-        else return "MARVELOUS !!!";
+        else if(nbHits == 14) return "MARVELOUS !!!";
+        //lets add some more
+        else if(nbHits == 15) return "AWESOME !!";
+        else if(nbHits == 16) return "AWESOME !!!";
+        else if(nbHits == 17) return "VERY AWESOME!!";
+        else if(nbHits == 18) return "VERY AWESOME !!!";
+        else if(nbHits == 19) return "OUTSTANDING !!";
+        else if(nbHits == 20) return "OUTSTANDING !!!";
+        else return "DECENT !!!";
     }
 
 

@@ -4,10 +4,11 @@ var CreateSoundManager = function()
     /*******************************************************/
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
-   var items_ = {};
-   var sounds_ = [];
-   var extension_ = ".ogg";
-   var id_ = 0;
+    var items_ = {};
+    var sounds_ = [];
+    var extension_ = ".ogg";
+    var id_ = 0;
+    var sfxManager_ = CreateWebAudioManager();
 
     var GetPath_ = function(path)
     {
@@ -39,6 +40,13 @@ var CreateSoundManager = function()
     SoundManager.prototype.loadBase64 = function(path,nbChannels,defaultVolume,base64Data,loop)
     {
         if(!!__debugMode) return;
+
+        //send all non looping audio to WebAudio
+        if(!!sfxManager_ && !loop)
+        {
+            return sfxManager_.loadBase64(path,nbChannels,defaultVolume,base64Data);
+        }
+
         if(!items_[path])
         {
             nbChannels = nbChannels || 1;
@@ -203,8 +211,8 @@ var CreateSoundManager = function()
                 el.currentTime = 0;
 
             //el.loop = !!loops;
+            //el.volume = obj.Volume;
 
-            el.volume = obj.Volume;
             el.play();
 
             if(!!el.error)
@@ -214,6 +222,10 @@ var CreateSoundManager = function()
                 items_[path] = null;
                 return;
             }
+        }
+        else if(!!sfxManager_)
+        {
+            sfxManager_.play(obj.Value);
         }
     }
 
