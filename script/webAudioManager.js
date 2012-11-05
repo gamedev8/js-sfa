@@ -82,11 +82,13 @@ var CreateWebAudioManager = function()
         if(!!items_[path])
         {
             var buffer = items_[path].Elements[0];
-            var source = context_.createBufferSource();
-
-            source.buffer = buffer;
-            source.connect(context_.destination);
-            source.noteOn(0);
+            if(!!buffer)
+            {
+                var source = context_.createBufferSource();
+                source.buffer = buffer;
+                source.connect(context_.destination);
+                source.noteOn(0);
+            }
         }
     }
 

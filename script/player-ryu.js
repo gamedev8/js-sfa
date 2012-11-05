@@ -69,7 +69,7 @@ Player.prototype.createRyu = function(user)
 
     var hitReact_cLN = player.addAnimation(POSE_FLAGS.CROUCHING,"hr crouch light",0,["hr_cLN"],0,false);
     hitReact_cLN.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
-    hitReact_cLN.addFrame(player,0,"",folder + "/x-hit-cln-0.png",28,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
+    hitReact_cLN.addFrame(player,0,"",folder + "/x-hit-cln-0.png",8,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
     hitReact_cLN.chain(crouch,2);
 
     var hitReact_cMN = player.addAnimation(POSE_FLAGS.CROUCHING,"hr crouch medium",0,["hr_cMN"],0,false);

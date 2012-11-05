@@ -587,7 +587,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     var move = null;
     var slideAmount = 0;
     var hitDelayFactor_ = 1;
-    var isSpecial = attackFlags && ATTACK_FLAGS.SPECIAL || !!isProjectile;
+    var isSpecial = hasFlag(attackFlags, ATTACK_FLAGS.SPECIAL) || !!isProjectile;
 
     if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_START))
     {
