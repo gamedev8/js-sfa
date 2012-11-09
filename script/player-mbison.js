@@ -24,23 +24,61 @@ Player.prototype.createMBison = function(user)
     jump_land.addFrameWithSound(player,1,"audio/misc/jump-land.zzz",0,"",folder + "/r-crouch-0.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-38,-18,0,0,0,0,0,0);
     jump_land.addFrame(player,0,"",folder + "/r-stance-1.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,-26,-15,0,0,0,0,0,0);
 
-    var win1 = player.addAnimation(MISC_FLAGS.NONE,"win 1",0,["win1"],0,false);
-    win1.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    win1.addFrame(player,0,"",folder + "/x-win-1-0.png",4);
-    win1.addFrame(player,0,"",folder + "/x-win-1-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-96);
-    win1.addFrame(player,0,"",folder + "/x-win-1-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-110);
-    win1.chain(win1,1);
+    /*if this is not added,then only the first win animation will ever be used*/
+    player.WinAnimationNames = ["win 1","win 2","win 3"];
 
     var win2 = player.addAnimation(MISC_FLAGS.NONE,"win 2",0,["win2"],0,false);
     win2.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    win2.addFrame(player,0,"",folder + "/x-win-0-0.png",5);
-    win2.addFrame(player,0,"",folder + "/x-win-0-1.png",5);
-    win2.addFrame(player,0,"",folder + "/x-win-0-2.png",5);
-    win2.addFrame(player,0,"",folder + "/x-win-0-3.png",5);
-    win2.addFrame(player,0,"",folder + "/x-win-0-4.png",5);
-    win2.addFrame(player,0,"",folder + "/x-win-0-5.png",5);
-    win2.addFrame(player,0,"",folder + "/x-win-0-6.png",CONSTANTS.MAX_FRAME);
-    win2.chain(win2,6);
+    win2.addFrameWithSound(player, 1, "audio/mbison/laugh-0.zzz",0,"",folder + "/x-win-1-0.png",4);
+    win2.addFrame(player,0,"",folder + "/x-win-1-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-96);
+    win2.addFrame(player,0,"",folder + "/x-win-1-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-110);
+    win2.chain(win2,1);
+
+    var win1 = player.addAnimation(MISC_FLAGS.NONE,"win 1",0,["win1"],0,false);
+    win1.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
+    win1.addFrame(player,0,"",folder + "/x-win-0-0.png",5);
+    win1.addFrame(player,0,"",folder + "/x-win-0-1.png",5);
+    win1.addFrame(player,0,"",folder + "/x-win-0-2.png",5);
+    win1.addFrame(player,0,"",folder + "/x-win-0-3.png",5);
+    win1.addFrame(player,0,"",folder + "/x-win-0-4.png",5);
+    win1.addFrame(player,0,"",folder + "/x-win-0-5.png",5);
+    win1.addFrame(player,0,"",folder + "/x-win-0-6.png",CONSTANTS.MAX_FRAME);
+    win1.chain(win1,6);
+
+    var win3 = player.addAnimation(MISC_FLAGS.NONE,"win 3",0,["win3"],0,false);
+    win3.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
+    win3.KeepAirborneFunctions = true;
+    win3.AirborneStartDeltaY = 300;
+    win3.Vy = 1;
+    win3.Vx = 0;
+    win3.NbFramesAirborneAdvance = nb;
+    win3.VyFnArgs = {};
+    win3.vyFn = (function(args)
+    {
+        var t = 0;
+        var initialY = 50;
+        return function(dy)
+        {
+            t += Math.PI*0.04;
+            var retVal = (3*Math.sin(t)) + initialY;
+
+            initialY = 0;
+            return retVal;
+        }
+    });
+
+    win3.addFrame(player, 0, "", folder + "/teleport-0.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-1.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-2.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-3.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-4.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-4.png", 20, {Player:PLAYER_FLAGS.INVISIBLE}, MISC_FLAGS.NONE, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+
+    win3.addFrameWithSound(player, 1, "audio/mbison/laugh-1.zzz",0,"",folder + "/x-win-2-0.png",1,{Pose: POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
+    win3.addFrame(player,0,"",folder + "/x-win-2-0.png",1,{Pose: POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
+    win3.addFrame(player,0,"",folder + "/x-win-2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
+    win3.addFrame(player,0,"",folder + "/x-win-2-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-82,0);
+    win3.chain(win3,7);
 
     var crouch = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD,"crouch",0,[BUTTONS.CROUCH],99,false);
     crouch.Flags = ({Player:PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION | PLAYER_FLAGS.HOLD_ZINDEX,Pose:POSE_FLAGS.CROUCHING});
@@ -499,7 +537,7 @@ Player.prototype.createMBison = function(user)
     p2.addFrame(player,0,"",folder + "/p2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
     p2.addFrame(player,0,"",folder + "/p2-3.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
     p2.addFrame(player,0,"",folder + "/p2-4.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,-22,-11,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 220,y: 193 },{ state: HIT_FLAGS.FAR,x: 320,y: 193}],ATTACK_FLAGS.MEDIUM,1,1,15);
-    p2.addFrame(player,0,"",folder + "/p2-5.png",3,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,-22,-11,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 150,y: 220 },{ state: HIT_FLAGS.FAR,x: 135,y: 270}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    p2.addFrame(player,0,"",folder + "/p2-5.png",3,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MP },MISC_FLAGS.NONE,0,0,0,10,null,-22,-11,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 220,y: 193 },{ state: HIT_FLAGS.FAR,x: 320,y: 193}],ATTACK_FLAGS.MEDIUM,1,1,15);
     p2.endBlock();
     p2.addFrame(player,0,"",folder + "/p1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,1,-11);
     p2.addFrame(player,0,"",folder + "/turn-2.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);

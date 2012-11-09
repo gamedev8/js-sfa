@@ -303,7 +303,7 @@ Player.prototype.goToStance = function(frame)
     {
         if((this.WinningFrame != CONSTANTS.NO_FRAME) && frame > (this.WinningFrame + CONSTANTS.WIN_ANIMATION_DELAY))
         {
-            this.forceWin(frame);
+            this.forceWinAnimation(frame);
             return;
         }
         this.Flags.Player.add(PLAYER_FLAGS.MOBILE);
@@ -541,7 +541,7 @@ Player.prototype.chainToAnimation = function(frame,move,frameOffset,stageX,stage
     var attackDirection = this.CurrentAnimation.AttackDirection;
 
     var tmp = {Animation:move,StartFrame:frame - newFrame.FrameOffset,Direction:this.Direction,AttackDirection:attackDirection};
-    this.setCurrentAnimation(tmp);
+    this.setCurrentAnimation(tmp,true);
     this.setCurrentFrame(newFrame,frame,stageX,stageY);
 }
 
@@ -571,7 +571,7 @@ Player.prototype.clearUnclearedFlags = function()
 }
 
 /*Sets the current move*/
-Player.prototype.setCurrentAnimation = function(newAnimation)
+Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
 {
     ++this.MoveCount;
     this.NbHits = 0;
@@ -696,7 +696,8 @@ Player.prototype.setCurrentAnimation = function(newAnimation)
         if(!!newAnimation.Animation.Trail)
             this.CurrentAnimation.Animation.Trail.enable(newAnimation.StartFrame,this.Element,this.Direction);
 
-        this.showFirstAnimationFrame();
+        if(!isChaining)
+            this.showFirstAnimationFrame();
 
         //if this move is an attack, then raise the event
         if(!!this.CurrentAnimation.Animation.BaseAnimation.IsAttack)
@@ -818,6 +819,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             this.Element.style.display = "none";
             this.ShadowContainer.style.display = "none";
         }
+
 
         if(hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.TELEPORT_BEHIND))
             this.setTeleportTarget(COMBAT_FLAGS.TELEPORT_BEHIND,newFrame.Frames);

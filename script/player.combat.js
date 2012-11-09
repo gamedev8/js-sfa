@@ -806,7 +806,7 @@ Player.prototype.justWon = function(frame)
     this.ForceImmobile = true;
     this.WinningFrame = frame;
 }
-Player.prototype.forceWin = function(frame)
+Player.prototype.forceWinAnimation = function(frame)
 {
     var name = this.WinAnimationNames[Math.ceil(Math.random() * this.WinAnimationNames.length) - 1];
     if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
