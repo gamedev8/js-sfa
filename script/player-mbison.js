@@ -412,6 +412,12 @@ Player.prototype.createMBison = function(user)
     cblock.addFrame(player,0,"",folder+"/c-block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.HOLD_FRAME},MISC_FLAGS.NONE,0,0,0,0,null,-82,-19,0,0,0,0,0,0);
     cblock.chain(cblockRelease);
 
+    var ablock = player.addAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB|POSE_FLAGS.ALLOW_AIR_BLOCK,"air block",0,[BUTTONS.BACK],-1,false);
+    ablock.Flags = ({Player:PLAYER_FLAGS.BLOCKING});
+    ablock.addFrame(player,0,"",folder + "/ablock-0.png",1,{Player:PLAYER_FLAGS.BLOCKING});
+    ablock.addFrame(player,0,"",folder + "/ablock-0.png",1,{Player:PLAYER_FLAGS.BLOCKING});
+    ablock.chain(jump_land);
+
     var walkSpeed = 6;
     var f_walk = player.addAnimation(POSE_FLAGS.STANDING,"f-walk",0,[BUTTONS.FORWARD],90,false);
     f_walk.AdjustShadowPosition = (false);
