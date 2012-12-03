@@ -55,6 +55,30 @@ Player.prototype.addDizzyAnimation = function(centeredOffset,topOffset)
     };
     return this.OtherAnimations.Dizzy[this.OtherAnimations.Dizzy.length-1].Animation;
 }
+/*helper function - adds the blue fire animation*/
+Player.prototype.addBlueFireAnimation = function(centeredOffset,topOffset)
+{
+    this.OtherAnimations.BlueFire =
+    {
+        Direction:this.Direction
+        ,StartFrame:0
+        ,Element:this.FireElement
+        ,Animation:CreateGenericAnimation("blue-fire",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
+    };
+    return this.OtherAnimations.BlueFire.Animation;
+}
+/*helper function - adds the red fire animation*/
+Player.prototype.addRedFireAnimation = function(centeredOffset,topOffset)
+{
+    this.OtherAnimations.RedFire =
+    {
+        Direction:this.Direction
+        ,StartFrame:0
+        ,Element:this.FireElement
+        ,Animation:CreateGenericAnimation("red-fire",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
+    };
+    return this.OtherAnimations.RedFire.Animation;
+}
 /* Helper function - adds a dirt animation for the player */
 Player.prototype.addDirtAnimation = function()
 {
@@ -379,6 +403,26 @@ Player.prototype.spawnDizzy = function(frame)
     instance.Animation.InitialStageY = game_.Match.Stage.getGroundY();
 }
 
+Player.prototype.spawnRedFire = function(frame)
+{   
+    var instance = this.OtherAnimations.RedFire;
+    instance.StartFrame = frame;
+    instance.Animation.Direction = this.Direction;
+    instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
+    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
+    instance.Animation.InitialStageY = game_.Match.Stage.getGroundY();
+}
+
+Player.prototype.spawnBlueFire = function(frame)
+{   
+    var instance = this.OtherAnimations.RedFire;
+    instance.StartFrame = frame;
+    instance.Animation.Direction = this.Direction;
+    instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
+    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
+    instance.Animation.InitialStageY = game_.Match.Stage.getGroundY();
+}
+
 Player.prototype.spawnSmallDirt = function(frame,offsetX)
 {
     if(!this.isOnGround())
@@ -540,7 +584,7 @@ Player.prototype.chainToAnimation = function(frame,move,frameOffset,stageX,stage
     var newFrame = move.BaseAnimation.Frames[frameOffset || this.CurrentAnimation.Animation.ChainAnimationFrame];
     var attackDirection = this.CurrentAnimation.AttackDirection;
 
-    var tmp = {Animation:move,StartFrame:frame - newFrame.FrameOffset,Direction:this.Direction,AttackDirection:attackDirection};
+    var tmp = {ID:this.Id + move.BaseAnimation.Name + frame.toString() ,Animation:move,StartFrame:frame - newFrame.FrameOffset,Direction:this.Direction,AttackDirection:attackDirection};
     this.setCurrentAnimation(tmp,true);
     this.setCurrentFrame(newFrame,frame,stageX,stageY);
 }
@@ -567,7 +611,6 @@ Player.prototype.clearInterupt = function()
 Player.prototype.clearUnclearedFlags = function()
 {
     this.Flags.Player.remove(PLAYER_FLAGS.BULLDOZE);
-    this.Flags.Player.remove(PLAYER_FLAGS.BLUE_FIRE);
 }
 
 /*Sets the current move*/
@@ -581,7 +624,6 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     {
         //this.LastAnimation = this.CurrentAnimation.Animation;
         //this.onEndAttackEnemiesFn(0);
-
         this.CurrentAnimation.Animation.hideChildren();
         //maintain the same velocity if required
         if(!!newAnimation && !!this.CurrentAnimation.Animation.ChainAnimation)
@@ -618,6 +660,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     }
 
     this.CurrentAnimation = newAnimation;
+    var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
         this.MaintainYPosition = newAnimation.Animation.MaintainYPosition;
@@ -632,8 +675,12 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
                 if(!!this.MustChangeDirection)
                     this.changeDirection(true);
             }
+            //clear fire if required
+            ignoreClearFire = !hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.IGNORE_CLEAR_FIRE);
         }
 
+        if(!!ignoreClearFire)
+            this.clearFire();
 
         this.IsInAttackFrame = false;
         this.IgnoreOverrides = false;
@@ -767,10 +814,9 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         //Remove the flags that were set by the current frame, except for the ones that must be cleared at a later time.
 
         this.Flags.Player.remove((this.CurrentFrame.FlagsToSet.Player | Player.prototype.PlayerFlagsToIgnore) ^ Player.prototype.PlayerFlagsToIgnore);
-
         this.Flags.Pose.remove((this.CurrentFrame.FlagsToSet.Pose | Player.prototype.PoseFlagsToIgnore ) ^ Player.prototype.PoseFlagsToIgnore);
-
         this.Flags.Combat.remove((this.CurrentFrame.FlagsToSet.Combat | Player.prototype.CombatFlagsToIgnore) ^ Player.CombatFlagsToIgnore);
+        this.Flags.Combo.remove(this.CurrentFrame.FlagsToSet.Combo);
 
 
         this.Flags.SwingSound.remove(this.CurrentFrame.FlagsToSet.SwingSound);
@@ -855,6 +901,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Combat.add(newFrame.FlagsToSet.Combat);
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
         this.Flags.Spawn.add(newFrame.FlagsToSet.Spawn);
+        this.Flags.Combo.add(newFrame.FlagsToSet.Combo);
 
 
         if(!!this.CanHoldAirborne && newFrame.isClearingAirborneFlag())
@@ -864,6 +911,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Combat.remove(newFrame.FlagsToClear.Combat);
         this.Flags.Player.remove(newFrame.FlagsToClear.Player);
         this.Flags.Spawn.remove(newFrame.FlagsToClear.Spawn);
+        this.Flags.Combo.remove(newFrame.FlagsToClear.Combo);
 
         this.ClipHitFront = newFrame.ClipHitFront || 0;
         this.ClipHitBack = newFrame.ClipHitBack || 0;
@@ -961,7 +1009,7 @@ Player.prototype.setSprite = function(frame)
         else if(this.Direction == 1 && !!this.IsFlipped)
             this.flip(false);
     }
-    if(this.Direction == -1 && (this.CurrentFrame.ImageOffsetX != undefined))
+    if(this.Direction == -1)// && (this.CurrentFrame.ImageOffsetX != undefined))
         this.offsetImageX(this.CurrentFrame.ImageOffsetX);
     if(this.CurrentFrame.ImageOffsetY != undefined)
         this.offsetImageY(this.CurrentFrame.ImageOffsetY);

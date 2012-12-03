@@ -30,7 +30,7 @@ div.stance-container-p1 {left:32px;}
 div.stance-container-p2 {right:32px;}
 .stance-name {position:absolute;z-index:3;bottom:0px;background-image:url(../images/misc/font3/name-sprites.png);}
 .stance-shadow {position:absolute;z-index:1;background-image:url(../images/misc/misc/char-sprites.png);}
-div.stage{height:576px;width:768px;bottom:50px;overflow:hidden;position:absolute;display:inline-block;}
+div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
 div.dimBackground{height:100%;width:100%;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:16;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.loadingBackground{height:100%;width:100%;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:9999999;background:#111;text-align:center;}
 span.loading {background-color:#222;color:#aaaaff;}
@@ -45,6 +45,7 @@ div.stage .mbison-bg0{top:0px;}
 div.shadow{position:absolute;bottom:42px;z-index:0;/*border:solid 1px #000;*/}
 div.shadow .shadow{position:absolute;bottom:0px;background-image:url(../images/misc/misc/shadow-sprites.png);}
 div.player-dizzy{position:absolute;bottom:0px;background-image:url(../images/misc/misc/misc-sprites.png);background-color:Transparent;z-index:14;}
+div.player-fire{position:absolute;bottom:0px;background-image:url(../images/misc/misc/blast-sprites.png);background-color:Transparent;z-index:14;}
 div.player{position:absolute;bottom:35px;z-index:1;/*border:solid 1px #000;*/}
 div.player .player-sprite{position:relative;bottom:0px;}
 div.basic-animation{position:absolute;}

@@ -168,17 +168,29 @@
 
 
     /*Test each player to see if the hit region intersects with them*/
-    Physics.prototype.tryAttack = function(hitDelayFactor,hitID,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze)
+    Physics.prototype.tryAttack = function(hitDelayFactor,hitID,attackID,maxNbHits,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams)
     {
         if(!p2)
             return;
-        /*is p1 ejecting p2 from a grapple?*/
-        if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT) && !p1.isGrappling(p2.Id))
-            return;
-        /*is p2 being grappled by p1?*/
-        if(p2.isBeingGrappled() && !p1.isGrappling(p2.Id))
-            return;
         if(p2.Flags.Player.has(PLAYER_FLAGS.IGNORE_ATTACKS))
+            return;
+        /*some moves can only hit a certain number of times - e.g. MBison psycho crusher*/
+        if(!!p2.Hits[attackID] && (p2.Hits[attackID].Nb >= maxNbHits))
+            return;
+        /*is p1 ejecting p2 from a grapple?*/
+        var isEjecting = hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT);
+        var isP1GrapplingP2 = p1.isGrappling(p2.Id);
+        var isP2BeingGrappled = p2.isBeingGrappled();
+        var isP1Grappling = p1.isGrappling();
+        var isP2Grappling = p2.isGrappling();
+
+        if(!!isEjecting && !isP1GrapplingP2)
+            return;
+        /*Is p2 being grappled by p1?*/
+        if(isP2BeingGrappled && !isP1GrapplingP2)
+            return;
+        /*Can only start a grapple once*/
+        if(isP2BeingGrappled && isP1GrapplingP2 && !isEjecting)
             return;
         if(!p2.isVisible() && !p2.isTeleporting())
             return;
@@ -189,15 +201,15 @@
         if(p2.LastHitFrame[p1.Id] == p1.getHitFrameID(hitID))
             return;
         /*if the attack is a throw, it can not grab more than one player*/
-        if(p1.isGrappling() && !p1.isGrappling(p2.Id))
+        if(isP1Grappling && !isP1GrapplingP2)
             return;
-        if(p2.isGrappling())
+        if(isP2Grappling)
             return;
         if(p2.isAirborne() && hasFlag(attackFlags,ATTACK_FLAGS.CAN_AIR_JUGGLE))
         {
             //return;
         }
-        else if(p2.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE) && hasFlag(attackFlags,ATTACK_FLAGS.BLUE_FIRE))
+        else if(hasFlag(attackFlags,ATTACK_FLAGS.OVERRIDE_INVULNERABLE))
         {
             //moves such as M Bison psycho crusher will override invulnerable
         }
@@ -235,7 +247,7 @@
                 if(((points[i].x == -1) && !!p2.isBeingGrappled()) || (x >= p2Left && x < p2Right && y >= p2Bottom && y < p2Top))
                 {
                     p1.setGiveHit(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
-                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,STAGE.MAX_STAGEX - x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze);
+                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,STAGE.MAX_STAGEX - x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),attackID,moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,maxNbHits,otherParams);
                     break;
                 }
             }
@@ -252,7 +264,7 @@
                 if(((points[i].x == -1) && !!p2.isBeingGrappled()) || ((x <= p2Right && x > p2Left && y >= p2Bottom && y < p2Top)))
                 {
                     p1.setGiveHit(attackFlags,hitDelayFactor,energyToAdd, behaviorFlags,p2);
-                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze);
+                    p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),attackID,moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,maxNbHits,otherParams);
                     break;
                 }
             }
@@ -312,7 +324,7 @@
                 if(p2.Direction > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,projectile.OverrideFlags,null,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -334,7 +346,7 @@
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,projectile.OverrideFlags,null,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);

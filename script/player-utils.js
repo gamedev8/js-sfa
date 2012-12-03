@@ -56,6 +56,7 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.IsThrow = false;
         this.IsSuperMove = false;
         this.IsSpecialMove = false;
+        this.IsLooping = false;
         this.MaxNbHits = CONSTANTS.MAX_NBHITS;
 
         this.Flags = {};
@@ -350,7 +351,12 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
                 return this.BaseAnimation.Frames[index];
         }
         else
+        {
+            if(!!this.IsLooping && (frameDelta > this.BaseAnimation.NbFrames))
+                frameDelta = frameDelta % this.BaseAnimation.NbFrames;
+
             return this.BaseAnimation.getFrame.apply(this.BaseAnimation,arguments);
+        }
 
         return null;
     }
@@ -452,6 +458,14 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
     }
     GenericAnimation.prototype.getFrame = function(frameDelta) { return this.BaseAnimation.getFrame.apply(this.BaseAnimation,arguments); }
     GenericAnimation.prototype.getNextFrameOffset = function(id) { return this.BaseAnimation.getNextFrameOffset.apply(this.BaseAnimation,arguments); }
+    //must change such that this object knows what element to show/hide
+    GenericAnimation.prototype.stop = function(element)
+    {
+        element.style.display="none";
+        element.isInUse = false;
+        this.IsActive = false;
+        this.reset();
+    }
     GenericAnimation.prototype.tryRender = function(frame,startFrame,element,stageX,stageY,playerX,playerY,playerWidth)
     {
         var offsetX = 0;
@@ -470,15 +484,11 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
         if(!newFrame)
         {
             /*free the element so it can be reused in other animations*/
-            element.style.display="none";
-            element.isInUse = false;
-            this.IsActive = false;
+            this.stop(element);
             return false;
         }
         else
         {
-            if(element.style.display != "")
-                element.style.display = "";
             offsetX = newFrame.X;
             offsetY = newFrame.Y;
 
@@ -542,6 +552,8 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
                 element.style.left = (offsetX + this.InitialX  - (this.InitialStageX - stageX)) + "px";
         }
         element.style.bottom = (offsetY + this.InitialY + (stageY - this.InitialStageY)) + "px";
+        if(element.style.display != "")
+            element.style.display = "";
         return true;
     }
     return new GenericAnimation();
@@ -632,6 +644,11 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
                 /*element.style.backgroundImage = "url(" + data.Sprite + ")";*/
                 element.style.width = data.Width;
                 element.style.height = data.Height;
+            }
+            else if (!data)
+            {
+                element.style.display = "none";
+                return true;
             }
             if(direction > 0)
             {
@@ -835,6 +852,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToSet.Player = !!flagsToSet ? (flagsToSet.Player || 0) : 0;
         this.FlagsToSet.Pose = !!flagsToSet ? (flagsToSet.Pose || 0) : 0;
         this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
+        this.FlagsToSet.Combo = !!flagsToSet ? (flagsToSet.Combo || 0) : 0;
         this.FlagsToSet.Spawn = !!flagsToSet ? (flagsToSet.Spawn || 0) : 0;
         this.FlagsToSet.MotionSound = !!flagsToSet ? (flagsToSet.MotionSound || 0) : 0;
         this.FlagsToSet.SwingSound = !!flagsToSet ? (flagsToSet.SwingSound || 0) : 0;
@@ -845,6 +863,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToClear.Player = !!flagsToClear ? (flagsToClear.Player || 0) : 0;
         this.FlagsToClear.Pose = !!flagsToClear ? (flagsToClear.Pose || 0) : 0;
         this.FlagsToClear.Combat = !!flagsToClear ? (flagsToClear.Combat || 0) : 0;
+        this.FlagsToClear.Combo = !!flagsToClear ? (flagsToClear.Combo || 0) : 0;
         this.FlagsToClear.Spawn = !!flagsToClear ? (flagsToClear.Spawn || 0) : 0;
         this.FlagsToClear.SwingSound = !!flagsToClear ? (flagsToClear.SwingSound || 0) : 0;
         this.FlagsToClear.HitSound = !!flagsToClear ? (flagsToClear.HitSound || 0) : 0;
@@ -963,6 +982,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     var Projectile = function()
     {
         this.Owner = player;
+        this.Params = this.Params || {};
         this.Animation = animation;
         this.DisintegrationAnimation = disintegrationAnimation;
         this.OffsetX = xOffset;

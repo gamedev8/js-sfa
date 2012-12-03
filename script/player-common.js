@@ -1,5 +1,27 @@
 Player.prototype.addGenericAnimations = function()
 {
+    
+    var dizzyFrames = 2;
+    var offsetXPct = 0.4;
+    var offsetY = 75;
+    var bfire = this.addBlueFireAnimation(offsetXPct,offsetY);
+    for(var i = 0; i < 24; ++i)
+    {
+        num = (i < 10) ? ("0" + i) : i;    
+        bfire.addFrame(this,0,null,"images/misc/misc/bfire-" + num + ".png",dizzyFrames);
+    }
+    
+    var dizzyFrames = 2;
+    var offsetXPct = 0.4;
+    var offsetY = 125;
+    var rfire = this.addRedFireAnimation(offsetXPct,offsetY);
+    for(var i = 1; i < 44; ++i)
+    {
+        num = (i < 10) ? ("0" + i) : i;    
+        rfire.addFrame(this,0,null,"images/misc/misc/rfire-" + num + ".png",dizzyFrames);
+    }
+
+
     var dizzyFrames = 2;
     var offsetXPct = 0.4;
     var offsetY = 10;

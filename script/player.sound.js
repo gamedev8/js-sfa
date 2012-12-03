@@ -1,5 +1,5 @@
 
-/**/
+
 Player.prototype.loadAssets = function()
 {
     stuffLoader_.queue(this.Name.toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
@@ -14,17 +14,10 @@ Player.prototype.loadAssets = function()
 
 }
 
-Player.prototype.queueDizzy = function()
-{
-    this.queueSound("audio/misc/dizzy.zzz");
-}
+Player.prototype.queueDizzy = function() { this.queueSound("audio/misc/dizzy.zzz"); }
+Player.prototype.stopDizzyAudio = function() { soundManager_.pause("audio/misc/dizzy.zzz"); }
 
-Player.prototype.stopDizzyAudio = function()
-{
-    soundManager_.pause("audio/misc/dizzy.zzz");
-}
 
-/**/
 Player.prototype.queueSwingSound = function(value)
 {
     if(hasFlag(value,SWINGSOUND.HP)) this.queueSound("audio/misc/hp.zzz");
@@ -37,7 +30,7 @@ Player.prototype.queueSwingSound = function(value)
 }
 
 
-/**/
+
 Player.prototype.queueHitSound = function(value)
 {
     if(hasFlag(value,HITSOUND.HP)) this.queueSound("audio/misc/hit-hp.zzz");
@@ -50,32 +43,15 @@ Player.prototype.queueHitSound = function(value)
 }
 
 
-/**/
-Player.prototype.queueBlockSound = function()
-{
-    this.queueSound("audio/misc/block.zzz");
-}
+
+Player.prototype.queueBlockSound = function() { this.queueSound("audio/misc/block.zzz"); }
+Player.prototype.queueBlockProjectileSound = function() { this.queueSound("audio/misc/block-projectile.zzz"); }
+Player.prototype.queueGrappleSound = function() { this.queueSound("audio/misc/grapple.zzz"); }
+Player.prototype.queueSuperMoveChargeSound = function() { this.queueSound("audio/misc/super-charge.zzz"); }
+Player.prototype.queueLightFireSound = function() { this.queueSound("audio/misc/fire-0.zzz"); }
+Player.prototype.queueHardFireSound = function() { this.queueSound("audio/misc/fire-1.zzz"); }
 
 
-/**/
-Player.prototype.queueBlockProjectileSound = function()
-{
-    this.queueSound("audio/misc/block-projectile.zzz");
-}
-
-/**/
-Player.prototype.queueGrappleSound = function()
-{
-    this.queueSound("audio/misc/grapple.zzz");
-}
-
-
-Player.prototype.queueSuperMoveChargeSound = function()
-{
-    this.queueSound("audio/misc/super-charge.zzz");
-}
-
-/**/
 Player.prototype.queueSound = function(value,volume)
 {
     soundManager_.queueSound(value,volume);

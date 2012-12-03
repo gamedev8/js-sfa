@@ -1,4 +1,5 @@
 /*Renders debug info*/
+var maxDebugHits = 10;
 Player.prototype.renderDebugInfo = function()
 {
     /*
@@ -27,7 +28,7 @@ Player.prototype.renderDebugInfo = function()
         var points = this.CurrentFrame.HitPoints;
         var x = this.getX();
         var i = 0;
-        for(; (i < 3) && (i < points.length); ++i)
+        for(; (i < maxDebugHits) && (i < points.length); ++i)
         {
             this.DebugHit[i].style.bottom = (this.getY() + points[i].y) + "px";
 
@@ -52,7 +53,7 @@ Player.prototype.renderDebugInfo = function()
     }
     else
     {
-        for(var i = 0; i < 3; ++i)
+        for(var i = 0; i < maxDebugHits; ++i)
         {
             if(this.DebugHit[i].style.display != "none")
                 this.DebugHit[i].style.display = "none";
@@ -82,9 +83,10 @@ Player.prototype.renderDebugInfo = function()
 /**/
 Player.prototype.releaseDebugElements = function()
 {
-    utils_.removeFromDOM(this.DebugHit[0]);
-    utils_.removeFromDOM(this.DebugHit[1]);
-    utils_.removeFromDOM(this.DebugHit[2]);
+    for(var i = 0; i < maxDebugHits; ++i)
+    {
+        utils_.removeFromDOM(this.DebugHit[i]);
+    }
     utils_.removeFromDOM(this.DebKeysElement);
 }
 
@@ -111,7 +113,7 @@ Player.prototype.createDebugElements = function(parentElement)
     this.Element.appendChild(d);
     */
     this.DebugHit = [];
-    for(var i = 0; i < 3; ++i)
+    for(var i = 0; i < maxDebugHits; ++i)
     {
         this.DebugHit[i] = window.document.createElement("b");
         this.DebugHit[i].style.display = "none";

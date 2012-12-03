@@ -341,6 +341,7 @@ Player.prototype.moveY = function(amount,forced)
 }
 Player.prototype.offsetImageX = function(amount)
 {
+    amount = amount || 0;
     if(amount != this.LastImageOffsetX)
     {
         this.setImageX(amount);

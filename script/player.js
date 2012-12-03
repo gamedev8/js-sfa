@@ -40,6 +40,8 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.OtherAnimations.Dirt = [];
     this.OtherAnimations.BigDirt = [];
     this.OtherAnimations.Dizzy = [];
+    this.OtherAnimations.BlueFire = [];
+    this.OtherAnimations.RedFire = [];
     this.FrontHitReport = [];
     this.RearHitReport = [];
     this.DirtIndices = [];
@@ -54,6 +56,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
 
     this.Element = null;
     this.DizzyElement = null;
+    this.FireElement = null;
     this.Image = null;
     this.SpriteElement = null;
     this.ShadowContainer = null;
@@ -117,6 +120,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.OffsetHeight = 0;
     this.IgnoreOverrides = false;
     this.ComboCount = 0;
+    this.Combo = {};
 
     this.loadAssets();
     this.createElement();
@@ -178,19 +182,28 @@ Player.prototype.getAdjustShadowPosition = function() { return this.AdjustShadow
 Player.prototype.setAdjustShadowPosition = function(value) { this.AdjustShadowPosition = value; }
 Player.prototype.setFlags = function(value) { this.Flags = value; }
 Player.prototype.getFlags = function() { return this.Flags; }
+Player.prototype.getFrame = function() { return this.getGame().getCurrentFrame(); }
 
 Player.prototype.resetCombo = function()
 {
     if(!!this.onDecComboRefCountFn)    
         this.onDecComboRefCountFn();
     this.ComboCount = 0;
+
+    this.Hits = {};
 }
-Player.prototype.incCombo = function()
+Player.prototype.incCombo = function(attackId)
 {
     if(!this.getCurrentComboCountFn())
         this.onIncComboRefCountFn();
     this.onIncComboFn();
     ++this.ComboCount;
+
+    if(!!attackId)
+    {
+        this.Hits[attackId] = this.Hits[attackId] || {Nb:0};
+        ++this.Hits[attackId].Nb;
+    }
 }
 
 Player.prototype.reset = function(ignoreDirection)
@@ -246,6 +259,7 @@ Player.prototype.reset = function(ignoreDirection)
     this.LastY = STAGE.FLOORY;
     this.LastFrameY = 0;
     this.ConstY = 0;
+    this.Hits = {};
 
     this.ClipMoveBottom = 0;
     this.ClipMoveTop = 0;
@@ -307,6 +321,12 @@ Player.prototype.createElement = function(x,y,parentElement)
     this.DizzyElement = window.document.createElement("div");
     this.DizzyElement.className = "player-dizzy";
     this.DizzyElement.style.display = "none";
+
+
+    this.FireElement = window.document.createElement("div");
+    this.FireElement.className = "player-fire";
+    this.FireElement.style.display = "none";
+
     this.SpriteElement = window.document.createElement("div");
     this.SpriteElement.className = "player-sprite";
     this.Element.appendChild(this.SpriteElement);
@@ -324,6 +344,7 @@ Player.prototype.createElement = function(x,y,parentElement)
     parentElement.appendChild(this.ShadowContainer);
     parentElement.appendChild(this.Element);
     parentElement.appendChild(this.DizzyElement);
+    parentElement.appendChild(this.FireElement);
 
     this.createDebugElements();
 }
@@ -471,6 +492,22 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     if(this.isDizzy())
     {
         var item = this.OtherAnimations.Dizzy[this.DizzyIndex];
+        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
+            item.StartFrame = frame;
+    }
+    /*blue fire*/
+    if(this.hasBlueFire())
+    {
+        var item = this.OtherAnimations.BlueFire;
+        item.Animation.Direction = this.Direction;
+        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
+            item.StartFrame = frame;
+    }
+    /*red fire*/
+    if(this.hasRedFire())
+    {
+        var item = this.OtherAnimations.RedFire;
+        item.Animation.Direction = this.Direction;
         if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
             item.StartFrame = frame;
     }
@@ -776,6 +813,7 @@ Player.prototype.release = function()
     utils_.removeFromDOM(this.ShadowContainer);
     utils_.removeFromDOM(this.Element);
     utils_.removeFromDOM(this.DizzyElement);
+    utils_.removeFromDOM(this.FireElement);
     for(var i in this.Moves)
     {
         var trail = this.Moves[i].Trail;

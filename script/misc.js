@@ -15,6 +15,7 @@ var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0Y
 var stages_ = {};
 stages_["ken"] = new StageParams("ken", 129, -62.5, 322.5, -21, -41);
 stages_["ryu"] = new StageParams("chunli", -192, -382, -2, -21, -41);
+stages_["dramatic_battle"] = new StageParams("mbison", -192, -382, -2, -21, -41);
 stages_["mbison"] = new StageParams("mbison", -192, -382, -2, -21, -41);
 stages_["akuma"] = new StageParams("akuma", -192, -382, -2, -21, -41);
 stages_["sodom"] = new StageParams("sodom", -192, -382, -2, -21, -41);

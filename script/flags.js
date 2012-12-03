@@ -32,6 +32,7 @@ var PlayerFlags = function(owner)
     this.Player.IsPlayer = true;
     this.Pose = new Flags();
     this.Combat = new Flags();
+    this.Combo = new Flags();
     this.Spawn = new Flags();
     this.SwingSound = new Flags();
     this.HitSound = new Flags();
@@ -45,6 +46,7 @@ var FrameFlags = function()
     this.Pose = 0;
     this.Combat = 0;
     this.Spawn = 0;
+    this.Combo = 0;
 }
 
 
@@ -210,6 +212,7 @@ var COMBAT_FLAGS =
     ,TELEPORT_END:1 << 13
     ,CHAIN_ON_HIT:1 << 14
     ,PENDING_ATTACK:1 << 15
+    ,IGNORE_CLEAR_FIRE:1 << 16
 }
 
 var AI_FLAGS =
@@ -253,7 +256,16 @@ var ATTACK_FLAGS =
     ,FLOOR_AIRBORNE_HARD:1 << 23
     ,CAN_AIR_JUGGLE:1 << 24
     ,BLUE_FIRE:1 << 25
-    ,NO_DELAY:1 << 26
+    ,RED_FIRE:1 << 26
+    ,NO_DELAY:1 << 27
+    ,RED_FIRE_ON_MAX_HIT:1 << 28
+    ,RED_FIRE_NO_SOUND:1 << 29
+    ,OVERRIDE_INVULNERABLE:1 << 30
+};
+var COMBO_FLAGS = 
+{
+    BLUE_FIRE_ON_FIRST_HIT:1 << 1
+    ,RED_FIRE_ON_MAX_HIT:1 << 2
 };
 var MOVE_FLAGS = 
 {
@@ -496,9 +508,9 @@ var CONSTANTS =
     ,SHOW_FACEOFF_NAMES_DELAY:!!__debugMode ? 0 : 100
     ,REMOVE_FACEOFF_PICS_DELAY:!!__debugMode ? 0 : 150
     ,SHOW_TEAMS_DELAY:!!__debugMode ? 0 : 200
-    ,START_THEME_DELAY:!!__debugMode ? 0 : 400
-    ,ANNOUNCE_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 460
-    ,START_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 580
+    ,START_THEME_DELAY:!!__debugMode ? 0 : 250
+    ,ANNOUNCE_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 310
+    ,START_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 430
 
 };
 var CHARACTERS = 

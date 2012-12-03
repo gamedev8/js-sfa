@@ -1,6 +1,6 @@
 
 
-var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,isGrapple,hitX,hitY,attackDirection,who,hitID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
+var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,isGrapple,hitX,hitY,attackDirection,who,hitID,attackID,priorityFlags,playerPoseState,playerState,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName)
 {
     this.BehaviorFlags = behaviorFlags;
     this.HitState = hitState;
@@ -16,6 +16,7 @@ var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,ene
     this.Who = who;
     this.AttackDirection = attackDirection;
     this.HitID = hitID;
+    this.AttackID = attackID;
     this.PriorityFlags = priorityFlags;
     this.PlayerPoseState = priorityFlags;
     this.PlayerState = playerState;

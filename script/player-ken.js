@@ -102,9 +102,9 @@ Player.prototype.createKen = function(user)
 
     var hitReact_sMN = player.addAnimation(POSE_FLAGS.STANDING,"hr_sMN",0,["hr_sMN"],0,false);
     hitReact_sMN.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-c-1.png",8,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE }).clipMove({Front:50});
-    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-b-0.png",8).clipMove({Front:50});
-    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-b-2.png",8).clipMove({Front:50});
+    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-c-1.png",8,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE }).clipMove({Front:20});
+    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-b-0.png",8).clipMove({Front:20});
+    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-b-2.png",8).clipMove({Front:20});
 
     var hitReact_sMF = player.addAnimation(POSE_FLAGS.STANDING,"hr_sMF",0,["hr_sMF"],0,false);
     hitReact_sMF.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
@@ -114,9 +114,9 @@ Player.prototype.createKen = function(user)
 
     var hitReact_sHN = player.addAnimation(POSE_FLAGS.STANDING,"hr_sHN",0,["hr_sHN"],0,false);
     hitReact_sHN.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-b-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE }).clipMove({Front:50});
-    hitReact_sHN.addFrameWithSound(player,1,"audio/ken/clocked.zzz",0,"",folder + "/x-hit-b-1.png",8).clipMove({Front:50});
-    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-b-2.png",8).clipMove({Front:50});
+    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-b-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE }).clipMove({Front:20});
+    hitReact_sHN.addFrameWithSound(player,1,"audio/ken/clocked.zzz",0,"",folder + "/x-hit-b-1.png",8).clipMove({Front:20});
+    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-b-2.png",8).clipMove({Front:20});
 
     var hitReact_sHF = player.addAnimation(POSE_FLAGS.STANDING,"hr_sHF",0,["hr_sHF"],0,false);
     hitReact_sHF.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
@@ -207,6 +207,24 @@ Player.prototype.createKen = function(user)
     hitReact_air.addFrame(player,0,"",folder + "/x-f-jump-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
     hitReact_air.addFrame(player,0,"",folder + "/x-jump-1.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
     hitReact_air.chain(jump_land);
+
+    var hitReact_red_fire = player.addAnimation(POSE_FLAGS.STANDING,"red fire",0,["hr_red_fire"],0,false);
+    hitReact_red_fire.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Combat : COMBAT_FLAGS.IGNORE_CLEAR_FIRE });
+    hitReact_red_fire.Vx = (25);
+    hitReact_red_fire.Vy = (200);
+    hitReact_red_fire.IsLooping = true;
+    hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },0,1);
+    hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-02.png",2,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
+    hitReact_red_fire.chain(hitReact_bounce);
+
+    var hitReact_blue_fire = player.addAnimation(POSE_FLAGS.STANDING,"blue fire",0,["hr_blue_fire"],0,false);
+    hitReact_blue_fire.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Combat : COMBAT_FLAGS.IGNORE_CLEAR_FIRE  });
+    hitReact_blue_fire.Vx = (50);
+    hitReact_blue_fire.Vy = (150);
+    hitReact_blue_fire.IsLooping = true;
+    hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },0,1);
+    hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-02.png",2,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
+    hitReact_blue_fire.chain(hitReact_bounce);
 
     var hitReact_knockDown = player.addAnimation(POSE_FLAGS.STANDING,"knock down",0,["hr_knockdown"],0,false);
     hitReact_knockDown.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
@@ -463,7 +481,7 @@ Player.prototype.createKen = function(user)
     k2.addFrame(player,0,"",folder + "/x-k2-1.png",1,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
     k2.addFrame(player,0,"",folder + "/x-k2-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,20);
     k2.addFrame(player,0,"",folder + "/x-k2-3.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,30);
-    k2.addFrame(player,0,"",folder + "/x-k2-4.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1 },MISC_FLAGS.NONE,0,0,0,10,null,70,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 195,y: 160 },{ state: HIT_FLAGS.NEAR,x: 215,y: 200}],ATTACK_FLAGS.LIGHT,1,1,10);
+    k2.addFrame(player,0,"",folder + "/x-k2-4.png",2,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1 },MISC_FLAGS.NONE,0,0,0,10,null,70,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 175,y: 140 },{ state: HIT_FLAGS.NEAR,x: 215,y: 200}],ATTACK_FLAGS.LIGHT,1,1,10);
     k2.addFrame(player,0,"",folder + "/x-k2-5.png",5,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1 },MISC_FLAGS.NONE,0,0,0,10,null,76,0,ATTACK_FLAGS.HARD,[{ state: HIT_FLAGS.FAR,x: 205,y: 170 },{ state: HIT_FLAGS.FAR,x: 305,y: 225}],ATTACK_FLAGS.HARD | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPIT1,2,1,10);
     k2.endBlock();
     k2.addFrame(player,0,"",folder + "/x-k2-6.png",4,{Player:PLAYER_FLAGS.MOVE_TO_BACK},MISC_FLAGS.NONE,0,0,0,0,0,94);
@@ -479,8 +497,8 @@ Player.prototype.createKen = function(user)
     f_k2.addFrame(player,0,"",folder + "/x-fk2-4.png",3);
     f_k2.addFrame(player,0,"",folder + "/x-fk2-5.png",3);
     f_k2.addFrame(player,0,"",folder + "/x-fk2-6.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,48);
-    f_k2.addFrame(player,0,"",folder + "/x-fk2-7.png",3,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,0,76,0,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 275,y: 250 },{ state: HIT_FLAGS.NEAR,x: 215,y: 200}],ATTACK_FLAGS.MEDIUM,CONSTANTS.FIRST_HIT,1,8);
-    f_k2.addFrame(player,0,"",folder + "/x-fk2-8.png",3,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,0,76,0,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 315,y: 160 },{ state: HIT_FLAGS.NEAR,x: 215,y: 200}],ATTACK_FLAGS.MEDIUM,CONSTANTS.SECOND_HIT,1,8);
+    f_k2.addFrame(player,0,"",folder + "/x-fk2-7.png",3,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,0,76,0,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 275,y: 250 },{ state: HIT_FLAGS.NEAR,x: 185,y: 200}],ATTACK_FLAGS.MEDIUM,CONSTANTS.FIRST_HIT,1,8);
+    f_k2.addFrame(player,0,"",folder + "/x-fk2-8.png",3,{ Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,0,76,0,ATTACK_FLAGS.MEDIUM,[{ state: HIT_FLAGS.NEAR,x: 315,y: 160 },{ state: HIT_FLAGS.NEAR,x: 185,y: 200}],ATTACK_FLAGS.MEDIUM,CONSTANTS.SECOND_HIT,1,8);
     f_k2.endBlock();
     f_k2.addFrame(player,0,"",folder + "/x-fk2-9.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,78);
     f_k2.addFrame(player,0,"",folder + "/x-k1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0);
@@ -527,6 +545,18 @@ Player.prototype.createKen = function(user)
 
     var uppercut_land = player.addAnimation(MISC_FLAGS.NONE,"uppercut landing",200,["uppercut-landing"],0,false,false);
     uppercut_land.addFrameWithSound(player,1,"audio/misc/jump-land.zzz",0,"",folder + "/x-uppercut-p1-6.png",4,{ Player: PLAYER_FLAGS.MOBILE },MISC_FLAGS.NONE);
+
+    var uppercut_land_flame = player.addAnimation(MISC_FLAGS.NONE,"uppercut landing",200,["uppercut-landing-flame"],0,false,false);
+    uppercut_land_flame.addFrameWithSound(player,1,"audio/misc/jump-land.zzz",0,"",folder + "/x-uppercut-p1-6.png",4,{ Player: PLAYER_FLAGS.MOBILE },MISC_FLAGS.NONE);
+
+    /*add flame animation for the uppercut*/
+    var flame = CreateBasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
+    flame.addFrame(player,folder + "/fire-uppercut-12.png",2,2,206);
+    flame.addFrame(player,folder + "/fire-uppercut-13.png",1,2,210);
+    flame.addFrame(player,folder + "/fire-uppercut-14.png",1,2,210);
+    uppercut_land_flame.addAnimation(flame);
+
+
     for (var x = 0; x < 3; ++x)
     {
         var button = BUTTONS.LIGHT_PUNCH;
@@ -565,8 +595,44 @@ Player.prototype.createKen = function(user)
 
             uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-1.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.FAR,x: 130,y: 107}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,delay,10);
             uppercut.addFrameWithSound(player,1,"audio/ken/shoryuken.zzz",0,"",folder + "/x-uppercut-p1-2.png",3,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.NEAR,x: 170,y: 177}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.SECOND_HIT,delay,10);
-            uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
-            uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",18,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
+            uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN | ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
+            uppercut.addFrameWithSound(player,1,"audio/misc/fire-0.zzz",0,"",folder + "/x-uppercut-p1-3.png",18,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN | ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
+
+
+            /*add flame animation for the uppercut*/
+            var flame = CreateBasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
+            flame.addEmptyFrame(player,2,2);
+            flame.addFrame(player,folder + "/fire-uppercut-01.png",1,94,94);
+            flame.addFrame(player,folder + "/fire-uppercut-02.png",2,108,123);
+            flame.addFrame(player,folder + "/fire-uppercut-03.png",1,110,105);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+            flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+            flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+            flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+            flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+            flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+            flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+            flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+
+            flame.addFrame(player,folder + "/fire-uppercut-11.png",1,30,250);
+            flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+            flame.addFrame(player,folder + "/fire-uppercut-11.png",1,-4,230);
+            flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+            flame.addFrame(player,folder + "/fire-uppercut-11.png",1,-4,230);
+            flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+            flame.addFrame(player,folder + "/fire-uppercut-11.png",1,-4,230);
+            flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+            flame.addFrame(player,folder + "/fire-uppercut-11.png",CONSTANTS.MAX_FRAME,-4,230);
+
+            uppercut.addAnimation(flame);
+
+            uppercut.chain(uppercut_land_flame);
+
         }
         else if(x == 1)
         {
@@ -579,6 +645,7 @@ Player.prototype.createKen = function(user)
             uppercut.addFrameWithSound(player,1,"audio/ken/shoryuken.zzz",0,"",folder + "/x-uppercut-p1-2.png",3,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.NEAR,x: 170,y: 177}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,delay,10);
             uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.SECOND_HIT,longDelay,10);
             uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",14,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.SECOND_HIT,longDelay,10);
+            uppercut.chain(uppercut_land);
         }
         else
         {
@@ -590,12 +657,12 @@ Player.prototype.createKen = function(user)
             uppercut.addFrameWithSound(player,1,"audio/ken/shoryuken.zzz",0,"",folder + "/x-uppercut-p1-2.png",3,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.FLOOR_AIRBORNE | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.NEAR,x: 170,y: 177}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,delay,10);
             uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.FIRST_HIT,longDelay,10);
             uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",10,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN,[{ state: HIT_FLAGS.FAR,x: 130,y: 127 },{ state: HIT_FLAGS.FAR,x: 110,y: 227 },{ state: HIT_FLAGS.FAR,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.FIRST_HIT,longDelay,10);
+            uppercut.chain(uppercut_land);
         }
         
         uppercut.endBlock();
         uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-4.png",1,{ Player: PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE },{ Combat: COMBAT_FLAGS.CAN_BE_AIR_BLOCKED });
         uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-5.png",CONSTANTS.MAX_FRAME,{Player: PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE},MISC_FLAGS.NONE);
-        uppercut.chain(uppercut_land);
     }
 
     var jumpX = 32;
@@ -920,8 +987,17 @@ Player.prototype.createKenSuperMoves = function(player)
     var delay = 0.7;
     var longDelay = 1.0;
 
-    var uppercut_land = player.addAnimation(MISC_FLAGS.NONE,"uppercut landing",200,["uppercut-landing"],0,false,false);
+    var uppercut_land = player.addAnimation(MISC_FLAGS.NONE,"super uppercut landing",200,["super-uppercut-landing"],0,false,false);
     uppercut_land.addFrameWithSound(player,1,"audio/misc/jump-land.zzz",0,"",folder + "/x-uppercut-p1-6.png",4,{Player:PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE);
+
+    /*add flame animation for the uppercut*/
+    var flame = CreateBasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
+    flame.addFrame(player,folder + "/fire-uppercut-12.png",2,2,206);
+    flame.addFrame(player,folder + "/fire-uppercut-13.png",1,2,210);
+    flame.addFrame(player,folder + "/fire-uppercut-14.png",1,2,210);
+    uppercut_land.addAnimation(flame);
+
+
     for(var x = 0; x < 3; ++x)
     {
         var button = BUTTONS.LIGHT_PUNCH;
@@ -969,12 +1045,45 @@ Player.prototype.createKenSuperMoves = function(player)
         s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-0.png",4,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES},MISC_FLAGS.NONE,dx);
         s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-1.png",4,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,dx,0,0,25,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE,[{state:HIT_FLAGS.FAR,x:130,y:107}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,delay,5);
         s_uppercut.addRepeatingFrame(player,0,"",folder + "/x-uppercut-p1-2.png",4,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,dx,0,0,25,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE,[{state:HIT_FLAGS.NEAR,x:170,y:177}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL2,CONSTANTS.SECOND_HIT,delay,5);
-        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",1,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,Pose:POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN,[{state:HIT_FLAGS.FAR,x:130,y:127},{state:HIT_FLAGS.FAR,x:110,y:227},{state:HIT_FLAGS.FAR,x:100,y:322}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,delay,5);
-        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",16,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN,[{state:HIT_FLAGS.FAR,x:130,y:127},{state:HIT_FLAGS.FAR,x:110,y:227},{state:HIT_FLAGS.FAR,x:100,y:322}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,delay,5);
+        s_uppercut.addFrameWithSound(player,1,"audio/misc/fire-1.zzz",0,"",folder + "/x-uppercut-p1-3.png",1,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,Pose:POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN|ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{state:HIT_FLAGS.FAR,x:130,y:127},{state:HIT_FLAGS.FAR,x:110,y:227},{state:HIT_FLAGS.FAR,x:100,y:322}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,delay,5);
+        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",18,{Player:PLAYER_FLAGS.IGNORE_PROJECTILES,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,25,null,0,0,ATTACK_FLAGS.CAN_AIR_JUGGLE|ATTACK_FLAGS.SPECIAL|ATTACK_FLAGS.HARD|ATTACK_FLAGS.KNOCKDOWN|ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{state:HIT_FLAGS.FAR,x:130,y:127},{state:HIT_FLAGS.FAR,x:110,y:227},{state:HIT_FLAGS.FAR,x:100,y:322}],ATTACK_FLAGS.MEDIUM|ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,delay,5);
         s_uppercut.endBlock();
-        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-4.png",6,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.CAN_BE_AIR_BLOCKED});
-        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-5.png",CONSTANTS.MAX_FRAME,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
+        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-4.png",1,{ Player: PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE },{Combat:COMBAT_FLAGS.CAN_BE_AIR_BLOCKED});
+        s_uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-5.png",CONSTANTS.MAX_FRAME,{Player: PLAYER_FLAGS.IGNORE_MOVE_OVERRIDE},MISC_FLAGS.NONE);
         s_uppercut.chain(uppercut_land);
+
+        /*add flame animation for the uppercut*/
+        var flame = CreateBasicAnimation("super uppercut flame",[],false,0,folder + "/misc-sprites.png");
+        flame.addEmptyFrame(player, 76 + 1 + (maxIter * 23) + 4,2);
+        flame.addFrame(player,folder + "/fire-uppercut-01.png",4,94,94);
+        flame.addFrame(player,folder + "/fire-uppercut-02.png",2,108,123);
+        flame.addFrame(player,folder + "/fire-uppercut-03.png",2,110,105);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+        flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+        flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+        flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+        flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+        flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+        flame.addFrame(player,folder + "/fire-uppercut-05.png",2,62,251);
+        flame.addFrame(player,folder + "/fire-uppercut-04.png",1,64,229);
+
+        flame.addFrame(player,folder + "/fire-uppercut-11.png",1,30,250);
+        flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+        flame.addFrame(player,folder + "/fire-uppercut-11.png",1,-4,230);
+        flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+        flame.addFrame(player,folder + "/fire-uppercut-11.png",1,-4,230);
+        flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+        flame.addFrame(player,folder + "/fire-uppercut-11.png",1,-4,230);
+        flame.addFrame(player,folder + "/fire-uppercut-12.png",2,-4,253);
+        flame.addFrame(player,folder + "/fire-uppercut-11.png",CONSTANTS.MAX_FRAME,-4,230);
+
+        s_uppercut.addAnimation(flame);
+
 
         /*add the uppercut charge up*/
         var charge_up = CreateBasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");

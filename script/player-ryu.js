@@ -101,9 +101,9 @@ Player.prototype.createRyu = function(user)
 
     var hitReact_sMN = player.addAnimation(POSE_FLAGS.STANDING,"hr_sMN",0,["hr_sMN"],0,false);
     hitReact_sMN.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
-    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-smn-0.png",8,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE}).clipMove({Front:50});
-    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-smn-1.png",8).clipMove({Front:50});
-    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-sln-0.png",8).clipMove({Front:50});
+    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-smn-0.png",8,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE}).clipMove({Front:20});
+    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-smn-1.png",8).clipMove({Front:20});
+    hitReact_sMN.addFrame(player,0,"",folder + "/x-hit-sln-0.png",8).clipMove({Front:20});
 
     var hitReact_sMF = player.addAnimation(POSE_FLAGS.STANDING,"hr_sMF",0,["hr_sMF"],0,false);
     hitReact_sMF.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
@@ -113,9 +113,9 @@ Player.prototype.createRyu = function(user)
 
     var hitReact_sHN = player.addAnimation(POSE_FLAGS.STANDING,"hr_sHN",0,["hr_sHN"],0,false);
     hitReact_sHN.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
-    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-smn-1.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
-    hitReact_sHN.addFrameWithSound(player,1,"audio/ryu/clocked.zzz",0,"",folder + "/x-hit-shn-1.png",8);
-    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-sln-0.png",8);
+    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-smn-1.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE}).clipMove({Front:20});
+    hitReact_sHN.addFrameWithSound(player,1,"audio/ryu/clocked.zzz",0,"",folder + "/x-hit-shn-1.png",8).clipMove({Front:20});
+    hitReact_sHN.addFrame(player,0,"",folder + "/x-hit-sln-0.png",8).clipMove({Front:20});
 
     var hitReact_sHF = player.addAnimation(POSE_FLAGS.STANDING,"hr_sHF",0,["hr_sHF"],0,false);
     hitReact_sHF.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
@@ -208,6 +208,24 @@ Player.prototype.createRyu = function(user)
     hitReact_air.addFrame(player,0,"",folder + "/x-f-jump-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
     hitReact_air.addFrame(player,0,"",folder + "/x-jump-1.png",CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
     hitReact_air.chain(jump_land);
+
+    var hitReact_red_fire = player.addAnimation(POSE_FLAGS.STANDING,"red fire",0,["hr_red_fire"],0,false);
+    hitReact_red_fire.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Combat : COMBAT_FLAGS.IGNORE_CLEAR_FIRE  });
+    hitReact_red_fire.Vx = (25);
+    hitReact_red_fire.Vy = (200);
+    hitReact_red_fire.IsLooping = true;
+    hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },0,1);
+    hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-02.png",2,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
+    hitReact_red_fire.chain(hitReact_bounce);
+
+    var hitReact_blue_fire = player.addAnimation(POSE_FLAGS.STANDING,"blue fire",0,["hr_blue_fire"],0,false);
+    hitReact_blue_fire.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Combat : COMBAT_FLAGS.IGNORE_CLEAR_FIRE  });
+    hitReact_blue_fire.Vx = (50);
+    hitReact_blue_fire.Vy = (150);
+    hitReact_blue_fire.IsLooping = true;
+    hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },0,1);
+    hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-02.png",2,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
+    hitReact_blue_fire.chain(hitReact_bounce);
 
     var hitReact_knockDown = player.addAnimation(POSE_FLAGS.STANDING,"knock down",0,["hr_knockdown"],0,false);
     hitReact_knockDown.AllowJuggle = true;
@@ -928,8 +946,10 @@ Player.prototype.createRyuSuperMoves = function(player)
         else if(x == 1)
             projectile.FlagsToSend |= ATTACK_FLAGS.SUPER|ATTACK_FLAGS.PROJECTILE;
         else if(x == 2)
-            projectile.FlagsToSend |= ATTACK_FLAGS.SUPER|ATTACK_FLAGS.PROJECTILE;
-
+        {
+            projectile.FlagsToSend |= ATTACK_FLAGS.SUPER|ATTACK_FLAGS.PROJECTILE|ATTACK_FLAGS.RED_FIRE_ON_MAX_HIT;
+            projectile.Params = {Combo:COMBO_FLAGS.RED_FIRE_ON_MAX_HIT};
+        }
         projectile.BaseDamage = 25;
 
         /*this formula is applied each frame to compute the X coordinate of the projectile*/
