@@ -8,6 +8,7 @@ var CreateAnnouncer = function()
     var fight_ = {StartFrame:0,IsAnimating:false,Element:window.document.getElementById("pnlFight")};
     var ko_ = {StartFrame:0,IsAnimating:false,Element:window.document.getElementById("pnlKO")};
     var perfect_ = {StartFrame:0,IsAnimating:false,Element:window.document.getElementById("pnlPerfect")};
+    var scf_ = {StartFrame:0,IsAnimating:false,Element:window.document.getElementById("pnlSuperComboFinish")};
     var frameId_ = 0;
 
     var Init_ = function()
@@ -100,6 +101,25 @@ var CreateAnnouncer = function()
         perfect_.Animation.addFrame(this,"|images/misc/misc/perfect-7.png",4,x - 7,y + 18);
         perfect_.Animation.addFrame(this,"|images/misc/misc/perfect-8.png",4,x,y + 18);
         perfect_.Animation.addFrame(this,"|images/misc/misc/perfect-9.png",100,x,y + 18);
+
+        var y = 0;
+        var x = 0;
+        scf_.Animation = CreateBasicAnimation("super-combo-finish");
+        for(var i = 0; i < 2; ++i)
+        {
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa000.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa001.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa002.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa003.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa005.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa006.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa007.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa008.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa009.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa010.png",2,0,0);
+        scf_.Animation.addFrame(this,"images/misc/misc/sfa011.png",2,0,0);
+        }
+        scf_.Animation.addFrame(this,"images/misc/misc/white.png",10,0,0);
     }
 
     var GetNextFrameID = function()
@@ -115,6 +135,13 @@ var CreateAnnouncer = function()
     {
     }
 
+
+    Announcer.prototype.runSuperComboFinish = function()
+    {
+        scf_.IsAnimating = true;
+        scf_.StartFrame = game_.getCurrentFrame()+2;
+        soundManager_.queueSound("audio/misc/scblast.zzz",1,1);
+    }
 
     Announcer.prototype.init = function()
     {
@@ -145,6 +172,9 @@ var CreateAnnouncer = function()
 
     Announcer.prototype.startRound = function()
     {
+        scf_.IsAnimating = false;
+        scf_.StartFrame = 0;
+
         round_.IsAnimating = true;
         round_.StartFrame = match_.getCurrentFrame();
 
@@ -252,6 +282,8 @@ var CreateAnnouncer = function()
             fight_.IsAnimating = fight_.Animation.tryRender(frame, fight_);
         if(perfect_.IsAnimating && perfect_.StartFrame <= frame)
             perfect_.IsAnimating = perfect_.Animation.tryRender(frame, perfect_);
+        if(scf_.IsAnimating)
+            scf_.IsAnimating = scf_.Animation.tryRender(frame, scf_);
     }
 
     return new Announcer();

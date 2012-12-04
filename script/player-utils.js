@@ -625,7 +625,8 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         }
         else
             delta = frame - startFrame;
-
+        if(delta < 0)
+            return true;
         var newFrame = this.getFrame(delta);
         if(!newFrame)
         {
@@ -648,7 +649,7 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
             else if (!data)
             {
                 element.style.display = "none";
-                return true;
+                return false;
             }
             if(direction > 0)
             {

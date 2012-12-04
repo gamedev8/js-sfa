@@ -752,7 +752,8 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
             else if(this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE) || hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE_NO_SOUND)) { ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true);}
             else if(hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE)) { ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy); }
         }
-        
+        if(hasFlag(flags,ATTACK_FLAGS.SUPER) || hasFlag(attackFlags,ATTACK_FLAGS.SUPER))
+            announcer_.runSuperComboFinish();
         this.forceLose(attackDirection,ignoreDeadAnimation);
         this.queueHitSound(hitSound);
         return;

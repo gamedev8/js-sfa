@@ -435,3 +435,16 @@
 	spriteLookup_.load("images/misc/misc/round-10.png","|images/misc/misc/announcer-sprites.png", "-6396px", "-111px", "208px", "67px");
 	spriteLookup_.load("images/misc/misc/round-11.png","|images/misc/misc/announcer-sprites.png", "-6604px", "-142px", "192px", "36px");
 	spriteLookup_.load("images/misc/misc/round-12.png","|images/misc/misc/announcer-sprites.png", "-6796px", "-144px", "164px", "34px");
+    //super combo finish
+	spriteLookup_.load("images/misc/misc/sfa000.png","images/misc/misc/scf-sprites.png", "0px", "0px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa001.png","images/misc/misc/scf-sprites.png", "-768px", "0px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa002.png","images/misc/misc/scf-sprites.png", "-1536px", "0px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa003.png","images/misc/misc/scf-sprites.png", "-2304px", "0px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa005.png","images/misc/misc/scf-sprites.png", "-3072px", "0px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa006.png","images/misc/misc/scf-sprites.png", "-3840px", "0px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa007.png","images/misc/misc/scf-sprites.png", "0px", "-576px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa008.png","images/misc/misc/scf-sprites.png", "-768px", "-576px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa009.png","images/misc/misc/scf-sprites.png", "-1536px", "-576px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa010.png","images/misc/misc/scf-sprites.png", "-2304px", "-576px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/sfa011.png","images/misc/misc/scf-sprites.png", "-3072px", "-576px", "768px", "576px");
+	spriteLookup_.load("images/misc/misc/white.png","images/misc/misc/scf-sprites.png", "-3840px", "-576px", "768px", "576px");
