@@ -201,13 +201,13 @@ var CreateTeam = function(num)
     }
 
     /**/
-    Team.prototype.frameMove = function(frame, keyboardState, x, y)
+    Team.prototype.frameMove = function(frame, x, y)
     {
         if(frame % 100 == 0)
             this.setCursor(((this.getCursor() + 1) < nbPlayers_) ? (this.getCursor()+1) : 0);
 
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).handleInput(keyboardState,frame);
+            this.getPlayer(i).handleInput(frame);
         for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.getPlayer(i).onFrameMove(frame,x,y);
 

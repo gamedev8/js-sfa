@@ -24,6 +24,7 @@ var CreateGame = function()
     var users_ = [];
     var frame_ = 0;
     var keyboardState_ = {};
+    var buttonState_ = {};
     var keyState_ = 0;
     var keyStates_ = [];
     var lastTime_ = 0;
@@ -153,15 +154,15 @@ var CreateGame = function()
             {
                 window.document.attachEvent("onkeydown",getKeyPressHandler(this,true),true);
                 window.document.attachEvent("onkeyup",getKeyPressHandler(this,false),true);
-                /*window.attachEvent("onblur", resetKeys(this), true);*/
-                window.onblur = resetKeys(this);
+                //window.attachEvent("onblur", resetKeys(this), true);
+                //window.onblur = resetKeys(this);
             }
             else
             {
                 window.document.addEventListener("keydown",getKeyPressHandler(this,true),true);
                 window.document.addEventListener("keyup",getKeyPressHandler(this,false),true);
-                /*window.addEventListener("onblur", resetKeys(this), true);*/
-                window.onblur = resetKeys(this);
+                //window.addEventListener("onblur", resetKeys(this), true);
+                //window.onblur = resetKeys(this);
             }
         }
         isInitialized_ = true;
@@ -435,6 +436,19 @@ var CreateGame = function()
             this.slowDown();
 
         keyboardState_["_" + keyCode] = isDown;
+
+        if(isDown)
+        {
+            if(!buttonState_["_" + keyCode])
+                buttonState_["_" + keyCode] = BUTTON_STATE.JUST_PRESSED;
+            else
+                buttonState_["_" + keyCode] = BUTTON_STATE.STILL_PRESSED;
+        }
+        else
+        {
+            buttonState_["_" + keyCode] = BUTTON_STATE.JUST_RELEASED;
+        }
+
         if(!!managed_)
         {
             managed_.onKeyStateChanged(isDown,keyCode,frame_);
@@ -443,7 +457,11 @@ var CreateGame = function()
 
     Game.prototype.handleInput = function()
     {
-        this.handleGamePadButtonPresses();
+        for(var i in buttonState_)
+            if(buttonState_[i] == BUTTON_STATE.JUST_RELEASED)
+                buttonState_[i] = BUTTON_STATE.NONE;
+
+        //this.handleGamePadButtonPresses();
     }
 
     Game.prototype.end = function()
@@ -515,7 +533,7 @@ var CreateGame = function()
             this.Match.preFrameMove(frame_);
 
             //frame move
-            this.Match.frameMove(frame_, keyboardState_);
+            this.Match.frameMove(frame_);
             announcer_.frameMove(frame_);
             soundManager_.frameMove(frame_);
             if(!this.Match.isSuperMoveActive())

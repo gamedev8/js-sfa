@@ -42,6 +42,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepadIndex)
 User.prototype.getFolder = function() { return this.Folder; }
 User.prototype.getName = function() { return this.CurrentStance.replace("_selected", ""); }
 
+
 User.prototype.setChar = function(char, isAlternate)
 {
     var name = "";
@@ -289,7 +290,7 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
                     this.IsCharSelected = true;
                     this.chooseCharacterFn(this);
                     this.IsAlternateChar = (keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3);
-                    if(this.getOtherCharacterFn() == this.Selected)
+                    if(this.getOtherCharacterFn() == this.getName())
                     {
                          this.IsAlternateChar = !this.getOtherIsAlternateFn()
                     }
@@ -714,8 +715,8 @@ var CreateCharSelect = function(user1,user2)
             u1_.init(true);
             u1_.changeCharacterFn = (function(thisValue) { return function(direction) { thisValue.tryChangeCharacter(this,direction); } })(this);
             u1_.chooseCharacterFn = (function(thisValue) { return function(direction) { thisValue.queueUser1ChooseSound(); thisValue.LastPicked = this.getName(); } })(this);
-            u1_.getOtherCharacterFn = (function(thisValue) { return function(direction) { return thisValue.Selected; } })(u2_);
-            u1_.getOtherIsAlternateFn = (function(thisValue) { return function(direction) { return thisValue.IsAlternateChar; } })(u2_);
+            u1_.getOtherCharacterFn = (function(thisValue) { return function(direction) { return thisValue.IsCharSelected ? thisValue.getName() : ""; } })(u2_);
+            u1_.getOtherIsAlternateFn = (function(thisValue) { return function(direction) { return thisValue.IsCharSelected && thisValue.IsAlternateChar; } })(u2_);
 
             if(u1_.Selected == null)
                 u1_.Selected = CHARACTERS.RYU;
@@ -731,8 +732,8 @@ var CreateCharSelect = function(user1,user2)
             u2_.init(false);
             u2_.changeCharacterFn = (function(thisValue) { return function(direction) { thisValue.tryChangeCharacter(this,direction); } })(this);
             u2_.chooseCharacterFn = (function(thisValue) { return function(direction) { thisValue.queueUser2ChooseSound();  thisValue.LastPicked = this.getName();} })(this);
-            u2_.getOtherCharacterFn = (function(thisValue) { return function(direction) { return thisValue.Selected; } })(u1_);
-            u2_.getOtherIsAlternateFn = (function(thisValue) { return function(direction) { return thisValue.IsAlternateChar; } })(u1_);
+            u2_.getOtherCharacterFn = (function(thisValue) { return function(direction) { return thisValue.IsCharSelected ? thisValue.getName() : ""; } })(u1_);
+            u2_.getOtherIsAlternateFn = (function(thisValue) { return function(direction) { return thisValue.IsCharSelected && thisValue.IsAlternateChar; } })(u1_);
 
             if(u1_.Selected == null)
                 u1_.Selected = CHARACTERS.KEN;

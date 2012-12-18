@@ -159,7 +159,6 @@ var CreateInsertCoinScreen = function(u1,u2)
 
     InsertCoinScreen.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
-        Alert(keyCode);
         if(!!isDown && (keyCode == KEYS.CNTRL))
         {
             showCredits_ = true;

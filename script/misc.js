@@ -1,4 +1,7 @@
-﻿
+﻿var getRand = function()
+{
+    return (Math.random() * 100) >> 0;
+}
 
 var StageParams = function(name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0YOffset, bg1YOffset)
 {
@@ -52,10 +55,10 @@ function AutoApplyFlip(element,applied)
 }
 
 function Alert(text)
-{    /*
+{   
     if(!!console && !!console.log)
         console.log(text);
-    */
+    
 }
 function AlertError(text)
 {
@@ -70,6 +73,10 @@ var fontSystem_ = CreateFontSystem();
 var runGameLoop_ = (function(thisValue) { return function() { thisValue.runGameLoop(); } })(game_);
 var runCharSelectLoop_ = (function(thisValue) { return function() { thisValue.runCharSelectLoop(); } })(game_);
 var runInsertCoinScreenLoop_ = (function(thisValue) { return function() { thisValue.runInsertCoinScreenLoop(); } })(game_);
+var btn = function(button,state,min,max)
+{
+    return {Button:button, State:state, MinNbFrames:min || undefined, MaxNbFrames:max || undefined};
+}
 
 /*overriden OnStageImagesLoaded function, just incase the images load too slow*/
 function OnStageImagesLoaded()
@@ -92,11 +99,12 @@ u4_.IsAlternateChar = true;
 /*This is more for debugging - starts a quick match right away with Ryu vs Ken*/
 function StartQuickMatch()
 {
-    //u1_.setChar(CHARACTERS.MBISON);
-    u1_.setChar(CHARACTERS.RYU,true);
+    u1_.setChar(CHARACTERS.KEN,true);
     u2_.setChar(CHARACTERS.RYU);
+    //u1_.setChar(CHARACTERS.RYU,true);
+    //u2_.setChar(CHARACTERS.RYU);
 
-    game_.startMatch(false,[u1_],[u2_], stages_["sodom"],StartTestAI);
+    game_.startMatch(false,[u1_],[u2_], stages_["ken"],StartTestAI);
 }
 
 /* multi player battle */
@@ -112,7 +120,7 @@ function StartDramaticBattle()
 function StartBattle()
 {
     if(!__debugMode)
-        StartDramaticBattle();
+        StartQuickMatch();
     else
         StartQuickMatch();
 }

@@ -179,31 +179,5 @@ Player.prototype.debugShowDirsHelper = function(bit)
 Player.prototype.debugShowKeys = function()
 {
     return;
-    var output = "";
-    var tmp = "";
-    for(var i = 0, length = this.KeyStates.length; i < length; ++i)
-    {
-        tmp = "";
-        var bit = this.KeyStates[i].Bit;
-        var keys = ((((((((this.KeyStates[i].Bit | 1) ^ 1) | 2) ^ 2) | 4) ^ 4) | 8) ^ 8);
-        var dir = ((((((((((((this.KeyStates[i].Bit | 16) ^ 16) | 32) ^ 32) | 64) ^ 64) | 128) ^ 128) | 256) ^ 256) | 512) ^ 512);
-        
-        tmp += this.debugShowDirsHelper(dir);
-        tmp += this.debugShowKeysHelper(keys);
-
-        if(!!tmp)
-        {
-            if(tmp[0] == "+")
-                tmp = tmp.substring(1);
-            if(!!output)
-                output += ", ";
-            output += tmp;
-        }
-    }
-
-    if(!!output)
-    {
-        this.DebKeysElement.innerHTML = output;
-    }
 }
 

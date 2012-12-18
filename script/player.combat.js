@@ -182,7 +182,7 @@ Player.prototype.setAllowBlock = function(attackId,frame,isAllowed,x,y,hitPoints
             {
                 this.Flags.Pose.remove(POSE_FLAGS.ALLOW_BLOCK);
                 //if the player is blocking, then remove it
-                if(this.Flags.Player.has(PLAYER_FLAGS.BLOCKING))
+                if(this.Flags.Player.has(PLAYER_FLAGS.BLOCKING) && !this.isBlockingInAir())
                 {
                     this.IgnoreHoldFrame = true;
                     this.ForceEndAnimation = true;
@@ -593,6 +593,7 @@ Player.prototype.decreaseDizziness = function(frame)
 /*The player was just hit and must react*/
 Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,damage,energyToAdd,isProjectile,hitX,hitY,attackDirection,who,hitID,attackID,moveOverrideFlags,fx,fy,otherPlayer,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,maxHits,otherParams)
 {
+    this.onTakeHit(frame,who);
     if(this.isDizzy())
         this.clearDizzy();
 
@@ -630,7 +631,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
         if(!!invokedAnimationName)
         {
-            move = this.Moves[invokedAnimationName];
+            move = this.Moves[this.ndx(invokedAnimationName)];
             if(!!move)
             {
                 move.ControllerAnimation = otherPlayer.CurrentAnimation;
@@ -659,6 +660,8 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE / 2;}
         this.FreezeUntilFrame = frame + (nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
+
+        this.onBlocked();
     }
     else
     {
@@ -690,24 +693,43 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
         if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
         {
-            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cLN")];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cMN")];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cHN")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cLN")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cMN")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cHN")];}
+
+            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[this.MoveNdx.Tripped];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.CLN];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.CMN];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.CHN];}
+
         }
         else
         {
-            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_knockdown")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_knockdown")];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLN")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLF")];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMN")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMF")];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHN")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHF")];}
+
+
+            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[this.MoveNdx.Tripped];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[this.MoveNdx.KnockDown];}
+
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLN];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLF];}
+
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMN];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMF];}
+
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHN];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHF];}
         }
     }
 
@@ -754,8 +776,9 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         }
         if(hasFlag(flags,ATTACK_FLAGS.SUPER) || hasFlag(attackFlags,ATTACK_FLAGS.SUPER))
             announcer_.runSuperComboFinish();
+        else
+            this.queueHitSound(hitSound);
         this.forceLose(attackDirection,ignoreDeadAnimation);
-        this.queueHitSound(hitSound);
         return;
     }
 
@@ -848,24 +871,44 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     {
         if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
         {
-            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cLN")];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cMN")];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cHN")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cLN")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cMN")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cHN")];}
+
+            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[this.MoveNdx.Tripped];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.CLN];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.CMN];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.CHN];}
+
         }
         else
         {
-            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_knockdown")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_knockdown")];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLN")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLF")];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMN")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMF")];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHN")];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHF")];}
+
+
+
+            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[this.MoveNdx.Tripped];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[this.MoveNdx.KnockDown];}
+
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLN];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLF];}
+
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMN];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMF];}
+
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHN];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHF];}
         }
 
         if(!!move)
@@ -942,7 +985,7 @@ Player.prototype.forceTeamLose = function(frame,attackDirection)
 }
 Player.prototype.knockDownDefeat = function(frame,attackDirection)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_dead")];
+    var move = this.Moves[this.MoveNdx.Dead];
     if(!!move)
     {
         attackDirection = this.getRelativeDirection(attackDirection);
@@ -958,7 +1001,7 @@ Player.prototype.getDizzy = function(attackFlags,hitState,flags,frame,damage,isP
     if(this.isDead())
         return;
 
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_dizzy")];
+    var move = this.Moves[this.MoveNdx.Dizzy];
     if(!!move)
     {
         this.resetCombo();
@@ -979,13 +1022,13 @@ Player.prototype._DEBUG_Getup = function()
 {
     this.Flags.Player.remove(PLAYER_FLAGS.DEAD);
     this.takeDamage(-20);
-    var move = this.Moves[_c3("_",MISC_FLAGS.NONE,"_getup")];
+    var move = this.Moves[this.MoveNdx.Getup];
     this.setCurrentAnimation({Animation:move,StartFrame:this.getMatch().getCurrentFrame(),Direction:this.Direction,AttackDirection:this.Direction});
 }
 /*Player gets tripped*/
 Player.prototype.takeTrip = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];
+    var move = this.Moves[this.MoveNdx.Tripped];
     if(!!move)
     {
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
@@ -997,7 +1040,7 @@ Player.prototype.takeTrip = function(attackFlags,hitState,flags,frame,damage,isP
 /*Player falls*/
 Player.prototype.drop = function()
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_eject")];
+    var move = this.Moves[this.MoveNdx.Eject];
     if(!!move)
     {
         this.setBeingGrappled(false);
@@ -1022,7 +1065,7 @@ Player.prototype.abortThrow = function()
 /*Player gets knocked down*/
 Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_eject")];
+    var move = this.Moves[this.MoveNdx.Eject];
     if(!!move)
     {
         //attackDirection = this.getRelativeDirection(attackDirection);
@@ -1035,7 +1078,7 @@ Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProj
 /*Player gets knocked down*/
 Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_knockdown")];
+    var move = this.Moves[this.MoveNdx.KnockDown];
     if(!!move)
     {
         this.stopGettingDizzy();
@@ -1048,7 +1091,7 @@ Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,is
 /*Player turns blue and gets knocked down*/
 Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_blue_fire")];
+    var move = this.Moves[this.MoveNdx.BlueFire];
     if(!!move)
     {
         this.stopGettingDizzy();
@@ -1064,7 +1107,7 @@ Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damag
 /*Player turns red and gets knocked down*/
 Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_red_fire")];
+    var move = this.Moves[this.MoveNdx.RedFire];
     if(!!move)
     {
         this.stopGettingDizzy();
@@ -1080,7 +1123,7 @@ Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage
 /*Player takes a hit while in the air*/
 Player.prototype.takeAirborneHit = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
-    var move = this.Moves[_c3("_",POSE_FLAGS.AIRBORNE,"_hr_air")];
+    var move = this.Moves[this.MoveNdx.Air];
     if(!!move)
     {   
         var direction = -this.getAttackDirection(attackDirection);

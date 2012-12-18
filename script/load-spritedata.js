@@ -23,16 +23,17 @@
 	spriteLookup_.load("images/misc/misc/ken-name-1.png","images/misc/misc/char-sprites.png", "-532px", "-130px", "58px", "34px");
 	spriteLookup_.load("images/misc/misc/ken-r-portriat-1.png","images/misc/misc/char-sprites.png", "-590px", "-84px", "64px", "80px");
 	spriteLookup_.load("images/misc/misc/ken-shadow.png","images/misc/misc/char-sprites.png", "-654px", "-126px", "136px", "38px");
-	spriteLookup_.load("images/misc/misc/mbison-name-1.png","images/misc/misc/char-sprites.png", "-790px", "-130px", "112px", "34px");
-	spriteLookup_.load("images/misc/misc/mbison-r-portriat-1.png","images/misc/misc/char-sprites.png", "-902px", "-82px", "62px", "82px");
-	spriteLookup_.load("images/misc/misc/mbison-shadow.png","images/misc/misc/char-sprites.png", "-964px", "-134px", "196px", "30px");
-	spriteLookup_.load("images/misc/misc/rose-shadow.png","images/misc/misc/char-sprites.png", "-1160px", "-126px", "136px", "38px");
-	spriteLookup_.load("images/misc/misc/ryu2-r-portriat-1.png","images/misc/misc/char-sprites.png", "-1296px", "-84px", "62px", "80px");
-	spriteLookup_.load("images/misc/misc/ryu-name-1.png","images/misc/misc/char-sprites.png", "-1358px", "-130px", "58px", "34px");
-	spriteLookup_.load("images/misc/misc/ryu-r-portriat-1.png","images/misc/misc/char-sprites.png", "-1416px", "-84px", "62px", "80px");
-	spriteLookup_.load("images/misc/misc/ryu-shadow.png","images/misc/misc/char-sprites.png", "-1478px", "-126px", "136px", "38px");
-	spriteLookup_.load("images/misc/misc/sagat-shadow.png","images/misc/misc/char-sprites.png", "-1614px", "-126px", "168px", "38px");
-	spriteLookup_.load("images/misc/misc/sodom-shadow.png","images/misc/misc/char-sprites.png", "-1782px", "-126px", "168px", "38px");
+	spriteLookup_.load("images/misc/misc/mbison2-r-portriat-1.png","images/misc/misc/char-sprites.png", "-790px", "-82px", "62px", "82px");
+	spriteLookup_.load("images/misc/misc/mbison-name-1.png","images/misc/misc/char-sprites.png", "-852px", "-130px", "112px", "34px");
+	spriteLookup_.load("images/misc/misc/mbison-r-portriat-1.png","images/misc/misc/char-sprites.png", "-964px", "-82px", "62px", "82px");
+	spriteLookup_.load("images/misc/misc/mbison-shadow.png","images/misc/misc/char-sprites.png", "-1026px", "-134px", "196px", "30px");
+	spriteLookup_.load("images/misc/misc/rose-shadow.png","images/misc/misc/char-sprites.png", "-1222px", "-126px", "136px", "38px");
+	spriteLookup_.load("images/misc/misc/ryu2-r-portriat-1.png","images/misc/misc/char-sprites.png", "-1358px", "-84px", "62px", "80px");
+	spriteLookup_.load("images/misc/misc/ryu-name-1.png","images/misc/misc/char-sprites.png", "-1420px", "-130px", "58px", "34px");
+	spriteLookup_.load("images/misc/misc/ryu-r-portriat-1.png","images/misc/misc/char-sprites.png", "-1478px", "-84px", "62px", "80px");
+	spriteLookup_.load("images/misc/misc/ryu-shadow.png","images/misc/misc/char-sprites.png", "-1540px", "-126px", "136px", "38px");
+	spriteLookup_.load("images/misc/misc/sagat-shadow.png","images/misc/misc/char-sprites.png", "-1676px", "-126px", "168px", "38px");
+	spriteLookup_.load("images/misc/misc/sodom-shadow.png","images/misc/misc/char-sprites.png", "-1844px", "-126px", "168px", "38px");
     /*in-game shadows*/
 	spriteLookup_.load("images/misc/misc/shadow.png","|images/misc/misc/shadow-sprites.png", "0px", "0px", "136px", "38px");
 	spriteLookup_.load("images/misc/misc/shadow-136.png","|images/misc/misc/shadow-sprites.png", "-136px", "0px", "136px", "38px");

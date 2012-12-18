@@ -65,9 +65,9 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.resetKeys = function()
     {
         for(var i = 0; i < this.TeamA.Players.length; ++i)
-            this.TeamA.getPlayer(i).clearInput();
+            this.TeamA.Players[i].clearInput();
         for(var i = 0; i < this.TeamB.Players.length; ++i)
-            this.TeamB.getPlayer(i).clearInput();
+            this.TeamB.Players[i].clearInput();
     }
     Match.prototype.playerCount = function()
     {
@@ -170,19 +170,19 @@ var CreateMatch = function(team1,team2,stage)
             case CONSTANTS.TEAM1:
             {
                 for(var i = 0; i < this.TeamA.Players.length; ++i)
-                    if(this.TeamA.getPlayer(i).Id != loseIgnoreId)
-                        this.TeamA.getPlayer(i).forceLose(attackDirection);
+                    if(this.TeamA.Players[i].Id != loseIgnoreId)
+                        this.TeamA.Players[i].forceLose(attackDirection);
                 for(var i = 0; i < this.TeamB.Players.length; ++i)
-                    this.TeamB.getPlayer(i).justWon(frame);
+                    this.TeamB.Players[i].justWon(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
                 for(var i = 0; i < this.TeamB.Players.length; ++i)
-                    if(this.TeamB.getPlayer(i).Id != loseIgnoreId)
-                        this.TeamB.getPlayer(i).forceLose(attackDirection);
+                    if(this.TeamB.Players[i].Id != loseIgnoreId)
+                        this.TeamB.Players[i].forceLose(attackDirection);
                 for(var i = 0; i < this.TeamA.Players.length; ++i)
-                    this.TeamA.getPlayer(i).justWon(frame);
+                    this.TeamA.Players[i].justWon(frame);
                 break;
             }
         }
@@ -232,23 +232,23 @@ var CreateMatch = function(team1,team2,stage)
             this.TeamA.getEnergybar().change(0,0);
             this.TeamB.getEnergybar().change(0,0);
 
-            if(!!this.TeamA.getPlayer(0))
-                this.TeamA.getPlayer(0).setX(STAGE.START_X);
-            if(!!this.TeamB.getPlayer(0))
-                this.TeamB.getPlayer(0).setX(STAGE.START_X);
+            if(!!this.TeamA.Players[0])
+                this.TeamA.Players[0].setX(STAGE.START_X);
+            if(!!this.TeamB.Players[0])
+                this.TeamB.Players[0].setX(STAGE.START_X);
 
             /*set the starting locations for each player*/
             for(var i = 0; i < this.TeamA.Players.length; ++i)
             {
-                this.TeamA.getPlayer(i).reset(true);
-                this.TeamA.getPlayer(i).setDirection(-1);
-                this.TeamA.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                this.TeamA.Players[i].reset(true);
+                this.TeamA.Players[i].setDirection(-1);
+                this.TeamA.Players[i].setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
             for(var i = 0; i < this.TeamB.Players.length; ++i)
             {
-                this.TeamB.getPlayer(i).reset(true);
-                this.TeamB.getPlayer(i).setDirection(1);
-                this.TeamB.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                this.TeamB.Players[i].reset(true);
+                this.TeamB.Players[i].setDirection(1);
+                this.TeamB.Players[i].setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
 
             this.setRoundOver(false);
@@ -310,6 +310,7 @@ var CreateMatch = function(team1,team2,stage)
         var onContinueAttackEnemies= function(thisValue,otherTeam) { return function(frame,hitPoints) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyContinueAttack(frame,this,hitPoints); } } }
         var onVulnerable           = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyVulerable(frame,this); } } }
         var onEndAttackEnemies     = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyEndAttack(frame,this); } } }
+        var onDizzy                = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyDizzy(frame,this); } } }
 
         var otherTeam = null;
         var myTeam = null;
@@ -342,6 +343,7 @@ var CreateMatch = function(team1,team2,stage)
         player.onContinueAttackEnemiesFn = onContinueAttackEnemies(this,otherTeam);
         player.onVulnerableFn = onVulnerable(this,otherTeam);
         player.onEndAttackEnemiesFn = onEndAttackEnemies(this,otherTeam);
+        player.onDizzyFn = onDizzy(this,otherTeam);
 
         player.onStartAttackFn = startAttack(this,otherTeam);
         player.onEndAttackFn = endAttack(this,otherTeam);
@@ -374,11 +376,11 @@ var CreateMatch = function(team1,team2,stage)
         for(var i = 0; i < this.TeamA.Players.length; ++i)
         {
             this.setupPlayer(this.TeamA.Players[i],CONSTANTS.TEAM1);
+            this.TeamA.Players[0].setX(STAGE.START_X);
         }
-        if(!!this.TeamA.getPlayer(0))
+        if(!!this.TeamA.Players[0])
         {
-            faceoff_.setTeamA(this.TeamA.getPlayer(0).Name);
-            this.TeamA.getPlayer(0).setX(STAGE.START_X);
+            faceoff_.setTeamA(this.TeamA.Players[0].Name);
         }
 
         /*init team 2*/
@@ -386,17 +388,17 @@ var CreateMatch = function(team1,team2,stage)
         {
             this.setupPlayer(this.TeamB.Players[i],CONSTANTS.TEAM2);
         }
-        if(!!this.TeamB.getPlayer(0))
+        if(!!this.TeamB.Players[0])
         {
-            faceoff_.setTeamB(this.TeamB.getPlayer(0).Name);
-            this.TeamB.getPlayer(0).setX(STAGE.START_X);
+            faceoff_.setTeamB(this.TeamB.Players[0].Name);
+            this.TeamB.Players[0].setX(STAGE.START_X);
         }
 
         /*set the starting locations for each player*/
         for(var i = 1, length = this.TeamA.Players.length; i < length; ++i)
-            this.TeamA.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+            this.TeamA.Players[i].setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
         for(var i = 1, length = this.TeamB.Players.length; i < length; ++i)
-            this.TeamB.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+            this.TeamB.Players[i].setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
         this.Stage.init();
         this.TeamA.init();
@@ -408,9 +410,9 @@ var CreateMatch = function(team1,team2,stage)
         //if(this.getAllowInput())
         //{
             for(var i = 0; i < this.TeamA.Players.length; ++i)
-                this.TeamA.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
+                this.TeamA.Players[i].onKeyStateChanged(isDown,keyCode,frame);
             for(var i = 0; i < this.TeamB.Players.length; ++i)
-                this.TeamB.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
+                this.TeamB.Players[i].onKeyStateChanged(isDown,keyCode,frame);
         //}
     }
     /*Dims the background when a player is starting a super move*/
@@ -432,11 +434,11 @@ var CreateMatch = function(team1,team2,stage)
             this.setBackgroundTransparent(player);
             this.setSuperMoveActive(true);
             for(var i = 0; i < this.TeamA.Players.length; ++i)
-                if(this.TeamA.getPlayer(i).Id != player.Id)
-                    this.TeamA.getPlayer(i).onSuperMoveStarted();
+                if(this.TeamA.Players[i].Id != player.Id)
+                    this.TeamA.Players[i].onSuperMoveStarted();
             for(var i = 0; i < this.TeamB.Players.length; ++i)
-                if(this.TeamB.getPlayer(i).Id != player.Id)
-                    this.TeamB.getPlayer(i).onSuperMoveStarted();
+                if(this.TeamB.Players[i].Id != player.Id)
+                    this.TeamB.Players[i].onSuperMoveStarted();
         }
     }
     Match.prototype.onSuperMoveCompleted = function(player)
@@ -445,27 +447,27 @@ var CreateMatch = function(team1,team2,stage)
         {
             this.setBackgroundTransparent();
             for(var i = 0; i < this.TeamA.Players.length; ++i)
-                if(this.TeamA.getPlayer(i).Id != player.Id)
-                    this.TeamA.getPlayer(i).onSuperMoveCompleted();
+                if(this.TeamA.Players[i].Id != player.Id)
+                    this.TeamA.Players[i].onSuperMoveCompleted();
             for(var i = 0; i < this.TeamB.Players.length; ++i)
-                if(this.TeamB.getPlayer(i).Id != player.Id)
-                    this.TeamB.getPlayer(i).onSuperMoveCompleted();
+                if(this.TeamB.Players[i].Id != player.Id)
+                    this.TeamB.Players[i].onSuperMoveCompleted();
             this.setSuperMoveActive(false);
         }
     }
     Match.prototype.preFrameMove = function(frame)
     {
         for(var i = 0; i < this.TeamA.Players.length; ++i)
-            this.TeamA.getPlayer(i).onPreFrameMove(frame);
+            this.TeamA.Players[i].onPreFrameMove(frame);
         for(var i = 0; i < this.TeamB.Players.length; ++i)
-            this.TeamB.getPlayer(i).onPreFrameMove(frame);
+            this.TeamB.Players[i].onPreFrameMove(frame);
     }
     Match.prototype.renderComplete = function(frame)
     {
         for(var i = 0; i < this.TeamA.Players.length; ++i)
-            this.TeamA.getPlayer(i).onRenderComplete(frame);
+            this.TeamA.Players[i].onRenderComplete(frame);
         for(var i = 0; i < this.TeamB.Players.length; ++i)
-            this.TeamB.getPlayer(i).onRenderComplete(frame);
+            this.TeamB.Players[i].onRenderComplete(frame);
     }
 
     /**/
@@ -523,8 +525,8 @@ var CreateMatch = function(team1,team2,stage)
         this.Stage.frameMove(frame);
         this.getHitSystem().frameMove(frame);
 
-        this.TeamA.frameMove(frame,keyboardState,this.Stage.X, this.Stage.getGroundY());
-        this.TeamB.frameMove(frame,keyboardState,this.Stage.X, this.Stage.getGroundY());
+        this.TeamA.frameMove(frame,this.Stage.X, this.Stage.getGroundY());
+        this.TeamB.frameMove(frame,this.Stage.X, this.Stage.getGroundY());
 
         if(round_ != 1)
             this.handleOtherRounds(frame);

@@ -69,6 +69,16 @@ var BUTTONS =
     ,EXACT:1 << 14
 }
 
+var BUTTON_STATE = 
+{
+    NONE:0
+    ,PRESSED:1
+};
+//BUTTON_STATE.PRESSED = BUTTON_STATE.JUST_PRESSED | BUTTON_STATE.STILL_PRESSED;
+//BUTTON_STATE.NONE = BUTTON_STATE.JUST_RELEASED | BUTTON_STATE.NONE;
+
+var makeButtonState = function(state,frame) { return {Value:state||BUTTON_STATE.NONE, Frame:frame || 0}; };
+
 var MAX = 
 {
     KEY_SEQUENCE:20
@@ -126,6 +136,11 @@ var AIRBORNE_FLAGS =
     YES:1 << 0
     ,NO:1 << 1
     ,EQUAL:1 << 2
+}
+
+
+var ALERT_FLAGS = {
+    DIZZY:1 << 1
 }
 
 var PLAYER_FLAGS = 
@@ -191,6 +206,7 @@ var POSE_FLAGS =
     ,AIR_BRAKES:1 << 21
     ,ALLOW_OVERLAP:1 << 22
     ,QUICK_CHANGE_DIRECTION:1 << 23
+    ,FORCE_CHANGE_TARGET:1 << 24
 }
 
 
@@ -354,7 +370,7 @@ var CONSTANTS =
 {
     MAX_SPEED:0
     ,MAX_PRIORITY:1 << 30
-    ,NORMAL_SPEED:14
+    ,NORMAL_SPEED:12
     ,SLOW_SPEED:70
     ,MAX_FRAME:100000000000000 /*round will end when Game.prototype.frame reaches this value*/
     ,TARGET_FPS:64
@@ -447,6 +463,9 @@ var CONSTANTS =
     ,DOUBLE:2
     ,TRIPLE:3
     ,QUADRUPLE:4
+    /*key sequences are "dead" after the following number of frames*/
+    ,KEY_SEQUENCE_EXPIRY:5
+    ,MAINTAIN_KEYS_WHILE_AIRBORNE:0
 
     ,ONE_LEVEL:96
     ,MAX_BLOCK_DISTANCE_SQ:90000
@@ -474,8 +493,11 @@ var CONSTANTS =
     ,COL2:1
     ,COL3:2
     ,COL4:3
-    ,NBCHARGE_FRAMES:60
     ,MAX_CREDITS:9
+
+    ,NBCHARGE_FRAMES:60
+    ,NBINTERIM_FRAMES:30
+    ,ATTACKBUTTON_FRAMES:3
 
     ,PRESENT_DELAY:5
     ,MIN_TELEPORT_DISTANCE_SQ:10
@@ -625,6 +647,14 @@ var KEYS =
     ,SPACE:32
     ,CNTRL:17
     ,ENTER:13
+};
+
+var KEY_STATES = 
+{
+    NONE:0
+    ,JUST_PRESSED:1
+    ,STILL_PRESSED:2
+    ,JUST_RELEASED:3
 };
 
 var GAME_STATES = 

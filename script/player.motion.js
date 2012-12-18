@@ -217,7 +217,7 @@ Player.prototype.checkMustChangeDirection = function()
     }
 }
 
-Player.prototype.changeDirection = function(quick)
+Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
 {
     this.MustChangeDirection = 0;
     var pnlStageWidth = STAGE.CSSWIDTH;
@@ -273,31 +273,65 @@ Player.prototype.changeDirection = function(quick)
         this.Buttons[this.RightKey].Bit = 2;
         this.flip(false);
     }
-    if(!quick)
+    if(!quick && !ignoreSetAnimation)
     {
         if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
         {
-            var move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_turn")];
+            //var move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_turn")];
+            var move = this.Moves[this.MoveNdx.CrouchTurn];
             this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
         }
         else
         {
-            var move = this.Moves[_c3("_",POSE_FLAGS.ANY),"_quick_turn"] || this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
+            //var move = this.Moves[_c3("_",POSE_FLAGS.ANY),"_quick_turn"] || this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
+            var move = this.Moves[this.MoveNdx.Turn];
             this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
         }
     }
 
-    for(var i = 0; i < this.KeyStates.length; ++i)
+
+    var tmp = 0;
+    for(var i = 0; i < this.ButtonStates.length; ++i)
     {
-        if(hasFlag(this.KeyStates[i].Bit,(1 << 0)))
-            this.KeyStates[i].Bit = this.KeyStates[i].Bit ^ (1 << 0) | (1 << 1);
-        else if(hasFlag(this.KeyStates[i].Bit,(1 << 1)))
-            this.KeyStates[i].Bit = this.KeyStates[i].Bit ^ (1 << 1) | (1 << 0);
+        if(this.ButtonStates[i].State[BUTTONS.BACK].Value == BUTTON_STATE.PRESSED)
+        {
+            
+            this.ButtonStates[i].State[BUTTONS.BACK].Value = BUTTON_STATE.NONE;
+            this.ButtonStates[i].State[BUTTONS.FORWARD].Value = BUTTON_STATE.PRESSED;
+
+            tmp = this.ButtonStates[i].State[BUTTONS.FORWARD].Frame;
+            this.ButtonStates[i].State[BUTTONS.FORWARD].Frame = this.ButtonStates[i].State[BUTTONS.BACK].Frame;
+            this.ButtonStates[i].State[BUTTONS.BACK].Frame = tmp;
+        }
+        else if(this.ButtonStates[i].State[BUTTONS.FORWARD].Value == BUTTON_STATE.PRESSED)
+        {
+            this.ButtonStates[i].State[BUTTONS.FORWARD].Value = BUTTON_STATE.NONE;
+            this.ButtonStates[i].State[BUTTONS.BACK].Value = BUTTON_STATE.PRESSED;
+
+            tmp = this.ButtonStates[i].State[BUTTONS.BACK].Frame;
+            this.ButtonStates[i].State[BUTTONS.BACK].Frame = this.ButtonStates[i].State[BUTTONS.FORWARD].Frame;
+            this.ButtonStates[i].State[BUTTONS.FORWARD].Frame = tmp;
+        }
     }
-    if(hasFlag(this.KeyState,(1 << 0)))
-        this.KeyState ^= (1 << 0) | (1 << 1);
-    else if(hasFlag(this.KeyState,(1 << 1)))
-        this.KeyState ^= (1 << 1) | (1 << 0);
+
+    if(this.ButtonState[BUTTONS.BACK].Value == BUTTON_STATE.PRESSED)
+    {
+        this.ButtonState[BUTTONS.BACK].Value = BUTTON_STATE.NONE;
+        this.ButtonState[BUTTONS.FORWARD].Value = BUTTON_STATE.PRESSED;
+
+        tmp = this.ButtonState[BUTTONS.FORWARD].Frame;
+        this.ButtonState[BUTTONS.FORWARD].Frame = this.ButtonState[BUTTONS.BACK].Frame;
+        this.ButtonState[BUTTONS.BACK].Frame = tmp;
+    }
+    else if(this.ButtonState[BUTTONS.FORWARD].Value == BUTTON_STATE.PRESSED)
+    {
+        this.ButtonState[BUTTONS.FORWARD].Value = BUTTON_STATE.NONE;
+        this.ButtonState[BUTTONS.BACK].Value = BUTTON_STATE.PRESSED;
+
+        tmp = this.ButtonState[BUTTONS.BACK].Frame;
+        this.ButtonState[BUTTONS.BACK].Frame = this.ButtonState[BUTTONS.FORWARD].Frame;
+        this.ButtonState[BUTTONS.FORWARD].Frame = tmp;
+    }
 }
 Player.prototype.moveCircleToBottom = function()
 {
@@ -711,6 +745,7 @@ Player.prototype.advanceJump = function(ignoreYCheck)
         //lets the stage move back down to the ground (just in case it wasnt triggered already)
         this.getStage().requestScrollY(false,this.Y);
         this.getMatch().decAirborne();
+        this.NbMaintainInputFrames = 0;
         return false;
     }
 
@@ -744,6 +779,7 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
     if(this.getCurrentComboCountFn() < 2 || !!jumpT)
         this.JumpT = jumpT || 0;
     this.JumpT = this.JumpT || 0;
+    this.NbMaintainInputFrames = CONSTANTS.MAINTAIN_KEYS_WHILE_AIRBORNE;
     /*store the velocity*/
     /*store a timer*/
     if(!this.hasAirborneComboFlag())

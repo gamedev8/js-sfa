@@ -1,6 +1,6 @@
 ﻿
 
-/*Encapsulates a new player*/
+//Encapsulates a new player
 var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
     user.Player = this;
@@ -14,10 +14,10 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.NameImageSrc = nameImageSrc || "images/misc/misc/" + this.Name.toLowerCase() +"-name-1.png";
     this.PortriatImageSrc = portriatImageSrc || "images/misc/misc/" + this.Folder.toLowerCase() + "-r-portriat-1.png";
 
-    /*these 2 are used so we can easily swap left and right when the player changes directions*/
+    //these 2 are used so we can easily swap left and right when the player changes directions
     this.LeftKey = user.Left;
     this.RightKey = user.Right;
-    /*store all of the key mappings*/
+    //store all of the key mappings
     this.Buttons = {};
     this.Buttons[user.Left] =   {Button:user.Left,Bit:1};
     this.Buttons[user.Right] =  {Button:user.Right,Bit:2};
@@ -31,10 +31,24 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.Buttons[user.K3] =     {Button:user.K3,Bit:512};
     this.Buttons[user.Turn] =   {Button:user.Turn,Bit:1024};
 
+    this.ButtonStates = [];
+    this.ButtonState = {};
+    this.ButtonState[this.Buttons[user.Left].Bit] =  {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.Right].Bit] = {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.Up].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.Down].Bit] =  {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.P1].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.P2].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.P3].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.K1].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.K2].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.K3].Bit] =    {Value:BUTTON_STATE.NONE,Frame:0};
+    this.ButtonState[this.Buttons[user.Turn].Bit] =  {Value:BUTTON_STATE.NONE,Frame:0};
+
     this.ForceNoAdjustShadowPosition = false;
 
-    this.Moves = {};
-    this.Throws = {};
+    this.Moves = [];
+    this.Throws = [];
 
     this.OtherAnimations = {};
     this.OtherAnimations.Dirt = [];
@@ -105,7 +119,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.HeadOffsetY = 10;
     this.Ai = new CreateAIProxy(this);
     this.HasPendingGrapple = false;
-    /**/
+
     this.SlideFactor = slideFactor || 30;
     this.BaseTakeHitDelay = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
     this.BaseGiveHitDelay = CONSTANTS.DEFAULT_GIVE_HIT_DELAY;
@@ -121,12 +135,69 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.IgnoreOverrides = false;
     this.ComboCount = 0;
     this.Combo = {};
+    this.MoveNdx = {
+        HitReact: {}
+    };
 
     this.loadAssets();
     this.createElement();
     this.reset();
     this.addGenericAnimations();
     this.setImgRect();
+}
+Player.prototype.sortAnimations = function()
+{
+    this.Throws.sort(function(a,b) {
+            return b.ButtonCount - a.ButtonCount;
+        });
+
+    this.Moves.sort(function(a,b) {
+            return b.ButtonCount - a.ButtonCount;
+        });
+
+
+
+    for(var i = 0; i < this.Moves.length; ++i)
+    {
+        if(this.Moves[i].BaseAnimation.Name == "block"){ this.MoveNdx.HighBlock = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "crouch block"){ this.MoveNdx.LowBlock = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr dead"){ this.MoveNdx.Dead = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "down"){ this.MoveNdx.Down = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "dead bounce"){ this.MoveNdx.DeadBounce = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "stance"){ this.MoveNdx.Stance = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "turn"){ this.MoveNdx.Turn = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "crouch turn"){ this.MoveNdx.CrouchTurn = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "quick turn"){ this.MoveNdx.QuickTurn = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "dizzy"){ this.MoveNdx.Dizzy = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "getup"){ this.MoveNdx.Getup = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "tripped"){ this.MoveNdx.Tripped = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "knock down"){ this.MoveNdx.KnockDown = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "blue fire"){ this.MoveNdx.BlueFire = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "red fire"){ this.MoveNdx.RedFire = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "eject"){ this.MoveNdx.Eject = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hit in air"){ this.MoveNdx.Air = i; }
+
+        else if(this.Moves[i].BaseAnimation.Name == "shoulder throw"){ this.MoveNdx.ShoulderThrow = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "bison shoulder throw"){ this.MoveNdx.BisonShoulderThrow = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "fk throw"){ this.MoveNdx.FkThrow = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "roll throw"){ this.MoveNdx.RollThrow = i; }
+
+        else if(this.Moves[i].BaseAnimation.Name == "hr crouch light"){ this.MoveNdx.CLN = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr crouch medium"){ this.MoveNdx.CMN = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr crouch hard"){ this.MoveNdx.CHN = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sLN"){ this.MoveNdx.SLN = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sLF"){ this.MoveNdx.SLF = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sMN"){ this.MoveNdx.SMN = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sMF"){ this.MoveNdx.SMF = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sHN"){ this.MoveNdx.SHN = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sHF"){ this.MoveNdx.SHF = i; }
+    }
+}
+Player.prototype.ndx = function(key)
+{
+    var retVal = this.MoveNdx[key] || -1;
+
+    return retVal;
 }
 Player.prototype.setIndex = function(index) { this.Index = index; }
 Player.prototype.getIndex = function() { return this.Index; }
@@ -229,7 +300,7 @@ Player.prototype.reset = function(ignoreDirection)
     this.IgnoreHoldFrame = false;
     this.MustClearAllowBlock = false;
     this.MustClearAllowAirBlock = false;
-    /*this is the combo against THIS player! Not against other players*/
+    //this is the combo against THIS player! Not against other players
     this.resetCombo();
     this.InteruptAnimation = null;
     this.CurrentAnimation = null;
@@ -240,8 +311,6 @@ Player.prototype.reset = function(ignoreDirection)
         this.Direction = 1;
     this.Health = 100;
     this.Flags = new PlayerFlags(this);
-    this.KeyState = 0;
-    this.KeyStates = [];
     this.IsInAttackFrame = false;
 
     this.LastKeyStates = [];
@@ -283,11 +352,12 @@ Player.prototype.reset = function(ignoreDirection)
     this.Fy = 0;
     this.LastFx = 0;
     this.LastFy = 0;
-    /*jump velocity*/
+    //jump velocity
     this.JumpVelocityX = 0;
     this.JumpVelocityY = 0;
     this.ZOrder = null;
-    /**/
+    this.NbMaintainInputFrames = 0;
+    //
     this.T = 0;
     this.FrameFreeze = 0;
     this.IsSliding = false;
@@ -376,34 +446,18 @@ Player.prototype.moveToFront = function(dontMoveOtherPlayers)
     if(!dontMoveOtherPlayers)
         this.moveOtherPlayersToBackFn();
 }
-/*Change the speed of the moves for this player*/
-Player.prototype.changeSpeed = function(amount)
-{
-    var fastestFrame = 999999;
-    for(var i in this.Moves)
-        for(var x = 0; x < this.Moves[i].BaseAnimation.Frames.length; ++x)
-            fastestFrame = Math.min(this.Moves[i].BaseAnimation.Frames[x].Frames,fastestFrame);
-    fastestFrame -= 1;
-    for(var i in this.Moves)
-        this.Moves[i].FrameSpeed = Math.min(Math.max(this.Moves[i].FrameSpeed + amount, CONSTANTS.MIN_FRAME_DELAY), fastestFrame);
-}
-Player.prototype.resetSpeed = function()
-{
-    for(var i in this.Moves)
-        this.Moves[i].FrameSpeed = 0;
-}
-/*Simply returns the count of all of the frames*/
+//Simply returns the count of all of the frames
 Player.prototype.getNextFrameID = function()
 {
     return this.NbFrames;
 }
-/*If the move is a projectile, and a projectile is already active, then this returns true;*/
+//If the move is a projectile, and a projectile is already active, then this returns true;
 Player.prototype.isProjectileInUse = function(move)
 {
     return !!this.HasActiveProjectiles && (hasFlag(move.Flags.Combat,COMBAT_FLAGS.PROJECTILE_ACTIVE));
 }
 
-/*Gets the direction of the attack relative to the current player*/
+//Gets the direction of the attack relative to the current player
 Player.prototype.getAttackDirection = function(attackDirection)
 {
     var direction = -this.Direction;
@@ -417,7 +471,7 @@ Player.prototype.getAttackDirection = function(attackDirection)
         direction = -1
     return direction;
 }
-/*Gets the direction of the attack relative to the current player*/
+//Gets the direction of the attack relative to the current player
 Player.prototype.getRelativeDirection = function(attackDirection)
 {
     var direction = -this.Direction;
@@ -431,7 +485,7 @@ Player.prototype.getRelativeDirection = function(attackDirection)
         direction = 1
     return direction;
 }
-/*Gets the direction of the attack relative to the current player*/
+//Gets the direction of the attack relative to the current player
 Player.prototype.getProjectileDirection = function(attackDirection)
 {
     var direction = -this.Direction;
@@ -445,18 +499,16 @@ Player.prototype.getProjectileDirection = function(attackDirection)
         direction = -1
     return direction;
 }
-/*Holds the current frame*/
+//Holds the current frame
 Player.prototype.setHoldFrame = function(nbFrames)
 {
     this.FrameFreeze = nbFrames;
 }
 
-/*
-Handles other animations
-*/
+//Handles other animations
 Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
 {
-    /*front hit report images*/
+    //front hit report images
     var fhrIndex = -1;
     while(++fhrIndex < this.FrontHitReport.length)
     {
@@ -464,7 +516,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
         if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.FrontHitReport.splice(fhrIndex,1);
     }
-    /*rear hit report images*/
+    //rear hit report images
     var rhrIndex = -1;
     while(++rhrIndex < this.RearHitReport.length)
     {
@@ -472,7 +524,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
         if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.RearHitReport.splice(rhrIndex,1);
     }
-    /*dirt images*/
+    //dirt images
     var dirtIndex = -1;
     while(++dirtIndex < this.DirtIndices.length)
     {
@@ -480,7 +532,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
         if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.DirtIndices.splice(dirtIndex,1);
     }
-    /*big dirt images*/
+    //big dirt images
     var bigDirtIndex = -1;
     while(++bigDirtIndex < this.BigDirtIndices.length)
     {
@@ -488,14 +540,14 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
         if(!item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,stageY,this.X,this.Y))
             this.BigDirtIndices.splice(bigDirtIndex,1);
     }
-    /*dizzy*/
+    //dizzy
     if(this.isDizzy())
     {
         var item = this.OtherAnimations.Dizzy[this.DizzyIndex];
         if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
             item.StartFrame = frame;
     }
-    /*blue fire*/
+    //blue fire
     if(this.hasBlueFire())
     {
         var item = this.OtherAnimations.BlueFire;
@@ -503,7 +555,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
         if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
             item.StartFrame = frame;
     }
-    /*red fire*/
+    //red fire
     if(this.hasRedFire())
     {
         var item = this.OtherAnimations.RedFire;
@@ -512,13 +564,13 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
             item.StartFrame = frame;
     }
 }
-/*Moves the animation back one frame*/
+//Moves the animation back one frame
 Player.prototype.reverseFrame = function(frame)
 {
     if(!!this.CurrentFrame)
         this.CurrentAnimation.StartFrame += 2;
 }
-/*Prevents the animation from continuing for one frame*/
+//Prevents the animation from continuing for one frame
 Player.prototype.holdFrame = function(frame)
 {
     this.FrameFreeze = Math.max(this.FrameFreeze - 1, 0);
@@ -527,7 +579,7 @@ Player.prototype.holdFrame = function(frame)
     if(this.isAirborne())
         this.getStage().holdFrame();
 }
-/*Prevents the animation from continuing for one frame*/
+//Prevents the animation from continuing for one frame
 Player.prototype.forceHoldFrame = function(frame)
 {
     if(!!this.CurrentFrame)
@@ -535,14 +587,14 @@ Player.prototype.forceHoldFrame = function(frame)
     if(this.isAirborne())
         this.getStage().holdFrame();
 }
-/*Prevents the animation from continuing for one frame*/
+//Prevents the animation from continuing for one frame
 Player.prototype.forceNextFrame = function(frame)
 {
     if(!!this.CurrentFrame)
         this.CurrentAnimation.StartFrame = frame - this.CurrentFrame.getEndFrameOffset();
 }
 
-/*Can the current move be interrupted by a speial move?*/
+//Can the current move be interrupted by a speial move?
 Player.prototype.checkForInterupt = function(frame)
 {
     if(!!this.InteruptAnimation)
@@ -560,8 +612,10 @@ Player.prototype.checkForInterupt = function(frame)
         var poseFlags = this.CurrentAnimation.Animation.InteruptAnimationFlags.Pose
         if(hasFlag(poseFlags,this.Flags.Pose.Value))
         {
-            var key = this.CurrentAnimation.Animation.InteruptAnimation.getKey(this.CurrentAnimation.Animation.InteruptAnimation.getKeySequenceLength() - 1);
-            if(this.isKeyDown(key))
+
+            var state = this.CurrentAnimation.Animation.InteruptAnimation.ButtonSequence[this.CurrentAnimation.Animation.InteruptAnimation.ButtonSequence.length-1];
+            //if the key is NOT pressed, then offset into the next frame in the current move
+            if(!!this.hasButtonState(state))
             {
                 this.chainToAnimation(frame, this.CurrentAnimation.Animation.InteruptAnimation);
             }
@@ -615,7 +669,7 @@ Player.prototype.frameMoveTrail = function(frame,stageX,stageY)
 }
 
 
-/*sets some data beforehand*/
+//sets some data beforehand
 Player.prototype.setPendingFrame = function(pendingFrame)
 {
     if(!!pendingFrame)
@@ -632,7 +686,7 @@ Player.prototype.preRender = function(frame)
 {
 }
 
-/*Show the image at the current frame in the current animation*/
+//Show the image at the current frame in the current animation
 Player.prototype.frameMove = function(frame,stageX,stageY)
 {
     this.LastY = this.Y;
@@ -663,14 +717,14 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
         if(!!currentFrame || (!!this.CurrentFrame && (hasFlag(this.CurrentFrame.FlagsToSet.Player,PLAYER_FLAGS.HOLD_FRAME))))
         {
             this.setPendingFrame(currentFrame);
-            /*check to see if the move allows you to change direction mid-move*/
+            //check to see if the move allows you to change direction mid-move
             if(!!this.MustChangeDirection && hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {
                 this.changeDirection();
                 return;
             }
 
-            /*check to see if the new frame needs to be airborne*/
+            //check to see if the new frame needs to be airborne
             if(!!currentFrame)
             {
                 if(currentFrame.isSettingAirborneFlag())
@@ -711,7 +765,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
 
             if(!this.FrameFreeze)
             {
-                /*if the player is still airborne then apply next step*/
+                //if the player is still airborne then apply next step
                 if(this.isAirborne())
                 {
                     if(this.isBlocking())
@@ -726,30 +780,34 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                     }
                 }
             }
-            /*some moves (crouch) require frame to not change, this simulates that.*/
+            //some moves (crouch) require frame to not change, this simulates that.
             if(!!this.CurrentFrame && hasFlag(this.CurrentFrame.FlagsToSet.Player,PLAYER_FLAGS.HOLD_FRAME) && !this.IgnoreHoldFrame)
             {
-                /*get the key that must be pressed*/
-                var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
-                /*if the key is NOT pressed, then offset into the next frame in the current move*/
-                if(!this.isKeyDown(key))
+                //get the key that must be pressed
+                //var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
+                var state = this.CurrentAnimation.Animation.ButtonSequence[this.CurrentAnimation.Animation.ButtonSequence.length-1];
+                //if the key is NOT pressed, then offset into the next frame in the current move
+                if(!this.hasButtonState(state))
                 {
                     this.forceNextFrame(frame);
-                    /*must clear frame because the current frame has a HOLD_FRAME flag*/
+                    //must clear frame because the current frame has a HOLD_FRAME flag
                     this.setCurrentFrame(null,frame);
                 }
             }
-            else if(!!currentFrame && hasFlag(currentFrame.FlagsToSet.Player,PLAYER_FLAGS.MUST_HOLD_KEY)) /*Does the move require the key to be held? ... */
+            //Does the move require the key to be held?
+            else if(!!currentFrame && hasFlag(currentFrame.FlagsToSet.Player,PLAYER_FLAGS.MUST_HOLD_KEY))
             {
-                /*the last key in the keySequence must be the required key*/
-                var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
-                if(this.isKeyDown(key)) /*... and was the key pressed?*/
+                //the last key in the keySequence must be the required key
+                //var key = this.CurrentAnimation.Animation.getKey(this.CurrentAnimation.Animation.getKeySequenceLength() - 1);
+                var state = this.CurrentAnimation.Animation.ButtonSequence[this.CurrentAnimation.Animation.ButtonSequence.length-1];
+                //... and was the key pressed?
+                if(this.hasButtonState(state))
                 {
                     this.setCurrentFrame(currentFrame,frame,stageX,stageY);
                 }
                 else
                 {
-                    /*the required key is not pressed, look for a new move*/
+                    //the required key is not pressed, look for a new move
                     this.tryChainAnimation(frame,stageX,stageY);
                 }
             }
@@ -767,7 +825,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
         }
         else
         {
-            /*No more frames for the move.*/
+            //No more frames for the move.
             this.tryChainAnimation(frame);
         }
     }
@@ -777,12 +835,12 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
     }
 
     this.CheckedForAnimation = false;
-    this.cleanUpKeyStateChanges(frame);
-    /*this.debugShowKeys();*/
+    this.cleanUpButtonStateChanges(frame);
+    //this.debugShowKeys();
 }
 
 
-/*Sets the team and initializes the energy bar and portriat*/
+//Sets the team and initializes the energy bar and portriat
 Player.prototype.setupInfo = function(value,side)
 {
     this.Team = value;
@@ -791,7 +849,7 @@ Player.prototype.setupInfo = function(value,side)
     this.createKeysElement();
 }
 
-/*remove any DOM element that was added by this instance*/
+//remove any DOM element that was added by this instance
 Player.prototype.release = function()
 {
     var parentElement = (parentElement || window.document.getElementById("pnlStage"));
@@ -822,7 +880,7 @@ Player.prototype.release = function()
     }
 }
 
-/**/
+////
 Player.prototype.pause = function()
 {
     if(this.isDizzy())
@@ -830,7 +888,7 @@ Player.prototype.pause = function()
 }
 
 
-/**/
+////
 Player.prototype.resume = function()
 {
     if(this.isDizzy())

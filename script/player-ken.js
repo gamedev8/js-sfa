@@ -18,6 +18,8 @@ Player.prototype.createKen = function(user)
     stance.addFrame(player,0,"",folder + "/x-stance-2.png",4);
 
     var crouch = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD,"crouch",0,[BUTTONS.CROUCH],99,false);
+    crouch.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.JUMP,State:BUTTON_STATE.NONE}]);
+    crouch.ButtonCount = 1;
     crouch.Flags = ({ Player: PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION | PLAYER_FLAGS.HOLD_ZINDEX,Pose: POSE_FLAGS.CROUCHING });
     crouch.addFrame(player,0,"",folder + "/x-crouch-0.png",2,{ Player: PLAYER_FLAGS.MOBILE });
     crouch.addFrame(player,0,"",folder + "/x-crouch-1.png",2,{ Player: PLAYER_FLAGS.MUST_HOLD_KEY });
@@ -36,7 +38,7 @@ Player.prototype.createKen = function(user)
     turn.addFrame(player,0,"",folder + "/x-turn-1.png",2);
     turn.addFrame(player,0,"",folder + "/x-turn-2.png",2);
 
-    var cturn = player.addAnimation(POSE_FLAGS.CROUCHING,"turn",0,["turn"],0,false);
+    var cturn = player.addAnimation(POSE_FLAGS.CROUCHING,"crouch turn",0,["turn"],0,false);
     cturn.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX,Pose: POSE_FLAGS.CROUCHING });
     cturn.addFrame(player,0,"",folder + "/x-crouch-turn-0.png",2,{ Player: PLAYER_FLAGS.MOBILE });
     cturn.addFrame(player,0,"",folder + "/x-crouch-turn-1.png",2);
@@ -134,8 +136,8 @@ Player.prototype.createKen = function(user)
     getup.addFrame(player,0,"",folder + "/x-getup-3.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
     getup.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
 
-    var dizzy = player.addAnimation(MISC_FLAGS.NONE,"dizzy",0,["hr_sodizzy"],0,false);
-    dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
+    var dizzy = player.addAnimation(MISC_FLAGS.NONE,"so dizzy",0,["hr_sodizzy"],0,false);
+    dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Alert: ALERT_FLAGS.DIZZY });
     dizzy.AdjustShadowPosition = false;
     dizzy.addFrame(player,0,"",folder + "/x-dizzy-0.png",32,{ Player: PLAYER_FLAGS.DIZZY },{Player: PLAYER_FLAGS.MOBILE});
     dizzy.addFrame(player,0,"",folder + "/x-dizzy-1.png",32,{ Player: PLAYER_FLAGS.DIZZY });
@@ -143,7 +145,7 @@ Player.prototype.createKen = function(user)
     dizzy.addFrame(player,0,"",folder + "/x-dizzy-1.png",32,{ Player: PLAYER_FLAGS.DIZZY },0,0,0,0,0,0,0);
     dizzy.chain(dizzy);
 
-    var getup_dizzy = player.addAnimation(MISC_FLAGS.NONE,"getup",0,["hr_getupdizzy"],0,false);
+    var getup_dizzy = player.addAnimation(MISC_FLAGS.NONE,"getup dizzy",0,["hr_getupdizzy"],0,false);
     getup_dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
     getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/x-hit-air-2a.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE,Spawn: SPAWN_FLAGS.SPAWN_SMALLDIRT },{ Player: PLAYER_FLAGS.MOBILE });
     getup_dizzy.addFrame(player,0,"200",folder + "/x-down.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
@@ -213,7 +215,7 @@ Player.prototype.createKen = function(user)
     hitReact_red_fire.Vx = (25);
     hitReact_red_fire.Vy = (200);
     hitReact_red_fire.IsLooping = true;
-    hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },0,1);
+    hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },{Player:PLAYER_FLAGS.MOBILE},1);
     hitReact_red_fire.addFrame(player,0,"200",folder + "/hr-rfire-02.png",2,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
     hitReact_red_fire.chain(hitReact_bounce);
 
@@ -222,7 +224,7 @@ Player.prototype.createKen = function(user)
     hitReact_blue_fire.Vx = (50);
     hitReact_blue_fire.Vy = (150);
     hitReact_blue_fire.IsLooping = true;
-    hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },0,1);
+    hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-01.png",2,{ Player: PLAYER_FLAGS.INVULNERABLE },{Player:PLAYER_FLAGS.MOBILE},1);
     hitReact_blue_fire.addFrame(player,0,"200",folder + "/hr-bfire-02.png",2,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE });
     hitReact_blue_fire.chain(hitReact_bounce);
 
@@ -250,7 +252,7 @@ Player.prototype.createKen = function(user)
     hitReact_deadBounce.chain(down);
 
 
-    var hitReact_dead = player.addAnimation(POSE_FLAGS.STANDING,"clocked",0,["hr_dead"],0,false);
+    var hitReact_dead = player.addAnimation(POSE_FLAGS.STANDING,"hr dead",0,["hr_dead"],0,false);
     hitReact_dead.Flags = ({ Player: PLAYER_FLAGS.MOVE_TO_FRONT });
     hitReact_dead.Vx = (35);
     hitReact_dead.Vy = (200);
@@ -287,7 +289,7 @@ Player.prototype.createKen = function(user)
     hitReact_shoulder_throw.addFrame(player,0,"",folder + "/#-hit-b-1a.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },MISC_FLAGS.NONE,-100,100,0,0,0,0,0);
 
 
-    var hitReact_fk_throw = player.addAnimation(POSE_FLAGS.ANY,"shoulder throw",0,["fk_throw"],0,false);
+    var hitReact_fk_throw = player.addAnimation(POSE_FLAGS.ANY,"fk throw",0,["fk_throw"],0,false);
     hitReact_fk_throw.IsImplicit = true;
     hitReact_fk_throw.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
     hitReact_fk_throw.addFrame(player,0,"",folder + "/x-hit-a-2.png",4,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE },{ Player: PLAYER_FLAGS.MOBILE });
@@ -312,13 +314,15 @@ Player.prototype.createKen = function(user)
 
 
 
-    var blockRelease = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_BLOCK,"block",0,["block_relase"],-2,false);
+    var blockRelease = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_BLOCK,"block release",0,["block_relase"],-2,false);
     blockRelease.Flags = ({Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MOVE_TO_BACK});
     blockRelease.addFrame(player,0,"",folder + "/x-block-1.png",2,{Player:PLAYER_FLAGS.BLOCKING});
     blockRelease.addFrame(player,0,"",folder + "/x-block-0.png",2,{Player:PLAYER_FLAGS.BLOCKING});
     /*The POSE_FLAGS.ALLOW_BLOCK is checked seperately,it absolutely must be there,or else the move will not be found!
     Only one of the other flags need to match*/
     var block = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_BLOCK,"block",0,[BUTTONS.BACK],-2,false);
+    block.ButtonSequence.push([{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED}]);
+    block.ButtonCount = 1;
     block.Flags = ({Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MOVE_TO_BACK});
     block.addFrame(player,0,"",folder + "/x-block-0.png",1,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.IGNORE_HOLD_FRAME});
     block.addFrame(player,0,"",folder + "/x-block-1.png",4,{Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MUST_HOLD_KEY});
@@ -333,6 +337,8 @@ Player.prototype.createKen = function(user)
     cblockRelease.chain(crouch,2);
 
     var cblock = player.addAnimation(POSE_FLAGS.CROUCHING | POSE_FLAGS.ALLOW_BLOCK,"crouch block",0,[BUTTONS.CROUCH | BUTTONS.BACK],-1,false);
+    cblock.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED}]);
+    cblock.ButtonCount = 1;
     cblock.Flags = ({ Player: PLAYER_FLAGS.BLOCKING,Pose: POSE_FLAGS.CROUCHING });
     cblock.addFrame(player,0,"",folder + "/x-crouch-block-0.png",1,{ Player: PLAYER_FLAGS.BLOCKING |PLAYER_FLAGS.IGNORE_HOLD_FRAME });
     cblock.addFrame(player,0,"",folder + "/x-crouch-block-1.png",4,{ Player: PLAYER_FLAGS.BLOCKING | PLAYER_FLAGS.MUST_HOLD_KEY });
@@ -340,12 +346,16 @@ Player.prototype.createKen = function(user)
     cblock.chain(cblockRelease);
 
     var ablock = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB | POSE_FLAGS.ALLOW_AIR_BLOCK,"air block",0,[BUTTONS.BACK],-1,false);
+    ablock.ButtonSequence.push([{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED}]);
+    ablock.ButtonCount = 1;
     ablock.Flags = ({ Player: PLAYER_FLAGS.BLOCKING });
     ablock.addFrame(player,0,"",folder + "/x-air-block-0.png",1,{ Player: PLAYER_FLAGS.BLOCKING });
-    ablock.addFrame(player,0,"",folder + "/x-air-block-0.png",1,{ Player: PLAYER_FLAGS.BLOCKING });
+    ablock.addFrame(player,0,"",folder + "/x-air-block-0.png",CONSTANTS.MAX_FRAME,{ Player: PLAYER_FLAGS.BLOCKING });
     ablock.chain(jump_land);
 
-    var crouch_p1 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch p1",0,[BUTTONS.CROUCH|BUTTONS.LIGHT_PUNCH],110);
+    var crouch_p1 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch p1",5,[BUTTONS.CROUCH|BUTTONS.LIGHT_PUNCH],110);
+    crouch_p1.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.LIGHT_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    crouch_p1.ButtonCount = 2;
     crouch_p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
     crouch_p1.Flags = {Pose:POSE_FLAGS.CROUCHING};
     crouch_p1.addFrame(player,0,"",folder + "/x-crouch-p1-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -354,7 +364,9 @@ Player.prototype.createKen = function(user)
     crouch_p1.addFrame(player,0,"",folder + "/x-crouch-p1-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_p1.chain(crouch,2);
 
-    var crouch_p2 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch p2",0,[BUTTONS.CROUCH|BUTTONS.MEDIUM_PUNCH],110);
+    var crouch_p2 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch p2",5,[BUTTONS.CROUCH|BUTTONS.MEDIUM_PUNCH],110);
+    crouch_p2.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.MEDIUM_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    crouch_p2.ButtonCount = 2;
     crouch_p2.setMediumAttack();
     crouch_p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
     crouch_p2.Flags = {Pose:POSE_FLAGS.CROUCHING};
@@ -365,7 +377,9 @@ Player.prototype.createKen = function(user)
     crouch_p2.addFrame(player,0,"",folder + "/x-crouch-p2-2.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_p2.chain(crouch,2);
 
-    var crouch_p3 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch p3",0,[BUTTONS.CROUCH|BUTTONS.HARD_PUNCH],110);
+    var crouch_p3 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch p3",5,[BUTTONS.CROUCH|BUTTONS.HARD_PUNCH],110);
+    crouch_p3.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.HARD_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    crouch_p3.ButtonCount = 2;
     crouch_p3.setHardAttack();
     crouch_p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING | OVERRIDE_FLAGS.AIRBORNE);
     crouch_p3.Flags = {Pose:POSE_FLAGS.CROUCHING};
@@ -376,7 +390,9 @@ Player.prototype.createKen = function(user)
     crouch_p3.addFrame(player,0,"",folder + "/x-crouch-p3-2.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_p3.chain(crouch,2);
 
-    var crouch_k1 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch k1",0,[BUTTONS.CROUCH|BUTTONS.LIGHT_KICK],110);
+    var crouch_k1 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch k1",5,[BUTTONS.CROUCH|BUTTONS.LIGHT_KICK],110);
+    crouch_k1.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.LIGHT_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    crouch_k1.ButtonCount = 2;
     crouch_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
     crouch_k1.Flags = {Pose:POSE_FLAGS.CROUCHING};
     crouch_k1.addFrame(player,0,"",folder + "/x-crouch-k1-1.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -385,7 +401,9 @@ Player.prototype.createKen = function(user)
     crouch_k1.addFrame(player,0,"",folder + "/x-crouch-k1-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_k1.chain(crouch,2);
 
-    var crouch_k2 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch k2",0,[BUTTONS.CROUCH|BUTTONS.MEDIUM_KICK],110);
+    var crouch_k2 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch k2",5,[BUTTONS.CROUCH|BUTTONS.MEDIUM_KICK],110);
+    crouch_k2.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.MEDIUM_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    crouch_k2.ButtonCount = 2;
     crouch_k2.setMediumAttack();
     crouch_k2.Flags = {Pose:POSE_FLAGS.CROUCHING};
     crouch_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
@@ -397,7 +415,9 @@ Player.prototype.createKen = function(user)
     crouch_k2.addFrame(player,0,"168",folder + "/x-crouch-k1-1.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_k2.chain(crouch,2);
 
-    var crouch_k3 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch k3",0,[BUTTONS.CROUCH|BUTTONS.HARD_KICK],110);
+    var crouch_k3 = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1,"crouch k3",5,[BUTTONS.CROUCH|BUTTONS.HARD_KICK],110);
+    crouch_k3.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.HARD_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    crouch_k3.ButtonCount = 2;
     crouch_k3.setHardAttack();
     crouch_k3.Flags = ({Pose:POSE_FLAGS.CROUCHING,Combat:COMBAT_FLAGS.NO_SLIDE_BACK});
     crouch_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
@@ -408,10 +428,15 @@ Player.prototype.createKen = function(user)
     crouch_k3.addFrame(player,0,"",folder + "/x-crouch-k3-4.png",6);
     crouch_k3.addFrame(player,0,"",folder + "/x-crouch-k3-5.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_k3.chain(crouch,2);
+
     /////////////////////////////////////////////
     /////////////////////////////////////////////
     /////////////////////////////////////////////
-    var p1 = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"light punch",0,[BUTTONS.LIGHT_PUNCH]);
+
+    var p1 = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"light punch",5,[BUTTONS.LIGHT_PUNCH]);
+    p1.ButtonSequence.push([{Button:BUTTONS.LIGHT_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    p1.ButtonCount = 1;
+    p1.Flags = {Pose:POSE_FLAGS.STANDING};
     p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     p1.addFrame(player,0,"",folder + "/x-p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
     p1.addFrame(player,0,"",folder + "/x-p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 110,y: 193 },{ state: HIT_FLAGS.FAR,x: 194,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
@@ -419,7 +444,9 @@ Player.prototype.createKen = function(user)
     p1.addFrame(player,0,"",folder + "/x-p1-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
 
     var throw1X = -6;
-    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.AIRBORNE_FB,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"_1_roll_throw");
+    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.AIRBORNE_FB,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"RollThrow");
+    throw1.ButtonSequence.push([{Button:[BUTTONS.FORWARD,BUTTONS.BACK],State:BUTTON_STATE.PRESSED,MinNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES},{Button:[BUTTONS.MEDIUM_PUNCH,BUTTONS.HARD_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    throw1.ButtonCount = 3;
     throw1.NbChargeFrames = 5;
     throw1.Vy = (90);
     throw1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
@@ -446,7 +473,10 @@ Player.prototype.createKen = function(user)
     throw1.addFrameWithSound(player,1,"audio/ken/thrust-1.zzz",0,"",folder + "/x-throw-0-5.png",25,{ Combat: COMBAT_FLAGS.ATTACK },{ Player: PLAYER_FLAGS.MOBILE },-10,0,0,100,null,0,0,ATTACK_FLAGS.THROW_EJECT,[{ x: -1,y: -1,Fx: 1,Fy: 1}],ATTACK_FLAGS.NONE,2,1,10);
     throw1.addFrame(player,0,"",folder + "/x-throw-0-6.png",6,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
 
-    var p2 = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"medium punch",0,[BUTTONS.MEDIUM_PUNCH]);
+    var p2 = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"medium punch",5,[BUTTONS.MEDIUM_PUNCH]);
+    p2.ButtonSequence.push([{Button:BUTTONS.MEDIUM_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    p2.ButtonCount = 1;
+    p2.Flags = {Pose:POSE_FLAGS.STANDING};
     p2.setMediumAttack();
     p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     p2.addFrame(player,0,"",folder + "/x-p2-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -456,7 +486,10 @@ Player.prototype.createKen = function(user)
     p2.addFrame(player,0,"",folder + "/x-p2-1.png",4);
     p2.addFrame(player,0,"",folder + "/x-p2-3.png",5);
 
-    var p3 = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"hard punch",0,[BUTTONS.HARD_PUNCH]);
+    var p3 = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"hard punch",5,[BUTTONS.HARD_PUNCH]);
+    p3.ButtonSequence.push([{Button:BUTTONS.HARD_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    p3.ButtonCount = 1;
+    p3.Flags = {Pose:POSE_FLAGS.STANDING};
     p3.setHardAttack();
     p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     p3.addFrame(player,0,"",folder + "/x-p2-1.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
@@ -466,7 +499,10 @@ Player.prototype.createKen = function(user)
     p3.addFrame(player,0,"",folder + "/x-p3-1.png",6);
     p3.addFrame(player,0,"",folder + "/x-p2-3.png",8);
 
-    var k1 = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"light kick",0,[BUTTONS.LIGHT_KICK]);
+    var k1 = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"light kick",5,[BUTTONS.LIGHT_KICK]);
+    k1.ButtonSequence.push([{Button:BUTTONS.LIGHT_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    k1.ButtonCount = 1;
+    k1.Flags = {Pose:POSE_FLAGS.STANDING};
     k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     k1.addFrame(player,0,"",folder + "/x-k1-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
     k1.addFrame(player,0,"",folder + "/x-k1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,60);
@@ -475,7 +511,10 @@ Player.prototype.createKen = function(user)
     k1.addFrame(player,0,"",folder + "/x-k1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,60);
     k1.addFrame(player,0,"",folder + "/x-k1-4.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0);
 
-    var k2 = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"medium kick",0,[BUTTONS.MEDIUM_KICK]);
+    var k2 = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"medium kick",5,[BUTTONS.MEDIUM_KICK]);
+    k2.ButtonSequence.push([{Button:BUTTONS.MEDIUM_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    k2.ButtonCount = 1;
+    k2.Flags = {Pose:POSE_FLAGS.STANDING};
     k2.setMediumAttack();
     k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     k2.addFrame(player,0,"",folder + "/x-k2-1.png",1,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
@@ -489,7 +528,10 @@ Player.prototype.createKen = function(user)
     k2.addFrame(player,0,"",folder + "/x-k2-8.png",3);
     k2.addFrame(player,0,"",folder + "/x-k2-9.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,2);
 
-    var f_k2 = player.addAnimation(POSE_FLAGS.WALKING_FORWARD,"forward medium kick",0,[BUTTONS.MEDIUM_KICK]);
+    var f_k2 = player.addAnimation(POSE_FLAGS.WALKING_FORWARD,"forward medium kick",5,[BUTTONS.MEDIUM_KICK]);
+    f_k2.ButtonSequence.push([{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.MEDIUM_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    f_k2.ButtonCount = 2;
+    f_k2.Flags = {Pose:POSE_FLAGS.STANDING};
     f_k2.setMediumAttack();
     f_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     f_k2.addFrame(player,0,"",folder + "/x-k2-2.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
@@ -503,7 +545,10 @@ Player.prototype.createKen = function(user)
     f_k2.addFrame(player,0,"",folder + "/x-fk2-9.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,78);
     f_k2.addFrame(player,0,"",folder + "/x-k1-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,0);
 
-    var k3 = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"hard kick",0,[BUTTONS.HARD_KICK]);
+    var k3 = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"hard kick",5,[BUTTONS.HARD_KICK]);
+    k3.ButtonSequence.push([{Button:BUTTONS.HARD_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    k3.ButtonCount = 1;
+    k3.Flags = {Pose:POSE_FLAGS.STANDING};
     k3.setHardAttack();
     k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
     k3.addFrame(player,0,"",folder + "/x-k2-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
@@ -519,6 +564,8 @@ Player.prototype.createKen = function(user)
 
     var walkSpeed = 4;
     var f_walk = player.addAnimation(POSE_FLAGS.STANDING,"f-walk",0,[BUTTONS.FORWARD],90,false);
+    f_walk.ButtonSequence.push([{Button:BUTTONS.BACK,State:BUTTON_STATE.NONE},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED}]);
+    f_walk.ButtonCount = 1;
     f_walk.AdjustShadowPosition = (false);
     f_walk.Flags = ({ Player: PLAYER_FLAGS.LOOP_IF_KEYDOWN | PLAYER_FLAGS.HOLD_ZINDEX,Pose: POSE_FLAGS.WALKING_FORWARD });
     f_walk.addRepeatingFrame(player,0,"",folder + "/x-crouch-0.png",2,{ Player: PLAYER_FLAGS.MOBILE },MISC_FLAGS.NONE,walkSpeed,0,0,0,18);
@@ -530,6 +577,8 @@ Player.prototype.createKen = function(user)
 
     var backpeddleSpeed = 3;
     var b_walk = player.addAnimation(POSE_FLAGS.STANDING,"b-walk",0,[BUTTONS.BACK],80,false);
+    b_walk.ButtonSequence.push([{Button:BUTTONS.FORWARD,State:BUTTON_STATE.NONE},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED}]);
+    b_walk.ButtonCount = 1;
     b_walk.AdjustShadowPosition = (false);
     b_walk.Flags = ({ Player: PLAYER_FLAGS.LOOP_IF_KEYDOWN | PLAYER_FLAGS.HOLD_ZINDEX,Pose: POSE_FLAGS.WALKING_BACKWARD });
     b_walk.addRepeatingFrame(player,0,"",folder + "/x-b-walk-1.png",4,{ Player: PLAYER_FLAGS.MOBILE },MISC_FLAGS.NONE,-backpeddleSpeed,0,0,0,0);
@@ -563,7 +612,12 @@ Player.prototype.createKen = function(user)
         if (x == 1) { button = BUTTONS.MEDIUM_PUNCH; }
         else if (x == 2) { button = BUTTONS.HARD_PUNCH; }
 
-        var uppercut = player.addAnimation(POSE_FLAGS.CROUCHING | POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"uppercut p1",50,[BUTTONS.FORWARD,0,BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.FORWARD,BUTTONS.CROUCH | BUTTONS.FORWARD | button],999,true,true);
+        var uppercut = player.addAnimation(POSE_FLAGS.CROUCHING | POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"uppercut p1",25,[BUTTONS.FORWARD,0,BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.FORWARD,BUTTONS.CROUCH | BUTTONS.FORWARD | button],999,true,true);
+        uppercut.ButtonCount = 5;
+        uppercut.ButtonSequence.push([{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED}]);
+        uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.NONE}]);
+        uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
         uppercut.Flags = ({Combat:COMBAT_FLAGS.NO_SLIDE_BACK});
         uppercut.EnergyToAdd = (5);
         uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
@@ -669,6 +723,8 @@ Player.prototype.createKen = function(user)
     var jumpY = 200;
 
     var jump = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD,"jump",0,[BUTTONS.JUMP],95,false);
+    jump.ButtonSequence.push([{Button:BUTTONS.JUMP,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.BACK,State:BUTTON_STATE.NONE},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.NONE}]);
+    jump.ButtonCount = 1;
     jump.UseJumpSpeed = true;
     jump.Vy = (jumpY);
 
@@ -685,7 +741,9 @@ Player.prototype.createKen = function(user)
 
     var airKnockBackX = 0.2;
 
-    var jump_p1 = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB,"jump p1",0,[BUTTONS.LIGHT_PUNCH],0,true,true);
+    var jump_p1 = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB,"jump p1",5,[BUTTONS.LIGHT_PUNCH],0,true,true);
+    jump_p1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    jump_p1.ButtonCount = 1;
     jump_p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     jump_p1.addFrame(player,0,"",folder + "/x-jump-p1-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
     jump_p1.addFrame(player,0,"",folder + "/x-jump-p1-2.png",24,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,HitSound:SWINGSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 160,y: 75,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
@@ -693,7 +751,9 @@ Player.prototype.createKen = function(user)
     jump_p1.addFrame(player,0,"",folder + "/x-jump-p1-1.png",CONSTANTS.FRAME_MAX);
     jump_p1.chain(jump_land);
 
-    var jump_p2 = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB,"jump p2",0,[BUTTONS.MEDIUM_PUNCH],0,true,true);
+    var jump_p2 = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB,"jump p2",5,[BUTTONS.MEDIUM_PUNCH],0,true,true);
+    jump_p2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    jump_p2.ButtonCount = 1;
     jump_p2.setMediumAttack();
     jump_p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     jump_p2.addFrame(player,0,"",folder + "/x-jump-p1-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -703,7 +763,9 @@ Player.prototype.createKen = function(user)
     jump_p2.addFrame(player,0,"",folder + "/x-jump-p1-1.png",CONSTANTS.FRAME_MAX);
     jump_p2.chain(jump_land);
 
-    var jump_p3 = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB,"jump p3",0,[BUTTONS.HARD_PUNCH],0,true,true);
+    var jump_p3 = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB,"jump p3",5,[BUTTONS.HARD_PUNCH],0,true,true);
+    jump_p3.ButtonSequence.push([{Button:[BUTTONS.HARD_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    jump_p3.ButtonCount = 1;
     jump_p3.setHardAttack();
     jump_p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     jump_p3.addFrame(player,0,"",folder + "/x-jump-p1-1.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -713,7 +775,9 @@ Player.prototype.createKen = function(user)
     jump_p3.addFrame(player,0,"",folder + "/x-jump-p1-1.png",CONSTANTS.FRAME_MAX);
     jump_p3.chain(jump_land);
 
-    var jump_k1 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k1",0,[BUTTONS.LIGHT_KICK],0,true,true);
+    var jump_k1 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k1",5,[BUTTONS.LIGHT_KICK],0,true,true);
+    jump_k1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_KICK],State:BUTTON_STATE.PRESSED}]);
+    jump_k1.ButtonCount = 1;
     jump_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     jump_k1.addFrame(player,0,"",folder + "/x-jump-k1-1.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
     jump_k1.addFrame(player,0,"",folder + "/x-jump-k1-2.png",24,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HITS_HIGH | ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.NEAR,x: 140,y: 235,Fx : airKnockBackX,Fy : 0 },{ state: HIT_FLAGS.NEAR,x: 90,y: 155,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.LIGHT,1,1,10);
@@ -722,7 +786,9 @@ Player.prototype.createKen = function(user)
     jump_k1.addFrame(player,0,"",folder + "/x-jump-k1-1.png",CONSTANTS.FRAME_MAX);
     jump_k1.chain(jump_land);
 
-    var jump_k2 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k2",0,[BUTTONS.MEDIUM_KICK],0,true,true);
+    var jump_k2 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k2",5,[BUTTONS.MEDIUM_KICK],0,true,true);
+    jump_k2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_KICK],State:BUTTON_STATE.PRESSED}]);
+    jump_k2.ButtonCount = 1;
     jump_k2.setMediumAttack();
     jump_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     jump_k2.addFrame(player,0,"",folder + "/x-jump-k1-1.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -734,7 +800,9 @@ Player.prototype.createKen = function(user)
     jump_k2.addFrame(player,0,"",folder + "/x-jump-1.png",CONSTANTS.FRAME_MAX);
     jump_k2.chain(jump_land);
 
-    var jump_k3 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k3",0,[BUTTONS.HARD_KICK],0,true,true);
+    var jump_k3 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k3",5,[BUTTONS.HARD_KICK],0,true,true);
+    jump_k3.ButtonSequence.push([{Button:[BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED}]);
+    jump_k3.ButtonCount = 1;
     jump_k3.setMediumAttack();
     jump_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     jump_k3.addFrame(player,0,"",folder + "/x-jump-k3-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -747,7 +815,9 @@ Player.prototype.createKen = function(user)
     jump_k3.addFrame(player,0,"",folder + "/x-jump-1.png",CONSTANTS.FRAME_MAX);
     jump_k3.chain(jump_land);
 
-    var f_jump_k1 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k1",0,[BUTTONS.LIGHT_KICK],0,true,true);
+    var f_jump_k1 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k1",5,[BUTTONS.LIGHT_KICK],0,true,true);
+    f_jump_k1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_KICK],State:BUTTON_STATE.PRESSED}]);
+    f_jump_k1.ButtonCount = 1;
     f_jump_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     f_jump_k1.addFrame(player,0,"",folder + "/x-f-jump-k1-1.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
     f_jump_k1.addFrame(player,0,"",folder + "/x-f-jump-k1-2.png",3);
@@ -756,7 +826,9 @@ Player.prototype.createKen = function(user)
     f_jump_k1.endBlock();
     f_jump_k1.chain(jump_land);
 
-    var f_jump_k2 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k2",0,[BUTTONS.MEDIUM_KICK],0,true,true);
+    var f_jump_k2 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k2",5,[BUTTONS.MEDIUM_KICK],0,true,true);
+    f_jump_k2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_KICK],State:BUTTON_STATE.PRESSED}]);
+    f_jump_k2.ButtonCount = 1;
     f_jump_k2.setMediumAttack();
     f_jump_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     f_jump_k2.addFrame(player,0,"",folder + "/x-f-jump-k2-1.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -769,7 +841,9 @@ Player.prototype.createKen = function(user)
     f_jump_k2.addFrame(player,0,"",folder + "/x-f-jump-k1-1.png",CONSTANTS.FRAME_MAX);
     f_jump_k2.chain(jump_land);
 
-    var f_jump_k3 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k3",0,[BUTTONS.HARD_KICK],0,true,true);
+    var f_jump_k3 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k3",5,[BUTTONS.HARD_KICK],0,true,true);
+    f_jump_k3.ButtonSequence.push([{Button:[BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED}]);
+    f_jump_k3.ButtonCount = 1;
     f_jump_k3.setMediumAttack();
     f_jump_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.AIRBORNE,OVERRIDE_FLAGS.NULL);
     f_jump_k3.addFrame(player,0,"",folder + "/x-f-jump-k1-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
@@ -781,6 +855,8 @@ Player.prototype.createKen = function(user)
     f_jump_k3.chain(jump_land);
 
     var f_jump = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD,"forward jump",0,[BUTTONS.FORWARD | BUTTONS.JUMP],95,false);
+    f_jump.ButtonSequence.push([{Button:BUTTONS.BACK,State:BUTTON_STATE.NONE},{Button:BUTTONS.JUMP,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED}]);
+    f_jump.ButtonCount = 2;
     f_jump.AdjustShadowPosition = (false);
     f_jump.UseJumpSpeed = true;
     f_jump.Vx = (jumpX);
@@ -803,6 +879,8 @@ Player.prototype.createKen = function(user)
 
 
     var b_jump = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.WALKING_BACKWARD,"back jump",0,[BUTTONS.BACK | BUTTONS.JUMP],95,false);
+    b_jump.ButtonSequence.push([{Button:BUTTONS.FORWARD,State:BUTTON_STATE.NONE},{Button:BUTTONS.JUMP,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED}]);
+    b_jump.ButtonCount = 2;
     b_jump.AdjustShadowPosition = (false);
     b_jump.UseJumpSpeed = true;
     b_jump.Vx = (-jumpX);
@@ -878,7 +956,12 @@ Player.prototype.createKen = function(user)
         if (x == 1) { button = BUTTONS.MEDIUM_PUNCH; }
         else if (x == 2) { button = BUTTONS.HARD_PUNCH; }
 
-        var fireball = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"fireball p" + x,50,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD | button],0,true);
+        var fireball = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"fireball p" + x,25,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD | button],0,true);
+        fireball.ButtonCount = 5;
+        fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
+        fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.NONE},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+
         fireball.OverrideFlags = new MoveOverrideFlags();
         fireball.EnergyToAdd = (5);
         fireball.IsSpecialMove = true;
@@ -899,7 +982,12 @@ Player.prototype.createKen = function(user)
         if (x == 1) button = BUTTONS.MEDIUM_KICK;
         else if (x == 2) button = BUTTONS.HARD_KICK;
 
-        var spinkick = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB | POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"spinkick k" + (x + 1),100,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.BACK,BUTTONS.BACK,BUTTONS.BACK | button],0,true,true);
+        var spinkick = player.addAnimation(POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB | POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"spinkick k" + (x + 1),25,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.BACK,BUTTONS.BACK,BUTTONS.BACK | button],0,true,true);
+        spinkick.ButtonCount = 5;
+        spinkick.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
+        spinkick.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        spinkick.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.NONE},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+
         spinkick.EnergyToAdd = (5);
         spinkick.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
         spinkick.AdjustShadowPosition = (false);
@@ -957,7 +1045,12 @@ Player.prototype.createKen = function(user)
         if (x == 2) button = BUTTONS.MEDIUM_PUNCH;
         else if (x == 3) button = BUTTONS.HARD_PUNCH;
 
-        var roll = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"roll p" + x,100,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.BACK,BUTTONS.BACK,BUTTONS.BACK | button],0,false);
+        var roll = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"roll p" + x,25,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.BACK,BUTTONS.BACK,BUTTONS.BACK | button],0,false);
+        roll.ButtonCount = 5;
+        roll.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
+        roll.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        roll.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.NONE},{Button:BUTTONS.BACK,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+
         roll.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NULL,OVERRIDE_FLAGS.THROW);
         roll.IsSpecialMove = true;
         roll.IgnoreDepressedKeys = true;
@@ -973,6 +1066,7 @@ Player.prototype.createKen = function(user)
         roll.chain(crouch,2);
     }
 
+    player.sortAnimations();
     return player;
 } 
 
@@ -1005,6 +1099,15 @@ Player.prototype.createKenSuperMoves = function(player)
         else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
 
         var s_uppercut = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"s_uppercut p" + (x+1),300,[BUTTONS.CROUCH,BUTTONS.CROUCH|BUTTONS.FORWARD,BUTTONS.FORWARD,0,BUTTONS.CROUCH,BUTTONS.CROUCH|BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD|button],999,true,true);
+        s_uppercut.ButtonCount = 10;
+        s_uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
+        s_uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        s_uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.NONE},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        s_uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
+        s_uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        s_uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.NONE},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+
+
         s_uppercut.EnergyToAdd = (10);
         s_uppercut.Flags = ({Combat:COMBAT_FLAGS.NO_SLIDE_BACK});
         s_uppercut.IsSuperMove = true;
