@@ -1,4 +1,4 @@
-﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:10px;overflow:hidden;}
+﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:12px;overflow:hidden;}
 body div.select {height:100%;width:100%;background:url(../images/misc/misc/player-select-bg.png) no-repeat 0px 0px;}
 .capcom,.credits,.insert-coin,.credits-text{position:absolute;}
 .capcom{background-image:url(../images/misc/font1/cap.png);width:352px;height:41px;bottom:42px;left:208px;}
@@ -62,8 +62,8 @@ div.team1Keys {color:#aaaaff;left:0px;}
 div.team2Keys {color:#ff6666;right:0px;}
 
 .state {margin:3px 0;}
-.running {background:#00aa00;color:#fff;}
-.paused {margin-top:2px;background:#ff0000;color:#fff;}
+.running span{background-color:#00aa00;}
+.paused span{background-color:#aaa;color:#000;}
 .frame-rate{background:#666;text-transform:uppercase;}
 
 div.projectile{position:absolute;bottom:35px;z-index:16;background-position:0 0;background-repeat:no-repeat;}

@@ -3,7 +3,7 @@ Player.prototype.createRyu = function(user)
 {
     var player = new Player("ryu",101,247,user);
     var folder = "images/misc/" + player.Folder;
-    player.DefaultJumpSpeed = 1.0;
+    player.DefaultJumpSpeed = 1.2;
     
     player.DefaultShadowImageSrc = "136"
     player.Circle.OffsetY = 50;
@@ -133,7 +133,7 @@ Player.prototype.createRyu = function(user)
     getup.addFrame(player,0,"",folder + "/x-getup-1.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
     getup.addFrame(player,0,"",folder + "/x-getup-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
     getup.addFrame(player,0,"",folder + "/x-getup-3.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
+    getup.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.MOBILE});
 
     var dizzy = player.addAnimation(MISC_FLAGS.NONE,"so dizzy",0,["hr_sodizzy"],0,false);
     dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Alert: ALERT_FLAGS.DIZZY });
@@ -168,7 +168,7 @@ Player.prototype.createRyu = function(user)
     hitReact_dizzy.Flags = ({ Player: PLAYER_FLAGS.MOVE_TO_FRONT });
     hitReact_dizzy.Vx = (35);
     hitReact_dizzy.Vy = (200);
-    hitReact_dizzy.addFrame(player,0,"200",folder + "/x-hit-air-0.png",32,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS },0,1);
+    hitReact_dizzy.addFrame(player,0,"200",folder + "/x-hit-air-0.png",32,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE},1);
     hitReact_dizzy.addFrame(player,0,"200",folder + "/x-hit-air-1.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS });
     hitReact_dizzy.chain(hitReact_dizzyBounce);
 
@@ -489,38 +489,38 @@ Player.prototype.createRyu = function(user)
 
 
     var throw1X = -4;
-    var throw1 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"ShoulderThrow");
-    throw1.ButtonSequence.push([{Button:[BUTTONS.FORWARD,BUTTONS.BACK],State:BUTTON_STATE.PRESSED,MinNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES},{Button:[BUTTONS.MEDIUM_PUNCH,BUTTONS.HARD_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    var throw1 = player.addThrow(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 1",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],CONSTANTS.MAX_PRIORITY,false,false,0,"ShoulderThrow");
+    throw1.ButtonSequence.push([{Button:[BUTTONS.FORWARD,BUTTONS.BACK],State:BUTTON_STATE.PRESSED},{Button:[BUTTONS.MEDIUM_PUNCH,BUTTONS.HARD_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     throw1.ButtonCount = 3;
     throw1.NbChargeFrames = 5;
     throw1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
     throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.HARD_PUNCH]);
     throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.MEDIUM_PUNCH]);
-    throw1.setGrappleDistance(100);
+    throw1.setGrappleDistance(CONSTANTS.GRAPPLE_DISTANCE);
     throw1.setOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw1.addFrame(player,0,"",folder + "/x-throw-0-0.png",10,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw1.addFrame(player,0,"",folder + "/x-throw-0-1.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw1.addFrame(player,0,"",folder + "/x-throw-0-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw1.addFrameWithSound(player,1,"audio/ryu/throw-0.zzz",0,"",folder + "/x-throw-0-3.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
-    throw1.addFrame(player,0,"",folder + "/x-throw-0-4.png",26,{Combat:COMBAT_FLAGS.ATTACK},MISC_FLAGS.NONE,-10,0,0,100,null,0,0,ATTACK_FLAGS.THROW_EJECT,[{x:-1,y:-1,Fx:0.5,Fy:0.5}],ATTACK_FLAGS.NONE,2,1,15);
+    throw1.addFrame(player,0,"",folder + "/x-throw-0-4.png",26,{Combat:COMBAT_FLAGS.ATTACK},MISC_FLAGS.NONE,-10,0,0,100,null,0,0,ATTACK_FLAGS.THROW_EJECT,[{x:-1,y:-1,Fx:1.5,Fy:0.75}],ATTACK_FLAGS.NONE,2,1,15);
 
 
     var throw2X = -4;
-    var throw2 = player.addThrow(POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"FkThrow");
-    throw2.ButtonSequence.push([{Button:[BUTTONS.FORWARD,BUTTONS.BACK],State:BUTTON_STATE.PRESSED,MinNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES},{Button:[BUTTONS.MEDIUM_KICK,BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
+    var throw2 = player.addThrow(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"throw 2",0,[BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.MEDIUM_KICK],CONSTANTS.MAX_PRIORITY,false,false,0,"FkThrow");
+    throw2.ButtonSequence.push([{Button:[BUTTONS.FORWARD,BUTTONS.BACK],State:BUTTON_STATE.PRESSED},{Button:[BUTTONS.MEDIUM_KICK,BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     throw2.ButtonCount = 3;
     throw2.NbChargeFrames = 5;
     throw2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
     throw2.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.HARD_KICK]);
     throw2.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.HARD_KICK]);
     throw2.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.MEDIUM_KICK]);
-    throw2.setGrappleDistance(100);
+    throw2.setGrappleDistance(CONSTANTS.GRAPPLE_DISTANCE);
     throw2.setOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw2.addFrame(player,0,"",folder + "/x-throw-0-0.png",7,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.NEAR,x:130,y:145},{state:HIT_FLAGS.FAR,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw2.addFrame(player,0,"",folder + "/x-throw-1-0.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     throw2.addFrame(player,0,"",folder + "/x-throw-1-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,-20);
-    throw2.addFrameWithSound(player,1,"audio/ryu/throw-1.zzz",0,"",folder + "/x-throw-1-2.png",5,{Combat:COMBAT_FLAGS.ATTACK},MISC_FLAGS.NONE,-20,0,0,100,null,0,0,ATTACK_FLAGS.THROW_EJECT,[{x:-1,y:-1,Fx:1,Fy:0.5}],ATTACK_FLAGS.NONE,2,1,15);
+    throw2.addFrameWithSound(player,1,"audio/ryu/throw-1.zzz",0,"",folder + "/x-throw-1-2.png",5,{Combat:COMBAT_FLAGS.ATTACK},MISC_FLAGS.NONE,-20,0,0,100,null,0,0,ATTACK_FLAGS.THROW_EJECT,[{x:-1,y:-1,Fx:1.5,Fy:0.75}],ATTACK_FLAGS.NONE,2,1,15);
     throw2.addFrame(player,0,"",folder + "/x-throw-1-3.png",22,MISC_FLAGS.NONE,MISC_FLAGS.NONE,20);
     throw2.addFrame(player,0,"",folder + "/x-throw-1-4.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
 
@@ -682,7 +682,7 @@ Player.prototype.createRyu = function(user)
     }
 
 
-    var jumpX = 32;
+    var jumpX = 38;
     var jumpY = 200;
 
     var jump = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"jump",0,[BUTTONS.JUMP],95,false);
@@ -705,7 +705,7 @@ Player.prototype.createRyu = function(user)
 
     
     var jump_p1 = player.addAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump p1",5,[BUTTONS.LIGHT_PUNCH],0,true,true);
-    jump_p1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    jump_p1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     jump_p1.ButtonCount = 1;
     jump_p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
     jump_p1.addFrame(player,0,"",folder + "/x-jump-p1-1.png",2,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
@@ -715,7 +715,7 @@ Player.prototype.createRyu = function(user)
     jump_p1.chain(jump_land);
       
     var f_jump_p2 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"forward jump p2",20,[BUTTONS.FORWARD|BUTTONS.MEDIUM_PUNCH],0,true,true);
-    f_jump_p2.ButtonSequence.push([{Button:[BUTTONS.FORWARD],State:BUTTON_STATE.PRESSED},{Button:[BUTTONS.MEDIUM_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    f_jump_p2.ButtonSequence.push([{Button:[BUTTONS.FORWARD],State:BUTTON_STATE.PRESSED},{Button:[BUTTONS.MEDIUM_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     f_jump_p2.ButtonCount = 2;
     f_jump_p2.setMediumAttack();
     f_jump_p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -732,7 +732,7 @@ Player.prototype.createRyu = function(user)
     f_jump_p2.chain(jump_land);
     
     var jump_p2 = player.addAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump p2",5,[BUTTONS.MEDIUM_PUNCH],0,true,true);
-    jump_p2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    jump_p2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     jump_p2.ButtonCount = 1;
     jump_p2.setMediumAttack();
     jump_p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -744,7 +744,7 @@ Player.prototype.createRyu = function(user)
     jump_p2.chain(jump_land);
   
     var jump_p3 = player.addAnimation(POSE_FLAGS.AIRBORNE|POSE_FLAGS.AIRBORNE_FB,"jump p3",5,[BUTTONS.HARD_PUNCH],0,true,true);
-    jump_p3.ButtonSequence.push([{Button:[BUTTONS.HARD_PUNCH],State:BUTTON_STATE.PRESSED}]);
+    jump_p3.ButtonSequence.push([{Button:[BUTTONS.HARD_PUNCH],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     jump_p3.ButtonCount = 1;
     jump_p3.setHardAttack();
     jump_p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -756,7 +756,7 @@ Player.prototype.createRyu = function(user)
     jump_p3.chain(jump_land);
     
     var jump_k1 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k1",5,[BUTTONS.LIGHT_KICK],0,true,true);
-    jump_k1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_KICK],State:BUTTON_STATE.PRESSED}]);
+    jump_k1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     jump_k1.ButtonCount = 1;
     jump_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
     jump_k1.addFrame(player,0,"",folder + "/x-jump-k1-1.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
@@ -767,7 +767,7 @@ Player.prototype.createRyu = function(user)
     jump_k1.chain(jump_land);
     
     var jump_k2 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k2",5,[BUTTONS.MEDIUM_KICK],0,true,true);
-    jump_k2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_KICK],State:BUTTON_STATE.PRESSED}]);
+    jump_k2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     jump_k2.ButtonCount = 1;
     jump_k2.setMediumAttack();
     jump_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -781,7 +781,7 @@ Player.prototype.createRyu = function(user)
     jump_k2.chain(jump_land);
     
     var jump_k3 = player.addAnimation(POSE_FLAGS.AIRBORNE,"jump k3",5,[BUTTONS.HARD_KICK],0,true,true);
-    jump_k3.ButtonSequence.push([{Button:[BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED}]);
+    jump_k3.ButtonSequence.push([{Button:[BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     jump_k3.ButtonCount = 1;
     jump_k3.setHardAttack();
     jump_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -796,7 +796,7 @@ Player.prototype.createRyu = function(user)
     jump_k3.chain(jump_land);
     
     var f_jump_k1 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k1",5,[BUTTONS.LIGHT_KICK],0,true,true);
-    f_jump_k1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_KICK],State:BUTTON_STATE.PRESSED}]);
+    f_jump_k1.ButtonSequence.push([{Button:[BUTTONS.LIGHT_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     f_jump_k1.ButtonCount = 1;
     f_jump_k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
     f_jump_k1.addFrame(player,0,"",folder + "/x-f-jump-k1-1.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
@@ -806,7 +806,7 @@ Player.prototype.createRyu = function(user)
     f_jump_k1.chain(jump_land);
     
     var f_jump_k2 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k2",5,[BUTTONS.MEDIUM_KICK],0,true,true);
-    f_jump_k2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_KICK],State:BUTTON_STATE.PRESSED}]);
+    f_jump_k2.ButtonSequence.push([{Button:[BUTTONS.MEDIUM_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     f_jump_k2.ButtonCount = 1;
     f_jump_k2.setMediumAttack();
     f_jump_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -819,7 +819,7 @@ Player.prototype.createRyu = function(user)
     f_jump_k2.chain(jump_land);
     
     var f_jump_k3 = player.addAnimation(POSE_FLAGS.AIRBORNE_FB,"f jump k3",5,[BUTTONS.HARD_KICK],0,true,true);
-    f_jump_k3.ButtonSequence.push([{Button:[BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED}]);
+    f_jump_k3.ButtonSequence.push([{Button:[BUTTONS.HARD_KICK],State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     f_jump_k3.ButtonCount = 1;
     f_jump_k3.setHardAttack();
     f_jump_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.NULL);
@@ -936,6 +936,7 @@ Player.prototype.createRyu = function(user)
         else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
 
         var fireball = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"fireball p" + (x+1),25,[BUTTONS.CROUCH,BUTTONS.CROUCH|BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD|button],0,true);
+        fireball.ProjectileId = player.Projectiles.length-1;
         fireball.ButtonCount = 5;
         fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
         fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
@@ -945,7 +946,7 @@ Player.prototype.createRyu = function(user)
         fireball.IsSpecialMove = true;
         fireball.IgnoreDepressedKeys = true;
         fireball.EnergyToAdd = (5);
-        fireball.Flags = ({Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE});
+        fireball.Flags = ({Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.MULTI_PROJECTILE});
         fireball.addFrame(player,0,"",folder + "/x-fb-0.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},{Player:PLAYER_FLAGS.MOBILE});
         fireball.addFrame(player,0,"168",folder + "/x-fb-1.png",6,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
         fireball.addFrame(player,0,"200",folder + "/x-fb-2.png",2,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
@@ -1030,6 +1031,7 @@ Player.prototype.createRyuSuperMoves = function(player)
         var projectile = player.addProjectile("super projectile",160,140,speed);
         projectile.HitSound = HITSOUND.HP;
 
+        projectile.IsSuperMove = true;
         projectile.CanJuggle = true;
         projectile.MaxHits = x + 3;
         projectile.HitStopFrameCount = 5;

@@ -2,6 +2,7 @@ var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","
 
 var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepadIndex)
 {
+    this.Folder = "";
     this.GamepadIndex = gamepadIndex;
     this.Right = right;
     this.Up = up;
@@ -36,6 +37,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepadIndex)
     this.getOtherIsAlternateFn = null;
     this.RandomSelect = 0;
     this.IsAlternateChar = false;
+    this.IsAI = false;
 }
 
 
@@ -43,7 +45,7 @@ User.prototype.getFolder = function() { return this.Folder; }
 User.prototype.getName = function() { return this.CurrentStance.replace("_selected", ""); }
 
 
-User.prototype.setChar = function(char, isAlternate)
+User.prototype.setChar = function(char, isAlternate, isAI)
 {
     var name = "";
     switch(char)
@@ -57,15 +59,17 @@ User.prototype.setChar = function(char, isAlternate)
         {
             switch(this.CurrentStance)
             {
-                case "ryu": { return this.setChar(CHARACTERS.RYU, isAlternate); }
-                case "ken": { return this.setChar(CHARACTERS.KEN, isAlternate); }
-                case "mbison": { return this.setChar(CHARACTERS.MBISON, isAlternate); }
+                case "ryu": { return this.setChar(CHARACTERS.RYU, isAlternate, isAI); }
+                case "ken": { return this.setChar(CHARACTERS.KEN, isAlternate, isAI); }
+                case "mbison": { return this.setChar(CHARACTERS.MBISON, isAlternate, isAI); }
             };
         }
     }
+    this.IsAlternate = isAlternate;
     this.Selected = char;
     this.CurrentStance = name + "_selected";
     this.Folder = name + (!!isAlternate ? "2" : "");
+    this.IsAI = (isAI === undefined) ? this.IsAI : isAI;
 }
 
 User.prototype.addStanceAnimations = function()
@@ -562,6 +566,7 @@ var CreateCharSelect = function(user1,user2)
     {
         game_.showLoading(false);
         this.init();
+        this.restartMusic();
         this.playMusic();
     }
 
@@ -661,7 +666,7 @@ var CreateCharSelect = function(user1,user2)
     /**/
     CharSelect.prototype.release = function()
     {
-        soundManager_.unload(this.Music);
+        soundManager_.pause(this.Music);
         var parentElement = window.document.getElementById("pnlStage");
         parentElement.style.backgroundImage = "";
         parentElement.style.backgroundRepeat = "";

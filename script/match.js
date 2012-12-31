@@ -22,6 +22,7 @@ var CreateMatch = function(team1,team2,stage)
     var startedTheme_ = false;
     var faceoff_ = null;
     var nbAirborne_ = 0;
+    game_.resetFrame();
 
     var Match = function()
     {
@@ -289,7 +290,9 @@ var CreateMatch = function(team1,team2,stage)
         var moveY                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getPhysics().moveY(amount,this); return 0; } };
         var moveToBack           = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.Players.length;++i) {otherTeam.Players[i].moveToBack(true);} } }
         var moveToFront          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.Players.length;++i) {otherTeam.Players[i].moveToFront(true);} } }
-        var projectileMoved      = function(thisValue,otherTeam) { return function(frame,id,x,y) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyProjectileMoved(frame,id,x,y,this); otherTeam.Players[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
+        var attackPending        = function(thisValue,otherTeam) { return function(frame,x,y,isSuperMove) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyAttackPending(frame,x,y,this,isSuperMove); } } }
+        var projectilePending    = function(thisValue,otherTeam) { return function(frame,x,y,isSuperMove) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyProjectilePending(frame,x,y,this,isSuperMove); } } }
+        var projectileMoved      = function(thisValue,otherTeam) { return function(frame,id,x,y,projectile,isSuperMove) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyProjectileMoved(frame,id,x,y,projectile); otherTeam.Players[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
         var projectileGone       = function(thisValue,otherTeam) { return function(frame,id)     { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].onEnemyProjectileGone(frame,id); otherTeam.Players[i].setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),false,id); } } }
         var startAttack          = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.Players.length;++i) { otherTeam.Players[i].allowBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints,this); } } }
         var endAttack            = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.Players.length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.Players[i].removeBlock(id,thisValue.getGame().getCurrentFrame(),false,undefined,undefined,undefined,this); } } }
@@ -349,6 +352,8 @@ var CreateMatch = function(team1,team2,stage)
         player.onEndAttackFn = endAttack(this,otherTeam);
         player.onStartAirAttackFn = startAirAttack(this,otherTeam);
         player.onEndAirAttackFn = endAirAttack(this,otherTeam);
+        player.onAttackPendingFn = attackPending(this,otherTeam);
+        player.onProjectilePendingFn = projectilePending(this,otherTeam);
         player.onProjectileMovedFn = projectileMoved(this,otherTeam);
         player.onProjectileGoneFn = projectileGone(this,otherTeam);
         player.onIncComboFn = incCombo(this,myTeam);
@@ -516,6 +521,13 @@ var CreateMatch = function(team1,team2,stage)
             this.reset();
             frame = game_.getCurrentFrame();
         }
+        if(!startedTheme_)
+        {
+            startedTheme_ = true;
+            this.Stage.playMusic();
+            this.TeamA.show();
+            this.TeamB.show();
+        }
         faceoff_.handleOtherRounds(frame);
     }
 
@@ -529,7 +541,9 @@ var CreateMatch = function(team1,team2,stage)
         this.TeamB.frameMove(frame,this.Stage.X, this.Stage.getGroundY());
 
         if(round_ != 1)
+        {
             this.handleOtherRounds(frame);
+        }
         else
         {
             this.handleRound1(frame);

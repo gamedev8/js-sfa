@@ -37,7 +37,8 @@ Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.ClipMove
 Player.prototype.getConstHeight = function() { return this.Height; }
 Player.prototype.getConstWidth = function() { return this.Width; }
 Player.prototype.getConstFrontX = function() { return this.getX() + this.getConstWidth(); }
-Player.prototype.getFrontX = function() { return this.getX() + this.getBoxWidth(); }
+Player.prototype.getFrontX = function() { if(this.Direction > 0){ return this.LeftOffset; } else { return this.RightOffset; } }
+Player.prototype.getBackX = function() { if(this.Direction > 1){ return this.LeftOffset; } else { return this.RightOffset; } }
 Player.prototype.getBoxWidth = function() { return this.SpriteWidth; }
 Player.prototype.getBoxHeight = function() { return this.SpriteHeight; }
 Player.prototype.getRect = function(useImageWidth)
@@ -51,17 +52,9 @@ Player.prototype.getRect = function(useImageWidth)
 }
 Player.prototype.getImgRect = function(useImageWidth)
 {
-    return {
-        Left:this.LeftOffset
-        ,Right:this.RightOffset
-        ,Top:this.TopOffset
-        ,Bottom:this.BottomOffset
-        ,BottomNoOffset:this.BottomNoOffset
-        ,LeftNoOffset:this.LeftNoOffset
-        ,RightNoOffset:this.RightNoOffset
-    };
+    return this.ImgBBox;
 }
-/*records the image coordinates so that they can be used intead of going to the DOM every time.*/
+//records the image coordinates so that they can be used intead of going to the DOM every time.
 Player.prototype.setImgRect = function()
 {
     var imageOffsetY = (!!this.CurrentFrame ? this.CurrentFrame.ImageOffsetY : 0);
@@ -97,13 +90,29 @@ Player.prototype.setImgRect = function()
         this.RightNoOffset = this.RightOffset;
     }
 
+    this.ImgBBox.Left = this.LeftOffset;
+    this.ImgBBox.Right = this.RightOffset;
+    this.ImgBBox.Top = this.TopOffset;
+    this.ImgBBox.Bottom = this.BottomOffset;
+    this.ImgBBox.BottomNoOffset = this.BottomNoOffset;
+    this.ImgBBox.LeftNoOffset = this.LeftNoOffset;
+    this.ImgBBox.RightNoOffset = this.RightNoOffset;
 }
-/*
-Player.prototype.getRight = function() { return parseInt(this.Element.style.right || 0); }
-Player.prototype.getLeft = function() { return parseInt(this.Element.style.left || 0); }
-Player.prototype.getY = function() { return parseInt(this.Element.style.bottom) || 0; }
-Player.prototype.getX = function() { if(this.Direction > 0){return this.getRight();} else {return this.getLeft();} }
-*/
+Player.prototype.isFacingProjectile = function(projectile)
+{
+    if(this.Direction == -1  && projectile.Direction ==  1 && this.RightOffset < projectile.getLeftX()) return true;
+    if(this.Direction ==  1  && projectile.Direction == -1 && this.LeftOffset  > projectile.getRightX()) return true;
+
+    return false;
+}
+Player.prototype.isFacingPlayer = function(otherPlayer)
+{
+    if(this.Direction == -1  && otherPlayer.Direction ==  1 && this.RightOffset < otherPlayer.LeftOffset) return true;
+    if(this.Direction ==  1  && otherPlayer.Direction == -1 && this.LeftOffset  > otherPlayer.RightOffset) return true;
+
+    return false;
+}
+
 Player.prototype.getRight = function() { return this.X; }
 Player.prototype.getLeft = function() { return this.X; }
 Player.prototype.getY = function() { return this.Y || 0; }
@@ -206,6 +215,9 @@ Player.prototype.setDirection = function(value)
 Player.prototype.turnAround = function()
 {
     this.MustChangeDirection = 1;
+
+    if(!!this.IsBeingThrown)
+        this.MustChangeDirectionQuick = true;
 }
 
 
@@ -224,7 +236,7 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
     var imgWidth = this.getBoxWidth(); //parseInt(this.SpriteElement.style.width) || 0;
 
 
-    /*facing left*/
+    //facing left
     if(this.isFacingLeft())
     {
         var x = this.getRight() + imgWidth;
@@ -244,7 +256,7 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
         this.Shadow.style.right = "";
 
         this.Direction = -1;
-        /*swap the left and right buttons*/
+        //swap the left and right buttons
         this.Buttons[this.LeftKey].Bit = 2;
         this.Buttons[this.RightKey].Bit = 1;
         this.flip(true);
@@ -268,24 +280,28 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
         this.Shadow.style.right = this.SpriteElement.style.right;
 
         this.Direction = 1;
-        /*swap the left and right buttons*/
+        //swap the left and right buttons
         this.Buttons[this.LeftKey].Bit = 1;
         this.Buttons[this.RightKey].Bit = 2;
         this.flip(false);
     }
     if(!quick && !ignoreSetAnimation)
     {
-        if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
+        if(!this.MustChangeDirectionQuick)
         {
-            //var move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_turn")];
-            var move = this.Moves[this.MoveNdx.CrouchTurn];
-            this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
-        }
-        else
-        {
-            //var move = this.Moves[_c3("_",POSE_FLAGS.ANY),"_quick_turn"] || this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
-            var move = this.Moves[this.MoveNdx.Turn];
-            this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
+            if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
+            {
+                //var move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_turn")];
+                var move = this.Moves[this.MoveNdx.CrouchTurn];
+                this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
+            }
+            else
+            {
+                //var move = this.Moves[_c3("_",POSE_FLAGS.ANY),"_quick_turn"] || this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"_turn")];
+                var move = this.Moves[this.MoveNdx.Turn];
+                this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
+            }
+            this.MustChangeDirectionQuick = false;
         }
     }
 
@@ -390,7 +406,7 @@ Player.prototype.offsetImageY = function(amount)
         this.LastImageOffsetY = amount;
     }
 }
-/*sets the target to which the player will teleport*/
+//sets the target to which the player will teleport
 Player.prototype.setTeleportTarget = function(flag,nbFrames)
 {
     var foe = this.getTarget();
@@ -410,7 +426,7 @@ Player.prototype.setTeleportTarget = function(flag,nbFrames)
     }
 }
 
-/*Advances the players teleportation. If this is the last movement, the player is warper to his final position*/
+//Advances the players teleportation. If this is the last movement, the player is warper to his final position
 Player.prototype.advanceTeleportation = function()
 {
     if(!!this.TeleportFramesLeft)
@@ -430,23 +446,27 @@ Player.prototype.advanceTeleportation = function()
                     var x = this.X;
                     switch(this.Teleport0GapX)
                     {
-                        case "f": /*must end up infront of the enemy*/
+                        case "f":
                         {
+                            //must end up infront of the enemy
                             x = this.Direction == -1 ? x = otherRect.Left - this.OffsetWidth * buffer : (STAGE.MAX_STAGEX - otherRect.Right) - this.OffsetWidth * buffer;
                             break;
                         }
-                        case "b": /*must end up behind enemy*/
+                        case "b":
                         {
+                            //must end up behind enemy
                             x = this.Direction == -1 ? x = otherRect.Right : x = STAGE.MAX_STAGEX - otherRect.Left;
                             break;
                         }
-                        case "bw": /*back wall*/
+                        case "bw":
                         {
+                            //back wall
                             x = 0;
                             break;
                         }
-                        case "m": /*mid screen*/
+                        case "m":
                         {
+                            //mid screen
                             x = this.Direction == -1 ? otherRect.Left * midBuffer : (STAGE.MAX_STAGEX - otherRect.Right) * midBuffer;
                             break;
                         }
@@ -462,72 +482,64 @@ Player.prototype.advanceTeleportation = function()
         }
     }
 }
+//returns true if player is facing his target
+Player.prototype.isFacingTarget = function()
+{
+    var otherPlayer = null;
+
+    if(this.Team == 1)
+        otherRect = this.getMatch().getTeamB().getPlayer(this.Target).getRect();
+    else
+        otherRect = this.getMatch().getTeamA().getPlayer(this.Target).getRect();
+
+    var flipToNeg1 = false;
+    var flipToPos1 = false;
+    var myRect = this.getRect();
+
+    if((this.Direction == -1) && (!this.MustChangeDirection) && (myRect.Left > otherRect.Left) && (myRect.Right > otherRect.Right))
+        flipToPos1 = true;
+
+    if((this.Direction == 1) && (!this.MustChangeDirection) && (myRect.Right < otherRect.Right) && (myRect.Left < otherRect.Left))
+        flipToNeg1 = true;
+
+    //if both cases are false, or both cases are true, then the player should not do anything
+    return flipToNeg1 == flipToPos1;
+}
 
 Player.prototype.getMustChangeDirection = function(recheck)
 {
-    if(!this.MustChangeDirection || !!recheck)
-    {
-        if((this.Direction == 1) && this.isRightCornered())
-            return false;
-        if((this.Direction == -1) && this.isLeftCornered())
-            return false;
-        if((this.Direction == 1) && this.getPhysics().isAnyPlayerFromOtherTeamMoreLeft(this.getMidX(),this.Team) === false)
-            return true;
-        else if((this.Direction == -1) && this.getPhysics().isAnyPlayerFromOtherTeamMoreRight(this.getMidX(true),this.Team) === false)
-            return true;
-    }
-
-    if(!!recheck)
-        this.MustChangeDirection = false;
-
-    return false;
+    return this.isFacingTarget();
 }
 Player.prototype.checkDirection = function()
 {
-    if(this.getMustChangeDirection())
+    if(!this.isFacingTarget())
         this.turnAround();
 }
-/*player faces his target*/
+//player faces his target
 Player.prototype.faceTarget = function()
 {
-    var otherFront = 0;
-    var otherBack = 0;
-
-    var myFront = 0;
-    var myBack = 0;
-
-
-    if(this.Team == 1)
-    {
-        otherFront = this.getMatch().getTeamB().getPlayer(this.Target).getAbsFrontX();
-        otherBack = this.getMatch().getTeamB().getPlayer(this.Target).getAbsBackX();
-
-        myFront = this.getAbsFrontX();
-        myBack = this.getAbsBackX();
-    }
-    else
-    {
-        otherFront = this.getMatch().getTeamA().getPlayer(this.Target).getAbsFrontX();
-        otherBack = this.getMatch().getTeamA().getPlayer(this.Target).getAbsBackX();
-
-        myFront = this.getAbsFrontX();
-        myBack = this.getAbsBackX();
-    }
-
-    if((myFront < otherFront) && (this.Direction != -1) && (!this.MustChangeDirection))
-        this.turnAround();
-    else if((myBack > otherBack) && (this.Direction != 1) && (!this.MustChangeDirection))
+    if(!this.isFacingTarget())
         this.turnAround();
 }
-Player.prototype.targetLastAttacker = function()
+Player.prototype.targetLastAttacker = function(record)
 {
     if(!!this.RegisteredHit.OtherPlayer)
     {
-        this.Target = this.RegisteredHit.OtherPlayer.getIndex();
-        this.faceTarget();
+        if(this.Target != this.RegisteredHit.OtherPlayer.getIndex())
+        {
+            this.Target = this.RegisteredHit.OtherPlayer.getIndex();
+            this.faceTarget();
+        }
+    }
+
+    if(!!record)
+    {
+        if(game_.isRecording())
+            game_.recordInput(this.Team,this.Index,this.Folder,null,null,this.getFrame(),"targetLastAttacker");
     }
 }
-/*moves the player in the stage*/
+
+//moves the player in the stage
 Player.prototype.moveX = function(amount)
 {
     if(!amount)
@@ -539,20 +551,23 @@ Player.prototype.moveX = function(amount)
     //this.setX(x);
     return deltaX;
 }
-/*warps the player to a new location - no collision detection is done*/
+
+//warps the player to a new location - no collision detection is done
 Player.prototype.warpX = function(amount,autoDir)
 {
     if(!!autoDir)
     {
-        if(amount > 0) /*moving right*/
+        if(amount > 0)
         {
+            //moving right
             if(this.Direction == -1)
                 amount = Math.abs(amount);
             else
                 amount = -Math.abs(amount);
         }
-        else /*moving left*/
+        else
         {
+            //moving left
             if(this.Direction == -1)
                 amount = -Math.abs(amount);
             else
@@ -621,7 +636,7 @@ Player.prototype.isRightCorneredInStage = function(x)
 {
     return this.isRightCornered() && this.getStage().isRightCornered();
 }
-/*Shows the dirt animation when a player is floored*/
+//Shows the dirt animation when a player is floored
 Player.prototype.showBigDirt = function(frame)
 {
     for(var i = 0; i < 4; ++i)
@@ -629,7 +644,7 @@ Player.prototype.showBigDirt = function(frame)
         this.spawnBigDirt(frame,i * 40);
     }
 }
-/*Shows the small dirt animation when a player is floored*/
+//Shows the small dirt animation when a player is floored
 Player.prototype.showSmallDirt = function(frame)
 {
     for(var i = 0; i < 4; ++i)
@@ -637,7 +652,7 @@ Player.prototype.showSmallDirt = function(frame)
         this.spawnSmallDirt(frame,20 + (i * 30));
     }
 }
-/*Puts a player in sliding motion*/
+//Puts a player in sliding motion
 Player.prototype.startSlide = function(frame,amount,direction,fx,hideSlideDirt,forceSlide)
 {
     if(!forceSlide && !!this.CurrentAnimation.Animation.Flags.Combat && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.NO_SLIDE_BACK))
@@ -660,7 +675,7 @@ Player.prototype.startSlide = function(frame,amount,direction,fx,hideSlideDirt,f
     this.SlideSpeed = fx;
     this.IsSliding = true;
 }
-/*Handles the player sliding*/
+//Handles the player sliding
 Player.prototype.slide = function(frame)
 {
     if(!!this.FrameFreeze)
@@ -704,10 +719,10 @@ Player.prototype.stopSlide = function()
     }
 }
 
-/*returns true if the player should hold its airborne position*/
+//returns true if the player should hold its airborne position
 Player.prototype.mustHoldAirborne = function() { return this.Flags.Pose.has(POSE_FLAGS.FORCE_HOLD_AIRBORNE_XY) || this.Flags.Pose.has(POSE_FLAGS.HOLD_AIRBORNE); }
 
-/*calculates the next position of the players jump*/
+//calculates the next position of the players jump
 Player.prototype.advanceJump = function(ignoreYCheck)
 {
     //this.x1 = this.X0 + ((this.JumpVelocityX * this.JumpT) * 0.1);
@@ -745,7 +760,7 @@ Player.prototype.advanceJump = function(ignoreYCheck)
         //lets the stage move back down to the ground (just in case it wasnt triggered already)
         this.getStage().requestScrollY(false,this.Y);
         this.getMatch().decAirborne();
-        this.NbMaintainInputFrames = 0;
+        this.LandedOnFrame = this.getFrame();
         return false;
     }
 
@@ -767,21 +782,20 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
         this.getMatch().incAirborne();
     this.JumpSpeed = !!useJumpSpeed ? this.DefaultJumpSpeed : 1;
 
-    /*store the X and Y modifier functions*/
+    //store the X and Y modifier functions
     this.setVxFn(vxFn);
     this.setVyFn(vyFn);
-    /*store the initial position*/
+    //store the initial position
     this.X0 = this.X;
     this.Y0 = this.Y + (deltaY || 0);
     this.OldY = this.Y;
+    //store the velocity
     this.JumpVelocityX = vx;
     this.JumpVelocityY = vy;
+    //store a timer
     if(this.getCurrentComboCountFn() < 2 || !!jumpT)
         this.JumpT = jumpT || 0;
     this.JumpT = this.JumpT || 0;
-    this.NbMaintainInputFrames = CONSTANTS.MAINTAIN_KEYS_WHILE_AIRBORNE;
-    /*store the velocity*/
-    /*store a timer*/
     if(!this.hasAirborneComboFlag())
     {
         if(!!vx)

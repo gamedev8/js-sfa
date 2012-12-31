@@ -552,7 +552,7 @@ Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
     {
         if(this.getMustChangeDirection(true))
         {
-            if(!!this.CurrentAnimation.Animation.Flags.Pose && hasFlag(this.CurrentAnimation.Animation.Flags.Pose,POSE_FLAGS.QUICK_CHANGE_DIRECTION))
+            if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Flags.Pose && hasFlag(this.CurrentAnimation.Animation.Flags.Pose,POSE_FLAGS.QUICK_CHANGE_DIRECTION))
                 this.changeDirection(true);
             else
                 this.changeDirection();
@@ -664,11 +664,13 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         if(!!this.MustClearAllowBlock)
         {
             this.MustClearAllowBlock = false;
+            //notify AI
             this.onEndAttackFn(this.CurrentAnimation.ID);
         }
         if(!!this.MustClearAllowAirBlock)
         {
             this.MustClearAllowAirBlock = false;
+            //notify AI
             this.onEndAirAttackFn(this.CurrentAnimation.ID);
         }
 
@@ -680,12 +682,20 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
             this.fixXFn(1);
         }
         this.Flags.Pose.remove(this.CurrentAnimation.Animation.Flags.Pose);
+
+        if(!!this.CurrentAnimation.Animation.BaseAnimation.IsAttack)
+            this.onAttackStateChanged(null,ATTACK_STATE.DONE);
+
     }
 
     this.CurrentAnimation = newAnimation;
     var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        if(!!this.CurrentAnimation.Animation.ProjectileId)
+            this.CurrentAnimation.Animation.IsProjectilePending = true;
+
+        this.onAnimationChanged(this.CurrentAnimation.Animation.BaseAnimation.Name);
         this.doAnimationAlerts();
         this.MaintainYPosition = newAnimation.Animation.MaintainYPosition;
         if(!!this.CurrentAnimation.Animation.Flags.Player)
@@ -771,7 +781,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
             this.showFirstAnimationFrame();
 
         //if this move is an attack, then raise the event
-        if(!!this.CurrentAnimation.Animation.BaseAnimation.IsAttack)
+        if(!!this.CurrentAnimation.Animation.BaseAnimation.IsAttack && !this.CurrentAnimation.Animation.ProjectileId)
         {
             this.IsInAttackFrame = true;
             this.onStartAttackEnemiesFn(0);
@@ -868,7 +878,6 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                 && ((!!newFrame.SoundFilename && ((!this.CurrentFrame) || (!!this.CurrentFrame && (this.CurrentFrame.SoundFilename != newFrame.SoundFilename))))
                 || !!newFrame.FlagsToSet.SwingSound);
 
-
     this.CurrentFrame = newFrame;
     if(!!newFrame)
     {
@@ -911,7 +920,10 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 
         //if the new frame spawns a projectile, handle that here
         if(!this.Flags.Combat.has(COMBAT_FLAGS.PROJECTILE_ACTIVE) && hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.SPAWN_PROJECTILE))
+        {
+            this.CurrentAnimation.Animation.IsProjectilePending = false;
             this.Projectiles[newFrame.ChainProjectile].execute(frame,stageX,stageY);
+        }
         if(!!this.IsSliding && hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.STOP_SLIDE_BACK))
             this.stopSlide();
         if(hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.RESET_Y_FUNC))
@@ -932,6 +944,8 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         ignoredFlags = Player.prototype.AirborneFlags; /*flags to be set in the OnFrame function*/
         this.Flags.Pose.add((newFrame.FlagsToSet.Pose | ignoredFlags) ^ ignoredFlags);
         this.Flags.Combat.add(newFrame.FlagsToSet.Combat);
+        if(!this.Flags.Player.has(PLAYER_FLAGS.MOBILE) && hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.MOBILE))
+            this.MobileOnFrame = this.getFrame();
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
         this.Flags.Spawn.add(newFrame.FlagsToSet.Spawn);
         this.Flags.Combo.add(newFrame.FlagsToSet.Combo);

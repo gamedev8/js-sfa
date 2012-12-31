@@ -25,14 +25,10 @@ var CreateGame = function()
     var frame_ = 0;
     var keyboardState_ = {};
     var buttonState_ = {};
-    var keyState_ = 0;
-    var keyStates_ = [];
     var lastTime_ = 0;
     var speed_ = CONSTANTS.NORMAL_SPEED;
     var targetFPS_ = CONSTANTS.TARGET_FPS;
-    var extraSpeed_ = 0;
-    var text_ = null;//fontSystem_.addText("pnlText");
-    var useAlternateImageLoadingFunctions_ = window.navigator.userAgent.indexOf("Firefox") > -1;
+    var text_ = null;
     var state_ = 0;
     var isInitialized_ = false;
     var managed_ = null;
@@ -41,14 +37,61 @@ var CreateGame = function()
     var insertCoinScreen_ = null;
     var pnlLoadingProgress_ = window.document.getElementById("pnlLoadingProgress");
     var pnlLoading_ = window.document.getElementById("pnlLoading");
+    var vcr_ = CreateVCR();
+    var mustRecordNextRound_ = false;
 
-    /*Encapulates a new game*/
+    //Encapulates a new game
     var Game = function ()
     {
         lastTime_ = this.getCurrentTime();
         this.initGame();
         this.Match = null;
         this.UsingGamepads = !!Gamepad.supported;
+        //his.VCR = vcr_;
+    }
+
+    Game.prototype.isRecording = function() { return vcr_.isRecording(); }
+
+    Game.prototype.recordInput = function(team,index,folder,isDown,keyCode,frame,funcName) { vcr_.recordInput(team,index,folder,isDown,keyCode,frame,funcName); }
+
+    Game.prototype.recordNextRound = function() { mustRecordNextRound_ = true; }
+
+    Game.prototype.stopRecording = function() { mustRecordNextRound_ = false; vcr_.stop(); }
+
+    Game.prototype.loadVHS = function(id)
+    {
+        //function to call when the vhs is done playing
+        var onPlaybackDone = (function(thisValue)
+        {
+            return function()
+            {
+                thisValue.onVHSPlaybackDone();
+            }
+        })(this);
+
+        //function to call when the vcr has loaded its data
+        var onLoadingDone = (function(thisValue)
+        {
+            return function(teamA,teamB,stage)
+            {
+                thisValue.onVHSLoadingDone(teamA,teamB,stage);
+            }
+        })(this);
+
+        //start loading the vhs
+        vcr_.load(onLoadingDone,onPlaybackDone,id);
+    }
+
+    Game.prototype.onVHSLoadingDone = function(teamA,teamB,stage)
+    {
+        //go to match
+        this.startMatch(false,teamA,teamB,stages_[stage]);
+    }
+
+    Game.prototype.onVHSPlaybackDone = function()
+    {
+        //go to insert coin screen
+        this.startInsertCoinScreen();
     }
 
     Game.prototype.getMatch = function() { return this.Match; }
@@ -74,6 +117,14 @@ var CreateGame = function()
     /*Resets the timer*/
     Game.prototype.resetFrame = function()
     {
+        if(vcr_.isRecording())
+        {
+            vcr_.save();
+        }
+        else if(mustRecordNextRound_)
+        {
+            vcr_.record();
+        }
         frame_ = 0;
     }
 
@@ -154,15 +205,15 @@ var CreateGame = function()
             {
                 window.document.attachEvent("onkeydown",getKeyPressHandler(this,true),true);
                 window.document.attachEvent("onkeyup",getKeyPressHandler(this,false),true);
-                //window.attachEvent("onblur", resetKeys(this), true);
-                //window.onblur = resetKeys(this);
+                window.attachEvent("onblur", resetKeys(this), true);
+                window.onblur = resetKeys(this);
             }
             else
             {
                 window.document.addEventListener("keydown",getKeyPressHandler(this,true),true);
                 window.document.addEventListener("keyup",getKeyPressHandler(this,false),true);
-                //window.addEventListener("onblur", resetKeys(this), true);
-                //window.onblur = resetKeys(this);
+                window.addEventListener("onblur", resetKeys(this), true);
+                window.onblur = resetKeys(this);
             }
         }
         isInitialized_ = true;
@@ -215,6 +266,9 @@ var CreateGame = function()
 
     Game.prototype.createMatch = function(teamA,teamB,stage,callback)
     {
+        var a = null;
+        var b = null;
+
         if(!!charSelect_)
         {
             a = charSelect_.getPlayers(teamA);
@@ -225,6 +279,8 @@ var CreateGame = function()
         }
 
         this.Match = CreateMatch(a,b,stage);
+        if(vcr_.isPlaying())
+            this.Match.setRound(vcr_.getData().Round);
         managed_ = this.Match;
         announcer_.setMatch(this.Match);
         this.showElements();
@@ -337,7 +393,7 @@ var CreateGame = function()
     {
         this.addState(GAME_STATES.PAUSED);
         this.addState(GAME_STATES.STEP_FRAME);
-        window.document.getElementById("spnState").innerHTML = "State: Frame Step"
+        window.document.getElementById("spnState").innerHTML = "State: <span>Frame by frame</span>"
         window.document.getElementById("spnState").className = "state paused"
         window.document.getElementById("spnStepFrame").className = "state running"
         window.document.getElementById("spnResume").className = "state running"
@@ -355,7 +411,7 @@ var CreateGame = function()
     Game.prototype.resume = function()
     {
         this.removeState(GAME_STATES.PAUSED);
-        window.document.getElementById("spnState").innerHTML = "State: Running";
+        window.document.getElementById("spnState").innerHTML = "State: <span>Running</span>";
         window.document.getElementById("spnState").className = "state running";
         window.document.getElementById("spnStepFrame").className = ""
         window.document.getElementById("spnResume").className = ""
@@ -449,7 +505,7 @@ var CreateGame = function()
             buttonState_["_" + keyCode] = BUTTON_STATE.JUST_RELEASED;
         }
 
-        if(!!managed_)
+        if(!!managed_ && !!managed_.onKeyStateChanged)
         {
             managed_.onKeyStateChanged(isDown,keyCode,frame_);
         }
@@ -461,7 +517,7 @@ var CreateGame = function()
             if(buttonState_[i] == BUTTON_STATE.JUST_RELEASED)
                 buttonState_[i] = BUTTON_STATE.NONE;
 
-        //this.handleGamePadButtonPresses();
+        this.handleGamePadButtonPresses();
     }
 
     Game.prototype.end = function()
@@ -499,6 +555,10 @@ var CreateGame = function()
     {
         return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
     }
+    Game.prototype.clearUsers = function()
+    {
+        users_ = [];
+    }
 
 
     /*Shows the frame rate on screen*/
@@ -508,10 +568,11 @@ var CreateGame = function()
         {
             var now = this.getCurrentTime();
             var elapsed = now - lastTime_;
+            spnFPS_.innerHTML = now - lastTime_;
             lastTime_ = now;
 
-            var fps = Math.floor(CONSTANTS.FPS_VALUE / elapsed);
-            spnFPS_.innerHTML = fps;
+            //var fps = Math.floor(CONSTANTS.FPS_VALUE / elapsed);
+            //spnFPS_.innerHTML = fps;
         }
     }
 
@@ -526,13 +587,16 @@ var CreateGame = function()
         this.handleInput();
         if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
         {
+            //frame move
+            if(!!vcr_.isPlaying())
+                vcr_.onFrameMove(frame_);
+
             this.removeState(GAME_STATES.STEP_FRAME);
             ++frame_;
 
             //pre fame move
             this.Match.preFrameMove(frame_);
 
-            //frame move
             this.Match.frameMove(frame_);
             announcer_.frameMove(frame_);
             soundManager_.frameMove(frame_);

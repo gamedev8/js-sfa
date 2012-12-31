@@ -229,6 +229,7 @@ var COMBAT_FLAGS =
     ,CHAIN_ON_HIT:1 << 14
     ,PENDING_ATTACK:1 << 15
     ,IGNORE_CLEAR_FIRE:1 << 16
+    ,MULTI_PROJECTILE:1 << 17
 }
 
 var AI_FLAGS =
@@ -238,6 +239,7 @@ var AI_FLAGS =
     ,MOVE_TO_ENEMY: 1 << 2
     ,MOBILE_ME: 1 << 3
     ,GROUNDED_ENEMY: 1 << 4
+    ,ATTACK_PENDING: 1 << 5
 }
 
 var BEHAVIOR_FLAGS = 
@@ -365,15 +367,26 @@ var ENERGYBAR =
 
 };
 
+var ATTACK_STATE = {
+    NONE:0
+    ,PENDING:1
+    ,HIT:2
+    ,BLOCKED:3
+    ,DONE:4
+};
+
 
 var CONSTANTS =
 {
-    MAX_SPEED:0
+    GRAPPLE_DISTANCE:50
+    ,GROUND_FRAMES_FOR_GRAPPLE:20
+    ,MOBILE_FRAMES_FOR_GRAPPLE:20
+    ,MAX_SPEED:0
     ,MAX_PRIORITY:1 << 30
     ,NORMAL_SPEED:12
     ,SLOW_SPEED:70
     ,MAX_FRAME:100000000000000 /*round will end when Game.prototype.frame reaches this value*/
-    ,TARGET_FPS:64
+    ,TARGET_FPS:60
     ,MS_PER_SEC:1000
     ,FPS_VALUE:60000
     ,DELAY_AFTER_CHARACTER_SELECT:100
@@ -608,6 +621,8 @@ var KEYS =
     ,NUMPAD_8:104
     ,NUMPAD_9:105
     ,P:80
+    ,ONE:49
+    ,TWO:50
     ,EIGHT:56
     ,NINE:57
     ,ZERO:48

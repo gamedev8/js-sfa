@@ -39,7 +39,7 @@ Player.prototype.handleInput = function(frame)
     }
 }
 
-Player.prototype.clearInput = function()
+Player.prototype.clearInput = function(record)
 {
     for(var i in this.ButtonState)
     {
@@ -47,6 +47,12 @@ Player.prototype.clearInput = function()
         this.ButtonState[i].Frame = 0;
     }
     this.ButtonStates = [];
+
+    if(!!record)
+    {
+        if(game_.isRecording())
+            game_.recordInput(this.Team,this.Index,this.Folder,null,null,this.getFrame(),"clearInput");
+    }
 }
 
 //Ensures that the buttonStateChange array doesn't get too big
@@ -58,23 +64,51 @@ Player.prototype.cleanUpButtonStateChanges = function(frame)
     var i = 0;
     while(i < this.ButtonStates.length)
     {
-        var canClearButtonState = true;
-        for(var x in this.ButtonStates[i].State)
-        {
-            if((this.ButtonStates[i].State[x].Value == BUTTON_STATE.PRESSED))
+        if(((frame - this.ButtonStates[i].Frame) > CONSTANTS.NBINTERIM_FRAMES)
+            && this.ButtonStates[i].State[1].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[2].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[4].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[8].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[16].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[32].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[64].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[128].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[256].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[512].Value != BUTTON_STATE.PRESSED
+            && this.ButtonStates[i].State[1024].Value != BUTTON_STATE.PRESSED)
             {
-                canClearButtonState = false;
-                break;
+                //this.ButtonStates = this.ButtonStates.slice(i+1);
+                this.ButtonStates.splice(0,i+1);
             }
-        }
-        
-        if(!!canClearButtonState && (frame - this.ButtonStates[i].Frame) > CONSTANTS.NBINTERIM_FRAMES)
-            this.ButtonStates = this.ButtonStates.slice(i+1);
         ++i;
     }
 }
 
 
+
+//Simuates pressing keys
+Player.prototype.injectInput = function(isDown,bit,frame,funcName)
+{
+    if(bit === null && !!funcName)
+    {
+        this[funcName]();
+    }
+    else
+    {
+        key = null;
+        for(var a in this.Buttons)
+        {
+            if(this.Buttons[a].Bit == bit)
+            {
+                key = a;
+                break;
+            }
+        }
+
+        if(!!key)
+            this.onKeyStateChanged(isDown,key,frame);
+    }
+}
 
 //Simuates pressing keys
 Player.prototype.sendInput = function(input)
@@ -116,6 +150,8 @@ Player.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     if(!!this.Buttons[keyCode])
     {
         var key = this.Buttons[keyCode].Bit;
+        if(game_.isRecording())
+            game_.recordInput(this.Team,this.Index,this.Folder,isDown,key,frame);
 
         if(!!isDown && (this.ButtonState[key].Value == BUTTON_STATE.NONE))
         {

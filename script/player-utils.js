@@ -24,6 +24,8 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 
     var Animation = function()
     {
+        this.ProjectileId = null;
+        this.IsProjectilePending = false;
         this.BaseAnimation = CreateBaseAnimation(frames,name,isAttack,allowAirBlock);
         this.KeySequence = keySequence;
         this.AlternateKeySequences = [];
@@ -100,6 +102,11 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 
     Animation.prototype.endBlock = function()
     {
+        for(var i = 0; i < this.BaseAnimation.Frames.length; ++i)
+        {
+            this.BaseAnimation.Frames[i].FlagsToSet.AI |= AI_FLAGS.ATTACK_PENDING;
+        }
+
         this.BaseAnimation.SkipFrameBlockCheck = true;
         this.BaseAnimation.CanAddStopBlock = true;
         this.BaseAnimation.SetFramesToVulnerable = true;
@@ -688,6 +695,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
         this.FlagsToSet.Combo = !!flagsToSet ? (flagsToSet.Combo || 0) : 0;
         this.FlagsToSet.Spawn = !!flagsToSet ? (flagsToSet.Spawn || 0) : 0;
+        this.FlagsToSet.AI = !!flagsToSet ? (flagsToSet.AI || 0) : 0;
         this.FlagsToSet.MotionSound = !!flagsToSet ? (flagsToSet.MotionSound || 0) : 0;
         this.FlagsToSet.SwingSound = !!flagsToSet ? (flagsToSet.SwingSound || 0) : 0;
         this.FlagsToSet.HitSound = !!flagsToSet ? (flagsToSet.HitSound || 0) : 0;
@@ -699,6 +707,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToClear.Combat = !!flagsToClear ? (flagsToClear.Combat || 0) : 0;
         this.FlagsToClear.Combo = !!flagsToClear ? (flagsToClear.Combo || 0) : 0;
         this.FlagsToClear.Spawn = !!flagsToClear ? (flagsToClear.Spawn || 0) : 0;
+        this.FlagsToClear.AI = !!flagsToClear ? (flagsToClear.AI || 0) : 0;
         this.FlagsToClear.SwingSound = !!flagsToClear ? (flagsToClear.SwingSound || 0) : 0;
         this.FlagsToClear.HitSound = !!flagsToClear ? (flagsToClear.HitSound || 0) : 0;
         this.FlagsToClear.BlockSound = !!flagsToClear ? (flagsToClear.BlockSound || 0) : 0;
@@ -854,6 +863,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.CanJuggle = false;
         this.TrimX = 20;
         this.TrimY = 70;
+        this.IsSuperMove = false;
         ++Projectile.prototype.count;
     }
     Projectile.prototype.setEnergyToAdd = function(value) { energyToAdd_ = value; }
@@ -932,7 +942,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         else
             return (STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + parseInt(this.Element.style.width) - this.TrimX));
     }
-    Projectile.prototype.getLeftX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.X + parseInt(this.Element.style.width);}else{return this.X;}}
+    Projectile.prototype.getLeftX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - (this.X + parseInt(this.Element.style.width));}else{return this.X;}}
     Projectile.prototype.getRightX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.X;}else{return this.X + parseInt(this.Element.style.width);}}
     Projectile.prototype.getMidX = function()
     {
@@ -1051,7 +1061,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         /*Allow players on the other team to deal with projectile coming toward them.*/
         if(!this.isDisintegrating)
         {
-            this.Owner.onProjectileMoved(frame,this.Id,this.getMidX(),this.getMidY(),this);
+            this.Owner.onProjectileMoved(frame,this.Id,this.getMidX(),this.getMidY(),this,!!this.IsSuperMove);
         }
 
         return this;

@@ -68,7 +68,7 @@ function GetDebugInstance(game)
     {
         if(!!game_.Match)
         {
-            this.p1().setAI(CreateSimpleRyuAI);
+            this.p1().enableAI();
         }
         return null;
     }
@@ -77,7 +77,7 @@ function GetDebugInstance(game)
     {
         if(!!game_.Match)
         {
-            this.p2().setAI(CreateSimpleRyuAI);
+            this.p2().enableAI();
         }
         return null;
     }
@@ -87,7 +87,7 @@ function GetDebugInstance(game)
     {
         if(!!game_.Match)
         {
-            this.t1(index || 0).setAI(CreateSimpleRyuAI);
+            this.t1(index || 0).enableAI();
         }
         return null;
     }
@@ -96,7 +96,7 @@ function GetDebugInstance(game)
     {
         if(!!game_.Match)
         {
-            this.t2(index || 0).setAI(CreateSimpleRyuAI);
+            this.t2(index || 0).enableAI();
         }
         return null;
     }
@@ -178,7 +178,7 @@ function GetDebugInstance(game)
                     else
                         game_.Match.TeamB.addPlayer(player);
                     game_.Match.setupPlayer(player,team);
-                    player.setAI(CreateSimpleRyuAI);
+                    player.enableAI(CreateRyuAI);
                 }
             })(user);
             stuffLoader_.start(null,onDone,null);

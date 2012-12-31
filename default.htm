@@ -50,22 +50,24 @@
         <div class="superComboFinish" id="pnlSuperComboFinish" style="display:none;">&nbsp;</div>
     </div>
     <div id="pnlStatus">
-        <br /><span class="frame-rate">frame rate: <span id="spnFPS">0</span> FPS</span>
+        <br /><span class="frame-rate">frame time: <span id="spnFPS">0</span>MS</span>
         <br />
         <br />press (8) to increase the FPS
         <br />press (9) to decrease the FPS
         <br />
-        <br /><span id="spnStepFrame" class="step-frame">press (o) to step frame</span>
-        <br /><span id="spnResume" class="resume">press (p) to resume</span>
+        <br />
+        <br />
+        <br /><span id="spnStepFrame" class="step-frame">Press [O] for next frame</span>
+        <br /><span id="spnResume" class="resume">Press [P] to resume</span>
+    </div>
+    <div>
         <br /><span id="spnMsg"></span>
-        <br />
-        <br />
         <br /><span id="spnState" class="state running">State: Running</span>
     </div>
     <div class="loading">loading: <span id="pnlLoading" class="loading">done</span></div>
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
-    <div class="menu">
+    <div id="pnlMenu" class="menu">
         <input type="button" onclick="StartBattle()" value="go" />
     </div>
     <div id="pnlAnimationDebug" class="animation-debug">
@@ -77,17 +79,21 @@
     </div>
     <script type="text/javascript">
         var __debugMode = false;
+        var __noDamage = false;
         if(!__debugMode)
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "none";
+            window.document.getElementById("pnlStatus").style.display = "none";
         }
         else
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "";
+            window.document.getElementById("pnlStatus").style.display = "";
         }
     </script>
 
     <script type="text/javascript" src="script/api/gamepad.js"></script>
+    <script type="text/javascript" src="script/vcr.js"></script>
     <script type="text/javascript" src="script/fonts.js"></script>
     <script type="text/javascript" src="script/stuff-loader.js"></script>
     <script type="text/javascript" src="script/audio/base64-binary.js"></script>
@@ -125,8 +131,11 @@
     <script type="text/javascript" src="script/player-ryu.js"></script>
     <script type="text/javascript" src="script/player-ryu-spritedata.js"></script>
     <!--<script type="text/javascript" src="script/player-mbison.js"></script>-->
+    <script type="text/javascript" src="script/generic-ai.js"></script>
     <script type="text/javascript" src="script/ai-proxy.js"></script>
-    <script type="text/javascript" src="script/simple-ai.js"></script>
+    <script type="text/javascript" src="script/ryu-ai.js"></script>
+    <script type="text/javascript" src="script/ken-ai.js"></script>
+    <script type="text/javascript" src="script/mbison-ai.js"></script>
     <script type="text/javascript" src="script/debug.js"></script>
     <script type="text/javascript" src="script/load-spritedata.js"></script>
     <script type="text/javascript" src="script/misc.js"></script>

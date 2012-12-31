@@ -60,6 +60,7 @@ Player.prototype.renderDebugInfo = function()
         }
     }
 
+    return;
     var rect = this.getRect();
     this.Rect.style.bottom = rect.Bottom + "px";
 

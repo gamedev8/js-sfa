@@ -324,7 +324,7 @@
                 if(p2.Direction > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -346,7 +346,7 @@
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,null,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -966,6 +966,34 @@
             {
                 //on right side
                 return (p1Rect.Left - p2Rect.Right) < distance;
+            }
+        }
+    }
+
+    /*checks if players are within the given distance*/
+    Physics.prototype.getOffsetDistanceX = function(p1,p2,useFront)
+    {
+        if(!useFront)
+        {
+            var x = p1.getMidX();
+            return (
+                   (Math.abs(x - p2.getMidX()))
+                );
+        }
+        else
+        {
+            var p1Rect = p1.getImgRect();
+            var p2Rect = p2.getImgRect();
+
+            if(p1Rect.Left < p2Rect.Left)
+            {
+                //on left side
+                return (p2Rect.Left - p1Rect.Right);
+            }
+            else
+            {
+                //on right side
+                return (p1Rect.Left - p2Rect.Right);
             }
         }
     }

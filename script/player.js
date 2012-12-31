@@ -1,6 +1,7 @@
 ﻿
 
 //Encapsulates a new player
+//TODO: make private fields
 var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
     user.Player = this;
@@ -10,7 +11,9 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.NbHits = 0;
     this.TmpState = {Y:0,V:0};
     this.Name = name;
-    this.Folder = user.Folder;
+    this.Character = user.Selected;
+    this.Folder = user.getFolder();
+    this.IsAlternate = user.IsAlternateChar;
     this.NameImageSrc = nameImageSrc || "images/misc/misc/" + this.Name.toLowerCase() +"-name-1.png";
     this.PortriatImageSrc = portriatImageSrc || "images/misc/misc/" + this.Folder.toLowerCase() + "-r-portriat-1.png";
 
@@ -91,7 +94,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.onEndAttackFn = null;
     this.onStartAirAttackFn = null;
     this.onEndAirAttackFn = null;
-    this.onProjectileMovedFn = null;
+    this.onEnemyProjectileMovedFn = null;
     this.onProjectileGoneFn = null;
     this.onIncComboFn = null;
     this.onIncComboRefCountFn = null;
@@ -117,8 +120,15 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.Circle = new Circle(this.HalfWidth,this.HalfWidth,this.HalfWidth);
     this.HeadOffsetX = 40;
     this.HeadOffsetY = 10;
+    this.ImgBBox = {};
+
     this.Ai = new CreateAIProxy(this);
+    if(!!user.IsAI)
+        this.enableAI();
+
     this.HasPendingGrapple = false;
+    this.LandedOnFrame = 0;
+    this.MobileOnFrame = 0;
 
     this.SlideFactor = slideFactor || 30;
     this.BaseTakeHitDelay = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
@@ -201,7 +211,7 @@ Player.prototype.ndx = function(key)
 }
 Player.prototype.setIndex = function(index) { this.Index = index; }
 Player.prototype.getIndex = function() { return this.Index; }
-Player.prototype.setAI = function(createAiFn) { this.Ai.setAI(createAiFn); }
+Player.prototype.enableAI = function(createAiFn) { this.Ai.enableAI(createAiFn || (window["Create" + this.Name[0].toUpperCase() + this.Name.substring(1) + "AI"])); }
 Player.prototype.playerCount = 0;
 Player.prototype.takeDamage = function(amount) { this.takeDamageFn(amount); }
 Player.prototype.changeEnergy = function(amount) { if(!!amount) this.changeEnergyFn(amount); }
@@ -279,9 +289,13 @@ Player.prototype.incCombo = function(attackId)
 
 Player.prototype.reset = function(ignoreDirection)
 {
+    this.Data = {};
+    this.LandedOnFrame = 0;
+    this.MobileOnFrame = 0;
     this.TeleportX = 0;
     this.TeleportFramesLeft = 0;
     this.IgnoreHoldFrame = false;
+    this.MustChangeDirectionQuick = false;
 
     this.DizzyIndex = 0;
     this.DizzyValue = 0;
@@ -356,7 +370,6 @@ Player.prototype.reset = function(ignoreDirection)
     this.JumpVelocityX = 0;
     this.JumpVelocityY = 0;
     this.ZOrder = null;
-    this.NbMaintainInputFrames = 0;
     //
     this.T = 0;
     this.FrameFreeze = 0;
@@ -367,6 +380,8 @@ Player.prototype.reset = function(ignoreDirection)
     this.LastHitFrame = {};
     this.WinningFrame = CONSTANTS.NO_FRAME;
     this.Target = 0;
+    if(this.Ai.isRunning())
+        this.Ai.reset();
     this.clearProjectiles();
     this.clearDizzy();
 }
@@ -454,7 +469,14 @@ Player.prototype.getNextFrameID = function()
 //If the move is a projectile, and a projectile is already active, then this returns true;
 Player.prototype.isProjectileInUse = function(move)
 {
-    return !!this.HasActiveProjectiles && (hasFlag(move.Flags.Combat,COMBAT_FLAGS.PROJECTILE_ACTIVE));
+    if(hasFlag(move.Flags.Combat,COMBAT_FLAGS.MULTI_PROJECTILE) && move.ProjectileId !== null)
+    {
+        return this.Projectiles[move.ProjectileId].IsActive;
+    }
+    else
+    {
+        return !!this.HasActiveProjectiles && (hasFlag(move.Flags.Combat,COMBAT_FLAGS.PROJECTILE_ACTIVE));
+    }
 }
 
 //Gets the direction of the attack relative to the current player
@@ -641,6 +663,7 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
         if(!!this.TeleportFramesLeft)
             this.advanceTeleportation(frame);
         this.decreaseDizziness(frame);
+        this.sendAttackAlerts(frame);
         if(this.Ai.isRunning())
             this.Ai.frameMove(frame);
         this.checkForInterupt(frame);
