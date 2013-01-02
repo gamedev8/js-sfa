@@ -38,11 +38,16 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepadIndex)
     this.RandomSelect = 0;
     this.IsAlternateChar = false;
     this.IsAI = false;
+    this.NbCredits = 0;
 }
 
 
 User.prototype.getFolder = function() { return this.Folder; }
 User.prototype.getName = function() { return this.CurrentStance.replace("_selected", ""); }
+User.prototype.getNbCredits = function() { return this.NbCredits; }
+User.prototype.hasCredits = function() { return !!this.NbCredits; }
+User.prototype.addCredit  = function() { this.NbCredits = Math.min(this.NbCredits + 1, CONSTANTS.MAX_CREDITS); }
+User.prototype.useCredit  = function() { this.NbCredits = Math.max(this.NbCredits - 1,0); }
 
 
 User.prototype.setChar = function(char, isAlternate, isAI)

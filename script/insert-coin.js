@@ -1,10 +1,8 @@
 var CreateInsertCoinScreen = function(u1,u2)
 {
     /*private members*/
-    var nbCredits_ = 0;
-    var showCredits_ = false;
     var hideInsertCoin_ = false;
-    var mustUpdate_ = false;
+    var mustUpdate_ = true;
     var user1_ = u1;
     var user2_ = u2;
     var isDone_ = false;
@@ -95,7 +93,7 @@ var CreateInsertCoinScreen = function(u1,u2)
 	    spriteLookup_.load("images/misc/font3/name-sagat.png","images/misc/font3/name-sprites.png", "-576px", "-41px", "160px", "41px");
 	    spriteLookup_.load("images/misc/font3/name-sodom.png","images/misc/font3/name-sprites.png", "-736px", "-41px", "161px", "41px");
 
-}
+    }
 
 
     InsertCoinScreen.prototype.isDone = function() { return isDone_; }
@@ -157,32 +155,36 @@ var CreateInsertCoinScreen = function(u1,u2)
         this.release();
     }
 
+    InsertCoinScreen.prototype.onAddCredit = function()
+    {
+        u1_.addCredit();
+        mustUpdate_ = true;
+        soundManager_.queueSound("audio/misc/credit.zzz");
+    }
+
     InsertCoinScreen.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
         if(!!isDown && (keyCode == KEYS.CNTRL))
         {
-            showCredits_ = true;
-            mustUpdate_ = true;
-
-            nbCredits_ = Math.min(nbCredits_ + 1, CONSTANTS.MAX_CREDITS);
-            text1_.change(nbCredits_);
-            soundManager_.queueSound("audio/misc/credit.zzz");
-
+            this.onAddCredit();
         }
-        else if(!!isDown && (keyCode == KEYS.ENTER) && !!nbCredits_)
+        else if(!!isDown && (keyCode == KEYS.ENTER) && !!u1_.hasCredits())
         {
+            u1_.useCredit();
             StartCharacterSelection();
         }
     }
 
 
-
-
     InsertCoinScreen.prototype.frameMove = function(frame)
     {
-        if(!showCredits_)
+        if(!u1_.hasCredits())
         {
-            if((frame % 80) == 0)
+            if((frame % 1000) == 0)
+            {
+                game_.loadVHS();
+            }
+            else if((frame % 80) == 0)
             {
                 hideInsertCoin_ = false;
                 mustUpdate_ = true;
@@ -201,12 +203,13 @@ var CreateInsertCoinScreen = function(u1,u2)
         if(!!mustUpdate_)
         {
             mustUpdate_ = false;
-            if(!!showCredits_)
+            if(u1_.hasCredits())
             {
                 capElement_.style.display = "none";
                 insertCoinElement_.style.display = "none";
                 creditsElement_.style.display = "";
                 creditsTextElement_.style.display = "";
+                text1_.change(u1_.getNbCredits());
             }
             else
             {

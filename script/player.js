@@ -656,6 +656,12 @@ Player.prototype.onPreFrameMove = function(frame)
 {
 }
 
+Player.prototype.handleAI = function(frame)
+{
+    if(this.Ai.isRunning())
+        this.Ai.frameMove(frame);
+}
+
 Player.prototype.onFrameMove = function(frame,stageX,stageY)
 {
     if(!this.IsPaused)
@@ -664,11 +670,8 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
             this.advanceTeleportation(frame);
         this.decreaseDizziness(frame);
         this.sendAttackAlerts(frame);
-        if(this.Ai.isRunning())
-            this.Ai.frameMove(frame);
         this.checkForInterupt(frame);
         this.frameMove(frame,stageX,stageY);
-        //if(!!this.CurrentFrame && hasFlag(this.CurrentFrame.FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
         if(!!this.IsInAttackFrame)
             this.handleAttack(frame, this.CurrentFrame);
         if(!!this.GrappledPlayer)
@@ -857,7 +860,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
         this.tryChainAnimation(frame);
     }
 
-    this.CheckedForAnimation = false;
+    //this.CheckedForAnimationFrame = false;
     this.cleanUpButtonStateChanges(frame);
     //this.debugShowKeys();
 }

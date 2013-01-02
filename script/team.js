@@ -207,6 +207,8 @@ var CreateTeam = function(num)
             this.setCursor(((this.getCursor() + 1) < nbPlayers_) ? (this.getCursor()+1) : 0);
 
         for(var i = 0, length = nbPlayers_; i < length; ++i)
+            this.getPlayer(i).handleAI(frame);
+        for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.getPlayer(i).handleInput(frame);
         for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.getPlayer(i).onFrameMove(frame,x,y);

@@ -692,6 +692,13 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        this.CurrentAnimation.ID = _c3(this.Id,this.CurrentAnimation.Animation.BaseAnimation.Name,game_.getCurrentFrame());
+
+        //if(game_.isRecording())
+        //    __vcrMoves.push(this.CurrentAnimation.ID);
+        //else
+        //    __matchMoves.push(this.CurrentAnimation.ID);
+
         if(!!this.CurrentAnimation.Animation.ProjectileId)
             this.CurrentAnimation.Animation.IsProjectilePending = true;
 
@@ -753,7 +760,6 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         }
 
         this.CanInterrupt = false;
-        this.CurrentAnimation.ID = _c3(this.Id,this.CurrentAnimation.Animation.BaseAnimation.Name,game_.getCurrentFrame());
         this.CurrentAnimation.FrameIndex = 0;
         this.IgnoreHoldFrame = false;
         this.IgnoreCollisionsWith = "";

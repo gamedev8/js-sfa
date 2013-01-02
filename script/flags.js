@@ -674,7 +674,11 @@ var KEY_STATES =
 
 var GAME_STATES = 
 {
-    PAUSED:1
+    NONE:0
+    ,PAUSED:1
     ,STEP_FRAME:2
+    ,INSERT_COIN:3
+    ,CHAR_SELECT:4
+    ,MATCH:5
 };
 

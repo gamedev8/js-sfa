@@ -38,7 +38,8 @@ var CreateGame = function()
     var pnlLoadingProgress_ = window.document.getElementById("pnlLoadingProgress");
     var pnlLoading_ = window.document.getElementById("pnlLoading");
     var vcr_ = CreateVCR();
-    var mustRecordNextRound_ = false;
+    var mustRecordNextRound_ = true;
+    var gameLoopState_ = GAME_STATES.INSERT_COIN;
 
     //Encapulates a new game
     var Game = function ()
@@ -47,16 +48,20 @@ var CreateGame = function()
         this.initGame();
         this.Match = null;
         this.UsingGamepads = !!Gamepad.supported;
-        //his.VCR = vcr_;
+        this.VCR = vcr_;
     }
 
     Game.prototype.isRecording = function() { return vcr_.isRecording(); }
+
+    Game.prototype.isPlayingVHS = function() { return vcr_.isPlaying(); }
 
     Game.prototype.recordInput = function(team,index,folder,isDown,keyCode,frame,funcName) { vcr_.recordInput(team,index,folder,isDown,keyCode,frame,funcName); }
 
     Game.prototype.recordNextRound = function() { mustRecordNextRound_ = true; }
 
     Game.prototype.stopRecording = function() { mustRecordNextRound_ = false; vcr_.stop(); }
+
+    Game.prototype.stopPlaying = function() { mustRecordNextRound_ = false; vcr_.stop(); }
 
     Game.prototype.loadVHS = function(id)
     {
@@ -119,10 +124,12 @@ var CreateGame = function()
     {
         if(vcr_.isRecording())
         {
+            mustRecordNextRound_ = false;
             vcr_.save();
         }
         else if(mustRecordNextRound_)
         {
+            mustRecordNextRound_ = false;
             vcr_.record();
         }
         frame_ = 0;
@@ -247,6 +254,7 @@ var CreateGame = function()
     {
         this.StartPaused = startPaused;
         this.resetGameData();
+        gameLoopState_ = GAME_STATES.MATCH;
 
         var fn = function(thisValue)
         {
@@ -266,6 +274,7 @@ var CreateGame = function()
 
     Game.prototype.createMatch = function(teamA,teamB,stage,callback)
     {
+        gameLoopState_ = GAME_STATES.MATCH;
         var a = null;
         var b = null;
 
@@ -292,6 +301,7 @@ var CreateGame = function()
     Game.prototype.startCharSelect = function()
     {
         this.resetGameData();
+        gameLoopState_ = GAME_STATES.CHAR_SELECT;
         charSelect_ = CreateCharSelect(user1_,user2_);
         managed_ = charSelect_;
 
@@ -301,6 +311,7 @@ var CreateGame = function()
     Game.prototype.startInsertCoinScreen = function()
     {
         this.resetGameData();
+        gameLoopState_ = GAME_STATES.INSERT_COIN;
         insertCoinScreen_ = CreateInsertCoinScreen(user1_,user2_);
         managed_ = insertCoinScreen_;
         this.go(this.runInsertCoinScreenLoop);
@@ -362,6 +373,7 @@ var CreateGame = function()
     /*resets common data*/
     Game.prototype.resetGameData = function()
     {
+        gameLoopState_ = GAME_STATES.NONE;
         this.hideElements();
         this.stop();
         this.releaseText();
@@ -579,6 +591,7 @@ var CreateGame = function()
     Game.prototype.stop = function()
     {
         window.clearTimeout(nextTimeout_);
+        nextTimeout_ = null;
     }
 
     /*Basic game loop*/
@@ -587,12 +600,12 @@ var CreateGame = function()
         this.handleInput();
         if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
         {
+            this.removeState(GAME_STATES.STEP_FRAME);
+            ++frame_;
+
             //frame move
             if(!!vcr_.isPlaying())
                 vcr_.onFrameMove(frame_);
-
-            this.removeState(GAME_STATES.STEP_FRAME);
-            ++frame_;
 
             //pre fame move
             this.Match.preFrameMove(frame_);
@@ -621,6 +634,8 @@ var CreateGame = function()
         if(!this.Match.isMatchOver(frame_))
         {
             //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
+            if(gameLoopState_ != GAME_STATES.MATCH)
+                return;
             nextTimeout_ = window.setTimeout(runGameLoop_,speed_);
         }
         else
@@ -649,6 +664,8 @@ var CreateGame = function()
 
         if(!insertCoinScreen_.isDone(frame_))
         {
+            if(gameLoopState_ != GAME_STATES.INSERT_COIN)
+                return;
             //nextTimeout_ = window.requestAnimFrame(runInsertCoinScreenLoop_,speed_);
             nextTimeout_ = window.setTimeout(runInsertCoinScreenLoop_,speed_);
         }
@@ -682,6 +699,8 @@ var CreateGame = function()
 
             if(!this.isGameOver())
             {
+                if(gameLoopState_ != GAME_STATES.CHAR_SELECT)
+                    return;
                 //nextTimeout_ = window.requestAnimFrame(runCharSelectLoop_,speed_);
                 nextTimeout_ = window.setTimeout(runCharSelectLoop_,speed_);
             }

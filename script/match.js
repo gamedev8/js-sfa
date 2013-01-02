@@ -20,7 +20,14 @@ var CreateMatch = function(team1,team2,stage)
     var showedFaceoff_ = false;
     var teamsVisible_ = false;
     var startedTheme_ = false;
+    var insertCoinElement_ = null;
+    var pressStartElement_ = null;
+    var isShowingMainInsertCoin_ = false;
+    var hideInsertCoin_ = false;
+    var mustUpdate_ = true;
     var faceoff_ = null;
+    var parent_ = window.document.getElementById("pnlStage");
+
     var nbAirborne_ = 0;
     game_.resetFrame();
 
@@ -408,17 +415,27 @@ var CreateMatch = function(team1,team2,stage)
         this.Stage.init();
         this.TeamA.init();
         this.TeamB.init();
+        if(game_.isPlayingVHS())
+            this.showMainInsertCoin();
     }
     /*Handles key state changes*/
     Match.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
-        //if(this.getAllowInput())
-        //{
-            for(var i = 0; i < this.TeamA.Players.length; ++i)
-                this.TeamA.Players[i].onKeyStateChanged(isDown,keyCode,frame);
-            for(var i = 0; i < this.TeamB.Players.length; ++i)
-                this.TeamB.Players[i].onKeyStateChanged(isDown,keyCode,frame);
-        //}
+        if(!!isDown && (keyCode == KEYS.CNTRL))
+        {
+            //u1_.incCredits();
+            soundManager_.queueSound("audio/misc/credit.zzz");
+
+            //TODO: if a tape is current being shown, then go back to the insert coin screen
+            u1_.addCredit();
+            if(game_.isPlayingVHS())
+                game_.stopPlaying();
+        }
+
+        for(var i = 0; i < this.TeamA.Players.length; ++i)
+            this.TeamA.Players[i].onKeyStateChanged(isDown,keyCode,frame);
+        for(var i = 0; i < this.TeamB.Players.length; ++i)
+            this.TeamB.Players[i].onKeyStateChanged(isDown,keyCode,frame);
     }
     /*Dims the background when a player is starting a super move*/
     Match.prototype.setBackgroundTransparent = function(player)
@@ -549,6 +566,21 @@ var CreateMatch = function(team1,team2,stage)
             this.handleRound1(frame);
             faceoff_.frameMove(frame);
         }
+
+        //
+        if(game_.isPlayingVHS())
+        {
+            if((frame % 80) == 0)
+            {
+                hideInsertCoin_ = false;
+                mustUpdate_ = true;
+            }
+            else if((frame % 40) == 0)
+            {
+                hideInsertCoin_ = true;
+                mustUpdate_ = true;
+            }
+        }
     }
 
     /*pre-frame move calculations to be performed here*/
@@ -580,6 +612,31 @@ var CreateMatch = function(team1,team2,stage)
             this.present();
         if(round_ == 1)
             faceoff_.render(frame);
+
+
+        if(game_.isPlayingVHS() && !!mustUpdate_)
+        {
+            mustUpdate_ = false;
+            if(u1_.hasCredits())
+            {
+                insertCoinElement_.style.display = "none";
+                pressStartElement_.style.display = "";
+                if(!!hideInsertCoin_)
+                    pressStartElement_.style.display = "none";
+                else
+                    pressStartElement_.style.display = "";
+            }
+            else
+            {
+                pressStartElement_.style.display = "none";
+                insertCoinElement_.style.display = "";
+                if(!!hideInsertCoin_)
+                    insertCoinElement_.style.display = "none";
+                else
+                    insertCoinElement_.style.display = "";
+            }
+        }
+
     }
 
     Match.prototype.kill = function()
@@ -594,6 +651,9 @@ var CreateMatch = function(team1,team2,stage)
         this.TeamA.release();
         this.TeamB.release();
         faceoff_.release();
+        utils_.removeFromDOM(insertCoinElement_);
+        utils_.removeFromDOM(pressStartElement_);
+        isShowingMainInsertCoin_ = false;
     }
 
 
@@ -602,232 +662,23 @@ var CreateMatch = function(team1,team2,stage)
         //stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
     }
 
-    /**********************************************************************************/
-    /*This prototype together with the Match prototype handles the announcing of round*/
-    /**********************************************************************************/
-    var CreateFaceoff = function(match)
+    Match.prototype.showMainInsertCoin = function()
     {
-        var match_ = match;
-        var showedFaceoff_ = false;
-        var announcedNewRound_ = false;
-        var startedRound_ = false;
-        var areNamesHidden_ = true;
-        var faceoffSound_ = "audio/misc/faceoff.zzz";
-
-        var Faceoff = function()
+        if(!isShowingMainInsertCoin_)
         {
-            this.FaceoffElement = null;
-            this.TeamAFaceoffElement = null;
-            this.TeamBFaceoffElement = null;
-            this.TeamANameElement = null;
-            this.TeamBNameElement = null;
-            this.VsElement = null;
+            isShowingMainInsertCoin_ = true;
+            insertCoinElement_ = window.document.createElement("div");
+            insertCoinElement_.className = "insert-coin";
+            insertCoinElement_.id = "pnlInsertCoin";
+            parent_.appendChild(insertCoinElement_);
 
-            this.MaxAngle = 360;
-            this.MaxScale = 1;
+            pressStartElement_ = window.document.createElement("div");
+            pressStartElement_.className = "press-start";
+            pressStartElement_.id = "pnlPressStart";
+            parent_.appendChild(pressStartElement_);
 
-            this.Angle = 0;
-            this.Scale = 0;
-
-            var nbFrames = 20;
-
-            this.rotateUpFn = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.MaxAngle);
-            this.rotateDownFn = (function(max,inc) { return function(t,value) { return Math.max(value + (max/nbFrames), 0); } })(this.MaxAngle);
-            this.scaleUpFn = (function(max,inc) { return function(t,value) { return Math.min(value + (max/nbFrames), max); } })(this.MaxScale);
-            this.scaleDownFn = (function(max,inc) { return function(t,value) { return Math.max(value - (max/nbFrames), 0); } })(this.MaxScale);
         }
-
-        Faceoff.prototype.setTeamA = function(name)
-        {
-            spriteLookup_.set(this.TeamAFaceoffElement,"images/misc/misc/p2-select-" + name + ".png");
-            spriteLookup_.set(this.TeamANameElement,"images/misc/font3/name-" + name + ".png",false,true);
-        }
-        Faceoff.prototype.setTeamB = function(name)
-        {
-            spriteLookup_.set(this.TeamBFaceoffElement,"images/misc/misc/p2-select-" + name + ".png");
-            spriteLookup_.set(this.TeamBNameElement,"images/misc/font3/name-" + name + ".png",false,true);
-        }
-
-        Faceoff.prototype.init = function()
-        {
-            this.FaceoffElement = window.document.createElement("div");
-            this.FaceoffElement.style.display = "none";
-            this.FaceoffElement.className = "faceoff";
-
-            this.TeamAFaceoffElement = window.document.createElement("div");
-            this.TeamAFaceoffElement.className = "team1-faceoff";
-
-            this.TeamBFaceoffElement = window.document.createElement("div");
-            this.TeamBFaceoffElement.className = "team2-faceoff";
-
-            this.FaceoffElement.appendChild(this.TeamAFaceoffElement);
-            this.FaceoffElement.appendChild(this.TeamBFaceoffElement);
-
-            this.TeamANameElement = window.document.createElement("div");
-            this.TeamANameElement.className = "faceoff-name flipped";
-            this.TeamAFaceoffElement.appendChild(this.TeamANameElement);
-
-            this.TeamBNameElement = window.document.createElement("div");
-            this.TeamBNameElement.className = "faceoff-name";
-            this.TeamBFaceoffElement.appendChild(this.TeamBNameElement);
-
-            this.VsElement = window.document.createElement("div");
-            this.VsElement.className = "vs";
-            spriteLookup_.set(this.VsElement,"images/misc/misc/vs-0.png");
-            this.FaceoffElement.appendChild(this.VsElement);
-
-            this.reset();
-
-            /*
-            imageLookup_.getBgB64(this.TeamAFaceoffElement,"images/misc/head-sprites.png");
-            imageLookup_.getBgB64(this.TeamBFaceoffElement,"images/misc/head-sprites.png");
-            imageLookup_.getBgB64(this.TeamANameElement,"images/misc/name-sprites.png");
-            imageLookup_.getBgB64(this.TeamBNameElement,"images/misc/name-sprites.png");
-            imageLookup_.getBgB64(this.VsElement,"images/misc/head-sprites.png");
-            */
-
-            window.document.getElementById("pnlStage").appendChild(this.FaceoffElement);
-        }
-
-        Faceoff.prototype.isActive = function()
-        {
-            return !startedRound_;
-        }
-
-        Faceoff.prototype.reset = function()
-        {
-            showedFaceoff_ = !!__debugMode;
-            announcedNewRound_ = !!__debugMode;
-            startedRound_ = false;
-            this.Scale = 0;
-            this.Angle = 0;
-
-            this.rotateScale();
-
-            this.TeamANameElement.style.display = "none";
-            this.TeamBNameElement.style.display = "none";
-            this.VsElement.style.display = "none";
-            areNamesHidden_ = true;
-        }
-
-        Faceoff.prototype.pause = function()
-        {
-            soundManager_.pause(faceoffSound_);
-        }
-
-        Faceoff.prototype.resume = function()
-        {
-            if(!startedRound_)
-                soundManager_.resume(faceoffSound_);
-        }
-
-        Faceoff.prototype.release = function()
-        {
-            utils_.removeFromDOM(this.FaceoffElement);
-        }
-
-        Faceoff.prototype.show = function(frame)
-        {
-            showedFaceoff_ = true;
-            soundManager_.queueSound(faceoffSound_);
-            this.FaceoffElement.style.display = "";
-        }
-
-
-        Faceoff.prototype.hide = function(frame)
-        {
-            this.FaceoffElement.style.display = "none";
-        }
-
-        Faceoff.prototype.startNewRound = function(frame)
-        {
-            announcedNewRound_ = true;
-            match_.startNewRound(frame);
-        }
-
-        Faceoff.prototype.endNewRound = function(frame)
-        {
-            startedRound_ = true;
-            match_.endNewRound(frame);
-        }
-
-        Faceoff.prototype.handleRound1 = function(frame)
-        {
-            if(!showedFaceoff_ && (frame > CONSTANTS.SHOW_FACEOFF_DELAY))
-                this.show(frame);
-            if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_FIRST_ROUND_DELAY))
-                this.startNewRound(frame);
-            if(!startedRound_ && (frame > CONSTANTS.START_FIRST_ROUND_DELAY))
-                this.endNewRound(frame);
-        }
-
-        Faceoff.prototype.handleOtherRounds = function(frame)
-        {
-            if(!announcedNewRound_ && (frame > CONSTANTS.ANNOUNCE_NEW_ROUND_DELAY))
-                this.startNewRound(frame);
-            if(!startedRound_ && (frame > CONSTANTS.START_NEW_ROUND_DELAY))
-                this.endNewRound(frame);
-        }
-
-        Faceoff.prototype.frameMove = function(frame)
-        {
-            if((frame > CONSTANTS.SHOW_FACEOFF_PICS_DELAY) && (frame < CONSTANTS.REMOVE_FACEOFF_PICS_DELAY))
-            {
-                if(this.Scale < this.MaxScale)
-                {
-                    this.Scale = this.scaleUpFn(frame, this.Scale);
-                    this.Angle = this.rotateUpFn(frame, this.Angle);
-                    this.rotateScale();
-                }
-                else if(!!areNamesHidden_)
-                {
-                    this.TeamANameElement.style.display = "";
-                    this.TeamBNameElement.style.display = "";
-                    this.VsElement.style.display = "";
-                    areNamesHidden_ = false;
-                }
-            }
-            else if(frame > CONSTANTS.REMOVE_FACEOFF_PICS_DELAY)
-            {
-                if(!areNamesHidden_)
-                {                
-                    this.TeamANameElement.style.display = "none";
-                    this.TeamBNameElement.style.display = "none";
-                    this.VsElement.style.display = "none";
-                    areNamesHidden_ = true;
-                }
-                if(this.Scale > 0)
-                {
-                    this.Scale = this.scaleDownFn(frame, this.Scale);
-                    this.Angle = this.rotateDownFn(frame, this.Angle);
-                    this.rotateScale();
-                }
-            }
-        }
-
-        Faceoff.prototype.rotateScale = function()
-        {
-            this.TeamAFaceoffElement.style["-webkit-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-            this.TeamAFaceoffElement.style["-moz-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-            this.TeamAFaceoffElement.style["MozTransform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-            this.TeamAFaceoffElement.style["-o-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
-            this.TeamAFaceoffElement.style["OTransform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
-            this.TeamAFaceoffElement.style["-ms-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-
-            this.TeamBFaceoffElement.style["-webkit-transform"] = "scale(" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-            this.TeamBFaceoffElement.style["-moz-transform"] = "scale(" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-            this.TeamBFaceoffElement.style["MozTransform"] = "scale(" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
-            this.TeamBFaceoffElement.style["OTransform"] = "scale(" + this.Scale + "," + this.Scale + ") rotate(" + this.Angle + "deg)";
-            this.TeamBFaceoffElement.style["-ms-transform"] = "scale(-" + this.Scale + "," + this.Scale + ") rotateZ(" + this.Angle + "deg)";
-        }
-
-        Faceoff.prototype.render = function(frame)
-        {
-        }
-
-        return new Faceoff();
     }
-
     return new Match();
 }
 

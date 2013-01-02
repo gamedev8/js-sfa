@@ -144,26 +144,34 @@ Player.prototype.addCurrentButtonState = function(frame)
     this.ButtonStates.push({State:state,Frame:frame});
 }
 
+//returns the frame to use for input (used for recording matches)
+Player.prototype.getInputFrame = function(frame)
+{
+    return (this.CheckedForAnimationFrame == frame) ? frame + 1 : frame;
+}
+
 //Handles key state changes
 Player.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
 {
     if(!!this.Buttons[keyCode])
     {
         var key = this.Buttons[keyCode].Bit;
-        if(game_.isRecording())
-            game_.recordInput(this.Team,this.Index,this.Folder,isDown,key,frame);
 
         if(!!isDown && (this.ButtonState[key].Value == BUTTON_STATE.NONE))
         {
             //the button was just pressed
             this.ButtonState[key].Value = BUTTON_STATE.PRESSED
             this.ButtonState[key].Frame = frame;
+            if(game_.isRecording())
+                game_.recordInput(this.Team,this.Index,this.Folder,isDown,key,this.getInputFrame(frame));
         }
         else if(!isDown && (this.ButtonState[key].Value == BUTTON_STATE.PRESSED))
         {
             //the button was released
             this.ButtonState[key].Value = BUTTON_STATE.NONE;
             this.ButtonState[key].Frame = frame;
+            if(game_.isRecording())
+                game_.recordInput(this.Team,this.Index,this.Folder,isDown,key,this.getInputFrame(frame));
         }
         else
             return;
@@ -266,9 +274,9 @@ Player.prototype.checkForAnimation = function(frame)
 {
     if(!this.getMatch().getAllowInput())
         return;
-    if(!!this.CheckedForAnimation)
+    if(!!this.CheckedForAnimationFrame == frame)
         return;
-    this.CheckedForAnimation = true;
+    this.CheckedForAnimationFrame = frame;
 
     if(this.Flags.Player.has(PLAYER_FLAGS.MOBILE) || (this.allowInterupt() && !this.InteruptAnimation))
     {

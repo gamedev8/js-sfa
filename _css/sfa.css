@@ -1,8 +1,9 @@
 ﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:12px;overflow:hidden;}
 body div.select {height:100%;width:100%;background:url(../images/misc/misc/player-select-bg.png) no-repeat 0px 0px;}
-.capcom,.credits,.insert-coin,.credits-text{position:absolute;}
+.capcom,.credits,.insert-coin,.press-start,.credits-text{position:absolute;}
 .capcom{background-image:url(../images/misc/font1/cap.png);width:352px;height:41px;bottom:42px;left:208px;}
-.insert-coin{background-image:url(../images/misc/font1/insert.png);width:172px;height:21px;bottom:144px;left:292px;}
+.press-start{background-image:url(../images/misc/font1/press-start.png);width:320px;height:21px;bottom:144px;left:224px;z-index:999;}
+.insert-coin{background-image:url(../images/misc/font1/insert.png);width:172px;height:21px;bottom:144px;left:292px;z-index:999;}
 .credits-text{background-image:url(../images/misc/font1/credits.png);width:320px;height:124px;bottom:0px;left:224px;}
 .credits{}
 .animation-debug{position:absolute;right:20px;bottom:50px;}
