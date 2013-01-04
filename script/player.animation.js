@@ -796,6 +796,21 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     }
 }
 
+Player.prototype.applyShake = function(frame, stageX, stageY)
+{
+    if(frame < this.ShakeUntilFrame)
+    {
+        if((frame % 2) == 0)
+        {
+            this.setX(this.X - (this.Direction * 4));
+        }
+        else
+        {
+            this.setX(this.X + (this.Direction * 4));
+        }
+    }
+}
+
 Player.prototype.doAnimationAlerts = function()
 {
     if(hasFlag(this.CurrentAnimation.Animation.Flags.Alert,ALERT_FLAGS.DIZZY))

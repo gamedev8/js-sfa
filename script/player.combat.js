@@ -708,7 +708,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE / 2;}
         this.FreezeUntilFrame = frame + (nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
-
+        this.ShakeUntilFrame = frame + (nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
         //notify AI
         this.onBlocked();
         if(!!otherPlayer)
@@ -745,6 +745,8 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
         if(!!energyToAdd && !(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)))
             energyToAdd = Math.ceil(energyToAdd/2);
+        if(!(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)))
+            this.ShakeUntilFrame = frame + (nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
 
         if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
         {
@@ -967,9 +969,13 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         hitDelayFactor_ = 0;
 
     if(this.ComboCount > 2)
+    {
         this.setHoldFrame(1);
+    }
     else
+    {
         this.setHoldFrame(nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
+    }
 
     if(!this.isBlocking())
         this.queueHitSound(hitSound);

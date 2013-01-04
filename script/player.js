@@ -727,7 +727,10 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
         return;
 
     if(!!this.FrameFreeze && !this.IgnoreHoldFrame)
+    {
+        this.applyShake(frame,stageX,stageY);
         this.holdFrame(frame);
+    }
 
     if(!!this.ForceEndAnimation)
     {
