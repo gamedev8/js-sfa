@@ -219,7 +219,7 @@ ManagedText.prototype.render = function(frame)
     }
 }
 
-ManagedText.prototype.reset = function()
+ManagedText.prototype.release = function()
 {
     this.init();
     this.change("");
@@ -239,8 +239,14 @@ var CreateFontSystem = function()
 
     FontSystem.prototype.reset = function(frame)
     {
-        for(var i = 0, length = this.Text.length; i < length; ++i)
-            this.Text[i].reset();
+        this.release(frame);
+    }
+
+    FontSystem.prototype.release = function(frame)
+    {
+        //for(var i = 0, length = this.Text.length; i < length; ++i)
+        //    this.Text[i].release();
+        utils_.releaseArray(this.Text);
     }
 
 

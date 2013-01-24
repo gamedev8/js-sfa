@@ -12,31 +12,35 @@ var CreateTeam = function(num)
     var currentCombo_ = 0;
     var currentComboRefCount_ = 0;
     var nbPlayers_ = 0;
+    var players_ = [];
+    var wins_ = 0;
+    var loses_ = 0;
+    var draws_ = 0;
 
     var Team = function(num)
     {
-        this.Players = [];
+        players_ = [];
     }
 
     Team.prototype.getGame = function() { return game_; }
     Team.prototype.getPlayer = function(value) { return this.getPlayers()[value]; }
-    Team.prototype.getPlayers = function() { return this.Players; }
+    Team.prototype.getPlayers = function() { return players_; }
     Team.prototype.setPlayers = function(value)
     {
-        this.Players = value;
+        players_ = value;
         this.setPlayerIndexes();
-        nbPlayers_ = this.Players.length;
+        nbPlayers_ = players_.length;
     }
     Team.prototype.addPlayer = function(value)
     {
-        this.Players.push(value);
+        players_.push(value);
         this.setPlayerIndexes();
-        nbPlayers_ = this.Players.length;
+        nbPlayers_ = players_.length;
     }
     Team.prototype.setPlayerIndexes = function()
     {
-        for(var i = 0, length = this.Players.length; i < length; ++i)
-            this.Players[i].setIndex(i);
+        for(var i = 0, length = players_.length; i < length; ++i)
+            this.getPlayer(i).setIndex(i);
     }
     Team.prototype.getCursor = function() { return cursor_; }
     Team.prototype.setCursor = function(value) { cursor_ = value; }
@@ -61,7 +65,41 @@ var CreateTeam = function(num)
     Team.prototype.getCurrentComboRefCount = function() { return currentComboRefCount_; }
     Team.prototype.setCurrentComboRefCount = function(value) { currentComboRefCount_ = value; }
     Team.prototype.incCurrentComboRefCount = function() { ++currentComboRefCount_; }
+    Team.prototype.getWins = function() { return wins_; }
+    Team.prototype.getLoses = function() { return loses_; }
+    Team.prototype.getDraws = function() { return draws_; }
 
+    Team.prototype.set1PMode = function()
+    {
+        players_.forEach(function(player) { player.User.set1PMode(); });
+    }
+
+    Team.prototype.clear1PMode = function()
+    {
+        players_.forEach(function(player)
+            {
+                player.User.clear1PMode();
+                player.User.reset();
+            });
+    }
+
+    Team.prototype.onDrawRound = function()
+    {
+        players_.forEach(function(player) { player.User.onDrawRound(); });
+        ++draws_;
+    }
+
+    Team.prototype.onWonRound = function()
+    {
+        players_.forEach(function(player) { player.User.onWonRound(); });
+        ++wins_;
+    }
+
+    Team.prototype.onLostRound = function()
+    {
+        players_.forEach(function(player) { player.User.onLostRound(); });
+        ++loses_;
+    }
 
     Team.prototype.init = function()
     {
@@ -69,6 +107,9 @@ var CreateTeam = function(num)
         nameImg_.style.display = "";
         healthbar_.init();
         energybar_.init();
+        wins_ = 0;
+        loses_ = 0;
+        draws_ = 0;
 
         /*
         imageLookup_.getBgB64(portriatImg_,"images/misc/char-sprites.png");
@@ -163,22 +204,22 @@ var CreateTeam = function(num)
         }
         healthbar_.release();
         energybar_.release();
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).release();
+
+        utils_.releaseArray(players_);
         this.setCursor(0);
     }
 
     Team.prototype.show = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.Players[i].show();
+            this.getPlayer(i).show();
         portriatImg_.parentNode.style.display = "";
     }
 
     Team.prototype.hide = function()
     {
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.Players[i].hide();
+            this.getPlayer(i).hide();
         portriatImg_.parentNode.style.display = "none";
     }
 

@@ -60,7 +60,7 @@ Player.prototype.renderDebugInfo = function()
         }
     }
 
-    return;
+
     var rect = this.getRect();
     this.Rect.style.bottom = rect.Bottom + "px";
 
@@ -89,6 +89,7 @@ Player.prototype.releaseDebugElements = function()
         utils_.removeFromDOM(this.DebugHit[i]);
     }
     utils_.removeFromDOM(this.DebKeysElement);
+    utils_.releaseArray(this.DebugHit);
 }
 
 

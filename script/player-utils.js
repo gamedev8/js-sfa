@@ -99,6 +99,14 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     Animation.prototype.setOtherPlayerAirborneFlags = function(flags) { this.OtherPlayerAirborneFlags = flags; }
     Animation.prototype.getOtherPlayerAirborneFlags = function() { return this.OtherPlayerAirborneFlags; }
     Animation.prototype.isAttack = function() { return this.BaseAnimation.IsAttack; }
+    Animation.prototype.makeHitsUnique = function()
+    {
+        var hitId = 0;
+        for(var i = 0; i < this.BaseAnimation.Frames.length; ++i)
+        {
+            this.BaseAnimation.Frames[i].HitID = ++hitId;
+        }
+    }
 
     Animation.prototype.endBlock = function()
     {
@@ -149,14 +157,14 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.Animations.push(animation);
     }
 
-    Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addFrameWithSound.apply(this.BaseAnimation,arguments);
         return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
 
-    Animation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
@@ -167,14 +175,14 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.BaseAnimation.addOffsetFrame.apply(this.BaseAnimation,arguments);
         return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
-    Animation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addRepeatingFrameWithSound.apply(this.BaseAnimation,arguments);
 
         return CreateFrameAdapter(this.BaseAnimation.Frames,nbFrames);
     }
-    Animation.prototype.addRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitDelayFactor,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addRepeatingFrame.apply(this.BaseAnimation,arguments);
@@ -240,6 +248,14 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
             this.Animations[i].hide();
     }
 
+    Animation.prototype.release = function()
+    {
+        utils_.releaseArray(this.Animations);
+        if(!!this.Trail)
+            this.Trail.release();
+        this.BaseAnimation.release();
+    }
+
     return new Animation();
 }
 /************************************************************************/
@@ -264,6 +280,8 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
         this.TopOffset = topOffset;
         this.IsLooping = isLooping || false;
         this.InternalFrame = 0;
+        this.OffsetX = 0;
+        this.OffsetY = 0;
     }
     GenericAnimation.prototype.reset = function()
     {
@@ -306,6 +324,60 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
         this.IsActive = false;
         this.reset();
     }
+    GenericAnimation.prototype.renderWithPlayer = function(frame,startFrame,element,direction,playerX,playerY)
+    {
+        var x = 0;
+        var y = 0;
+        var delta = 0;
+        if(!!this.IsLooping)
+        {
+            if(this.InternalFrame > this.BaseAnimation.NbFrames)
+                this.InternalFrame = 0;
+            delta = this.InternalFrame++;
+        }
+        else
+            delta = frame - startFrame;
+
+        var newFrame = this.getFrame(delta);
+        if(!newFrame)
+        {
+            /*free the element so it can be reused in other animations*/
+            this.stop(element);
+            return false;
+        }
+        else
+        {
+            var data = spriteLookup_.get(newFrame.RightSrc)
+            if(!!data && (element.style.backgroundPositionX != data.Left))
+            {
+                element.style.backgroundPosition = data.Left + " " + data.Bottom;
+                element.style.width = data.Width;
+                element.style.height = data.Height;
+            }
+            AutoApplyFlip(element,direction == -1);
+
+            x = this.OffsetX + playerX;
+            y = this.OffsetY + playerY;
+        }
+        /*Must add the change in stageX to the position to keep the animation in one place on the screen,
+         unless the animation must move with the player - in which case we disregard the stageX*/
+        if(direction > 0)
+        {
+            element.style.left = "";
+            element.style.right = x + "px";
+        }
+        else
+        {
+            element.style.right = "";
+            element.style.left = x + "px";
+        }
+        element.style.bottom = y + "px";
+        if(element.style.display != "")
+            element.style.display = "";
+        return true;
+    }
+
+
     GenericAnimation.prototype.tryRender = function(frame,startFrame,element,stageX,stageY,playerX,playerY,playerWidth)
     {
         var offsetX = 0;
@@ -422,6 +494,12 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
         this.Element.style.display = "none";
         this.Element.style.backgroundImage = "url(" + bgImg + ")";
         window.document.getElementById("pnlStage").appendChild(this.Element);
+    }
+
+    BasicAnimation.prototype.release = function()
+    {
+        if(!!this.Element)
+            utils_.removeFromDOM(this.Element);
     }
 
     BasicAnimation.prototype.getFrame = function(frameDelta)
@@ -659,7 +737,7 @@ var CreateSpriteLookup = function()
 var spriteLookup_ = CreateSpriteLookup();
 /************************************************************************/
 /************************************************************************/
-var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackFlags,hitPoints,flagsToSend,hitID,hitDelayFactor,energyToAdd,slideForce,slideFactor)
+var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackFlags,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
 {
     var Frame = function()
     {
@@ -670,8 +748,8 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.ID = +id; /* the "+" is a fast conversion to numeric*/
         this.ImageID = this.ID;
         this.HitID = hitID || 0;
-        this.HitDelayFactor = hitDelayFactor || 1;
-        this.NbFramesToFreeze = 0;
+        //this.HitDelayFactor = hitStop || 1;
+        this.HitStop = hitStop || 0;
         this.ShadowImageSrc = !!shadowImage ? "images/misc/misc/shadow-" + shadowImage + ".png" : null;
         this.ShadowOffsetX = shadowOffsetX || 0;
         this.IsFlipped = image.indexOf("#") > -1;
@@ -690,6 +768,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
 
         this.FlagsToSet = new FrameFlags();
         this.FlagsToSet.Clip = !!flagsToSet ? (flagsToSet.Clip || null) : null;
+        this.FlagsToSet.Juggle = !!flagsToSet ? (flagsToSet.Juggle || 0) : 0;
         this.FlagsToSet.Player = !!flagsToSet ? (flagsToSet.Player || 0) : 0;
         this.FlagsToSet.Pose = !!flagsToSet ? (flagsToSet.Pose || 0) : 0;
         this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
@@ -702,6 +781,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToSet.BlockSound = !!flagsToSet ? (flagsToSet.BlockSound || 0) : 0;
 
         this.FlagsToClear = new FrameFlags();
+        this.FlagsToClear.Juggle = !!flagsToClear ? (flagsToClear.Juggle || 0) : 0;
         this.FlagsToClear.Player = !!flagsToClear ? (flagsToClear.Player || 0) : 0;
         this.FlagsToClear.Pose = !!flagsToClear ? (flagsToClear.Pose || 0) : 0;
         this.FlagsToClear.Combat = !!flagsToClear ? (flagsToClear.Combat || 0) : 0;
@@ -735,7 +815,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.ChainProjectile = chainProjectile;
         this.SoundFilename = "";
         this.SoundVolume = 1;
-
+        this.ForceHitFx = false;
     }
     Frame.prototype.set = function(params)
     {
@@ -747,6 +827,11 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
             }
         }
 
+        return this;
+    }
+    Frame.prototype.flip = function()
+    {
+        this.IsFlipped = true;
         return this;
     }
     Frame.prototype.clip = function(params)
@@ -856,13 +941,16 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.NbHits = 0;
         this.MaxHits = 1;
         this.HitStopFrameCount = CONSTANTS.DEFAULT_PROJECTILE_HIT_STOP_FRAME_COUNT;
+        this.HitStop = 10;
         this.LastHitFrame = 0;
         this.Fx = 1;
         this.Fy = 1;
         this.Id = "" + Projectile.prototype.count;
         this.CanJuggle = false;
-        this.TrimX = 20;
-        this.TrimY = 70;
+        this.ClipFront = 20;
+        this.ClipBack = 20;
+        this.ClipTop = 70;
+        this.ClipBottom = 70;
         this.IsSuperMove = false;
         ++Projectile.prototype.count;
     }
@@ -871,6 +959,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     Projectile.prototype.setVxFn = function(value) { this.vxFn = value; }
     Projectile.prototype.getVyFn = function() { return this.vyFn; }
     Projectile.prototype.setVyFn = function(value) { this.vyFn = value; }
+    Projectile.prototype.isFirstFrame = function() { return this.T <= 1; }
     Projectile.prototype.count = 0;
     /*Stops the projectile*/
     Projectile.prototype.cancel = function(ignoreOnGoneEvent)
@@ -888,6 +977,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     Projectile.prototype.release = function()
     {
         utils_.removeFromDOM(this.Element);
+        this.Owner = null;
     }
 
     /*Fires the projectile*/
@@ -919,28 +1009,28 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
 
     Projectile.prototype.getTop = function()
     {
-        return parseInt(this.Element.style.bottom) + parseInt(this.Element.style.height) - this.TrimY;
+        return parseInt(this.Element.style.bottom) + parseInt(this.Element.style.height) - this.ClipBottom;
     }
 
     Projectile.prototype.getBottom = function()
     {
-        return parseInt(this.Element.style.bottom) + this.TrimY;
+        return parseInt(this.Element.style.bottom) + this.ClipTop;
     }
 
     Projectile.prototype.getBackX = function()
     {
         if(this.Direction < 0)
-            return parseInt(this.Element.style.left) + (this.TrimX);
+            return parseInt(this.Element.style.left) + this.ClipFront;
         else
-            return STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + (this.TrimX));
+            return STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + this.ClipBack);
     }
 
     Projectile.prototype.getFrontX = function()
     {
         if(this.Direction  < 0)
-            return (parseInt(this.Element.style.width) + parseInt(this.Element.style.left)) - this.TrimX;
+            return (parseInt(this.Element.style.width) + parseInt(this.Element.style.left)) - this.ClipFront;
         else
-            return (STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + parseInt(this.Element.style.width) - this.TrimX));
+            return (STAGE.MAX_STAGEX - (parseInt(this.Element.style.right) + parseInt(this.Element.style.width) - this.ClipFront));
     }
     Projectile.prototype.getLeftX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - (this.X + parseInt(this.Element.style.width));}else{return this.X;}}
     Projectile.prototype.getRightX = function() { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.X;}else{return this.X + parseInt(this.Element.style.width);}}
@@ -1043,6 +1133,11 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
                 newFrame = this.Animation.BaseAnimation.Frames[0];
                 this.StartFrame = frame;
             }
+
+            this.ClipFront = newFrame.ClipHitFront;
+            this.ClipBack = newFrame.ClipHitBack;
+            this.ClipTop = newFrame.ClipHitTop;
+            this.ClipBottom = newFrame.ClipHitBottom;
         }
         else
         {
@@ -1141,6 +1236,24 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
             this.disintegrate(frame);
         if(!isOtherSuper || areBothSupers)
             otherProjectile.disintegrate(frame);
+    }
+    //returns true if the projectile can juggle the player
+    Projectile.prototype.canJuggle = function(player)
+    {
+        if(player.allowJuggle() && !!this.CanJuggle)
+        {
+            //if(player.isDead() && !!this.CanJuggle)
+            //{
+            //    return true;
+            //}
+            //else if(!player.isDead() && !!this.CanJuggle)
+            //{
+            //    return true;
+            //}
+            return true;
+        }
+
+        return false;        
     }
     return new Projectile();
 }

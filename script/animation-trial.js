@@ -20,6 +20,9 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
         {
             utils_.removeFromDOM(this.Trail[i].Element);
         }
+        utils_.releaseArray(this.Trail);
+        utils_.removeFromDOM(this.FollowElement);
+        this.Player = null;
     }
 
     AnimationTrail.prototype.add = function(animation,followElement,folder,player)
@@ -127,7 +130,7 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
                         /*Must remove the stage offsetY from the cordinate and apply it on the current frame.*/
                         /*Remember that recording it here will apply the coordinate after a certain number of frames,*/
                         /*and if the screen Y changes then it will mess up the trail - so we must remove the screen offset*/
-                        ,Bottom:bottom - game_.Match.Stage.OffsetY + "px"
+                        ,Bottom:bottom - game_.getMatch().getStage().OffsetY + "px"
                         ,Top:this.FollowElement.style.top
                         ,DeltaX:0
                         ,DeltaY:0
@@ -193,7 +196,7 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
         {
             /*The trail is applying the exact coords of the player, but the screen may move, which must be applied to all trail coords!*/
             this.applyStageOffset(stageDiffX,stageDiffY);
-            var stageOffsetY = game_.Match.Stage.OffsetY;
+            var stageOffsetY = game_.getMatch().getStage().OffsetY;
             
             for(var i = 0, length = this.Trail.length; i < length; i++)
             {

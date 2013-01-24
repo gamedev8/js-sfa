@@ -1,16 +1,17 @@
-var CreateAIProxy = function(player,createAiFn)
+var CreateAIProxy = function()
 {
-    var player_ = player;
-    var managed_ = !!createAiFn ? createAiFn(player) : null;
+    var player_ = null;
+    var managed_ = null;
 
 
     var AIProxy = function()
     {
     }
 
+    AIProxy.prototype.release = function() { player_ = null; managed_ = null; }
     AIProxy.prototype.reset = function() { managed_.reset(); }
     AIProxy.prototype.getManaged = function() { return managed_; }
-    AIProxy.prototype.enableAI = function(createAiFn) { managed_ = !!createAiFn ? createAiFn(player_) : null; }
+    AIProxy.prototype.enableAI = function(player,createAiFn) { player_ = player; managed_ = !!createAiFn ? createAiFn(player_) : null; }
     AIProxy.prototype.isRunning = function() { return !!managed_; }
     AIProxy.prototype.onEnemyStartAttack = function(frame, who) { managed_.onEnemyStartAttack(frame,who); }
     AIProxy.prototype.onEnemyContinueAttack = function(frame, who) { managed_.onEnemyContinueAttack(frame,who); }

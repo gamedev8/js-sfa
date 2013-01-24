@@ -190,9 +190,8 @@ Player.prototype.findAnimation = function(input,frame)
         && (input[0].State[BUTTONS.CROUCH].Value == BUTTON_STATE.PRESSED 
             && input[0].State[BUTTONS.BACK].Value == BUTTON_STATE.PRESSED))
     {
-        //this.chainToAnimation(frame, this.CurrentAnimation.Animation.ChainOnKeyAnimation,this.CurrentAnimation.Animation.ChainOnKeyAnimationFrame);
         this.chainToAnimation(frame, this.Moves[this.MoveNdx.LowBlock],2);
-        //this.chainToAnimation(frame, this.Moves["_160_10"],2);
+
         return -1;
     }
 
@@ -203,9 +202,8 @@ Player.prototype.findAnimation = function(input,frame)
         && (input[0].State[BUTTONS.CROUCH].Value == BUTTON_STATE.NONE 
             && input[0].State[BUTTONS.BACK].Value == BUTTON_STATE.PRESSED))
     {
-        //this.chainToAnimation(frame, this.CurrentAnimation.Animation.ChainOnKeyAnimation,this.CurrentAnimation.Animation.ChainOnKeyAnimationFrame);
         this.chainToAnimation(frame, this.Moves[this.MoveNdx.HighBlock],2);
-        //this.chainToAnimation(frame, this.Moves["_198_2"],2);
+
         return -1;
     }
 
@@ -330,6 +328,7 @@ Player.prototype.goToStance = function(frame)
         var move = this.Moves[this.MoveNdx.Stance];
         //var move = this.Moves["_0_stance"];
         this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction},true);
+        this.showFirstAnimationFrame();
     }
 }
 /*returns the first free front hit report image*/
@@ -395,9 +394,8 @@ Player.prototype.spawnDizzy = function(frame)
     var instance = this.OtherAnimations.Dizzy[this.DizzyIndex];
     instance.StartFrame = frame;
     instance.Animation.Direction = this.Direction;
-    instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
-    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
-    instance.Animation.InitialStageY = game_.Match.Stage.getGroundY();
+    instance.Animation.OffsetX = this.DizzyOffset.X;
+    instance.Animation.OffsetY = this.DizzyOffset.Y;
 }
 
 Player.prototype.spawnRedFire = function(frame)
@@ -407,7 +405,7 @@ Player.prototype.spawnRedFire = function(frame)
     instance.Animation.Direction = this.Direction;
     instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
     instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
-    instance.Animation.InitialStageY = game_.Match.Stage.getGroundY();
+    instance.Animation.InitialStageY = game_.getMatch().getStage().getGroundY();
 }
 
 Player.prototype.spawnBlueFire = function(frame)
@@ -417,7 +415,7 @@ Player.prototype.spawnBlueFire = function(frame)
     instance.Animation.Direction = this.Direction;
     instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
     instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
-    instance.Animation.InitialStageY = game_.Match.Stage.getGroundY();
+    instance.Animation.InitialStageY = game_.getMatch().getStage().getGroundY();
 }
 
 Player.prototype.spawnSmallDirt = function(frame,offsetX)
@@ -477,8 +475,8 @@ Player.prototype.spawnHitReportAnimations = function(frame, flags, hitState, att
     if(!this.Flags.Player.has(PLAYER_FLAGS.BLOCKING) && hasFlag(flags,ATTACK_FLAGS.REAR))
     {
         var rearKey = "";
-        if(hasFlag(hitState,HIT_FLAGS.FAR) && hasFlag(flags,ATTACK_FLAGS.SPIT1)) {rearKey = _c3("_",ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPIT1,"_0");}
-        else if(hasFlag(hitState,HIT_FLAGS.FAR) && hasFlag(flags,ATTACK_FLAGS.SPIT2)) {rearKey = _c3("_",ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPIT2,"_0");}
+        if(hasFlag(hitState,HIT_FLAGS.HIGH) && hasFlag(flags,ATTACK_FLAGS.SPIT1)) {rearKey = _c3("_",ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPIT1,"_0");}
+        else if(hasFlag(hitState,HIT_FLAGS.HIGH) && hasFlag(flags,ATTACK_FLAGS.SPIT2)) {rearKey = _c3("_",ATTACK_FLAGS.REAR|ATTACK_FLAGS.SPIT2,"_0");}
 
         else if(hasFlag(flags,ATTACK_FLAGS.SPECIAL))
         {
@@ -582,12 +580,12 @@ Player.prototype.changeTarget = function()
 {
     if(this.Team == 1)
     {
-        if(!this.getMatch().TeamB.Players[++this.Target])
+        if(!this.getMatch().getTeamB().getPlayer(++this.Target))
             this.Target = 0;
     }
     else
     {
-        if(!this.getMatch().TeamA.Players[++this.Target])
+        if(!this.getMatch().getTeamA().getPlayer(++this.Target))
             this.Target = 0;
     }
 
@@ -679,7 +677,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         {
             if(!newAnimation.Animation || !(newAnimation.Animation.IgnoresCollisions))
                 this.Flags.Player.remove(PLAYER_FLAGS.IGNORE_COLLISIONS);
-            this.fixXFn(1);
+            this.fixXFn();
         }
         this.Flags.Pose.remove(this.CurrentAnimation.Animation.Flags.Pose);
 
@@ -692,12 +690,15 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        this.Flags.Juggle.clear();
         this.CurrentAnimation.ID = _c3(this.Id,this.CurrentAnimation.Animation.BaseAnimation.Name,game_.getCurrentFrame());
 
         //if(game_.isRecording())
         //    __vcrMoves.push(this.CurrentAnimation.ID);
         //else
         //    __matchMoves.push(this.CurrentAnimation.ID);
+
+        this.Flags.Juggle.add(this.CurrentAnimation.Animation.Flags.Juggle);
 
         if(!!this.CurrentAnimation.Animation.ProjectileId)
             this.CurrentAnimation.Animation.IsProjectilePending = true;
@@ -821,8 +822,11 @@ Player.prototype.doAnimationAlerts = function()
 
 Player.prototype.showFirstAnimationFrame = function()
 {
-    var firstFrame = this.CurrentAnimation.Animation.getFrame(0);
-    this.setCurrentFrame(firstFrame,game_.getCurrentFrame(),0,0,true);
+    if(!!this.CurrentAnimation.Animation)
+    {
+        var firstFrame = this.CurrentAnimation.Animation.getFrame(0);
+        this.setCurrentFrame(firstFrame,game_.getCurrentFrame(),0,0,true);
+    }
 }
 
 Player.prototype.AirborneFlags = POSE_FLAGS.AIR_COMBO_1 | POSE_FLAGS.AIR_COMBO_2 | POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB;
@@ -881,6 +885,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Pose.remove((this.CurrentFrame.FlagsToSet.Pose | Player.prototype.PoseFlagsToIgnore ) ^ Player.prototype.PoseFlagsToIgnore);
         this.Flags.Combat.remove((this.CurrentFrame.FlagsToSet.Combat | Player.prototype.CombatFlagsToIgnore) ^ Player.CombatFlagsToIgnore);
         this.Flags.Combo.remove(this.CurrentFrame.FlagsToSet.Combo);
+        this.Flags.Juggle.remove(this.CurrentFrame.FlagsToSet.Juggle);
 
 
         this.Flags.SwingSound.remove(this.CurrentFrame.FlagsToSet.SwingSound);
@@ -970,6 +975,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
         this.Flags.Spawn.add(newFrame.FlagsToSet.Spawn);
         this.Flags.Combo.add(newFrame.FlagsToSet.Combo);
+        this.Flags.Juggle.add(newFrame.FlagsToSet.Juggle);
 
 
         if(!!this.CanHoldAirborne && newFrame.isClearingAirborneFlag())
@@ -980,16 +986,18 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Player.remove(newFrame.FlagsToClear.Player);
         this.Flags.Spawn.remove(newFrame.FlagsToClear.Spawn);
         this.Flags.Combo.remove(newFrame.FlagsToClear.Combo);
+        this.Flags.Juggle.remove(newFrame.FlagsToClear.Juggle);
 
         this.ClipHitFront = newFrame.ClipHitFront || 0;
         this.ClipHitBack = newFrame.ClipHitBack || 0;
         this.ClipHitBottom = newFrame.ClipHitBottom || 0;
-        this.ClipHitTop = newFrame.ClipHitTop || 0;
+        this.ClipHitTop = newFrame.ClipHitTop  || 0;
 
-        this.ClipMoveFront = newFrame.ClipMoveFront || 0;
-        this.ClipMoveBack = newFrame.ClipMoveBack || 0;
-        this.ClipMoveBottom = newFrame.ClipMoveBottom || 0;
-        this.ClipMoveTop = newFrame.ClipMoveTop || 0;
+        this.ClipMoveFront = newFrame.ClipMoveFront || (this.isStanding() ? this.StandingClip.Front : 0) || 0;
+        this.ClipMoveBack = newFrame.ClipMoveBack || (this.isStanding() ? this.StandingClip.Back : 0) || 0;
+        this.ClipMoveBottom = newFrame.ClipMoveBottom || (this.isStanding() ? this.StandingClip.Bottom : 0) ||  0;
+        //some players will have a default clipTop, to make it easier to be jumped over.
+        this.ClipMoveTop = newFrame.ClipMoveTop || (this.isStanding() ? this.StandingClip.Top : 0) || 0;
 
         if(!ignoreTranslation)
         {
@@ -1006,6 +1014,14 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
                 this.queueSound(newFrame.SoundFilename,newFrame.SoundVolume);
         }
     }
+}
+
+Player.prototype.isStanding = function()
+{
+    return !this.isCrouching()
+        && !this.isAirborne()
+        && !this.isDead()
+    ;
 }
 
 Player.prototype.initSprite = function()
@@ -1107,7 +1123,7 @@ Player.prototype.render = function(frame,stageDiffX,stageDiffY)
             this.setRight(this.X);
         else
             this.setLeft(this.X);
-        this.Element.style.bottom = Math.max(this.Y,game_.Match.Stage.getGroundY()) + "px";
+        this.Element.style.bottom = Math.max(this.Y,game_.getMatch().getStage().getGroundY()) + "px";
         this.setImgRect();
 
         this.renderShadow();
@@ -1131,25 +1147,35 @@ Player.prototype.renderShadow = function()
 
     if(this.Direction > 0)
     {
-        this.ShadowContainer.style.right = this.X + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
-        this.Shadow.style.left = "";
-        if(!this.Shadow.style.right)
-            this.Shadow.style.right = "0px";
-        if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
+        this.ShadowX = this.X + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) || this.DefaultShadowOffset) + "px";
+        if((this.ShadowX != this.LastShadowX) || !!this.MustForceRenderShadow)
         {
-            this.Shadow.style.right = this.SpriteElement.style.right;
+            this.LastShadowX = this.ShadowX;
+            this.ShadowContainer.style.right = this.ShadowX;
+            this.Shadow.style.left = "";
+            if(!this.Shadow.style.right)
+                this.Shadow.style.right = "0px";
+            if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
+            {
+                this.Shadow.style.right = this.SpriteElement.style.right;
+            }
         }
     }
     else
     {
-        this.ShadowContainer.style.left = this.X + (!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) + "px";
-        this.Shadow.style.right = "";
-        if(!this.Shadow.style.left)
-            this.Shadow.style.left = "0px";
-        if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
+        this.ShadowX = this.X + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) || this.DefaultShadowOffset) + "px";
+        if((this.ShadowX != this.LastShadowX) || !!this.MustForceRenderShadow)
         {
-            this.Shadow.style.left = this.SpriteElement.style.left;
+            this.LastShadowX = this.ShadowX;
+            this.ShadowContainer.style.left = this.ShadowX;
+            this.Shadow.style.right = "";
+            if(!this.Shadow.style.left)
+                this.Shadow.style.left = "0px";
+            if(!!this.getAdjustShadowPosition() && !this.ForceNoAdjustShadowPosition)
+            {
+                this.Shadow.style.left = this.SpriteElement.style.left;
+            }
         }
     }
-    this.Shadow.style.bottom = game_.Match.Stage.getOffsetY(true) + "px";
+    this.Shadow.style.bottom = game_.getMatch().getStage().getOffsetY(true) + "px";
 }

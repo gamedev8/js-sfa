@@ -30,7 +30,7 @@ var Stage = function(bg0XOffset)
     this.HoldFrame = false;
 }
 Stage.prototype.getGame = function() { return game_; }
-Stage.prototype.getMatch = function() { return game_.Match; }
+Stage.prototype.getMatch = function() { return game_.getMatch(); }
 Stage.prototype.getPhysics = function() { return this.getMatch().getPhysics(); }
 Stage.prototype.onAudioLoaded = function()
 {
@@ -204,7 +204,7 @@ Stage.prototype.clampY = function(y,delta)
 /**/
 Stage.prototype.fixX = function(amount)
 {
-    var stageMovedX = game_.Match.DeltaX;
+    var stageMovedX = game_.getMatch().DeltaX;
     if(!!stageMovedX)
     {
         /*ensure the directions are the opposite*/
@@ -219,10 +219,10 @@ Stage.prototype.alignPlayersX = function()
 {
     var match = this.getMatch();
 
-    for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
-        match.TeamA.Players[i].alignX(this.DeltaX);
-    for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
-        match.TeamB.Players[i].alignX(this.DeltaX);
+    for(var i = 0, length = match.getTeamA().getPlayers().length; i < length; ++i)
+        match.getTeamA().getPlayer(i).alignX(this.DeltaX);
+    for(var i = 0, length = match.getTeamB().getPlayers().length; i < length; ++i)
+        match.getTeamB().getPlayer(i).alignX(this.DeltaX);
 }
 
 /*Aligns the players with the stage.*/
@@ -230,10 +230,10 @@ Stage.prototype.fixPlayersGroundY = function()
 {
     var match = this.getMatch();
 
-    for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
-        match.TeamA.Players[i].setGroundY(this.getGroundY());
-    for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
-        match.TeamB.Players[i].setGroundY(this.getGroundY());
+    for(var i = 0, length = match.getTeamA().getPlayers().length; i < length; ++i)
+        match.getTeamA().getPlayer(i).setGroundY(this.getGroundY());
+    for(var i = 0, length = match.getTeamB().getPlayers().length; i < length; ++i)
+        match.getTeamB().getPlayer(i).setGroundY(this.getGroundY());
 }
 
 
@@ -575,17 +575,17 @@ Stage.prototype.canScrollX = function ()
 {
     var flag = true;
     var match = this.getMatch();
-    for(var i = 0; i < match.TeamA.getPlayers().length; ++i)
+    for(var i = 0; i < match.getTeamA().getPlayers().length; ++i)
     {
-        if(match.TeamA.Players[i].getX() == STAGE.MIN_X)
+        if(match.getTeamA().getPlayer(i).getX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;
         }
     }
-    for(var i = 0; i < match.TeamB.getPlayers().length; ++i)
+    for(var i = 0; i < match.getTeamB().getPlayers().length; ++i)
     {
-        if(match.TeamB.Players[i].getX() == STAGE.MIN_X)
+        if(match.getTeamB().getPlayer(i).getX() == STAGE.MIN_X)
         {
             if(!flag) return false;
             flag = false;

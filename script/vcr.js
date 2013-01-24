@@ -16,17 +16,17 @@
             return;
 
         data_.MaxFrame = game_.getCurrentFrame() - 10;
-        data_.Stage = game_.Match.Stage.Params.Key;
-        var round = game_.Match.getRound();
-        data_.Round = game_.Match.isRoundOver() ? round - 1 : round;
+        data_.Stage = game_.getMatch().getStage().Params.Key;
+        var round = game_.getMatch().getRound();
+        data_.Round = game_.getMatch().isRoundOver() ? round - 1 : round;
         data_.TeamA = [];
         data_.TeamB = [];
 
-        for(var i = 0; i < game_.Match.TeamA.Players.length; ++i)
-            data_.TeamA.push({Character:game_.Match.TeamA.Players[i].Character, IsAlternate:game_.Match.TeamA.Players[i].IsAlternate});
+        for(var i = 0; i < game_.getMatch().getTeamA().getPlayers().length; ++i)
+            data_.TeamA.push({Character:game_.getMatch().getTeamA().getPlayer(i).Character, IsAlternate:game_.getMatch().getTeamA().getPlayer(i).IsAlternate});
 
-        for(var i = 0; i < game_.Match.TeamB.Players.length; ++i)
-            data_.TeamB.push({Character:game_.Match.TeamB.Players[i].Character, IsAlternate:game_.Match.TeamB.Players[i].IsAlternate});
+        for(var i = 0; i < game_.getMatch().getTeamB().getPlayers().length; ++i)
+            data_.TeamB.push({Character:game_.getMatch().getTeamB().getPlayer(i).Character, IsAlternate:game_.getMatch().getTeamB().getPlayer(i).IsAlternate});
 
         //send data to server
         var payload = JSON.stringify(data_);
@@ -142,9 +142,9 @@
                 {
                     ++frame_;
                     if(item[i].Team == 1)
-                        game_.Match.TeamA.Players[item[i].Index].injectInput(item[i].IsDown,item[i].Bit,item[i].Frame,item[i].Func);
+                        game_.getMatch().getTeamA().getPlayer(item[i].Index).injectInput(item[i].IsDown,item[i].Bit,item[i].Frame,item[i].Func);
                     else if(item[i].Team == 2)
-                        game_.Match.TeamB.Players[item[i].Index].injectInput(item[i].IsDown,item[i].Bit,item[i].Frame,item[i].Func);
+                        game_.getMatch().getTeamB().getPlayer(item[i].Index).injectInput(item[i].IsDown,item[i].Bit,item[i].Frame,item[i].Func);
                 }
             }
             if(frame >= data_.MaxFrame)

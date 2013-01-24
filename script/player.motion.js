@@ -1,4 +1,5 @@
-﻿Player.prototype.isFacingLeft = function() { return this.Direction > 0; }
+﻿Player.prototype.getDirection = function() { return this.Direction; }
+Player.prototype.isFacingLeft = function() { return this.Direction > 0; }
 Player.prototype.getDistanceFromSq = function(x,y)
 {
     var dx = x-this.getMidX();
@@ -29,7 +30,7 @@ Player.prototype.getAbsFrontX = function(useImageWidth) { if(this.Direction > 0)
 Player.prototype.getAbsBackX = function(useImageWidth)  { if(this.Direction > 0){ return this.getRightX(useImageWidth); } else { return this.getLeftX(useImageWidth); } }
 
 Player.prototype.getBoxTop = function() { return this.Y + (this.getBoxHeight()); }
-Player.prototype.getConstOffsetTop = function() { return this.Height + game_.Match.Stage.getGroundY(); }
+Player.prototype.getConstOffsetTop = function() { return this.Height + game_.getMatch().getStage().getGroundY(); }
 Player.prototype.getOffsetBoxTop = function() { return this.Y + (this.getBoxHeight()) - this.ClipMoveTop; }
 Player.prototype.getBoxBottom = function() { return this.Y; }
 Player.prototype.getOffsetBoxBottom = function() { return this.Y + this.ClipMoveBottom; }
@@ -137,7 +138,9 @@ Player.prototype.setLeft = function(value)
 
 Player.prototype.setY = function(value)
 {
-    this.Y = Math.max(value,game_.Match.Stage.getGroundY());
+    value = Math.max(value,game_.getMatch().getStage().getGroundY());
+    this.MustForceRenderShadow = this.MustForceRenderShadow || (this.Y != value);
+    this.Y = value;
     this.moveCircle();
 }
 Player.prototype.setX = function(value)
@@ -145,9 +148,8 @@ Player.prototype.setX = function(value)
     value = value || 0;
     var r = this.getRect(true);
     var maxX = STAGE.MAX_STAGEX - (r.Right - r.Left);
-
     value = Math.max(Math.min(value, maxX),0);
-
+    this.MustForceRenderShadow = this.MustForceRenderShadow || (this.X != value);
     this.X = value;
     this.moveCircle();
 }
@@ -171,11 +173,11 @@ Player.prototype.alignX = function(deltaX) { this.X += (deltaX * -this.Direction
 Player.prototype.setImageX = function(value) {if(this.Direction > 0){this.SpriteElement.style.right = value+"px"; } else {this.SpriteElement.style.left = value+"px";}}
 Player.prototype.setImageY = function(value) { this.SpriteElement.style.bottom = value+"px"; }
 Player.prototype.isCrouching = function() { return this.Flags.Pose.has(POSE_FLAGS.CROUCHING); }
-Player.prototype.isOnGround = function() { return this.Y == game_.Match.Stage.getGroundY(); }
+Player.prototype.isOnGround = function() { return this.Y == game_.getMatch().getStage().getGroundY(); }
 Player.prototype.isMobile = function() { return this.Flags.Player.has(PLAYER_FLAGS.MOBILE); }
 Player.prototype.hasAirborneFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIRBORNE) || this.Flags.Pose.has(POSE_FLAGS.AIRBORNE_FB) }
 Player.prototype.hasAirborneComboFlag = function() { return this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_1) || this.Flags.Pose.has(POSE_FLAGS.AIR_COMBO_2); }
-Player.prototype.isAirborne = function() { return this.hasAirborneComboFlag() || this.hasAirborneFlag() || this.Y > game_.Match.Stage.getGroundY(); }
+Player.prototype.isAirborne = function() { return this.hasAirborneComboFlag() || this.hasAirborneFlag() || this.Y > game_.getMatch().getStage().getGroundY(); }
 Player.prototype.setGroundY = function(groundY)
 {
     if(!this.hasAirborneFlag() && !this.hasAirborneComboFlag())
@@ -200,13 +202,7 @@ Player.prototype.isTeleporting = function() { return !!this.isTeleportingStartin
 Player.prototype.isTeleportingStarting = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_START); }
 Player.prototype.isTeleportingEnding = function()   { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_END); }
 Player.prototype.jumpedOverAPlayer = function() { return this.isAirborne() && this.isDescending() && !!this.MustChangeDirection; }
-Player.prototype.canBeJuggled = function()
-{
-    return this.isAirborne()
-        && !!this.CurrentAnimation.Animation
-        && !!this.CurrentAnimation.Animation.AllowJuggle
-    ;
-}
+
 Player.prototype.setDirection = function(value)
 {
     if(value != this.Direction)
@@ -301,9 +297,9 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
                 var move = this.Moves[this.MoveNdx.Turn];
                 this.setCurrentAnimation({Animation:move,StartFrame:game_.getCurrentFrame(),Direction:this.Direction});
             }
-            this.MustChangeDirectionQuick = false;
         }
     }
+    this.MustChangeDirectionQuick = false;
 
 
     var tmp = 0;
@@ -396,6 +392,7 @@ Player.prototype.offsetImageX = function(amount)
     {
         this.setImageX(amount);
         this.LastImageOffsetX = amount;
+        this.MustForceRenderShadow = true;
     }
 }
 Player.prototype.offsetImageY = function(amount)
@@ -404,6 +401,7 @@ Player.prototype.offsetImageY = function(amount)
     {
         this.setImageY(amount);
         this.LastImageOffsetY = amount;
+        this.MustForceRenderShadow = true;
     }
 }
 //sets the target to which the player will teleport
@@ -477,7 +475,7 @@ Player.prototype.advanceTeleportation = function()
         }
         else
         {
-            if(!foe || !game_.Match.getPhysics().isWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ))
+            if(!foe || !game_.getMatch().getPhysics().isWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ))
                 this.moveX(this.TeleportX);
         }
     }
@@ -536,6 +534,15 @@ Player.prototype.targetLastAttacker = function(record)
     {
         if(game_.isRecording())
             game_.recordInput(this.Team,this.Index,this.Folder,null,null,this.getFrame(),"targetLastAttacker");
+    }
+}
+Player.prototype.targetRearEnemy = function()
+{
+    var target = this.getPhysics().getRearEnemy(this.Team, this.Direction, this.getRect(), this.Target);
+    if(target != this.Target)
+    {
+        this.Target = target;
+        this.turnAround();
     }
 }
 
@@ -604,16 +611,7 @@ Player.prototype.convertY = function(y)
 }
 Player.prototype.isLeftCornered = function(x)
 {
-    var rect = this.getRect();
-    return rect.Left <= STAGE.MIN_X;
-
-    x = x || this.getX();
-    var retVal = false;
-    if(this.Direction < 0 && x <= STAGE.MIN_X)
-        retVal = true;
-    else if(this.Direction > 0 && x >= STAGE.MAX_STAGEX - (this.PendingWidth || 0))
-        retVal = true;
-    return retVal;
+    return this.LeftNoOffset <= STAGE.MIN_X;
 }
 Player.prototype.isLeftCorneredInStage = function(x)
 {
@@ -621,16 +619,7 @@ Player.prototype.isLeftCorneredInStage = function(x)
 }
 Player.prototype.isRightCornered = function(x)
 {
-    var rect = this.getRect();
-    return rect.Right >= STAGE.MAX_STAGEX;
-
-    x = x || this.getX();
-    var retVal = false;
-    if(this.Direction < 0 && x >= STAGE.MAX_STAGEX - (this.PendingWidth || 0))
-        retVal = true;
-    else if(this.Direction > 0 && x <= STAGE.MIN_X)
-        retVal = true;
-    return retVal;
+    return this.RightNoOffset >= STAGE.MAX_STAGEX;
 }
 Player.prototype.isRightCorneredInStage = function(x)
 {
@@ -751,7 +740,7 @@ Player.prototype.advanceJump = function(ignoreYCheck)
     this.moveY(dy);
 
 
-    if((this.JumpT > this.JumpSpeed) && this.getY() <= game_.Match.Stage.getGroundY() && !(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE)))
+    if((this.JumpT > this.JumpSpeed) && this.getY() <= game_.getMatch().getStage().getGroundY() && !(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE)))
     {
         this.clearAirborneFlags();
         this.vxFn = null;
@@ -793,8 +782,8 @@ Player.prototype.performJump = function(vx,vy,vxFn,vyFn,jumpT,deltaY,useJumpSpee
     this.JumpVelocityX = vx;
     this.JumpVelocityY = vy;
     //store a timer
-    if(this.getCurrentComboCountFn() < 2 || !!jumpT)
-        this.JumpT = jumpT || 0;
+    //if(this.getCurrentComboCountFn() < 2 || !!jumpT)
+    this.JumpT = jumpT || 0;
     this.JumpT = this.JumpT || 0;
     if(!this.hasAirborneComboFlag())
     {

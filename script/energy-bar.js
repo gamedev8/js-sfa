@@ -214,6 +214,10 @@ var CreateEnergyBar = function(pnlID,team)
     EnergyBar.prototype.frameMove = function(frame)
     {
         var delta = frame - this.getStartFrame();
+        var animation = this.getAnimation(this.getKey());
+        if(!animation)
+            return;
+
         var currentFrame = this.getAnimation(this.getKey()).getFrame(delta);
         /*these animations are continuous, so if we go past the end, reset*/
         if(!currentFrame)

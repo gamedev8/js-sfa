@@ -177,7 +177,9 @@ Player.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
             return;
 
         this.addCurrentButtonState(frame);
+
     }
+    //this.User.onKeyStateChanged(isDown,keyCode,frame);
 }
 
 Player.prototype.compareButtonSequence = function(frame,move,input)
@@ -302,9 +304,16 @@ Player.prototype.checkForAnimation = function(frame)
                     else if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
                     {
                         if(this.allowInterupt())
+                        {
                             this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
+                        }
                         else
-                            this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
+                        {
+                            if(move.BaseAnimation.Name == "turn" || move.BaseAnimation.Name == "crouch turn")
+                                this.targetRearEnemy();
+                            else
+                                this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
+                        }
                     }
                     return;
                 }

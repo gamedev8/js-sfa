@@ -1,6 +1,7 @@
 Player.prototype.canBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK); }
 Player.prototype.canAirBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK); }
 Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
+Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW); }
 Player.prototype.hasRegisteredHit = function() { return !!this.RegisteredHit.HitID; }
 Player.prototype.hasBlueFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE); }
 Player.prototype.hasRedFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE); }
@@ -18,6 +19,42 @@ Player.prototype.clearFire = function()
     }
 }
 
+//returns true if the attack has already hit in the combo on this player
+Player.prototype.isInCombo = function(attackId)
+{
+    for(var i in this.Hits)
+    {
+        if(i == attackId)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Player.prototype.canJuggle = function(other,attackId,juggleGroup)
+{
+    if(other.allowJuggle())
+    {
+        //don't allow foe to keep juggling with the same attack over and over
+        if(!!attackId && !!juggleGroup && (juggleGroup === other.LastHitJuggleGroup[this.Id]) && !other.isInCombo(attackId))
+        {
+            return false;
+        }
+
+        if(other.isDead() && this.Flags.Juggle.has(JUGGLE_FLAGS.DEAD))
+        {
+            return true;
+        }
+        else if(!other.isDead() && this.Flags.Juggle.has(JUGGLE_FLAGS.ALIVE))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 Player.prototype.isVulnerable = function()
 {
@@ -296,6 +333,8 @@ Player.prototype.setAllowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoi
 /*returns true if a grapple can be performed*/
 Player.prototype.tryStartGrapple = function(move,frame)
 {
+    if(!!this.InteruptAnimation)
+        return false;
     if(this.hasRegisteredHit())
         return false;
     if((this.getFrame() - this.LandedOnFrame) < CONSTANTS.GROUND_FRAMES_FOR_GRAPPLE)
@@ -313,8 +352,8 @@ Player.prototype.tryStartGrapple = function(move,frame)
 
         var firstFrame = move.getFrame(0);
         grappledPlayer.clearPendingHit();
-        this.setGiveHit(firstFrame.AttackFlags,firstFrame.HitDelayFactor,firstFrame.EnergyToAdd,move.BehaviorFlags,grappledPlayer);
-        grappledPlayer.takeHit(firstFrame.AttackFlags,HIT_FLAGS.NEAR,firstFrame.FlagsToSend,frame,frame,firstFrame.BaseDamage,firstFrame.EnergyToAdd,false,0,0,this.Direction,this.Id,firstFrame.HitID,this.CurrentAnimation.ID,move.OverrideFlags,0,0,this,move.BehaviorFlags,move.InvokedAnimationName,firstFrame.FlagsToSet.HitSound,firstFrame.FlagsToSet.BlockSound);
+        this.setGiveHit(firstFrame.AttackFlags,firstFrame.HitStop,firstFrame.EnergyToAdd,move.BehaviorFlags,grappledPlayer);
+        grappledPlayer.takeHit(firstFrame.AttackFlags,HIT_FLAGS.LOW,firstFrame.FlagsToSend,frame,frame,firstFrame.BaseDamage,firstFrame.EnergyToAdd,false,0,0,this.Direction,this.Id,firstFrame.HitID,this.CurrentAnimation.ID,move.OverrideFlags,0,0,this,move.BehaviorFlags,move.InvokedAnimationName,firstFrame.FlagsToSet.HitSound,firstFrame.FlagsToSet.BlockSound);
         //this.attackFn(moveFrame.HitDelayFactor, moveFrame.HitID,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,moveFrame.BaseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound);
     }
 
@@ -344,7 +383,7 @@ Player.prototype.canBeGrappled = function(x,y,distance,airborneFlags,isAirborne,
 
     var retVal = false;
 
-    if((Math.abs(x - (grappleDirection < 1 ? this.LeftOffset : this.RightOffset)) < distance)
+    if(((Math.abs(x - (grappleDirection < 1 ? this.LeftOffset : this.RightOffset)) < distance) || (x > this.LeftOffset && x < this.RightOffset))
         && (Math.abs(y - this.Y) < distance)
         && (!(this.Flags.Player.has(PLAYER_FLAGS.INVULNERABLE)))
         && (!this.GrappledPlayer
@@ -463,10 +502,12 @@ Player.prototype.handleAttack = function(frame, moveFrame)
 
     var otherParams = {
         Combo:this.Flags.Combo.Value
+        ,HitJuggleGroup:this.CurrentAnimation.Animation.HitJuggleGroup
+        ,ForceHitFx:moveFrame.ForceHitFx
     };
 
 
-    this.attackFn(moveFrame.HitDelayFactor,moveFrame.HitID,this.CurrentAnimation.ID,this.CurrentAnimation.Animation.MaxNbHits,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,moveFrame.BaseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound,moveFrame.NbFramesToFreeze,otherParams);
+    this.attackFn(moveFrame.HitStop,moveFrame.HitID,this.CurrentAnimation.ID,this.CurrentAnimation.Animation.MaxNbHits,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,moveFrame.BaseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound,moveFrame.HitStop,otherParams);
 }
 
 /*If the player gets hit - this function must be called to set all of the details of the hit*/
@@ -537,7 +578,7 @@ Player.prototype.registerHit = function(frame)
                 ,this.RegisteredHit.HitState
                 ,this.RegisteredHit.Flags
                 ,this.RegisteredHit.StartFrame
-                ,this.RegisteredHit.Frame
+                ,frame
                 ,this.RegisteredHit.Damage
                 ,this.RegisteredHit.EnergyToAdd
                 ,this.RegisteredHit.IsProjectile
@@ -651,16 +692,17 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     if(!!otherPlayer && !isProjectile)
     {
         slideValue = otherPlayer.giveHitFn(frame);
-        if(otherPlayer.isAirborne() && this.isAirborne() && !this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE))
-            fx = 1;
+        //if(otherPlayer.isAirborne() && this.isAirborne() && !this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE))
+        //    fx *= 1;
     }
+    this.LastHitJuggleGroup[who] = !!otherParams ? otherParams.HitJuggleGroup : null;
     this.LastHitFrame[who] = hitID;
     this.LastHit = {x:hitX,y:hitY};
     if(!!isProjectile && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.IGNORE_PROJECTILES))
         return false;
     var move = null;
     var slideAmount = 0;
-    var hitDelayFactor_ = 1;
+    var hitStop = 1;
     var isSpecial = hasFlag(attackFlags, ATTACK_FLAGS.SPECIAL) || !!isProjectile;
 
     if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_START))
@@ -707,8 +749,8 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE / 2;}
-        this.FreezeUntilFrame = frame + (nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
-        this.ShakeUntilFrame = frame + (nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
+        this.FreezeUntilFrame = frame + nbFreeze; //(nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
+        this.ShakeUntilFrame = frame + nbFreeze; //(nbFreeze || (this.BaseTakeHitDelay * hitStop));
         //notify AI
         this.onBlocked();
         if(!!otherPlayer)
@@ -746,29 +788,29 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(!!energyToAdd && !(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)))
             energyToAdd = Math.ceil(energyToAdd/2);
         if(!(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)))
-            this.ShakeUntilFrame = frame + (nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
+            this.ShakeUntilFrame = frame + nbFreeze; //(nbFreeze || (this.BaseTakeHitDelay * hitStop));
 
         if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
         {
             if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[this.MoveNdx.Tripped];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.CLN];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.CMN];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.CHN];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.CLH];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.CMH];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.CHH];}
 
         }
         else
         {
-            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[this.MoveNdx.Tripped];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.LOW)) {move = this.Moves[this.MoveNdx.Tripped];}
             else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[this.MoveNdx.KnockDown];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLN];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLF];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLL];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLH];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMN];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMF];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SML];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMH];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHN];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHF];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHL];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHH];}
         }
     }
 
@@ -837,7 +879,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         this.setBeingGrappled(false);
         attackDirection = -this.getRelativeDirection(attackDirection);
         this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
-        hitDelayFactor_ = 0;
+        hitStop = 0;
     }
     else if(this.isBlocking())
     {
@@ -918,39 +960,43 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
             //if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.CROUCHING,"_hr_cHN")];}
 
             if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP)) {move = this.Moves[this.MoveNdx.Tripped];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.CLN];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.CMN];}
-            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.CHN];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.CLH];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.CMH];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.CHH];}
 
         }
         else
         {
-            //if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
+            //if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.LOW)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"_hr_trip")];}
             //else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_knockdown")];}
 
-            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLN")];}
-            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sLF")];}
 
-            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMN")];}
-            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMN")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sMF")];}
 
-            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHN")];}
-            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHF")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHL")];}
+            //else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[_c3("_",POSE_FLAGS.STANDING,"_hr_sHF")];}
 
 
 
-            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.NEAR)) {move = this.Moves[this.MoveNdx.Tripped];}
+            if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP) && hasFlag(hitState,HIT_FLAGS.LOW)) {move = this.Moves[this.MoveNdx.Tripped];}
             else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)) {move = this.Moves[this.MoveNdx.KnockDown];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLN];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLF];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLL];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_LIGHT_HRSLIDE; move = this.Moves[this.MoveNdx.SLH];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMN];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMF];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SML];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_MEDIUM_HRSLIDE; move = this.Moves[this.MoveNdx.SMH];}
 
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.NEAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHN];}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.FAR)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHF];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.LOW)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHL];}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD) && hasFlag(hitState,HIT_FLAGS.HIGH)) {slideAmount = CONSTANTS.DEFAULT_HARD_HRSLIDE; move = this.Moves[this.MoveNdx.SHH];}
         }
+
+        //this is used for jump combos
+        if(otherPlayer.isAirborne() && !this.isAirborne() && !otherParams.ForceHitFx)
+            fx *= 0.2;
 
         if(!!move)
         {
@@ -966,17 +1012,12 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     }
 
     if(hasFlag(attackFlags,ATTACK_FLAGS.NO_HIT_DELAY))
-        hitDelayFactor_ = 0;
-
-    if(this.ComboCount > 2)
     {
-        this.setHoldFrame(1);
-    }
-    else
-    {
-        this.setHoldFrame(nbFreeze || (this.BaseTakeHitDelay * hitDelayFactor_));
+        hitStop = 0;
+        nbFreeze = 0;
     }
 
+    this.setHoldFrame(nbFreeze);// || (this.BaseTakeHitDelay * hitStop));
     if(!this.isBlocking())
         this.queueHitSound(hitSound);
 
@@ -1104,7 +1145,7 @@ Player.prototype.abortThrow = function()
         this.GrappledPlayer.drop();
         this.GrappledPlayer = null;
         this.GrappledPlayerId = "";
-        hitDelayFactor = 0;
+        hitStop = 0;
     }
 }
 /*Player gets knocked down*/
@@ -1177,7 +1218,7 @@ Player.prototype.takeAirborneHit = function(attackFlags,hitState,flags,frame,dam
     }
     
 }
-Player.prototype.slideBack = function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
+Player.prototype.slideBack = function(frame,attackFlags,hitStop,energyToAdd,behaviorFlags,otherPlayer)
 {
     var x = otherPlayer.X;//STAGE.MAX_STAGEX - this.X;
     if(x < CONSTANTS.SLIDE_BACK_RANGE_FAR)
@@ -1197,27 +1238,27 @@ Player.prototype.slideBack = function(frame,attackFlags,hitDelayFactor,energyToA
         else if(hasFlag(attackFlags,ATTACK_FLAGS.HARD))  {slideAmount *= CONSTANTS.HARD_SLIDE_BACK_RATE;}
 
         this.stopSlide();
-        return this.startSlide(frame,slideAmount,-this.Direction,1,true);
+        return this.startSlide(frame,slideAmount,-this.Direction,this.CurrentFrame.SlideFactor || 1,true);
     }
     return 0;
 }
 /*Sets up the closure to be called later*/
-Player.prototype.setGiveHit = function(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2)
+Player.prototype.setGiveHit = function(attackFlags,hitStop,energyToAdd,behaviorFlags,p2)
 {
     if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_START))
         this.GrappledPlayerId = p2.Id;
 
-    this.giveHitFn = (function(thisValue,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2)
+    this.giveHitFn = (function(thisValue,attackFlags,hitStop,energyToAdd,behaviorFlags,p2)
     {
         return function (frame)
         {
-            return thisValue.giveHit(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
+            return thisValue.giveHit(frame,attackFlags,hitStop,energyToAdd,behaviorFlags,p2);
         }
-    })(this,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
-    this.setHoldFrame(this.BaseGiveHitDelay * hitDelayFactor);
+    })(this,attackFlags,hitStop,energyToAdd,behaviorFlags,p2);
+    this.setHoldFrame(hitStop);
 }
 /*This player just hit the other player*/
-Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer)
+Player.prototype.giveHit = function(frame,attackFlags,hitStop,energyToAdd,behaviorFlags,otherPlayer)
 {
     var slideRemainder = 0;
     this.stopGettingDizzy();
@@ -1230,11 +1271,11 @@ Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
         this.handleGrapple(this.CurrentAnimation.FrameIndex-1,frame,0,0);
         this.GrappledPlayer = null;
         this.GrappledPlayerId = "";
-        hitDelayFactor = 0;
+        hitStop = 0;
     }
     else
     {
-        slideRemainder = this.slideBack(frame,attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,otherPlayer);
+        slideRemainder = this.slideBack(frame,attackFlags,hitStop,energyToAdd,behaviorFlags,otherPlayer);
     }
 
     this.changeEnergy(energyToAdd);
@@ -1247,7 +1288,7 @@ Player.prototype.giveHit = function(frame,attackFlags,hitDelayFactor,energyToAdd
         if(!!this.Flags.Player.has(PLAYER_FLAGS.BULLDOZE))
             this.setHoldFrame(0);
         else
-            this.setHoldFrame(this.BaseGiveHitDelay * hitDelayFactor);
+            this.setHoldFrame(hitStop);
     }
 
     return slideRemainder;
@@ -1282,7 +1323,7 @@ Player.prototype.setLastHit = function(animation,type,offsetX,offsetY)
         case CONSTANTS.USE_PLAYER_XY:
         {
             animation.InitialX = this.getX() + offsetX;
-            animation.InitialY = game_.Match.Stage.getGroundY() + offsetY;
+            animation.InitialY = game_.getMatch().getStage().getGroundY() + offsetY;
             break;
         };
         default:

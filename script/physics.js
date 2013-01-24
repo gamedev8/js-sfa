@@ -4,8 +4,8 @@
     /*******************  PRIVATE STATE    *****************/
     /*******************************************************/
 
-    var GetMatch_ = function() { return game_.Match; }
-    var GetStage_ = function() { return GetMatch_().getStage(); }
+    var getMatch = function() { return game_.getMatch(); }
+    var getStage = function() { return getMatch().getStage(); }
 
     var HasIntersection_ = function(a, b)
     {
@@ -46,9 +46,9 @@
         var team = who.Team;
         var temp = [];
         var retVal = [];
-        var match = GetMatch_();
+        var match = getMatch();
         var PADDING = 1;
-        var players = (team == CONSTANTS.TEAM1) ? match.TeamB.getPlayers() : match.TeamA.getPlayers();
+        var players = (team == CONSTANTS.TEAM1) ? match.getTeamB().getPlayers() : match.getTeamA().getPlayers();
         var distance = 0;
         var otherRect = {};
         var hasP1RightIntersection = false;
@@ -168,7 +168,7 @@
 
 
     /*Test each player to see if the hit region intersects with them*/
-    Physics.prototype.tryAttack = function(hitDelayFactor,hitID,attackID,maxNbHits,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams)
+    Physics.prototype.tryAttack = function(hitStop,hitID,attackID,maxNbHits,frame,points,flagsToSend,attackFlags,p1,p2,damage,moveOverrideFlags,energyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams)
     {
         if(!p2)
             return;
@@ -194,8 +194,11 @@
             return;
         if(!p2.isVisible() && !p2.isTeleporting())
             return;
+        if(p1.canJuggle(p2,attackID,otherParams.HitJuggleGroup))
+        {
+        }
         /*need to reform the "invulernable" flags - there are too many*/  
-        if(p2.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !hasFlag(behaviorFlags,BEHAVIOR_FLAGS.THROW))
+        else if(p2.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !hasFlag(behaviorFlags,BEHAVIOR_FLAGS.THROW))
             return;
         /*frame can not hit more than once*/
         if(p2.LastHitFrame[p1.Id] == p1.getHitFrameID(hitID))
@@ -205,7 +208,10 @@
             return;
         if(isP2Grappling)
             return;
-        if(p2.isAirborne() && hasFlag(attackFlags,ATTACK_FLAGS.CAN_AIR_JUGGLE))
+        if(p1.canJuggle(p2))
+        {
+        }
+        else if(p2.isAirborne() && hasFlag(attackFlags,ATTACK_FLAGS.CAN_AIR_JUGGLE))
         {
             //return;
         }
@@ -246,7 +252,7 @@
                 var y = p1Bottom + points[i].y;
                 if(((points[i].x == -1) && !!p2.isBeingGrappled()) || (x >= p2Left && x < p2Right && y >= p2Bottom && y < p2Top))
                 {
-                    p1.setGiveHit(attackFlags,hitDelayFactor,energyToAdd,behaviorFlags,p2);
+                    p1.setGiveHit(attackFlags,hitStop,energyToAdd,behaviorFlags,p2);
                     p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,STAGE.MAX_STAGEX - x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),attackID,moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,maxNbHits,otherParams);
                     break;
                 }
@@ -263,7 +269,7 @@
                 var y = p1Bottom + points[i].y;
                 if(((points[i].x == -1) && !!p2.isBeingGrappled()) || ((x <= p2Right && x > p2Left && y >= p2Bottom && y < p2Top)))
                 {
-                    p1.setGiveHit(attackFlags,hitDelayFactor,energyToAdd, behaviorFlags,p2);
+                    p1.setGiveHit(attackFlags,hitStop,energyToAdd, behaviorFlags,p2);
                     p2.setRegisteredHit(attackFlags,points[i].state,flagsToSend,frame,damage,energyToAdd,isGrapple,false,x,y,p1.Direction,p1.Id,p1.getHitFrameID(hitID),attackID,moveOverrideFlags,p1,fx, fy, behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,maxNbHits,otherParams);
                     break;
                 }
@@ -290,7 +296,10 @@
         //    return;
         if(p2.Flags.Player.has(PLAYER_FLAGS.IGNORE_PROJECTILES))
             return;
-        if(p2.isAirborne() && !!projectile && hasFlag(projectile.FlagsToSend,ATTACK_FLAGS.SUPER) && !!projectile.CanJuggle)
+        if(!!projectile && projectile.canJuggle(p2))
+        {
+        }
+        else if(p2.isAirborne() && !!projectile && hasFlag(projectile.FlagsToSend,ATTACK_FLAGS.SUPER) && !!projectile.CanJuggle)
         {
             /*allows super fireballs to hit multiple times in the air*/
         }
@@ -307,6 +316,10 @@
         var p2Top = p2Rect.Top; //p2.getOffsetBoxTop();
         var p2Bottom = p2Rect.Bottom; //p2.getOffsetBoxBottom();
 
+        var p1Rect = projectile.Owner.getImgRect();
+        var p1Left = p1Rect.Left;
+        var p1Right = p1Rect.Right;
+
         var y0 = projectile.getTop();
         var y1 = projectile.getBottom();
         var x0 = 0;
@@ -316,7 +329,10 @@
         {
             x0 = projectile.getBackX();
             x1 = projectile.getFrontX();
-            if(((x0 >= p2Left && x0 < p2Right) || (x1 >= p2Left && x1 < p2Right)) && ((y0 >= p2Bottom && y0 < p2Top) || (y1 >= p2Bottom && y1 < p2Top)))
+            if(
+                ((x0 >= p2Left && x0 < p2Right) || (x1 >= p2Left && x1 < p2Right)) && ((y0 >= p2Bottom && y0 < p2Top) || (y1 >= p2Bottom && y1 < p2Top))
+                || (projectile.isFirstFrame() && (x1 >= p2Right) && (p2Left > p1Left) && ((y0 >= p2Bottom && y0 < p2Top) || (y1 >= p2Bottom && y1 < p2Top)))
+            )
             {
                 /*Calculate a general hit poisition.
                 Since this function use left zeroed only values, we must convert, so that the right can be zeroed as well*/
@@ -324,7 +340,7 @@
                 if(p2.Direction > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.HitStop,projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -341,12 +357,15 @@
         {
             x0 = projectile.getBackX();
             x1 = projectile.getFrontX();
-            if(((x1 >= p2Left && x1 < p2Right) || (x0 >= p2Left && x0 < p2Right)) && ((y0 >= p2Bottom && y0 < p2Top) || (y1 >= p2Bottom && y1 < p2Top)))
+            if(
+                ((x1 >= p2Left && x1 < p2Right) || (x0 >= p2Left && x0 < p2Right)) && ((y0 >= p2Bottom && y0 < p2Top) || (y1 >= p2Bottom && y1 < p2Top))
+                || (projectile.isFirstFrame() && (x1 < p2Left) && (p2Right < p1Right) && ((y0 >= p2Bottom && y0 < p2Top) || (y1 >= p2Bottom && y1 < p2Top)))
+            )
             {
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.NbFramesToFreeze,projectile.MaxHits,projectile.Params))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.HitStop,projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -465,7 +484,7 @@
             var direction = amount / Math.abs(amount);
 
             player.moveCircleToBottom();
-            var match = GetMatch_();
+            var match = getMatch();
             var myRect = player.getRect();
             var stageFixX = 0;
 
@@ -557,7 +576,7 @@
             }
 
             player.moveCircleToBottom();
-            var match = GetMatch_();
+            var match = getMatch();
             var myRect = player.getRect(); //!!player.IsInAttackFrame ? player.getImgRect() : player.getRect();
             var stageFixX = 0;
 
@@ -588,7 +607,7 @@
                     if(!!impededAmount)
                     {
                         if(collisions[i].isRightCornered())
-                            impededAmount = GetStage_().moveX(impededAmount/2);
+                            impededAmount = getStage().moveX(impededAmount/2);
 
                         /*if both players are on the ground, or both players in air, then they can push each other*/
                         if((player.isOnGround() && collisions[i].isOnGround()) || (!player.isOnGround() && !collisions[i].isOnGround()) || (collisions[i].isRightCornered()))
@@ -622,7 +641,7 @@
                         if(!!impededAmount)
                         {
                             if(collisions[i].isLeftCornered())
-                                impededAmount = GetStage_().moveX(impededAmount/2);
+                                impededAmount = getStage().moveX(impededAmount/2);
 
                             this.moveX(impededAmount,collisions[i],true);
                         }
@@ -656,7 +675,7 @@
                     if(!!impededAmount)
                     {
                         if(collisions[i].isLeftCornered())
-                            impededAmount = GetStage_().moveX(impededAmount/2);
+                            impededAmount = getStage().moveX(impededAmount/2);
                         /*if both players are on the ground, or both players in air, then they can push each other*/
                         if((player.isOnGround() && collisions[i].isOnGround()) || (!player.isOnGround() && !collisions[i].isOnGround()) || (collisions[i].isRightCornered()))
                         {
@@ -689,7 +708,7 @@
                         if(!!impededAmount)
                         {
                             if(collisions[i].isRightCornered())
-                                impededAmount = GetStage_().moveX(impededAmount/2);
+                                impededAmount = getStage().moveX(impededAmount/2);
 
                             this.moveX(impededAmount,collisions[i],true);
                         }
@@ -699,7 +718,7 @@
             }
             amount = player.warpX(amount,true);
             if(!!canFixStageX && !!stageFixX)
-                GetStage_().fixX(stageFixX);
+                getStage().fixX(stageFixX);
         }
 
 
@@ -717,7 +736,7 @@
             var myMidX = player.getMidX();
             if(amount > 0) /*moving up*/
             {
-                amount = GetStage_().clampY(myRect.Top,amount);
+                amount = getStage().clampY(myRect.Top,amount);
                 if(!amount) return amount;
                 player.moveCircleToTop();
 
@@ -758,7 +777,7 @@
             }
             else /*moving down*/
             {
-                amount = GetStage_().clampY(myRect.Bottom,amount);
+                amount = getStage().clampY(myRect.Bottom,amount);
                 if(!amount) return amount;
                 player.moveCircleToBottom();
 
@@ -816,10 +835,10 @@
             }
             amount = player.warpY(amount);
         }
-        //GetStage_().scrollY();
+        //getStage().scrollY();
 
         if(!!amount)
-            GetStage_().requestScrollY(amount > 0, player.Y);
+            getStage().requestScrollY(amount > 0, player.Y);
         return amount;
     }
 
@@ -827,12 +846,12 @@
     /*Returns true if any player is airborne*/
     Physics.prototype.isAnyPlayerAirborne = function()
     {
-        var match = GetMatch_();
-        for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
-            if(match.TeamB.Players[i].isAirborne())
+        var match = getMatch();
+        for(var i = 0, length = match.getTeamB().getPlayers().length; i < length; ++i)
+            if(match.getTeamB().getPlayer(i).isAirborne())
                 return true;
-        for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
-            if(match.TeamA.Players[i].isAirborne())
+        for(var i = 0, length = match.getTeamA().getPlayers().length; i < length; ++i)
+            if(match.getTeamA().getPlayer(i).isAirborne())
                 return true;
 
         return false;
@@ -842,31 +861,31 @@
     /*Returns the player closest to the left side of the screen*/
     Physics.prototype.getLeftMostPlayer = function()
     {
-        var match = GetMatch_();
+        var match = getMatch();
 
         var minX = 9999;
         var retVal = null;
 
-        var tALength = match.TeamA.getPlayers().length;
-        var tBLength = match.TeamB.getPlayers().length;
+        var tALength = match.getTeamA().getPlayers().length;
+        var tBLength = match.getTeamB().getPlayers().length;
 
         if(!tALength || !tBLength)
             return null;
 
         for(var i = 0; i < tALength; ++i)
         {
-            if(match.TeamA.Players[i].getLeftX() < minX)
+            if(match.getTeamA().getPlayer(i).getLeftX() < minX)
             {
-                minX = match.TeamA.Players[i].getLeftX();
-                retVal = match.TeamA.Players[i];
+                minX = match.getTeamA().getPlayer(i).getLeftX();
+                retVal = match.getTeamA().getPlayer(i);
             }
         }
         for(var i = 0; i < tBLength; ++i)
         {
-            if(match.TeamB.Players[i].getLeftX() < minX)
+            if(match.getTeamB().getPlayer(i).getLeftX() < minX)
             {
-                minX = match.TeamB.Players[i].getLeftX();
-                retVal = match.TeamB.Players[i];
+                minX = match.getTeamB().getPlayer(i).getLeftX();
+                retVal = match.getTeamB().getPlayer(i);
             }
         }
 
@@ -875,31 +894,31 @@
     /*Returns the player closest to the right side of the screen*/
     Physics.prototype.getRightMostPlayer = function()
     {
-        var match = GetMatch_();
+        var match = getMatch();
 
         var maxX = -9999;
         var retVal = null;
 
-        var tALength = match.TeamA.getPlayers().length;
-        var tBLength = match.TeamB.getPlayers().length;
+        var tALength = match.getTeamA().getPlayers().length;
+        var tBLength = match.getTeamB().getPlayers().length;
 
         if(!tALength || !tBLength)
             return null;
 
         for(var i = 0; i < tALength; ++i)
         {
-            if(match.TeamA.Players[i].getLeftX() > maxX)
+            if(match.getTeamA().getPlayer(i).getLeftX() > maxX)
             {
-                maxX = match.TeamA.Players[i].getLeftX();
-                retVal = match.TeamA.Players[i];
+                maxX = match.getTeamA().getPlayer(i).getLeftX();
+                retVal = match.getTeamA().getPlayer(i);
             }
         }
         for(var i = 0; i < tBLength; ++i)
         {
-            if(match.TeamB.Players[i].getLeftX() > maxX)
+            if(match.getTeamB().getPlayer(i).getLeftX() > maxX)
             {
-                maxX = match.TeamB.Players[i].getLeftX();
-                retVal = match.TeamB.Players[i];
+                maxX = match.getTeamB().getPlayer(i).getLeftX();
+                retVal = match.getTeamB().getPlayer(i);
             }
         }
 
@@ -921,21 +940,21 @@
     /*checks if any player from ther other team is within the given distance*/
     Physics.prototype.getGrappledPlayer = function(team,x,y,distance,airborneFlags,isAirborne,grappleDirection)
     {
-        var match = GetMatch_();
+        var match = getMatch();
         switch(team)
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0, length = match.TeamB.getPlayers().length; i < length; ++i)
-                    if(match.TeamB.Players[i].canBeGrappled(x,y,distance,airborneFlags,isAirborne,grappleDirection))
-                        return match.TeamB.Players[i];
+                for(var i = 0, length = match.getTeamB().getPlayers().length; i < length; ++i)
+                    if(match.getTeamB().getPlayer(i).canBeGrappled(x,y,distance,airborneFlags,isAirborne,grappleDirection))
+                        return match.getTeamB().getPlayer(i);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0, length = match.TeamA.getPlayers().length; i < length; ++i)
-                    if(match.TeamA.Players[i].canBeGrappled(x,y,distance,airborneFlags,isAirborne,grappleDirection))
-                        return match.TeamA.Players[i];
+                for(var i = 0, length = match.getTeamA().getPlayers().length; i < length; ++i)
+                    if(match.getTeamA().getPlayer(i).canBeGrappled(x,y,distance,airborneFlags,isAirborne,grappleDirection))
+                        return match.getTeamA().getPlayer(i);
                 break;
             }
         }
@@ -1021,26 +1040,26 @@
     /*Returns true if any player from the other team is on the left*/
     Physics.prototype.isAnyPlayerFromOtherTeamMoreLeft = function(x,team)
     {
-        var match = GetMatch_();
+        var match = getMatch();
         switch(team)
         {
             case CONSTANTS.TEAM1:
             {
-                var nbPlayers = match.TeamB.getPlayers().length;
-                if(nbPlayers == 0 || !match.TeamB.Players.every(function(a){return a.isVisible();}))
+                var nbPlayers = match.getTeamB().getPlayers().length;
+                if(nbPlayers == 0 || !match.getTeamB().getPlayers().every(function(a){return a.isVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(!!match.TeamB.Players[i].isVisible() && (match.TeamB.Players[i].getMidX() < x))
+                    if(!!match.getTeamB().getPlayer(i).isVisible() && (match.getTeamB().getPlayer(i).getMidX() < x))
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                var nbPlayers = match.TeamA.getPlayers().length;
-                if(nbPlayers == 0 || !match.TeamA.Players.every(function(a){return a.isVisible();}))
+                var nbPlayers = match.getTeamA().getPlayers().length;
+                if(nbPlayers == 0 || !match.getTeamA().getPlayers().every(function(a){return a.isVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(!!match.TeamA.Players[i].isVisible() && (match.TeamA.Players[i].getMidX() < x))
+                    if(!!match.getTeamA().getPlayer(i).isVisible() && (match.getTeamA().getPlayer(i).getMidX() < x))
                         return true;
                 break;
             }
@@ -1051,31 +1070,68 @@
     /*Returns true if any player from the other team is on the right*/
     Physics.prototype.isAnyPlayerFromOtherTeamMoreRight = function(x,team)
     {
-        var match = GetMatch_();
+        var match = getMatch();
         switch(team)
         {
             case CONSTANTS.TEAM1:
             {
-                var nbPlayers = match.TeamB.getPlayers().length;
-                if(nbPlayers == 0 || !match.TeamB.Players.every(function(a){return a.isVisible();}))
+                var nbPlayers = match.getTeamB().getPlayers().length;
+                if(nbPlayers == 0 || !match.getTeamB().getPlayers().every(function(a){return a.isVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(!!match.TeamB.Players[i].isVisible() && (match.TeamB.Players[i].getMidX() > x))
+                    if(!!match.getTeamB().getPlayer(i).isVisible() && (match.getTeamB().getPlayer(i).getMidX() > x))
                         return true;
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                var nbPlayers = match.TeamA.getPlayers().length;
-                if(nbPlayers == 0 || !match.TeamA.Players.every(function(a){return a.isVisible();}))
+                var nbPlayers = match.getTeamA().getPlayers().length;
+                if(nbPlayers == 0 || !match.getTeamA().getPlayers().every(function(a){return a.isVisible();}))
                     return null;
                 for(var i = 0; i < nbPlayers; ++i)
-                    if(!!match.TeamA.Players[i].isVisible() && (match.TeamA.Players[i].getMidX() > x))
+                    if(!!match.getTeamA().getPlayer(i).isVisible() && (match.getTeamA().getPlayer(i).getMidX() > x))
                         return true;
                 break;
             }
         }
         return false;
+    }
+
+    Physics.prototype.getRearEnemy = function(myTeam, myDirection, myRect, myTarget)
+    {
+        match = getMatch();
+        switch(myTeam)
+        {
+            case CONSTANTS.TEAM1:
+            {
+                var nbPlayers = match.getTeamB().getPlayers().length;
+                for(var i = 0; i < nbPlayers; ++i)
+                {
+                    var foe = match.getTeamB().getPlayer(i);
+                    var foeRect = foe.getRect();
+                    if(myDirection == -1 && (myRect.Right > foeRect.Right))
+                        return foe.Index;
+                    else if(myDirection == 1 && (myRect.Left < foeRect.Left))
+                        return foe.Index;
+                }
+                break;
+            }
+            case CONSTANTS.TEAM2:
+            {
+                var nbPlayers = match.getTeamA().getPlayers().length;
+                for(var i = 0; i < nbPlayers; ++i)
+                {
+                    var foe = match.getTeamA().getPlayer(i);
+                    var foeRect = foe.getRect();
+                    if(myDirection == -1 && (myRect.Right > foeRect.Right))
+                        return foe.Index;
+                    else if(myDirection == 1 && (myRect.Left < foeRect.Left))
+                        return foe.Index;
+                }
+                break;
+            }
+        }
+        return myTarget;
     }
 
     return new Physics();

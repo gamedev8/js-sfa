@@ -5,6 +5,12 @@
 var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slideFactor)
 {
     user.Player = this;
+    this.User = user;
+
+    this.StandingClip = {Top:0,Bottom:0,Front:0,Back:0};
+    this.ShadowX = "";
+    this.LastShadowX = "";
+    this.DefaultShadowOffset = 0;
     this.Mass = 1;
     this.JumpSpeed = 1;
     this.DefaultJumpSpeed = 1;
@@ -122,7 +128,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.HeadOffsetY = 10;
     this.ImgBBox = {};
 
-    this.Ai = new CreateAIProxy(this);
+    this.Ai = new CreateAIProxy();
     if(!!user.IsAI)
         this.enableAI();
 
@@ -131,8 +137,6 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.MobileOnFrame = 0;
 
     this.SlideFactor = slideFactor || 30;
-    this.BaseTakeHitDelay = CONSTANTS.DEFAULT_TAKE_HIT_DELAY;
-    this.BaseGiveHitDelay = CONSTANTS.DEFAULT_GIVE_HIT_DELAY;
     this.Index = 0;
     this.Id = "";
     this.Team = 0;
@@ -192,15 +196,15 @@ Player.prototype.sortAnimations = function()
         else if(this.Moves[i].BaseAnimation.Name == "fk throw"){ this.MoveNdx.FkThrow = i; }
         else if(this.Moves[i].BaseAnimation.Name == "roll throw"){ this.MoveNdx.RollThrow = i; }
 
-        else if(this.Moves[i].BaseAnimation.Name == "hr crouch light"){ this.MoveNdx.CLN = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr crouch medium"){ this.MoveNdx.CMN = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr crouch hard"){ this.MoveNdx.CHN = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr_sLN"){ this.MoveNdx.SLN = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr_sLF"){ this.MoveNdx.SLF = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr_sMN"){ this.MoveNdx.SMN = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr_sMF"){ this.MoveNdx.SMF = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr_sHN"){ this.MoveNdx.SHN = i; }
-        else if(this.Moves[i].BaseAnimation.Name == "hr_sHF"){ this.MoveNdx.SHF = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr crouch light"){ this.MoveNdx.CLH = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr crouch medium"){ this.MoveNdx.CMH = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr crouch hard"){ this.MoveNdx.CHH = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sLL"){ this.MoveNdx.SLL = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sLH"){ this.MoveNdx.SLH = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sML"){ this.MoveNdx.SML = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sMH"){ this.MoveNdx.SMH = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sHL"){ this.MoveNdx.SHL = i; }
+        else if(this.Moves[i].BaseAnimation.Name == "hr_sHH"){ this.MoveNdx.SHH = i; }
     }
 }
 Player.prototype.ndx = function(key)
@@ -209,18 +213,17 @@ Player.prototype.ndx = function(key)
 
     return retVal;
 }
-Player.prototype.setIndex = function(index) { this.Index = index; }
-Player.prototype.getIndex = function() { return this.Index; }
-Player.prototype.enableAI = function(createAiFn) { this.Ai.enableAI(createAiFn || (window["Create" + this.Name[0].toUpperCase() + this.Name.substring(1) + "AI"])); }
-Player.prototype.playerCount = 0;
-Player.prototype.takeDamage = function(amount) { this.takeDamageFn(amount); }
-Player.prototype.changeEnergy = function(amount) { if(!!amount) this.changeEnergyFn(amount); }
-Player.prototype.getMatch = function() { return game_.Match; }
+Player.prototype.getMatch = function() { return game_.getMatch(); }
 Player.prototype.getPhysics = function() { return this.getMatch().getPhysics(); }
 Player.prototype.getStage = function() { return this.getMatch().getStage(); }
 Player.prototype.getGame = function() { return game_; }
 Player.prototype.getHealth = function() { return !!this.getHealthFn ? this.getHealthFn() : -1; }
 Player.prototype.getEnergy = function() { return this.getEnergyFn(); }
+Player.prototype.setIndex = function(index) { this.Index = index; }
+Player.prototype.getIndex = function() { return this.Index; }
+Player.prototype.playerCount = 0;
+Player.prototype.takeDamage = function(amount) { this.takeDamageFn(amount); }
+Player.prototype.changeEnergy = function(amount) { if(!!amount) this.changeEnergyFn(amount); }
 Player.prototype.getIsExecutingSuperMove = function () { return this.IsExecutingSuperMove; }
 Player.prototype.setExecutingSuperMove = function (value) { this.IsExecutingSuperMove = value; }
 Player.prototype.isBeingGrappled = function() { return this.IsBeingThrown; }
@@ -228,15 +231,23 @@ Player.prototype.setBeingGrappled = function(value) { this.IsBeingThrown = value
 Player.prototype.getNameImageSrc = function() { return this.NameImageSrc; }
 Player.prototype.getPortriatImageSrc = function() { return this.PortriatImageSrc; }
 Player.prototype.getName = function() { return this.Name; }
+
+Player.prototype.enableAI = function(createAiFn)
+{
+    this.Ai.enableAI(this, createAiFn || (window["Create" + this.Name[0].toUpperCase() + this.Name.substring(1) + "AI"]));
+    if(!!this.getMatch())
+        this.getMatch().checkAIMatch();
+}
+
 Player.prototype.getTarget = function()
 {
     if(this.Team == 1)
     {
-        return game_.Match.TeamB.Players[0];
+        return game_.getMatch().getTeamB().getPlayer(0);
     }
     else
     {
-        return game_.Match.TeamA.Players[0];
+        return game_.getMatch().getTeamA().getPlayer(0);
     }
 }
 
@@ -289,7 +300,7 @@ Player.prototype.incCombo = function(attackId)
 
 Player.prototype.reset = function(ignoreDirection)
 {
-    this.Data = {};
+    this.ShakeUntilFrame = 0;
     this.LandedOnFrame = 0;
     this.MobileOnFrame = 0;
     this.TeleportX = 0;
@@ -343,6 +354,7 @@ Player.prototype.reset = function(ignoreDirection)
     this.LastFrameY = 0;
     this.ConstY = 0;
     this.Hits = {};
+    this.LastHitJuggleGroup = {};
 
     this.ClipMoveBottom = 0;
     this.ClipMoveTop = 0;
@@ -566,7 +578,8 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     if(this.isDizzy())
     {
         var item = this.OtherAnimations.Dizzy[this.DizzyIndex];
-        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
+        //if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.getMatch().getStage().getGroundY(),this.X,this.Y,this.getBoxWidth()))
+        if(item.Animation.renderWithPlayer(frame,item.StartFrame,item.Element,this.Direction,this.X,this.Y))
             item.StartFrame = frame;
     }
     //blue fire
@@ -574,7 +587,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     {
         var item = this.OtherAnimations.BlueFire;
         item.Animation.Direction = this.Direction;
-        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
+        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.getMatch().getStage().getGroundY(),this.X,this.Y,this.getBoxWidth(),true))
             item.StartFrame = frame;
     }
     //red fire
@@ -582,7 +595,7 @@ Player.prototype.otherAnimationFrameMove = function(frame,stageX,stageY)
     {
         var item = this.OtherAnimations.RedFire;
         item.Animation.Direction = this.Direction;
-        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.Match.Stage.getGroundY(),this.X,this.Y,this.getBoxWidth()))
+        if(item.Animation.tryRender(frame,item.StartFrame,item.Element,stageX,game_.getMatch().getStage().getGroundY(),this.X,this.Y,this.getBoxWidth()))
             item.StartFrame = frame;
     }
 }
@@ -654,6 +667,7 @@ Player.prototype.onRenderComplete = function(frame)
 
 Player.prototype.onPreFrameMove = function(frame)
 {
+    this.MustForceRenderShadow = false;
 }
 
 Player.prototype.handleAI = function(frame)
@@ -873,6 +887,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
 Player.prototype.setupInfo = function(value,side)
 {
     this.Team = value;
+    this.User.setTeam(value);
     this.PortriatImageSrc = this.PortriatImageSrc.replace("x-",side + "-")
 
     this.createKeysElement();
@@ -881,6 +896,7 @@ Player.prototype.setupInfo = function(value,side)
 //remove any DOM element that was added by this instance
 Player.prototype.release = function()
 {
+    this.pause();
     var parentElement = (parentElement || window.document.getElementById("pnlStage"));
 
     for(var i = 0; i < this.FrontHitReportImages.length; ++i)
@@ -892,8 +908,24 @@ Player.prototype.release = function()
     for(var i = 0; i < this.OtherAnimations.BigDirt.length; ++i)
         utils_.removeFromDOM(this.OtherAnimations.BigDirt[i].Element);
     this.clearProjectiles();
+
+    /*
     for(var i = 0; i < this.Projectiles.length; ++i)
         this.Projectiles[i].release();
+    for(var i = 0; i < this.Throws.length; ++i)
+        this.Throws[i].release();
+    for(var i = 0; i < this.Moves.length; ++i)
+        this.Moves[i].release();
+    */
+
+    utils_.releaseArray(this.FrontHitReportImages);
+    utils_.releaseArray(this.RearHitReportImages);
+    utils_.releaseArray(this.OtherAnimations.Dirt);
+    utils_.releaseArray(this.OtherAnimations.BigDirt);
+    utils_.releaseArray(this.Projectiles);
+    utils_.releaseArray(this.Throws);
+    utils_.releaseArray(this.Moves);
+
 
     this.releaseDebugElements();
 
@@ -901,12 +933,14 @@ Player.prototype.release = function()
     utils_.removeFromDOM(this.Element);
     utils_.removeFromDOM(this.DizzyElement);
     utils_.removeFromDOM(this.FireElement);
-    for(var i in this.Moves)
+
+    if(!!this.User)
     {
-        var trail = this.Moves[i].Trail;
-        if(!!trail)
-            trail.release();
+        this.User.Player = null;
+        this.User = null;
     }
+    this.Flags.release();
+    this.Ai.release();
 }
 
 ////

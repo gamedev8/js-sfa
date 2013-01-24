@@ -28,6 +28,7 @@ stages_["dramatic_battle"] = new StageParams("dramatic_battle", "mbison", -192, 
 stages_["mbison"] = new StageParams("mbison", "mbison", -192, -382, -2, -21, -41);
 stages_["akuma"] = new StageParams("akuma", "akuma", -192, -382, -2, -21, -41);
 stages_["sodom"] = new StageParams("sodom", "sodom", -192, -382, -2, -21, -41);
+stages_["sagat"] = new StageParams("sagat", "sagat", -192, -382, -2, -21, -41);
 
 
 /*******************************************************************************************************************************/
@@ -76,7 +77,13 @@ var announcer_ = CreateAnnouncer();
 var game_ = CreateGame();
 var fontSystem_ = CreateFontSystem();
 
-var runGameLoop_ = (function(thisValue) { return function() { thisValue.runGameLoop(); } })(game_);
+var runGameLoop_ = (function(thisValue)
+{
+    return function()
+    {
+        thisValue.runGameLoop(thisValue.getCurrentTime());
+    }
+})(game_);
 var runCharSelectLoop_ = (function(thisValue) { return function() { thisValue.runCharSelectLoop(); } })(game_);
 var runInsertCoinScreenLoop_ = (function(thisValue) { return function() { thisValue.runInsertCoinScreenLoop(); } })(game_);
 var btn = function(button,state,min,max)
@@ -98,12 +105,11 @@ function InitUsers()
     delete window.u3_;
     delete window.u4_;
 
-    window.u1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,0);
-    window.u2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L);
-    //window.u2_.IsAI = true;
     var val = 10000000;
-    window.u3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,0);
-    //window.u3_ = game_.addUser(val+1,val+2,val+3,val+4,val+5,val+6,val+7,val+8,val+9,val+10,val+11);
+
+    window.u1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,KEYS.CNTRL,KEYS.ENTER);
+    window.u2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
+    window.u3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
     window.u4_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
 }
 InitUsers();
@@ -111,22 +117,21 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    u1_.setChar(CHARACTERS.RYU);
-    u2_.setChar(CHARACTERS.KEN,false,true);
-    u3_.setChar(CHARACTERS.MBISON,false,true);
-    //u2_.setChar(CHARACTERS.RYU);
+    u1_.setChar(CHARACTERS.KEN,true,true);
+    u2_.setChar(CHARACTERS.RYU,true,true);
 
-    game_.startMatch(false,[u1_,u2_],[u3_], stages_["mbison"]);
+    game_.startMatch(false,[u1_],[u2_], stages_["ryu"]);
 }
 
 //multi player battle 
 function StartDramaticBattle()
 {
     u1_.setChar(CHARACTERS.RYU);
-    u2_.setChar(CHARACTERS.KEN,false,true);
-    u3_.setChar(CHARACTERS.MBISON,false,true);
+    u2_.setChar(CHARACTERS.KEN,false,false);
+    u3_.setChar(CHARACTERS.MBISON,false,false);
+    u4_.setChar(CHARACTERS.RYU,true,false);
 
-    game_.startMatch(false,[u1_,u2_],[u3_], stages_["mbison"]);
+    game_.startMatch(false,[u1_,u2_],[u3_,u4_], stages_["mbison"]);
 }
 
 function StartBattle()
@@ -163,8 +168,8 @@ function Go()
 }
 function MaxOutEnergy()
 {
-    game_.Match.getTeamA().getEnergybar().change(1000);
-    game_.Match.getTeamB().getEnergybar().change(1000);
+    game_.getMatch().getTeamA().getEnergybar().change(1000);
+    game_.getMatch().getTeamB().getEnergybar().change(1000);
 }
 var debug_ = GetDebugInstance(game_);
 /*******************************************************************************************************************************/

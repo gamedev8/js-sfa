@@ -30,7 +30,7 @@ var RegisteredHit = function(behavior,hitState,flags,startFrame,frame,damage,ene
 
 
 
-/*controls if a move can override another. To allow a double hit, set both the allowOverridgeFlags and overideFlags to OVERRIDE_FLAGS.NONE*/
+//*controls if a move can override another. To allow a double hit, set both the allowOverridgeFlags and overideFlags to OVERRIDE_FLAGS.NONE
 var MoveOverrideFlags = function(allowOverrideFlags,overrideFlags)
 {
     this.AllowOverrideFlags = allowOverrideFlags || OVERRIDE_FLAGS.ALL;
@@ -59,7 +59,7 @@ var ActionDetails = function(overrideFlags,player,otherID,isProjectile,isGrapple
 ActionDetails.prototype.getKey = function(playerID,otherID)
 {
     var retVal = "";
-    /*ensure that the team 1 is always first*/
+    //ensure that the team 1 is always first
     if(playerID.charAt(1) == "1")
         retVal = playerID + otherID;
     else
@@ -98,7 +98,7 @@ HitSystem.prototype.canHit = function(key,index)
     var retVal  = true;
     if(!!first.OtherPlayer && !!first.Player.CurrentAnimation.Animation)
     {
-        /*grapples can not be overriden*/
+        //grapples can not be overriden
         if(first.IsGrapple || (!!second && second.IsGrapple))
             return true;
         if(first.Player.isGrappling())
@@ -129,7 +129,6 @@ HitSystem.prototype.clearPendingHit = function(id)
         }
         if(!this.Actions[i][0] && !this.Actions[i][1])
         {
-            this.Actions[i] = null;
             delete this.Actions[i];
         }
     }
@@ -156,7 +155,7 @@ HitSystem.prototype.frameMove = function(frame)
 
             if(!!item[0] && canP1Hit)
             {
-                /*player 1 registers action*/
+                //player 1 registers action
                 item[0].Player.registerHit(frame);
             }
             else if(!!item[0])
@@ -166,14 +165,14 @@ HitSystem.prototype.frameMove = function(frame)
 
             if(!!item[1] && canP2Hit)
             {
-                /*player 2 registers action*/
+                //player 2 registers action
                 item[1].Player.registerHit(frame);
             }
             else if(!!item[1])
             {
                 item[1].Player.didntHit(frame);
             }
-            /*clear the action*/
+            //clear the action
             this.Actions[i] = null;
             delete this.Actions[i];
         }

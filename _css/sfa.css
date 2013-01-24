@@ -1,5 +1,9 @@
 ﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:12px;overflow:hidden;}
-body div.select {height:100%;width:100%;background:url(../images/misc/misc/player-select-bg.png) no-repeat 0px 0px;}
+body div.select {margin-left:224px;height:201px;width:100%;background:url(../images/misc/misc/globe.png) no-repeat 0px 0px;}
+body div.char-select {margin-left:256px;margin-top:87px;height:400px;width:100%;background:url(../images/misc/misc/char-select.png) no-repeat 0px 0px;}
+body div.next-foe-line1 {position:absolute;top:250px;left:280px;}
+body div.next-foe-line2 {position:absolute;top:332px;left:408px;}
+body div.question-mark {display:inline-block;background:url(../images/misc/misc/char-misc-sprites.png) no-repeat 0px 0px;}
 .capcom,.credits,.insert-coin,.press-start,.credits-text{position:absolute;}
 .capcom{background-image:url(../images/misc/font1/cap.png);width:352px;height:41px;bottom:42px;left:208px;}
 .press-start{background-image:url(../images/misc/font1/press-start.png);width:320px;height:21px;bottom:144px;left:224px;z-index:999;}

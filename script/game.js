@@ -40,28 +40,33 @@ var CreateGame = function()
     var vcr_ = CreateVCR();
     var mustRecordNextRound_ = true;
     var gameLoopState_ = GAME_STATES.INSERT_COIN;
+    var start_ = 0;
+    var end_ = 0;
+    var delta_ = 0;
+    var delay_ = 0;
+    var match_ = null;
+    var maxWinsPerMatch_ = 2;
 
     //Encapulates a new game
     var Game = function ()
     {
         lastTime_ = this.getCurrentTime();
         this.initGame();
-        this.Match = null;
+        match_ = null;
         this.UsingGamepads = !!Gamepad.supported;
         this.VCR = vcr_;
     }
 
+    Game.prototype.gameLoopState = function() { return gameLoopState_; }
     Game.prototype.isRecording = function() { return vcr_.isRecording(); }
-
     Game.prototype.isPlayingVHS = function() { return vcr_.isPlaying(); }
-
     Game.prototype.recordInput = function(team,index,folder,isDown,keyCode,frame,funcName) { vcr_.recordInput(team,index,folder,isDown,keyCode,frame,funcName); }
-
     Game.prototype.recordNextRound = function() { mustRecordNextRound_ = true; }
-
     Game.prototype.stopRecording = function() { mustRecordNextRound_ = false; vcr_.stop(); }
-
     Game.prototype.stopPlaying = function() { mustRecordNextRound_ = false; vcr_.stop(); }
+    Game.prototype.getMaxWinsPerMatch = function() { return maxWinsPerMatch_; }
+    Game.prototype.getMatch = function() { return match_; }
+    Game.prototype.getCharSelect = function() { return charSelect_; }
 
     Game.prototype.loadVHS = function(id)
     {
@@ -98,8 +103,6 @@ var CreateGame = function()
         //go to insert coin screen
         this.startInsertCoinScreen();
     }
-
-    Game.prototype.getMatch = function() { return this.Match; }
 
     Game.prototype.isGameOver = function()
     {
@@ -166,8 +169,8 @@ var CreateGame = function()
 
     Game.prototype.onStageImagesLoaded = function()
     {
-        if(!!this.Match)
-            this.Match.getStage().init();
+        if(!!match_)
+            match_.getStage().init();
     }
 
     Game.prototype.releaseText = function()
@@ -250,11 +253,14 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "none";
     }
 
-    Game.prototype.startMatch = function(startPaused,teamA,teamB,stage,callback)
+    Game.prototype.startMatch = function(startPaused,teamAIndexes,teamBIndexes,stage,callback)
     {
         this.StartPaused = startPaused;
         this.resetGameData();
         gameLoopState_ = GAME_STATES.MATCH;
+
+        var teamA = teamAIndexes.map(function(i) { return users_[i]; });
+        var teamB = teamBIndexes.map(function(i) { return users_[i]; });
 
         var fn = function(thisValue)
         {
@@ -287,27 +293,42 @@ var CreateGame = function()
             charSelect_.release();
         }
 
-        this.Match = CreateMatch(a,b,stage);
+        match_ = CreateMatch(a,b,stage);
         if(vcr_.isPlaying())
-            this.Match.setRound(vcr_.getData().Round);
-        managed_ = this.Match;
-        announcer_.setMatch(this.Match);
+            match_.setRound(vcr_.getData().Round);
+        managed_ = match_;
+        announcer_.setMatch(match_);
         this.showElements();
 
 
         this.go(this.runGameLoop,callback);
     }
 
+    Game.prototype.getFirstUserForCharSelect = function()
+    {
+        if(users_.length > 0 && users_[0].isRequestingCharSelect())
+            return users_[0];
+        return null;
+    }
+
+    Game.prototype.getSecondUserForCharSelect = function()
+    {
+        for(var i = 1; i < users_.length; ++i)
+            if(users_[i].isRequestingCharSelect())
+                return users_[i];
+        return users_[1];
+    }
+
     Game.prototype.startCharSelect = function()
     {
         this.resetGameData();
         gameLoopState_ = GAME_STATES.CHAR_SELECT;
-        charSelect_ = CreateCharSelect(user1_,user2_);
+        charSelect_ = CreateCharSelect(users_);
         managed_ = charSelect_;
 
         this.go(this.runCharSelectLoop);
     }
-    /**/
+
     Game.prototype.startInsertCoinScreen = function()
     {
         this.resetGameData();
@@ -316,7 +337,7 @@ var CreateGame = function()
         managed_ = insertCoinScreen_;
         this.go(this.runInsertCoinScreenLoop);
     }
-    /**/
+
     Game.prototype.go = function(loopFn, callback)
     {
         this.init();
@@ -381,8 +402,8 @@ var CreateGame = function()
         speed_ = CONSTANTS.NORMAL_SPEED;
         if(!!charSelect_)
             charSelect_.release();
-        if(!!this.Match)
-            this.Match.release();
+        if(!!match_)
+            match_.release();
         if(!!insertCoinScreen_)
             insertCoinScreen_.release();
     }
@@ -520,6 +541,8 @@ var CreateGame = function()
         if(!!managed_ && !!managed_.onKeyStateChanged)
         {
             managed_.onKeyStateChanged(isDown,keyCode,frame_);
+            for(var i = 0; i < users_.length; ++i)
+                users_[i].onKeyStateChanged(isDown,keyCode,frame_);
         }
     }
 
@@ -542,33 +565,47 @@ var CreateGame = function()
         this.stop();
     }
 
-    Game.prototype.addUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.setUser1 = function(user)
     {
-        user1_ = this.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+        user1_ = user;
+    }
+
+    Game.prototype.setUser2 = function(user)
+    {
+        user2_ = user;
+    }
+
+    Game.prototype.addUser1 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad)
+    {
+        user1_ = this.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad);
         return user1_;
     }
-    Game.prototype.addUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addUser2 = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad)
     {
-        user2_ = this.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+        user2_ = this.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad);
         return user2_;
     }
-    Game.prototype.addUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad)
     {
         var user = null;
         if(gamepad != undefined)
-            user = this.addGamepadUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+            user = this.addGamepadUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad);
         else
-            user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+            user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start);
 
         users_.push(user);
         return user;
     }
-    Game.prototype.addGamepadUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad)
+    Game.prototype.addGamepadUser = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad)
     {
-        return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,gamepad);
+        return new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad);
     }
+
     Game.prototype.clearUsers = function()
     {
+        var length = users_.length;
+        for(var i = 0; i < length; ++i)
+            delete users_[i];
         users_ = [];
     }
 
@@ -595,7 +632,7 @@ var CreateGame = function()
     }
 
     /*Basic game loop*/
-    Game.prototype.runGameLoop = function()
+    Game.prototype.runGameLoop = function(start)
     {
         this.handleInput();
         if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
@@ -608,39 +645,63 @@ var CreateGame = function()
                 vcr_.onFrameMove(frame_);
 
             //pre fame move
-            this.Match.preFrameMove(frame_);
+            match_.preFrameMove(frame_);
 
-            this.Match.frameMove(frame_);
-            announcer_.frameMove(frame_);
-            soundManager_.frameMove(frame_);
-            if(!this.Match.isSuperMoveActive())
-                fontSystem_.frameMove(frame_);
+            match_.frameMove(frame_);
+            if(!match_.mustQuit())
+            {
+                announcer_.frameMove(frame_);
+                soundManager_.frameMove(frame_);
+                if(!match_.isSuperMoveActive())
+                    fontSystem_.frameMove(frame_);
 
-            //pre render
-            this.Match.preRender(frame_);
+                //pre render
+                match_.preRender(frame_);
 
-            //render
-            this.Match.render(frame_);
-            if(!this.Match.isSuperMoveActive())
-                fontSystem_.render(frame_);
-            announcer_.render(frame_);
-            soundManager_.render(frame_);
+                //render
+                match_.render(frame_);
+                if(!match_.isSuperMoveActive())
+                    fontSystem_.render(frame_);
+                announcer_.render(frame_);
+                soundManager_.render(frame_);
 
-            //done
-            this.Match.renderComplete(frame_);
-            this.showFPS();
+                //done
+                match_.renderComplete(frame_);
+                this.showFPS();
+            }
         }
 
-        if(!this.Match.isMatchOver(frame_))
+        if(match_.mustQuit())
+        {
+            switch(match_.getQuitReason())
+            {
+                case QUIT_MATCH.GOTO1PMODE:
+                    {
+                        this.startCharSelect();
+                        break;
+                    }
+                default:
+                    {
+                        this.startInsertCoinScreen();
+                        break;
+                    }
+            }
+        }
+        else if(!match_.isMatchOver(frame_))
         {
             //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             if(gameLoopState_ != GAME_STATES.MATCH)
                 return;
-            nextTimeout_ = window.setTimeout(runGameLoop_,speed_);
+
+            end_ = this.getCurrentTime();
+            delta_ = end_ - start;
+            delay_ = delta_ > speed_ ? 0 : speed_ - delta_;
+
+            nextTimeout_ = window.setTimeout(runGameLoop_,delay_);
         }
         else
         {
-            this.Match.handleMatchOver(frame_);
+            match_.handleMatchOver(frame_);
         }
     }
 
@@ -671,13 +732,13 @@ var CreateGame = function()
         }
         else
         {
-            this.Match.handleMatchOver(frame_);
+            match_.handleMatchOver(frame_);
         }
     }
 
     Game.prototype.runCharSelectLoop = function()
     {
-        if(!!charSelect_ && charSelect_.DelayAfterSelect < CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+        if(!!charSelect_)
         {
             this.handleInput();
             if(!this.hasState(GAME_STATES.PAUSED) || this.hasState(GAME_STATES.STEP_FRAME))
@@ -687,7 +748,7 @@ var CreateGame = function()
                 charSelect_.frameMove(frame_);
                 soundManager_.frameMove(frame_);
 
-                if(!!charSelect_.IsDone && charSelect_.DelayAfterSelect >= CONSTANTS.DELAY_AFTER_CHARACTER_SELECT)
+                if(!!charSelect_.IsDone && (frame_ >= charSelect_.getDelayAfterSelect()))
                 {
                     managed_ = null;
                     this.startMatch(false,charSelect_.getTeamA(),charSelect_.getTeamB(),charSelect_.getStage());
@@ -702,6 +763,7 @@ var CreateGame = function()
                 if(gameLoopState_ != GAME_STATES.CHAR_SELECT)
                     return;
                 //nextTimeout_ = window.requestAnimFrame(runCharSelectLoop_,speed_);
+
                 nextTimeout_ = window.setTimeout(runCharSelectLoop_,speed_);
             }
             else

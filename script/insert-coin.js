@@ -13,6 +13,7 @@ var CreateInsertCoinScreen = function(u1,u2)
     var creditsElement_ = null;
     var creditsTextElement_ = null;
     var parent_ = window.document.getElementById("pnlStage");
+    var nbCredits_ = 0;
 
     /*public*/
     var InsertCoinScreen = function()
@@ -157,28 +158,33 @@ var CreateInsertCoinScreen = function(u1,u2)
 
     InsertCoinScreen.prototype.onAddCredit = function()
     {
-        u1_.addCredit();
         mustUpdate_ = true;
-        soundManager_.queueSound("audio/misc/credit.zzz");
     }
 
     InsertCoinScreen.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
-        if(!!isDown && (keyCode == KEYS.CNTRL))
+        if(!!u1_)
         {
-            this.onAddCredit();
+            if(!!isDown && (keyCode == u1_.Coin))
+                this.onAddCredit();
         }
-        else if(!!isDown && (keyCode == KEYS.ENTER) && !!u1_.hasCredits())
+        if(!!u2_)
         {
-            u1_.useCredit();
-            StartCharacterSelection();
+            if(!!isDown && (keyCode == u2_.Coin))
+                this.onAddCredit();
         }
     }
 
 
     InsertCoinScreen.prototype.frameMove = function(frame)
     {
-        if(!u1_.hasCredits())
+        if((!!u1_ && u1_.IsRequestingCharSelect) || (!!u2_ && u2_.IsRequestingCharSelect))
+        {
+            StartCharacterSelection();
+            return;
+        }
+
+        if((!!u1 && !u1_.hasCredits()) || (!!u2_ && !u2_.hasCredits()))
         {
             if((frame % 1000) == 0)
             {
@@ -203,13 +209,14 @@ var CreateInsertCoinScreen = function(u1,u2)
         if(!!mustUpdate_)
         {
             mustUpdate_ = false;
-            if(u1_.hasCredits())
+            if((!!u1_ && u1_.hasCredits()) || (!!u2_ && u2_.hasCredits()))
             {
                 capElement_.style.display = "none";
                 insertCoinElement_.style.display = "none";
                 creditsElement_.style.display = "";
                 creditsTextElement_.style.display = "";
-                text1_.change(u1_.getNbCredits());
+                nbCredits_ = (!!u1_ ? u1_.getNbCredits() : 0) + (!!u2_ ? u2_.getNbCredits() : 0)
+                text1_.change(nbCredits_);
             }
             else
             {

@@ -44,6 +44,11 @@ var CreateGenericAI = function(player)
         this.CounterCloseJumpInCombos = [];
     }
 
+    GenericAI.prototype.release = function(frame,flags,input,name,dist,mustHit)
+    {
+        this.Player = null;
+    }
+
     GenericAI.prototype.createAction = function(frame,flags,input,name,dist,mustHit)
     {
         return {Flags:flags||0,MoveName:name||0,Frame:frame||0,Input:input||[],Distance:dist,IsActive:false,MustHit:mustHit};

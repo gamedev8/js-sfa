@@ -10,63 +10,63 @@ function GetDebugInstance(game)
 
     Debug.prototype.p1 = function()
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamA().getPlayer(0);
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamA().getPlayer(0);
         return null;
     }
 
     Debug.prototype.p2 = function()
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamB().getPlayer(0);
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamB().getPlayer(0);
         return null;
     }
 
     Debug.prototype.t1 = function(index)
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamA().getPlayer(index || 0);
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamA().getPlayer(index || 0);
         return null;
     }
 
     Debug.prototype.t2 = function(index)
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamB().getPlayer(index || 0);
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamB().getPlayer(index || 0);
         return null;
     }
 
     Debug.prototype.p1SendInput = function(input)
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamA().getPlayer(0).sendInput(input);
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamA().getPlayer(0).sendInput(input);
         return null;
     }
 
     Debug.prototype.p1ClearInput = function()
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamA().getPlayer(0).clearInput();
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamA().getPlayer(0).clearInput();
         return null;
     }
 
     Debug.prototype.p2SendInput = function(input)
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamB().getPlayer(0).sendInput(input);
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamB().getPlayer(0).sendInput(input);
         return null;
     }
 
     Debug.prototype.p2ClearInput = function()
     {
-        if(!!game_.Match)
-            return game_.Match.getTeamB().getPlayer(0).clearInput();
+        if(!!game_.getMatch())
+            return game_.getMatch().getTeamB().getPlayer(0).clearInput();
         return null;
     }
 
     Debug.prototype.p1TestAI = function()
     {
-        if(!!game_.Match)
+        if(!!game_.getMatch())
         {
             this.p1().enableAI();
         }
@@ -75,7 +75,7 @@ function GetDebugInstance(game)
 
     Debug.prototype.p2TestAI = function()
     {
-        if(!!game_.Match)
+        if(!!game_.getMatch())
         {
             this.p2().enableAI();
         }
@@ -85,7 +85,7 @@ function GetDebugInstance(game)
  
     Debug.prototype.t1TestAI = function(index)
     {
-        if(!!game_.Match)
+        if(!!game_.getMatch())
         {
             this.t1(index || 0).enableAI();
         }
@@ -94,7 +94,7 @@ function GetDebugInstance(game)
  
     Debug.prototype.t2TestAI = function(index)
     {
-        if(!!game_.Match)
+        if(!!game_.getMatch())
         {
             this.t2(index || 0).enableAI();
         }
@@ -118,8 +118,8 @@ function GetDebugInstance(game)
 
     Debug.prototype.setOffsets = function(x,y)
     {
-        txtX.value = x;
-        txtY.value = y;
+        txtX.value = +x;
+        txtY.value = +y;
     }
 
     Debug.prototype.p1SetFrameOffsets = function()
@@ -129,11 +129,11 @@ function GetDebugInstance(game)
 
         if(!!+x || x === 0)
         {
-            debug_.p1().CurrentFrame.ImageOffsetX = x;
+            debug_.p1().CurrentFrame.ImageOffsetX = +x;
         }
         if(!!+y || y === 0)
         {
-            debug_.p1().CurrentFrame.ImageOffsetY = y;
+            debug_.p1().CurrentFrame.ImageOffsetY = +y;
         }
     }
 
@@ -141,7 +141,7 @@ function GetDebugInstance(game)
 
     Debug.prototype.injectPlayer = function(playerId,team)
     {
-        if(!game_.Match || !game_.Match.TeamA || !game_.Match.TeamB)
+        if(!game_.getMatch() || !game_.getMatch().getTeamA() || !game_.getMatch().getTeamB())
         {
             AlertError("You can only inject a player during a match.");
             return;
@@ -174,10 +174,10 @@ function GetDebugInstance(game)
                 {
                     var player = user.getPlayer();
                     if(team == 1)
-                        game_.Match.TeamA.addPlayer(player);
+                        game_.getMatch().getTeamA().addPlayer(player);
                     else
-                        game_.Match.TeamB.addPlayer(player);
-                    game_.Match.setupPlayer(player,team);
+                        game_.getMatch().getTeamB().addPlayer(player);
+                    game_.getMatch().setupPlayer(player,team);
                     player.enableAI(CreateRyuAI);
                 }
             })(user);

@@ -50,17 +50,46 @@ var CreateUtils = function()
             return false;
     }
 
+    Utils.prototype.releaseArray = function(arr)
+    {
+        while(arr.length > 0)
+        {
+            if(!!arr[0].release)
+                arr[0].release();
+
+            delete arr[0];
+            arr.splice(0,1);
+        }
+    }
+
+    Utils.prototype.clearElement = function(element)
+    {
+        if(!!element.src)
+            element.src = "";
+        if(!!element.className)
+            element.className = "";
+        if(!!element.style)
+            element.style.backgroundImage = "";
+    }
+
     Utils.prototype.removeFromDOM = function(element)
     {
         if(!!element)
         {
             while(element.children.length > 0)
                 utils_.removeChildrenFromDOM(element.children[0]);
+
             var parentNode = element.parentNode;
             if(!!parentNode)
+            {
+                this.clearElement(element);
                 parentNode.removeChild(element);
+            }
             else
+            {
+                this.clearElement(element);
                 element = null;
+            }
         }
     }
 
@@ -71,12 +100,18 @@ var CreateUtils = function()
             if(!element.parentNode)
             {
                 if(!keepOrginalElement)
+                {
+                    this.clearElement(element);
                     element = null;
+                }
             }
             else if(element.children.length == 0)
             {
                 if(!keepOrginalElement)
+                {
+                    this.clearElement(element);
                     element.parentNode.removeChild(element);
+                }
             }
             else
             {
