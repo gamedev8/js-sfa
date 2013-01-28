@@ -105,8 +105,13 @@ HitSystem.prototype.canHit = function(key,index)
             return false;
         var flags = first.Player.CurrentAnimation.Animation.OverrideFlags;
 
-        var isHitOverriden = flags.hasOverrideFlag(OVERRIDE_FLAGS.ALL) /*overrides all*/
-            || (!flags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) && flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)); /*overrides yours*/
+        var isHitOverriden = 
+            (flags.hasOverrideFlag(OVERRIDE_FLAGS.ALL) /*overrides all*/ 
+                && ((!second || !second.MoveOverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN)) /*but it can't override shoryuken*/
+                    && !first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN))) /*but it can't override shoryuken*/
+            ||
+            (!flags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) 
+                && flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)); /*overrides yours*/
 
         return !isHitOverriden || !!first.Player.IgnoreOverrides;
 
@@ -160,7 +165,7 @@ HitSystem.prototype.frameMove = function(frame)
             }
             else if(!!item[0])
             {
-                item[0].Player.didntHit(frame);
+                item[0].Player.didntHit(frame,item[0].OtherPlayer.Id);
             }
 
             if(!!item[1] && canP2Hit)
@@ -170,7 +175,7 @@ HitSystem.prototype.frameMove = function(frame)
             }
             else if(!!item[1])
             {
-                item[1].Player.didntHit(frame);
+                item[1].Player.didntHit(frame,item[1].OtherPlayer.Id);
             }
             //clear the action
             this.Actions[i] = null;

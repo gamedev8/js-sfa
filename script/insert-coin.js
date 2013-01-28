@@ -163,14 +163,14 @@ var CreateInsertCoinScreen = function(u1,u2)
 
     InsertCoinScreen.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
-        if(!!u1_)
+        if(!!user1_)
         {
-            if(!!isDown && (keyCode == u1_.Coin))
+            if(!!isDown && (keyCode == user1_.Coin))
                 this.onAddCredit();
         }
-        if(!!u2_)
+        if(!!user2_)
         {
-            if(!!isDown && (keyCode == u2_.Coin))
+            if(!!isDown && (keyCode == user2_.Coin))
                 this.onAddCredit();
         }
     }
@@ -178,13 +178,13 @@ var CreateInsertCoinScreen = function(u1,u2)
 
     InsertCoinScreen.prototype.frameMove = function(frame)
     {
-        if((!!u1_ && u1_.IsRequestingCharSelect) || (!!u2_ && u2_.IsRequestingCharSelect))
+        if((!!user1_ && user1_.IsRequestingCharSelect) || (!!user2_ && user2_.IsRequestingCharSelect))
         {
             StartCharacterSelection();
             return;
         }
 
-        if((!!u1 && !u1_.hasCredits()) || (!!u2_ && !u2_.hasCredits()))
+        if((!!u1 && !user1_.hasCredits()) || (!!user2_ && !user2_.hasCredits()))
         {
             if((frame % 1000) == 0)
             {
@@ -209,13 +209,13 @@ var CreateInsertCoinScreen = function(u1,u2)
         if(!!mustUpdate_)
         {
             mustUpdate_ = false;
-            if((!!u1_ && u1_.hasCredits()) || (!!u2_ && u2_.hasCredits()))
+            if((!!user1_ && user1_.hasCredits()) || (!!user2_ && user2_.hasCredits()))
             {
                 capElement_.style.display = "none";
                 insertCoinElement_.style.display = "none";
                 creditsElement_.style.display = "";
                 creditsTextElement_.style.display = "";
-                nbCredits_ = (!!u1_ ? u1_.getNbCredits() : 0) + (!!u2_ ? u2_.getNbCredits() : 0)
+                nbCredits_ = (!!user1_ ? user1_.getNbCredits() : 0) + (!!user2_ ? user2_.getNbCredits() : 0)
                 text1_.change(nbCredits_);
             }
             else

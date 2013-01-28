@@ -638,7 +638,7 @@ Player.prototype.createRyu = function(user)
         uppercut.IgnoreDepressedKeys = true;
 
         uppercut.EnergyToAdd = (5);
-        uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
+        uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.SHORYUKEN,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
 
         /*the following function will be executed each frame to compute the X coordinate of this move*/
         uppercut.vxFn = (function(args)

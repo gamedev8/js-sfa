@@ -3,7 +3,8 @@ body div.select {margin-left:224px;height:201px;width:100%;background:url(../ima
 body div.char-select {margin-left:256px;margin-top:87px;height:400px;width:100%;background:url(../images/misc/misc/char-select.png) no-repeat 0px 0px;}
 body div.next-foe-line1 {position:absolute;top:250px;left:280px;}
 body div.next-foe-line2 {position:absolute;top:332px;left:408px;}
-body div.question-mark {display:inline-block;background:url(../images/misc/misc/char-misc-sprites.png) no-repeat 0px 0px;}
+body div.question-mark-container {display:inline-block;width:64px;height:82px;}
+body div.question-mark {position:relative;display:inline-block;background:url(../images/misc/misc/char-sprites.png) no-repeat 0px 0px;}
 .capcom,.credits,.insert-coin,.press-start,.credits-text{position:absolute;}
 .capcom{background-image:url(../images/misc/font1/cap.png);width:352px;height:41px;bottom:42px;left:208px;}
 .press-start{background-image:url(../images/misc/font1/press-start.png);width:320px;height:21px;bottom:144px;left:224px;z-index:999;}
@@ -25,7 +26,7 @@ body div.question-mark {display:inline-block;background:url(../images/misc/misc/
 .select-stance-p2, .select-stance-p1 {position:absolute;z-index:2;bottom:0px;background-image:url(../images/misc/misc/stance-sprites.png)}
 .select-stance-p1 {left:0px;}
 .select-stance-p2 {right:0px;}
-.select-icon {position:absolute;z-index:3;background-image:url(../images/misc/misc/char-misc-sprites.png);}
+.select-icon {position:absolute;z-index:3;background-image:url(../images/misc/misc/char-sprites.png);}
 .select-portriat-p1 {position:absolute;top:0px;left:0px;z-index:5;background-image:url(../images/misc/misc/head-sprites.png);}
 .select-portriat-p2 {position:absolute;top:0px;right:0px;z-index:5;background-image:url(../images/misc/misc/head-sprites.png);}
 .select-random-p1, .select-random-p2{position:absolute;bottom:42px;z-index:1;background-image:url(../images/misc/misc/char-sprites.png);}

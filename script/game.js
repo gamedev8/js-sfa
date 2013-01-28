@@ -675,7 +675,7 @@ var CreateGame = function()
         {
             switch(match_.getQuitReason())
             {
-                case QUIT_MATCH.GOTO1PMODE:
+                case QUIT_MATCH.GOTO_STORYMODE:
                     {
                         this.startCharSelect();
                         break;

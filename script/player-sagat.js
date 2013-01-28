@@ -486,7 +486,7 @@ Player.prototype.createSagat = function(user)
     crouch_k1.Flags = {Pose:POSE_FLAGS.CROUCHING};
     crouch_k1.addFrame(player,0,"",folder + "/crouch-p1-0.png",1,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
     crouch_k1.addFrame(player,0,"",folder + "/cblock-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_k1.addFrame(player,0,"",folder + "/crouch-k1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.LOW,x: 150,y: 60 },{ state: HIT_FLAGS.LOW,x: 250,y: 5}],ATTACK_FLAGS.LIGHT,1,1,10);
+    crouch_k1.addFrame(player,0,"264",folder + "/crouch-k1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.LOW,x: 150,y: 60 },{ state: HIT_FLAGS.LOW,x: 250,y: 5}],ATTACK_FLAGS.LIGHT,1,1,10);
     crouch_k1.endBlock();
     crouch_k1.addFrame(player,0,"",folder + "/cblock-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_k1.chain(crouch,2);
@@ -498,12 +498,12 @@ Player.prototype.createSagat = function(user)
     crouch_k2.Flags = {Pose:POSE_FLAGS.CROUCHING};
     crouch_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
     crouch_k2.addFrame(player,0,"168",folder + "/crouch-k2-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_k2.addFrame(player,0,"168",folder + "/crouch-k2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
-    crouch_k2.addFrame(player,0,"168",folder + "/crouch-k2-2.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
-    crouch_k2.addFrame(player,0,"264",folder + "/crouch-k2-3.png",3,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_2,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,50,-5,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.LOW,x: 180,y: 85 },{ state: HIT_FLAGS.LOW,x: 265,y: 50 },{ state: HIT_FLAGS.LOW,x: 310,y: 1}],ATTACK_FLAGS.MEDIUM,1,1,15);
+    crouch_k2.addFrame(player,80,"168",folder + "/crouch-k2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
+    crouch_k2.addFrame(player,80,"168",folder + "/crouch-k2-2.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
+    crouch_k2.addFrame(player,80,"264",folder + "/crouch-k2-3.png",3,{ SwingSound:SWINGSOUND.MP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_2,HitSound:HITSOUND.MK },MISC_FLAGS.NONE,0,0,0,10,null,50,-5,ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.HITS_LOW,[{ state: HIT_FLAGS.LOW,x: 180,y: 85 },{ state: HIT_FLAGS.LOW,x: 265,y: 50 },{ state: HIT_FLAGS.LOW,x: 310,y: 1}],ATTACK_FLAGS.MEDIUM,1,1,15);
     crouch_k2.endBlock();
-    crouch_k2.addFrame(player,0,"168",folder + "/crouch-k2-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
-    crouch_k2.addFrame(player,0,"168",folder + "/crouch-k2-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
+    crouch_k2.addFrame(player,80,"168",folder + "/crouch-k2-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
+    crouch_k2.addFrame(player,80,"168",folder + "/crouch-k2-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
     crouch_k2.addFrame(player,0,"168",folder + "/crouch-k2-0.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_k2.chain(crouch,2);
 
@@ -514,12 +514,12 @@ Player.prototype.createSagat = function(user)
     crouch_k3.Flags = {Pose:POSE_FLAGS.CROUCHING};
     crouch_k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.STANDING);
     crouch_k3.addFrame(player,0,"168",folder + "/crouch-k2-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
-    crouch_k3.addFrame(player,0,"168",folder + "/crouch-k2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
-    crouch_k3.addFrame(player,0,"168",folder + "/crouch-k2-2.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
-    crouch_k3.addFrame(player,0,"264",folder + "/crouch-k2-3.png",8,{ SwingSound:SWINGSOUND.HP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK },MISC_FLAGS.NONE,0,0,0,10,null,50,-5,ATTACK_FLAGS.HARD | ATTACK_FLAGS.HITS_LOW | ATTACK_FLAGS.TRIP,[{ state: HIT_FLAGS.LOW,x: 180,y: 85 },{ state: HIT_FLAGS.LOW,x: 265,y: 50 },{ state: HIT_FLAGS.LOW,x: 340,y: 1}],ATTACK_FLAGS.HARD,1,1,20,0,CONSTANTS.TRIP_SLIDEFACTOR);
+    crouch_k3.addFrame(player,80,"168",folder + "/crouch-k2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
+    crouch_k3.addFrame(player,80,"168",folder + "/crouch-k2-2.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
+    crouch_k3.addFrame(player,80,"264",folder + "/crouch-k2-3.png",8,{ SwingSound:SWINGSOUND.HP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HK },MISC_FLAGS.NONE,0,0,0,10,null,50,-5,ATTACK_FLAGS.HARD | ATTACK_FLAGS.HITS_LOW | ATTACK_FLAGS.TRIP,[{ state: HIT_FLAGS.LOW,x: 180,y: 85 },{ state: HIT_FLAGS.LOW,x: 265,y: 50 },{ state: HIT_FLAGS.LOW,x: 340,y: 1}],ATTACK_FLAGS.HARD,1,1,20,0,CONSTANTS.TRIP_SLIDEFACTOR);
     crouch_k3.endBlock();
-    crouch_k3.addFrame(player,0,"168",folder + "/crouch-k2-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
-    crouch_k3.addFrame(player,0,"168",folder + "/crouch-k2-1.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
+    crouch_k3.addFrame(player,80,"168",folder + "/crouch-k2-2.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,-35);
+    crouch_k3.addFrame(player,80,"168",folder + "/crouch-k2-1.png",5,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,80,0);
     crouch_k3.addFrame(player,0,"168",folder + "/crouch-k2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     crouch_k3.chain(crouch,2);
 

@@ -1,4 +1,62 @@
-﻿
+﻿var CreateStoryMode = function()
+{
+    var levelsPassed_ = [false,false,false,false];
+    var level_ = 0;
+
+    var StoryModeHandler = function()
+    {
+    }
+
+    StoryModeHandler.prototype.incLevel = function()
+    {
+        levelsPassed_[level_] = true;
+        level_ = this.getLevel();
+    }
+
+    StoryModeHandler.prototype.getLevel = function()
+    {
+        for(var i = 0; i < levelsPassed_.length; ++i)
+            if(!levelsPassed_[i])
+                return i;
+
+        return CONSTANTS.MAX_STORY_MODE_LEVEL;
+    }
+
+    StoryModeHandler.prototype.getDefeatedOpponentsImgSrc = function(level)
+    {
+        if(!!levelsPassed_[level])
+        {
+            switch(level)
+            {
+                case 0: { return ["images/misc/misc/char-ryu-r.png"]; break;}
+                case 1: { return ["images/misc/misc/char-ken-r.png"]; break;}
+                case 2: { return ["images/misc/misc/char-mbison-r.png"]; break;}
+                case 3: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
+                default : { return ["images/misc/misc/question-0.png"]; break;}
+            }
+        }
+        return ["images/misc/misc/question-0.png"];
+    }
+
+    StoryModeHandler.prototype.getOpponents = function(level)
+    {
+        switch(level || level_)
+        {
+            case 0: { return [CHARACTERS.RYU]; break;}
+            case 1: { return [CHARACTERS.KEN]; break;}
+            case 2: { return [CHARACTERS.MBISON]; break;}
+            case 3: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
+            default : { return [CHARACTERS.RYU]; break;}
+        }
+
+        return [];
+    }
+
+    return new StoryModeHandler();
+}
+
+
+
 var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepadIndex)
 {
     this.Folder = "";
@@ -39,7 +97,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad
     this.getOtherCharacterFn = null;
     this.getOtherIsAlternateFn = null;
     this.RandomSelect = 0;
-    this.IsAlternateChar = false;
+    this.IsAlternate = false;
     this.IsAI = false;
     this.NbCredits = 0;
     this.IsRequestingCharSelect = false;
@@ -48,8 +106,9 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad
     this.Loses = 0;
     this.Draws = 0;
     this.Score = 0;
-    this.IsIn1PMode = false;
+    this.IsInStoryMode = false;
     this.ShowSelectIcon = false;
+    this.StoryMode = CreateStoryMode();
 }
 
 User.prototype.setTeam = function(value)
@@ -57,24 +116,47 @@ User.prototype.setTeam = function(value)
     this.Team = value;
 }
 
-User.prototype.set1PMode = function()
+User.prototype.enableStoryMode = function()
 {
-    this.IsIn1PMode = true;
+    this.IsInStoryMode = true;
 }
 
-User.prototype.clear1PMode = function()
+User.prototype.advanceStoryMode = function()
 {
-    this.IsIn1PMode = false;
+    if(!!this.IsInStoryMode)
+        this.StoryMode.incLevel();
+    else
+        this.IsInStoryMode = true;
 }
 
-User.prototype.isIn1PMode = function()
+User.prototype.disableStoryMode = function()
 {
-    return this.IsIn1PMode;
+    this.IsInStoryMode = false;
+}
+
+User.prototype.isInStoryMode = function()
+{
+    return this.IsInStoryMode;
+}
+
+User.prototype.isAI = function()
+{
+    return this.IsAI;
 }
 
 User.prototype.isInCharSelect = function()
 {
     return this.IsInCharSelect;
+}
+
+User.prototype.isCharSelected = function()
+{
+    return this.IsCharSelected;
+}
+
+User.prototype.isAlternateChar = function()
+{
+    return this.IsAlternate;
 }
 
 User.prototype.hasSelectedPlayer = function()
@@ -114,13 +196,14 @@ User.prototype.getNbCredits = function()
 
 User.prototype.reset = function()
 {
-    this.IsAlternateChar = false;
+    this.IsAlternate = false;
     this.IsAI = false;
     this.IsRequestingCharSelect = false;
     this.IsInCharSelect = false;
     this.IsCharSelected = false;
     this.Player = null;
     this.Team = null;
+    this.IsInStoryMode = false;
 }
 
 User.prototype.hasCredits = function()
@@ -152,7 +235,7 @@ User.prototype.isRequestingCharSelect = function()
 User.prototype.setChar = function(char, isAlternate, isAI)
 {
     var name = "";
-    if(this.isIn1PMode())
+    if(this.isInStoryMode())
     {
         char = this.Selected;
         isAlternate = this.IsAlternate;
@@ -186,152 +269,11 @@ User.prototype.setChar = function(char, isAlternate, isAI)
     this.IsCharSelected = true;
 
     //select the current character if we are in one-player mode
-    if(this.isIn1PMode())
+    if(this.isInStoryMode())
     {
         this.IsCharSelected = true;
         this.onSelectChar();
     }
-}
-
-User.prototype.addStanceAnimations = function()
-{
-    if(!this.IsInitialized)
-    {
-        this.Animations["ryu"] = CreateBasicAnimation("ryu_stance",[],true);
-        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-0.png",5);
-        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-1.png",5);
-        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-2.png",5);
-        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-3.png",5);
-        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-2.png",5);    
-        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-1.png",5);
-        this.Animations["ryu_selected"] = CreateBasicAnimation("ryu_selected",[],true);
-        this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-0.png",5);
-        this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-1.png",5);
-        this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-2.png",CONSTANTS.MAX_FRAME);
-
-        this.Animations["ken"] = CreateBasicAnimation("ken_stance",[],true);
-        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-0.png",5);
-        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-1.png",5);
-        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-2.png",5);
-        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-3.png",5);
-        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-2.png",5);    
-        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-1.png",5);
-        this.Animations["ken_selected"] = CreateBasicAnimation("ken_selected",[],true);
-        this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-0.png",5);
-        this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-1.png",5);
-        this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-2.png",CONSTANTS.MAX_FRAME);
-
-        this.Animations["mbison"] = CreateBasicAnimation("ken_stance",[],true);
-        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-0.png",5);
-        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-1.png",5);
-        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-2.png",5);
-        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-3.png",5);
-        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-2.png",5);    
-        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-1.png",5);
-        this.Animations["mbison_selected"] = CreateBasicAnimation("mbison_selected",[],true);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-0.png",5);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-1.png",5);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-2.png",5);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-3.png",5);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-4.png",5);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-5.png",5);
-        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-6.png",CONSTANTS.MAX_FRAME);
-
-        this.Animations["sagat"] = CreateBasicAnimation("sagat_stance",[],true);
-        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-0.png",5);
-        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-3.png",5);
-        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-2.png",5);
-        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-1.png",5);
-        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-2.png",5);    
-        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-3.png",5);    
-        this.Animations["sagat_selected"] = CreateBasicAnimation("sagat_selected",[],true);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-0.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-1.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-2.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-3.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-4.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-5.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-6.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-7.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-8.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-9.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-10.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-11.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-12.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-13.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-14.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-15.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-16.png",5);
-        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-17.png",CONSTANTS.MAX_FRAME);
-
-        this.Animations["guy"] = CreateBasicAnimation("guy_stance",[],true);
-        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-0.png",26);
-        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-3.png",15);
-        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-2.png",15);
-        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-1.png",26);
-        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-2.png",15);
-        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-3.png",15);
-
-        this.Animations["birdie"] = CreateBasicAnimation("birdie_stance",[],true);
-        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-0.png",15);
-        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-1.png",15);
-        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-2.png",15);
-        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-3.png",15);
-
-        this.Animations["chunli"] = CreateBasicAnimation("chunli_stance",[],true);
-        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-0.png",10);
-        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-1.png",10);
-        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-2.png",10);
-        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-3.png",10);
-
-        this.Animations["charlie"] = CreateBasicAnimation("charlie_stance",[],true);
-        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-0.png",5);
-        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-1.png",5);
-        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-2.png",5);
-        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-3.png",5);
-        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-2.png",5);
-        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-1.png",5);
-
-        this.Animations["sodom"] = CreateBasicAnimation("sodom_stance",[],true);
-        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-0.png",5);
-        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-1.png",5);
-        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-2.png",5);
-        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-3.png",5);
-        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-4.png",5);
-        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-5.png",5);
-
-
-        this.Animations["adon"] = CreateBasicAnimation("adon_stance",[],true);
-        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-0.png",5);
-        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-1.png",5);
-        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-2.png",5);
-        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-3.png",5);
-        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-4.png",5);
-
-
-        this.Animations["rose"] = CreateBasicAnimation("rose_stance",[],true);
-        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-0.png",5);
-        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-1.png",5);
-        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-2.png",5);
-        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-3.png",5);
-        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-4.png",5);
-        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-5.png",5);
-
-
-        this.Animations["random"] = CreateBasicAnimation("random",[],true);
-        this.Animations["random"].addFrame(this,"images/misc/misc/rose-r-c-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/adon-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/sodom-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/charlie-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/chunli-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/birdie-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/guy-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/sagat-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/ken-r-stance-0.png",5);
-        this.Animations["random"].addFrame(this,"images/misc/misc/ryu-r-stance-0.png",5);
-    }
-
-    this.IsInitialized = true;
 }
 
 User.prototype.charSelectElementsVisible = function(isVisible)
@@ -340,7 +282,7 @@ User.prototype.charSelectElementsVisible = function(isVisible)
     {
         var state = isVisible ? "" : "none";
         this.SelectIcon.Element.style.display = state;
-        this.Temp = true;
+        this.ShowSelectIcon = isVisible;
     }
 }
 
@@ -354,9 +296,6 @@ User.prototype.release = function()
     utils_.removeFromDOM(this.NameElement.Element);
     utils_.removeFromDOM(this.SelectedCharStance.Element);
     utils_.removeFromDOM(this.RandomCharFace.Element);
-    this.IsCharSelected = !!this.Player;
-    //this.IsInCharSelect = false;
-    //this.IsRequestingCharSelect = false;
 }
 
 User.prototype.init = function(isUser1)
@@ -442,8 +381,8 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
                 {
                     if(!this.Player)
                     {
-                        game_.getMatch().forceQuit();
-                        return
+                        game_.getMatch().forceQuit(QUIT_MATCH.GOTO_STORYMODE);
+                        return;
                     }
                     else
                     {
@@ -454,7 +393,6 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
         }
     }
 
-    //if we aren't active in the character select screen, then quit
     if(game_.gameLoopState() != GAME_STATES.CHAR_SELECT)
     {
         return;
@@ -483,12 +421,11 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
                 {
                     this.IsCharSelected = true;
                     this.chooseCharacterFn(this);
-                    this.IsAlternateChar = (keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3);
-                    if(this.getOtherCharacterFn() == this.getName())
-                    {
-                         this.IsAlternateChar = !this.getOtherIsAlternateFn()
-                    }
-                    this.setChar(this.Selected, this.IsAlternateChar);
+                    this.IsAlternate = (keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3);
+
+                    this.determineIsAternate();
+
+                    this.setChar(this.Selected, this.IsAlternate);
                 }
             }
             if(!!direction)
@@ -508,6 +445,24 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
                 this.onSelectChar();
             }
         }
+    }
+}
+
+User.prototype.determineIsAternate = function()
+{
+    var isCharOnOtherTeam = this.isCharOnOtherTeamFn();
+    var isAltCharOnOtherTeam = this.isAltCharOnOtherTeamFn();
+                    
+    if(isCharOnOtherTeam && !isAltCharOnOtherTeam)
+    {
+        this.IsAlternate = true;
+    }
+    else
+    {
+        if(!isCharOnOtherTeam)
+            this.IsAlternate = this.IsAlternate || false;
+        else
+            this.IsAlternate = false;
     }
 }
 
@@ -681,4 +636,145 @@ User.prototype.render = function(frame)
         this.setPositions();
         this.Animations[this.CurrentStance].tryRender(frame, this.SelectedCharStance, this.Direction);
     }
+}
+
+User.prototype.addStanceAnimations = function()
+{
+    if(!this.IsInitialized)
+    {
+        this.Animations["ryu"] = CreateBasicAnimation("ryu_stance",[],true);
+        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-0.png",5);
+        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-1.png",5);
+        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-2.png",5);
+        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-3.png",5);
+        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-2.png",5);    
+        this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-1.png",5);
+        this.Animations["ryu_selected"] = CreateBasicAnimation("ryu_selected",[],true);
+        this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-0.png",5);
+        this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-1.png",5);
+        this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-2.png",CONSTANTS.MAX_FRAME);
+
+        this.Animations["ken"] = CreateBasicAnimation("ken_stance",[],true);
+        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-0.png",5);
+        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-1.png",5);
+        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-2.png",5);
+        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-3.png",5);
+        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-2.png",5);    
+        this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-1.png",5);
+        this.Animations["ken_selected"] = CreateBasicAnimation("ken_selected",[],true);
+        this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-0.png",5);
+        this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-1.png",5);
+        this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-2.png",CONSTANTS.MAX_FRAME);
+
+        this.Animations["mbison"] = CreateBasicAnimation("ken_stance",[],true);
+        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-0.png",5);
+        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-1.png",5);
+        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-2.png",5);
+        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-3.png",5);
+        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-2.png",5);    
+        this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-1.png",5);
+        this.Animations["mbison_selected"] = CreateBasicAnimation("mbison_selected",[],true);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-0.png",5);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-1.png",5);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-2.png",5);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-3.png",5);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-4.png",5);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-5.png",5);
+        this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-6.png",CONSTANTS.MAX_FRAME);
+
+        this.Animations["sagat"] = CreateBasicAnimation("sagat_stance",[],true);
+        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-0.png",5);
+        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-3.png",5);
+        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-2.png",5);
+        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-1.png",5);
+        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-2.png",5);    
+        this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-3.png",5);    
+        this.Animations["sagat_selected"] = CreateBasicAnimation("sagat_selected",[],true);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-0.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-1.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-2.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-3.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-4.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-5.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-6.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-7.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-8.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-9.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-10.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-11.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-12.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-13.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-14.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-15.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-16.png",5);
+        this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-17.png",CONSTANTS.MAX_FRAME);
+
+        this.Animations["guy"] = CreateBasicAnimation("guy_stance",[],true);
+        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-0.png",26);
+        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-3.png",15);
+        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-2.png",15);
+        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-1.png",26);
+        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-2.png",15);
+        this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-3.png",15);
+
+        this.Animations["birdie"] = CreateBasicAnimation("birdie_stance",[],true);
+        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-0.png",15);
+        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-1.png",15);
+        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-2.png",15);
+        this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-3.png",15);
+
+        this.Animations["chunli"] = CreateBasicAnimation("chunli_stance",[],true);
+        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-0.png",10);
+        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-1.png",10);
+        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-2.png",10);
+        this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-3.png",10);
+
+        this.Animations["charlie"] = CreateBasicAnimation("charlie_stance",[],true);
+        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-0.png",5);
+        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-1.png",5);
+        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-2.png",5);
+        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-3.png",5);
+        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-2.png",5);
+        this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-1.png",5);
+
+        this.Animations["sodom"] = CreateBasicAnimation("sodom_stance",[],true);
+        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-0.png",5);
+        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-1.png",5);
+        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-2.png",5);
+        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-3.png",5);
+        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-4.png",5);
+        this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-5.png",5);
+
+
+        this.Animations["adon"] = CreateBasicAnimation("adon_stance",[],true);
+        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-0.png",5);
+        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-1.png",5);
+        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-2.png",5);
+        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-3.png",5);
+        this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-4.png",5);
+
+
+        this.Animations["rose"] = CreateBasicAnimation("rose_stance",[],true);
+        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-0.png",5);
+        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-1.png",5);
+        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-2.png",5);
+        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-3.png",5);
+        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-4.png",5);
+        this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-5.png",5);
+
+
+        this.Animations["random"] = CreateBasicAnimation("random",[],true);
+        this.Animations["random"].addFrame(this,"images/misc/misc/rose-r-c-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/adon-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/sodom-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/charlie-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/chunli-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/birdie-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/guy-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/sagat-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/ken-r-stance-0.png",5);
+        this.Animations["random"].addFrame(this,"images/misc/misc/ryu-r-stance-0.png",5);
+    }
+
+    this.IsInitialized = true;
 }

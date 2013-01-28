@@ -1,4 +1,13 @@
-﻿var getRand = function(max)
+﻿Array.prototype.indexOf = Array.prototype.indexOf || function(value)
+{
+    for(var i = 0, length = this.length; i < length; ++i)
+        if(this[i] === value)
+            return i;
+    return -1;
+}
+
+
+var getRand = function(max)
 {
     return (Math.random() * (max || 100)) >> 0;
 }
@@ -100,38 +109,44 @@ function OnStageImagesLoaded()
 //Human users
 function InitUsers()
 {
-    delete window.u1_;
-    delete window.u2_;
-    delete window.u3_;
-    delete window.u4_;
+    delete window.user1_;
+    delete window.user2_;
+    delete window.user3_;
+    delete window.user4_;
+    delete window.user5_;
+    delete window.user6_;
 
     var val = 10000000;
 
-    window.u1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,KEYS.CNTRL,KEYS.ENTER);
-    window.u2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
-    window.u3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
-    window.u4_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
+    window.user1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,KEYS.CNTRL,KEYS.ENTER);
+    window.user2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
+    window.user3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
+
+    val += 100;
+    window.user4_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
+    val += 100;
+    window.user5_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
+    val += 100;
+    window.user6_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
 }
 InitUsers();
 
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    u1_.setChar(CHARACTERS.KEN,true,true);
-    u2_.setChar(CHARACTERS.RYU,true,true);
+    user1_.setChar(CHARACTERS.SAGAT);
+    user2_.setChar(CHARACTERS.RYU);
 
-    game_.startMatch(false,[u1_],[u2_], stages_["ryu"]);
+    game_.startMatch(false,[0],[1], stages_["ryu"]);
 }
 
 //multi player battle 
 function StartDramaticBattle()
 {
-    u1_.setChar(CHARACTERS.RYU);
-    u2_.setChar(CHARACTERS.KEN,false,false);
-    u3_.setChar(CHARACTERS.MBISON,false,false);
-    u4_.setChar(CHARACTERS.RYU,true,false);
+    user1_.setChar(CHARACTERS.RYU);
+    user2_.setChar(CHARACTERS.KEN);
 
-    game_.startMatch(false,[u1_,u2_],[u3_,u4_], stages_["mbison"]);
+    game_.startMatch(false,[0],[1], stages_["mbison"]);
 }
 
 function StartBattle()

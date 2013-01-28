@@ -246,19 +246,20 @@ var HIT_FLAGS =
     HIGH:1 << 0
     ,LOW:1 << 1
     ,TRIP:1 << 2
-}
+};
+
 var JUGGLE_FLAGS =
 {
     NONE:1 << 0
     ,ALLOW:1 << 1
     ,ALIVE:1 << 2
     ,DEAD:1 << 3
-}
+};
 
 var JUGGLE_GROUP = 
 {
     UPPERCUT:1
-}
+};
 
 var OVERRIDE_FLAGS = 
 {
@@ -273,11 +274,12 @@ var OVERRIDE_FLAGS =
     ,CROUCHING:1 << 8
     ,STANDING:1 << 9
     ,AIRBORNE:1 << 10
+    ,SHORYUKEN:1 << 11
 };
 
 var QUIT_MATCH = 
 {
-    GOTO1PMODE:1
+    GOTO_STORYMODE:1
 };
 
 var STAGE = 
@@ -331,7 +333,8 @@ var ATTACK_STATE = {
 
 var CONSTANTS =
 {
-    TRIP_SLIDEFACTOR:0.1
+    MAX_STORY_MODE_LEVEL:3
+    ,TRIP_SLIDEFACTOR:0.1
     ,TRIP_SLIDEFORCE:0
     ,GRAPPLE_DISTANCE:50
     ,GROUND_FRAMES_FOR_GRAPPLE:20
@@ -498,9 +501,9 @@ var CONSTANTS =
     ,SHOW_FACEOFF_NAMES_DELAY:!!__debugMode ? 0 : 100
     ,REMOVE_FACEOFF_PICS_DELAY:!!__debugMode ? 0 : 150
     ,SHOW_TEAMS_DELAY:!!__debugMode ? 0 : 200
-    ,START_THEME_DELAY:!!__debugMode ? 0 : 250
-    ,ANNOUNCE_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 310
-    ,START_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 430
+    ,START_THEME_DELAY:!!__debugMode ? 0 : 210
+    ,ANNOUNCE_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 230
+    ,START_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 340
 
 };
 var CHARACTERS = 

@@ -2,6 +2,12 @@
 
 var CreateCharSelect = function(users)
 {
+    var SCREEN_STATE = 
+    {
+        SELECT_CHAR:1
+        ,SHOW_NEXT_FOE:2
+    }
+
     var DELAY = 100;
     var delayAfterSelect_ = 0;
     var keyCount_ = 0;
@@ -12,6 +18,10 @@ var CreateCharSelect = function(users)
     var teamA_ = [];
     var teamB_ = [];
     var showNextFoe_ = false;
+    var state_ = SCREEN_STATE.SELECT_CHAR;
+    var nextFoeElement_ = {X:0,Y:0,Element:null,StartFrame:0};
+    var animations_ = {};
+    var isFirstFoe_ = true;
 
     function determineTeams()
     {
@@ -25,11 +35,19 @@ var CreateCharSelect = function(users)
         {
             teamA_.push(0);
             users[0].ShowSelectIcon = true;
+            if(users[0].isRequestingCharSelect())
+                for(var i = 2; i < users.length; ++i)
+                    if((users[i].Team == 1))
+                        users[i].reset();
         }
         if(users[1].isRequestingCharSelect() || users[1].hasSelectedPlayer() || users[1].isInCharSelect())
         {
             teamB_.push(1);
             users[1].ShowSelectIcon = true;
+            if(users[1].isRequestingCharSelect())
+                for(var i = 2; i < users.length; ++i)
+                    if((users[i].Team == 2))
+                        users[i].reset();
         }
 
         for(var i = 2; i < users.length; ++i)
@@ -40,29 +58,14 @@ var CreateCharSelect = function(users)
                 teamB_.push(i);
         }
 
-        if(teamA_.length > 0 && teamB_.length > 0)
-        {
-            //remove the AI players
-            if(users[0].isRequestingCharSelect())
-            {
-                teamA_ = [];
-                teamA_.push(0);
-            }
-            if(users[1].isRequestingCharSelect())
-            {
-                teamB_ = [];
-                teamB_.push(1);
-            }
-        }
-
         u1_ = users[teamA_[0]];
         u2_ = users[teamB_[0]];
     }
 
     determineTeams();
 
-    var isU1Human = function() { return !!u1_ && (u1_.isInCharSelect() || u1_.isIn1PMode()); }
-    var isU2Human = function() { return !!u2_ && (u2_.isInCharSelect() || u2_.isIn1PMode()); }
+    var isU1Human = function() { return !!u1_ && (!u1_.isAI()); }
+    var isU2Human = function() { return !!u2_ && (!u2_.isAI()); }
 
     var CharSelect = function()
     {
@@ -84,11 +87,19 @@ var CreateCharSelect = function(users)
         this.NextFoeLine2Element = null;
         this.Music = "audio/misc/player-select.zzz";
         this.LastPicked = "";
+        this.NbFrames = 0;
         this.loadAssets();
     }
+
+    //Simply returns the count of all of the frames
+    CharSelect.prototype.getNextFrameID = function()
+    {
+        return this.NbFrames;
+    }
+
     CharSelect.prototype.getDelayAfterSelect = function() { return delayAfterSelect_; }
-    CharSelect.prototype.getUser1 = function() { return (!!u1_ && (!!u1_.IsInCharSelect || u1_.IsIn1PMode)) ? u1_ : null; }
-    CharSelect.prototype.getUser2 = function() { return (!!u2_ && (!!u2_.IsInCharSelect || u2_.IsIn1PMode)) ? u2_ : null; }
+    CharSelect.prototype.getUser1 = function() { return (!!u1_ && (!!u1_.IsInCharSelect || u1_.IsInStoryMode)) ? u1_ : null; }
+    CharSelect.prototype.getUser2 = function() { return (!!u2_ && (!!u2_.IsInCharSelect || u2_.IsInStoryMode)) ? u2_ : null; }
     CharSelect.prototype.getPlayers = function(users)
     {
         var retVal = [];
@@ -140,6 +151,19 @@ var CreateCharSelect = function(users)
         this.init();
         this.restartMusic();
         this.playMusic();
+        this.setupAnimations();
+    }
+
+    CharSelect.prototype.setupAnimations = function()
+    {
+        animations_ = {};
+        animations_["show_next_foe"] = CreateBasicAnimation("show_next_foe",[],false);
+        animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-0.png",8);
+        animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-1.png",8).set({"X":10});
+        animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-2.png",8).set({"X":25});
+        animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-3.png",8).set({"X":23});
+        animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-4.png",8).set({"X":10});
+        animations_["show_next_foe"].addFrame(this,"",CONSTANTS.MAX_FRAME);
     }
 
     CharSelect.prototype.getRow = function(user)
@@ -236,28 +260,6 @@ var CreateCharSelect = function(users)
     }
 
 
-    CharSelect.prototype.showNextFoe = function()
-    {
-        if(!!this.getUser1())
-            u1_.charSelectElementsVisible(false);
-        if(!!this.getUser2())
-            u2_.charSelectElementsVisible(false);
-        showNextFoe_ = true;
-        this.CharSelectElement.style.display = "none";
-        this.NextFoeLine1Element.style.display = "";
-        this.NextFoeLine2Element.style.display = "";
-
-        if(!!this.getUser1() && !!u1_.isIn1PMode())
-        {
-            
-        }
-        else if(!!this.getUser2() && !!u2_.isIn1PMode())
-        {
-            
-        }
-    }
-
-
     CharSelect.prototype.release = function()
     {
         showNextFoe_ = false;
@@ -275,7 +277,8 @@ var CreateCharSelect = function(users)
         utils_.removeChildrenFromDOM(this.CharSelectElement);
         utils_.removeChildrenFromDOM(this.NextFoeLine1Element);
         utils_.removeChildrenFromDOM(this.NextFoeLine2Element);
-
+        utils_.removeChildrenFromDOM(nextFoeElement_.Element);
+        isFirstFoe_ = false;
 
         if(!!u1_)
             u1_.release();
@@ -300,8 +303,13 @@ var CreateCharSelect = function(users)
             for(var i = 0; i < 4; ++i)
             {
                 var element = window.document.createElement("div");
-                element.className = "question-mark"
-                spriteLookup_.set(element,"images/misc/misc/question-0.png");
+                element.className = "question-mark-container"
+
+                var childElement = window.document.createElement("div");
+                childElement.className = "question-mark"
+                spriteLookup_.set(childElement,"images/misc/misc/question-0.png");
+                element.appendChild(childElement);
+
                 this.NextFoeLine1Element.appendChild(element);
             }
 
@@ -310,9 +318,14 @@ var CreateCharSelect = function(users)
             this.NextFoeLine2Element.className = "next-foe-line2";
             for(var i = 0; i < 4; ++i)
             {
-                element = window.document.createElement("div");
-                element.className = "question-mark"
-                spriteLookup_.set(element,"images/misc/misc/question-0.png");
+                var element = window.document.createElement("div");
+                element.className = "question-mark-container"
+
+                var childElement = window.document.createElement("div");
+                childElement.className = "question-mark"
+                spriteLookup_.set(childElement,"images/misc/misc/question-0.png");
+                element.appendChild(childElement);
+
                 this.NextFoeLine2Element.appendChild(element);
             }
 
@@ -345,12 +358,12 @@ var CreateCharSelect = function(users)
         }
 
 
-        if(!!u1_ && (u1_.isRequestingCharSelect() || u1_.isIn1PMode()))
+        if(!!u1_ && (u1_.isRequestingCharSelect() || u1_.isInStoryMode()))
         {
             this.enableUser1();
         }
 
-        if(!!u2_ && (u2_.isRequestingCharSelect() || u2_.isIn1PMode()))
+        if(!!u2_ && (u2_.isRequestingCharSelect() || u2_.isInStoryMode()))
         {
             this.enableUser2();
         }
@@ -374,40 +387,40 @@ var CreateCharSelect = function(users)
 
         if(hasP1 && hasP2)
         {
-            u1_.clear1PMode();
-            u2_.clear1PMode();
+            u1_.disableStoryMode();
+            u2_.disableStoryMode();
         }
         else if(hasP1)
         {
-            u1_.set1PMode();
+            u1_.enableStoryMode();
             if(!!u2_)
-                u2_.clear1PMode();
+                u2_.disableStoryMode();
         }
         else if(hasP2)
         {
-            u2_.set1PMode();
+            u2_.enableStoryMode();
             if(!!u1_)
-                u1_.clear1PMode();
+                u1_.disableStoryMode();
         }
     }
 
     CharSelect.prototype.addNewChallenger = function(user,slot)
     {
         determineTeams();
-        this.enableUser(user,slot);
+        this.enableUser(user,slot,slot == 1 ? teamB_ : teamA_);
     }
 
     CharSelect.prototype.enableUser1 = function()
     {
-        this.enableUser(users[teamA_[0]],1);
+        this.enableUser(users[teamA_[0]],1,teamB_);
     }
 
     CharSelect.prototype.enableUser2 = function()
     {
-        this.enableUser(users[teamB_[0]],2);
+        this.enableUser(users[teamB_[0]],2,teamA_);
     }
 
-    CharSelect.prototype.enableUser = function(user,slot)
+    CharSelect.prototype.enableUser = function(user,slot,otherTeam)
     {
         if(slot === undefined)
         {
@@ -433,7 +446,21 @@ var CreateCharSelect = function(users)
 
         var changeCharacterFn = function(thisValue) { return function(direction) { thisValue.tryChangeCharacter(this,direction); } };
         var getOtherCharacterFn = function(thisValue) { return function(direction) { return !!thisValue ? (thisValue.IsCharSelected ? thisValue.getName() : "") : ""; } };
-        var getOtherIsAlternateFn = function(thisValue) { return function(direction) { return !!thisValue ? (thisValue.IsCharSelected && thisValue.IsAlternateChar) : false; } };
+        var isCharOnOtherTeamFn = function(thisValue,otherTeam)
+        {
+            return function(direction)
+            {
+                return otherTeam.some(function(a) { return (users[a].isCharSelected() && (users[a].getName() == thisValue.getName())); });
+            }
+        };
+        var isAltCharOnOtherTeamFn = function(thisValue,otherTeam)
+        {
+            return function(direction)
+            {
+                return otherTeam.some(function(a) { return (users[a].isCharSelected() && (users[a].getName() == thisValue.getName())) && users[a].isAlternateChar(); });
+            }
+        };
+
         var chooseCharacterFn = function(thisValue)
         {
             return function(direction)
@@ -449,18 +476,20 @@ var CreateCharSelect = function(users)
         {
             user.PlayerNdx = slot == 1 ? 1 : 2;
             user.Direction = slot == 1 ? -1 : 1;
+            user.IsInCharSelect = true;
             user.init(slot == 1);
             user.changeCharacterFn = changeCharacterFn(this);
             user.chooseCharacterFn = chooseCharacterFn(this);
             user.getOtherCharacterFn = getOtherCharacterFn(otherUser);
-            user.getOtherIsAlternateFn = getOtherIsAlternateFn(otherUser);
+            user.isCharOnOtherTeamFn = isCharOnOtherTeamFn(user,otherTeam);
+            user.isAltCharOnOtherTeamFn = isAltCharOnOtherTeamFn(user,otherTeam);
 
             if(user.Selected === null)
                 user.Selected = (slot == 1) ? CHARACTERS.RYU : CHARACTERS.KEN;
 
             user.changeCharacterFn();
             user.showCharacter();
-            if(user.isIn1PMode())
+            if(user.isInStoryMode())
             {
                 user.setChar();
             }
@@ -481,52 +510,67 @@ var CreateCharSelect = function(users)
     CharSelect.prototype.handleCharsSelected = function(frame)
     {
         delayAfterSelect_ = frame + DELAY;
+        isFirstFoe_ = true;
+        teamA_ = this.getTeamA();
+        teamB_ = this.getTeamB();
+
+        if(teamA_.some(function(a) { return users[a].isInStoryMode(); }))
+        {
+            this.LastPicked = users[teamB_[0]].getName();
+            this.showNextFoe(users[teamB_[0]].Selected);
+        }
+        else if(teamB_.some(function(a) { return users[a].isInStoryMode(); }))
+        {
+            this.LastPicked = users[teamA_[0]].getName();
+            this.showNextFoe(users[teamA_[0]].Selected);
+        }
     }
 
     CharSelect.prototype.getTeamA = function()
     {
         if(teamA_.length == 0)
-            teamA_ = this.getAiTeam(1);
+            teamA_ = this.getAiTeam(teamB_);
         return teamA_;
     }
     CharSelect.prototype.getTeamB = function()
     {
         if(teamB_.length == 0)
-            teamB_ = this.getAiTeam(2);
+            teamB_ = this.getAiTeam(teamA_);
         return teamB_;
     }
 
-    CharSelect.prototype.getAiTeam = function(otherUserNdx, nbTeamMembers)
+    CharSelect.prototype.getAiTeam = function(otherTeam)
     {
-        var team = [];
-        nbTeamMembers = nbTeamMembers | (getRand(2) + 1);
+        //user = (otherUserNdx == 1) ? u1_ : u2_;
+        otherUser = users[otherTeam[0]]; //(otherUserNdx == 1) ? u2_ : u1_;
 
-        for(var i = 0; i < nbTeamMembers; ++i)
+        var opponents = otherUser.StoryMode.getOpponents();
+        var team = [];
+
+        for(var i = 0; i < opponents.length; ++i)
         {
             var playerIndex = 0;
-            for(var i = 2; i < users.length; ++i)
+            for(var j = 2; j < users.length; ++j)
             {
-                if(!users[i].IsCharSelected)
+                if(!users[j].IsCharSelected)
                 {
-                    playerIndex = i;
+                    playerIndex = j;
                     break;
                 }
             }
-            var teamMember = users[playerIndex]; //new game_.addUser(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
+            var teamMember = users[playerIndex];
 
-            otherUser = (otherUserNdx == 1) ? u2_ : u1_;
 
-            var char = selectableChars_[getRand(selectableChars_.length-1)];
+            var char = opponents[i];
 
-            var isAlternate = (otherUser.Selected == char) ? !otherUser.IsAlternate : (getRand(100) > 50);
+            //var isAlternate = (otherUser.Selected == char) ? !otherUser.IsAlternate : (getRand(100) > 50);
+            var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == char) && !users[a].isAlternateChar(); });
 
             if(char == CHARACTERS.SAGAT)
                 isAlternate = false;
 
             teamMember.setChar(char,isAlternate,true);
             team.push(playerIndex);
-
-            this.LastPicked = teamMember.getName();
         }
         return team;
     }
@@ -546,13 +590,125 @@ var CreateCharSelect = function(users)
     CharSelect.prototype.queueUser2MoveSound = function(value) { soundManager_.queueSound("audio/misc/p-select-move-1.zzz"); }
     CharSelect.prototype.queueUser2ChooseSound = function(value) { soundManager_.queueSound("audio/misc/p-select-choose-0.zzz"); }
 
-
-    Array.prototype.indexOf = Array.prototype.indexOf || function(value)
+    CharSelect.prototype.loadUserAssets = function(users)
     {
-        for(var i = 0, length = this.length; i < length; ++i)
-            if(this[i] == value)
-                return i;
-        return -1;
+        for(var i = 0; i < users.length; ++i)
+        {
+            var user = users[i];
+            if(!!user.getName())
+            {
+                var name = user.getName();
+                var folder = user.getFolder();
+                stuffLoader_.queue("script/player-" + name + ".js",RESOURCE_TYPES.SCRIPT);
+                stuffLoader_.queue("script/player-" + folder + "-spritedata.js",RESOURCE_TYPES.SCRIPT);
+            }
+        }
+    }
+
+    CharSelect.prototype.loadAssets = function()
+    {
+        stuffLoader_.queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
+    }
+
+
+    CharSelect.prototype.showNextFoe = function(who,boxIndex)
+    {
+        boxIndex = boxIndex || 0;
+        if(!!this.getUser1())
+            u1_.charSelectElementsVisible(false);
+        if(!!this.getUser2())
+            u2_.charSelectElementsVisible(false);
+        showNextFoe_ = true;
+        this.CharSelectElement.style.display = "none";
+        this.NextFoeLine1Element.style.display = "";
+        this.NextFoeLine2Element.style.display = "";
+
+        state_ = SCREEN_STATE.SHOW_NEXT_FOE;
+
+        var checkDefeatedOpponents = function(u)
+        {
+            for(var i = 0; i < CONSTANTS.MAX_STORY_MODE_LEVEL; ++i)
+            {
+                var src = u.StoryMode.getDefeatedOpponentsImgSrc(i);
+
+                if(i < 4)
+                    spriteLookup_.set(this.NextFoeLine1Element.children[i].firstChild,src[0]);
+                else
+                    spriteLookup_.set(this.NextFoeLine2Element.children[i-4].firstChild,src[0]);
+            }
+
+
+            nextFoeElement_.StartFrame = game_.getCurrentFrame();
+            nextFoeElement_.Element = boxIndex < 4 
+                                    ? this.NextFoeLine1Element.children[u.StoryMode.getLevel()].firstChild
+                                    : this.NextFoeLine2Element.children[u.StoryMode.getLevel()-4].firstChild;
+       }
+
+        if(!!this.getUser1() && !!u1_.isInStoryMode())
+        {
+            checkDefeatedOpponents.call(this,u1_);
+        }
+        else if(!!this.getUser2() && !!u2_.isInStoryMode())
+        {
+            checkDefeatedOpponents.call(this,u2_);
+        }
+
+
+        switch(who)
+        {
+            case CHARACTERS.KEN:    { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-ken-r.png"; break; }
+            case CHARACTERS.RYU:    { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-ryu-r.png"; break; }
+            case CHARACTERS.CHUNLI: { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-chunli-r.png"; break; }
+            case CHARACTERS.CHARLIE:{ animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-charlie-r.png"; break; }
+            case CHARACTERS.GUY:    { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-guy-r.png"; break; }
+            case CHARACTERS.BIRDIE: { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-birdie-r.png"; break; }
+            case CHARACTERS.SODOM:  { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-sodom-r.png"; break; }
+            case CHARACTERS.ADON:   { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-adon-r.png"; break; }
+            case CHARACTERS.ROSE:   { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-rose-r.png"; break; }
+            case CHARACTERS.SAGAT:  { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-sagat-r.png"; break; }
+            case CHARACTERS.MBISON: { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-mbison-r.png"; break; }
+            case CHARACTERS.AKUMA:  { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-akuma-r.png"; break; }
+            case CHARACTERS.DAN:    { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/char-dan-r.png"; break; }
+            default:                { animations_["show_next_foe"].BaseAnimation.Frames[5].RightSrc = "images/misc/misc/question-0.png"; break; }
+        }
+
+    }
+
+
+    CharSelect.prototype.frameMove = function(frame)
+    {
+        if(!this.IsDone)
+        {
+            if((!!users[0].IsRequestingCharSelect))
+                this.addNewChallenger(users[0],1);
+            if((!!users[1].IsRequestingCharSelect))
+                this.addNewChallenger(users[1],2);
+            this.check(frame);
+        }
+
+        if(state_ == SCREEN_STATE.SHOW_NEXT_FOE)
+        {
+            
+        }
+
+        if(!!this.getUser1())
+            u1_.frameMove(frame);
+        if(!!this.getUser2())
+            u2_.frameMove(frame);
+    }
+
+
+    CharSelect.prototype.render = function(frame)
+    {
+        if(state_ == SCREEN_STATE.SHOW_NEXT_FOE)
+        {
+            animations_["show_next_foe"].tryRender(frame, nextFoeElement_);
+        }
+
+        if(!!this.getUser1())
+            u1_.render(frame);
+        if(!!this.getUser2())
+            u2_.render(frame);
     }
 
     var LoadCharSelectSpriteData = function()
@@ -638,6 +794,7 @@ var CreateCharSelect = function(users)
 	    spriteLookup_.load("images/misc/misc/sodom-r-stance-4.png","images/misc/misc/stance-sprites.png", "-6775px", "-327px", "174px", "308px");
 	    spriteLookup_.load("images/misc/misc/sodom-r-stance-5.png","images/misc/misc/stance-sprites.png", "-6949px", "-332px", "178px", "303px");
 
+        /*
 	    spriteLookup_.load("images/misc/misc/next.png","images/misc/misc/char-misc-sprites.png", "0px", "-62px", "60px", "20px");
 	    spriteLookup_.load("images/misc/misc/p1-select-0.png","images/misc/misc/char-misc-sprites.png", "-60px", "0px", "64px", "82px");
 	    spriteLookup_.load("images/misc/misc/p1-select-1.png","images/misc/misc/char-misc-sprites.png", "-124px", "0px", "64px", "82px");
@@ -648,54 +805,7 @@ var CreateCharSelect = function(users)
 	    spriteLookup_.load("images/misc/misc/question-2.png","images/misc/misc/char-misc-sprites.png", "-106px", "-82px", "22px", "82px");
 	    spriteLookup_.load("images/misc/misc/question-3.png","images/misc/misc/char-misc-sprites.png", "-128px", "-82px", "22px", "82px");
 	    spriteLookup_.load("images/misc/misc/question-4.png","images/misc/misc/char-misc-sprites.png", "-150px", "-82px", "42px", "82px");
-
-    }
-
-    CharSelect.prototype.loadUserAssets = function(users)
-    {
-        for(var i = 0; i < users.length; ++i)
-        {
-            var user = users[i];
-            if(!!user.getName())
-            {
-                var name = user.getName();
-                var folder = user.getFolder();
-                stuffLoader_.queue("script/player-" + name + ".js",RESOURCE_TYPES.SCRIPT);
-                stuffLoader_.queue("script/player-" + folder + "-spritedata.js",RESOURCE_TYPES.SCRIPT);
-            }
-        }
-    }
-
-    CharSelect.prototype.loadAssets = function()
-    {
-        stuffLoader_.queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
-    }
-
-
-    CharSelect.prototype.frameMove = function(frame)
-    {
-        if(!this.IsDone)
-        {
-            if((!!users[0].IsRequestingCharSelect))
-                this.addNewChallenger(users[0],1);
-            if((!!users[1].IsRequestingCharSelect))
-                this.addNewChallenger(users[1],2);
-            this.check(frame);
-        }
-
-        if(!!this.getUser1())
-            u1_.frameMove(frame);
-        if(!!this.getUser2())
-            u2_.frameMove(frame);
-    }
-
-
-    CharSelect.prototype.render = function(frame)
-    {
-        if(!!this.getUser1())
-            u1_.render(frame);
-        if(!!this.getUser2())
-            u2_.render(frame);
+        */
     }
 
     return new CharSelect();

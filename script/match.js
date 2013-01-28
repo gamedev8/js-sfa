@@ -266,16 +266,16 @@ var CreateMatch = function(team1,team2,stage)
             //check to see if the match is over
             if(teamA_.getWins() == game_.getMaxWinsPerMatch())
             {
-                teamA_.set1PMode();
-                teamB_.clear1PMode();
-                this.forceQuit(QUIT_MATCH.GOTO1PMODE);
+                teamA_.advanceStoryMode();
+                teamB_.disableStoryMode();
+                this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
                 return;
             }
             else if(teamB_.getWins() == game_.getMaxWinsPerMatch())
             {
-                teamA_.clear1PMode();
-                teamB_.set1PMode();
-                this.forceQuit(QUIT_MATCH.GOTO1PMODE);
+                teamA_.disableStoryMode();
+                teamB_.advanceStoryMode();
+                this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
                 return;
             }
 
@@ -318,7 +318,7 @@ var CreateMatch = function(team1,team2,stage)
 
             this.setRoundOver(false);
             stage_.init();
-            game_.releaseText();
+            //game_.releaseText();
 
             this.getTeamA().getHealthbar().reset();
             this.getTeamB().getHealthbar().reset();
@@ -482,11 +482,11 @@ var CreateMatch = function(team1,team2,stage)
     {
         if(game_.isPlayingVHS())
             game_.stopPlaying();
-        if(!!isAIMatch_ && !game_.isPaused())
-        {
-            forceQuit_ = true;
-            return;
-        }
+        //if(!!isAIMatch_ && !game_.isPaused())
+        //{
+        //    forceQuit_ = true;
+        //    return;
+        //}
 
         for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
             this.getTeamA().getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);

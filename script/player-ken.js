@@ -627,7 +627,7 @@ Player.prototype.createKen = function(user)
         uppercut.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
         uppercut.Flags = ({Combat:COMBAT_FLAGS.NO_SLIDE_BACK});
         uppercut.EnergyToAdd = (5);
-        uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
+        uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.SHORYUKEN,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
         uppercut.IsSpecialMove = true;
         uppercut.IgnoreDepressedKeys = true;
 

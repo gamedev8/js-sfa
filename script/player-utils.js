@@ -510,11 +510,13 @@ var CreateBasicAnimation = function(name,frames,isLooping,direction,bgImg)
     BasicAnimation.prototype.addEmptyFrame = function(owner,nbFrames)
     {
         this.BaseAnimation.addEmptyFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
 
     BasicAnimation.prototype.addFrame = function(owner,image,nbFrames)
     {
         this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
+        return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
 
     BasicAnimation.prototype.hide = function()

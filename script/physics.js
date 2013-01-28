@@ -201,7 +201,7 @@
         else if(p2.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE) && !hasFlag(behaviorFlags,BEHAVIOR_FLAGS.THROW))
             return;
         /*frame can not hit more than once*/
-        if(p2.LastHitFrame[p1.Id] == p1.getHitFrameID(hitID))
+        if(!!p2.isHitFrameOk(p1.Id,p1.getHitFrameID(hitID)))
             return;
         /*if the attack is a throw, it can not grab more than one player*/
         if(isP1Grappling && !isP1GrapplingP2)

@@ -619,8 +619,15 @@ Player.prototype.isBlocking = function()
 {
     return this.Flags.Player.has(PLAYER_FLAGS.BLOCKING);
 }
-Player.prototype.didntHit = function(frame)
+Player.prototype.isHitFrameOk = function(playerId,hitFrameId)
 {
+    return !!this.LastHitFrame[playerId] 
+        && (this.LastHitFrame[playerId] == hitFrameId)
+    ;
+}
+Player.prototype.didntHit = function(frame,otherPlayerId)
+{
+    
 }
 /**/
 Player.prototype.stopGettingDizzy = function()

@@ -69,16 +69,21 @@ var CreateTeam = function(num)
     Team.prototype.getLoses = function() { return loses_; }
     Team.prototype.getDraws = function() { return draws_; }
 
-    Team.prototype.set1PMode = function()
+    Team.prototype.enableStoryMode = function()
     {
-        players_.forEach(function(player) { player.User.set1PMode(); });
+        players_.forEach(function(player) { player.User.enableStoryMode(); });
     }
 
-    Team.prototype.clear1PMode = function()
+    Team.prototype.advanceStoryMode = function()
+    {
+        players_.forEach(function(player) { player.User.advanceStoryMode(); });
+    }
+
+    Team.prototype.disableStoryMode = function()
     {
         players_.forEach(function(player)
             {
-                player.User.clear1PMode();
+                player.User.disableStoryMode();
                 player.User.reset();
             });
     }
@@ -197,10 +202,12 @@ var CreateTeam = function(num)
         if(!!comboText_)
         {
             comboText_.hideNow();
+            comboText_ = null;
         }
         if(!!nbHitsText_)
         {
             nbHitsText_.hideNow();
+            nbHitsText_ = null;
         }
         healthbar_.release();
         energybar_.release();
