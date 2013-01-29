@@ -215,7 +215,7 @@ var CreateInsertCoinScreen = function(u1,u2)
                 insertCoinElement_.style.display = "none";
                 creditsElement_.style.display = "";
                 creditsTextElement_.style.display = "";
-                nbCredits_ = (!!user1_ ? user1_.getNbCredits() : 0) + (!!user2_ ? user2_.getNbCredits() : 0)
+                nbCredits_ = Math.min(9, (!!user1_ ? user1_.getNbCredits() : 0) + (!!user2_ ? user2_.getNbCredits() : 0))
                 text1_.change(nbCredits_);
             }
             else

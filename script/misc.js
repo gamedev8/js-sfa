@@ -93,8 +93,11 @@ var runGameLoop_ = (function(thisValue)
         thisValue.runGameLoop(thisValue.getCurrentTime());
     }
 })(game_);
+
 var runCharSelectLoop_ = (function(thisValue) { return function() { thisValue.runCharSelectLoop(); } })(game_);
+
 var runInsertCoinScreenLoop_ = (function(thisValue) { return function() { thisValue.runInsertCoinScreenLoop(); } })(game_);
+
 var btn = function(button,state,min,max)
 {
     return {Button:button, State:state, MinNbFrames:min || undefined, MaxNbFrames:max || undefined};

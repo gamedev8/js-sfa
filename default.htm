@@ -68,7 +68,7 @@
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div id="pnlMenu" class="menu">
-        <input style="display:none" type="button" onclick="StartBattle()" value="go" />
+        <input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="go" />
     </div>
     <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
@@ -84,11 +84,13 @@
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "none";
             window.document.getElementById("pnlStatus").style.display = "";
+            window.document.getElementById("cmdGo").style.display = "none";
         }
         else
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "";
             window.document.getElementById("pnlStatus").style.display = "";
+            window.document.getElementById("cmdGo").style.display = "";
         }
     </script>
 

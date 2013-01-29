@@ -226,18 +226,37 @@ User.prototype.useCredit  = function()
     this.IsInCharSelect = true;
     return true;
 }
+
 User.prototype.isRequestingCharSelect = function()
 {
     return this.IsRequestingCharSelect;
 }
 
+User.prototype.getChar = function(char, isAlternate, isAI)
+{
+    switch(char)
+    {
+        case CHARACTERS.RANDOM1:
+        case CHARACTERS.RANDOM2:
+        {
+            switch(this.CurrentStance)
+            {
+                case "ryu": { return CHARACTERS.RYU; }
+                case "ken": { return CHARACTERS.KEN; }
+                case "sagat": { return CHARACTERS.SAGAT; }
+                case "mbison": { return CHARACTERS.MBISON; }
+            };
+        }
+        default: return char;
+    }
+}
 
 User.prototype.setChar = function(char, isAlternate, isAI)
 {
     var name = "";
     if(this.isInStoryMode())
     {
-        char = this.Selected;
+        char = this.getChar(this.Selected);
         isAlternate = this.IsAlternate;
         isAI = this.IsAI;
     }
@@ -283,6 +302,8 @@ User.prototype.charSelectElementsVisible = function(isVisible)
         var state = isVisible ? "" : "none";
         this.SelectIcon.Element.style.display = state;
         this.ShowSelectIcon = isVisible;
+        if(state == "none")
+            this.RandomCharFace.Element.style.display = "none";
     }
 }
 
