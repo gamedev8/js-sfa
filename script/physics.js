@@ -340,7 +340,7 @@
                 if(p2.Direction > 0)
                     hitX = STAGE.MAX_STAGEX - hitX;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.HitStop,projectile.MaxHits,projectile.Params))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.getHitStop(),projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);
@@ -365,7 +365,7 @@
                 /*Calculate a general hit poisition.*/
                 var hitX = ((x1 - x0) / 2) + x0;
                 var hitY = ((y1 - y0) / 2) + y0;
-                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.HitStop,projectile.MaxHits,projectile.Params))
+                if(p2.setRegisteredHit(projectile.AttackState,projectile.HitState,projectile.FlagsToSend,frame,projectile.BaseDamage,projectile.EnergyToAdd,false,true,hitX,hitY,projectile.Direction,p1.Id,"",projectile.Id,projectile.OverrideFlags,projectile.Owner,projectile.Fx,projectile.Fy,0,0,projectile.HitSound,projectile.BlockSound,projectile.getHitStop(),projectile.MaxHits,projectile.Params))
                 {
                     p1.changeEnergy(projectile.EnergyToAdd);
                     projectile.hitPlayer(frame);

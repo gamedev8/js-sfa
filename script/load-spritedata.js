@@ -51,11 +51,21 @@
 	spriteLookup_.load("images/misc/misc/sagat-shadow.png","images/misc/misc/char-sprites.png", "-1810px", "-126px", "168px", "38px");
 	spriteLookup_.load("images/misc/misc/sodom-shadow.png","images/misc/misc/char-sprites.png", "-1978px", "-126px", "168px", "38px");
     /*in-game shadows*/
-	spriteLookup_.load("images/misc/misc/shadow.png","|images/misc/misc/shadow-sprites.png", "0px", "0px", "136px", "38px");
-	spriteLookup_.load("images/misc/misc/shadow-136.png","|images/misc/misc/shadow-sprites.png", "-136px", "0px", "136px", "38px");
-	spriteLookup_.load("images/misc/misc/shadow-168.png","|images/misc/misc/shadow-sprites.png", "0px", "-38px", "168px", "38px");
-	spriteLookup_.load("images/misc/misc/shadow-200.png","|images/misc/misc/shadow-sprites.png", "-168px", "-38px", "200px", "38px");
-	spriteLookup_.load("images/misc/misc/shadow-264.png","|images/misc/misc/shadow-sprites.png", "-368px", "-38px", "264px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow.png","images/misc/misc/shadow-sprites.png", "0px", "0px", "136px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-136.png","images/misc/misc/shadow-sprites.png", "-136px", "0px", "136px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-140.png","images/misc/misc/shadow-sprites.png", "-272px", "0px", "140px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-144.png","images/misc/misc/shadow-sprites.png", "-412px", "0px", "144px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-148.png","images/misc/misc/shadow-sprites.png", "-556px", "0px", "148px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-152.png","images/misc/misc/shadow-sprites.png", "-704px", "0px", "152px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-156.png","images/misc/misc/shadow-sprites.png", "-856px", "0px", "156px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-160.png","images/misc/misc/shadow-sprites.png", "0px", "-57px", "160px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-164.png","images/misc/misc/shadow-sprites.png", "-160px", "-57px", "164px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-168.png","images/misc/misc/shadow-sprites.png", "-324px", "-57px", "168px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-200.png","images/misc/misc/shadow-sprites.png", "-492px", "-57px", "200px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-232.png","images/misc/misc/shadow-sprites.png", "-692px", "-56px", "232px", "39px");
+	spriteLookup_.load("images/misc/misc/shadow-264.png","images/misc/misc/shadow-sprites.png", "-924px", "-57px", "264px", "38px");
+	spriteLookup_.load("images/misc/misc/shadow-296.png","images/misc/misc/shadow-sprites.png", "-1188px", "-56px", "296px", "39px");
+	spriteLookup_.load("images/misc/misc/shadow-304.png","images/misc/misc/shadow-sprites.png", "-1484px", "-38px", "304px", "57px");
     /*dirt*/
 	spriteLookup_.load("images/misc/misc/r-big-dirt-0.png","images/misc/misc/dirt-sprites.png", "0px", "-7px", "58px", "75px");
 	spriteLookup_.load("images/misc/misc/r-big-dirt-1.png","images/misc/misc/dirt-sprites.png", "-58px", "-4px", "62px", "78px");

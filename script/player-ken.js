@@ -444,7 +444,7 @@ Player.prototype.createKen = function(user)
     p1.ButtonSequence.push([{Button:BUTTONS.LIGHT_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     p1.ButtonCount = 1;
     p1.Flags = {Pose:POSE_FLAGS.STANDING};
-    p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
+    p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.HPROJECTILE);
     p1.addFrame(player,0,"",folder + "/x-p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE });
     p1.addFrame(player,0,"",folder + "/x-p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.LOW,x: 110,y: 193 },{ state: HIT_FLAGS.HIGH,x: 194,y: 193}],ATTACK_FLAGS.LIGHT,1,0,10);
     p1.endBlock();
@@ -498,7 +498,7 @@ Player.prototype.createKen = function(user)
     p3.ButtonCount = 1;
     p3.Flags = {Pose:POSE_FLAGS.STANDING};
     p3.setHardAttack();
-    p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
+    p3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.HPROJECTILE);
     p3.addFrame(player,0,"",folder + "/x-p2-1.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE});
     p3.addFrame(player,0,"",folder + "/x-p3-1.png",2);
     p3.addFrame(player,0,"",folder + "/x-p3-2.png",4,{SwingSound:SWINGSOUND.HP,Combat:COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.HP,BlockSound:BLOCKSOUND.HP},MISC_FLAGS.NONE,0,0,0,10,null,0,0,ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.LOW,x:130,y:181},{state:HIT_FLAGS.HIGH,x:215,y:181}],ATTACK_FLAGS.HARD,1,1,20);
@@ -510,7 +510,7 @@ Player.prototype.createKen = function(user)
     k1.ButtonSequence.push([{Button:BUTTONS.LIGHT_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     k1.ButtonCount = 1;
     k1.Flags = {Pose:POSE_FLAGS.STANDING};
-    k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
+    k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING);
     k1.addFrame(player,0,"",folder + "/x-k1-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
     k1.addFrame(player,0,"",folder + "/x-k1-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,60);
     k1.addFrame(player,0,"",folder + "/x-k1-2.png",7,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,10,null,80,0,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.LOW,x: 200,y: 135 },{ state: HIT_FLAGS.LOW,x: 250,y: 85}],ATTACK_FLAGS.LIGHT,1,1,10);
@@ -540,7 +540,7 @@ Player.prototype.createKen = function(user)
     f_k2.ButtonCount = 2;
     f_k2.Flags = {Pose:POSE_FLAGS.STANDING};
     f_k2.setMediumAttack();
-    f_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
+    f_k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING);
     f_k2.addFrame(player,0,"",folder + "/x-k2-2.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
     f_k2.addFrame(player,0,"",folder + "/x-k2-3.png",3,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,20);
     f_k2.addFrame(player,0,"",folder + "/x-fk2-4.png",3);
@@ -557,7 +557,7 @@ Player.prototype.createKen = function(user)
     k3.ButtonCount = 1;
     k3.Flags = {Pose:POSE_FLAGS.STANDING};
     k3.setHardAttack();
-    k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING,OVERRIDE_FLAGS.AIRBORNE);
+    k3.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.STANDING);
     k3.addFrame(player,0,"",folder + "/x-k2-1.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,0,10);
     k3.addFrame(player,0,"",folder + "/x-k2-2.png",1,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
     k3.addFrame(player,0,"",folder + "/x-k2-3.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,0,30);

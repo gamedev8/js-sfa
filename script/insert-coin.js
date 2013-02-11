@@ -33,8 +33,6 @@ var CreateInsertCoinScreen = function(u1,u2)
         stuffLoader_.queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
         stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
 
-        /*stuffLoader_.queue("script/img/misc.png.js",RESOURCE_TYPES.SCRIPT);*/
-
         stuffLoader_.queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.queue("images/misc/misc/announcer-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.queue("images/misc/font1/insert.png",RESOURCE_TYPES.IMAGE);
@@ -63,6 +61,16 @@ var CreateInsertCoinScreen = function(u1,u2)
         stuffLoader_.queue("images/misc/misc/player-select-bg.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.queue("images/misc/misc/stance-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.queue("images/misc/misc/char-sprites.png",RESOURCE_TYPES.IMAGE);
+
+        //preload characters
+        Player.prototype.loadAssets("ryu","ryu",true);
+        Player.prototype.loadAssets("ryu","ryu2",true);
+        Player.prototype.loadAssets("ken","ken",true);
+        Player.prototype.loadAssets("ken","ken2",true);
+        Player.prototype.loadAssets("sagat","sagat",true);
+        //Player.prototype.loadAssets("sagat","sagat2",true);
+        Player.prototype.loadAssets("mbison","mbison",true);
+        Player.prototype.loadAssets("mbison","mbison2",true);
 
 		spriteLookup_.load("images/misc/misc/p2-select-adon.png","images/misc/misc/head-sprites.png", "0px", "0px", "256px", "288px");
 		spriteLookup_.load("images/misc/misc/p2-select-akuma.png","images/misc/misc/head-sprites.png", "-256px", "0px", "256px", "288px");

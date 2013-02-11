@@ -9,6 +9,7 @@ var CreateSoundManager = function()
     var extension_ = ".ogg";
     var id_ = 0;
     var sfxManager_ = CreateWebAudioManager();
+    var isEnabled_ = BrowserDetect.browser != "Explorer";
 
     var GetPath_ = function(path)
     {
@@ -35,11 +36,13 @@ var CreateSoundManager = function()
     }
 
     SoundManager.prototype.getExtension = function() { return extension_; }
+    SoundManager.prototype.enable = function() { isDisabled_ = false; }
+    SoundManager.prototype.disable = function() { isDisabled_ = true; }
 
     /*creates a DOM audio element and loads it with base64 data*/
     SoundManager.prototype.loadBase64 = function(path,nbChannels,defaultVolume,base64Data,loop)
     {
-        if(!!__debugMode) return;
+        if(!!__debugMode || !isEnabled_) return;
 
         //send all non looping audio to WebAudio
         if(!!sfxManager_ && !loop)
@@ -81,7 +84,8 @@ var CreateSoundManager = function()
     /*creates a DOM audio element and loads it*/
     SoundManager.prototype.load = function(path,nbChannels,defaultVolume)
     {
-        if(!!__debugMode) return;
+        if(!!__debugMode || !isEnabled_) return;
+
         if(!items_[path])
         {
             nbChannels = nbChannels || 1;
@@ -129,6 +133,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.setVolume = function(path, value)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             for(var i = 0; i < items_[path].Channels; ++i)
@@ -139,6 +144,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.getVolume = function(path)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             return GetCurrentElement_(path).volume;
@@ -149,6 +155,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.isPlaying = function(path)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             return !GetCurrentElement_(path).paused;
@@ -160,6 +167,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.restart = function(path,loops)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
@@ -172,6 +180,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.play = function(path,loops)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             /*go to the next channel*/
@@ -197,8 +206,9 @@ var CreateSoundManager = function()
     }
 
     /*sets the volume and plays the sound*/
-    SoundManager.prototype.playWithVolume = function(obj,loops)
+    SoundManager.prototype.playSFX = function(obj,loops)
     {
+        if(!isEnabled_) return;
         var path = obj.Value;
         if(!!items_[path])
         {
@@ -233,6 +243,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.replay = function(path)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
@@ -247,6 +258,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.pause = function(path)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
@@ -267,6 +279,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.resume = function(path)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
@@ -277,6 +290,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.playOrResume = function(path,loops)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             var el = GetCurrentElement_(path);
@@ -299,6 +313,7 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.queueSound = function(value,volume,delay)
     {
+        if(!isEnabled_) return;
         sounds_[sounds_.length] = {Value:value, Volume:volume||1, Frame:game_.getCurrentFrame() + (delay||0)};
     }
 
@@ -311,10 +326,11 @@ var CreateSoundManager = function()
     /**/
     SoundManager.prototype.render = function(frame)
     {
+        if(!isEnabled_) return;
         for(var i in sounds_)
         {
             if(frame >= sounds_[i].Frame)
-                this.playWithVolume(sounds_.splice(i,1)[0]);
+                this.playSFX(sounds_.splice(i,1)[0]);
         }
     }
 

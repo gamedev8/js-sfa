@@ -10,6 +10,8 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.StandingClip = {Top:0,Bottom:0,Front:0,Back:0};
     this.ShadowX = "";
     this.LastShadowX = "";
+    this.ShadowY = "";
+    this.LastShadowY = "";
     this.DefaultShadowOffset = 0;
     this.Mass = 1;
     this.JumpSpeed = 1;
@@ -153,12 +155,25 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
         HitReact: {}
     };
 
-    this.loadAssets();
+    //this.loadAssets();
     this.createElement();
     this.reset();
     this.addGenericAnimations();
     this.setImgRect();
 }
+
+Player.prototype.loadAssets = function(name,folder,loadProjectiles)
+{
+    stuffLoader_.queue((this.Name || name).toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
+    //stuffLoader_.queue("script/" + (this.Name || name).toLowerCase() + "-ai.js",RESOURCE_TYPES.SCRIPT);
+    stuffLoader_.queue("images/misc/" + (this.Folder || name).toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || name).toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || name).toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
+    if(!!loadProjectiles || this.Projectiles.length > 0)
+        stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
+
+}
+
 Player.prototype.sortAnimations = function()
 {
     this.Throws.sort(function(a,b) {
@@ -234,6 +249,7 @@ Player.prototype.getName = function() { return this.Name; }
 
 Player.prototype.enableAI = function(createAiFn)
 {
+    this.IsAI = true;
     this.Ai.enableAI(this, createAiFn || (window["Create" + this.Name[0].toUpperCase() + this.Name.substring(1) + "AI"]));
     if(!!this.getMatch())
         this.getMatch().checkAIMatch();
@@ -835,6 +851,8 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                     this.forceNextFrame(frame);
                     //must clear frame because the current frame has a HOLD_FRAME flag
                     this.setCurrentFrame(null,frame);
+                    this.CurrentAnimation.StartFrame -= 1;
+                    return this.frameMove(frame,stageX,stageY);
                 }
             }
             //Does the move require the key to be held?

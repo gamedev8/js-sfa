@@ -154,8 +154,13 @@ var CreateStuffLoader = function()
             {
                 callback_.call(context_ || window);
             }
+            //stuff_ = {};
 
             //callback_ = null;
+        }
+        if(!!stuff_[index])
+        {
+            stuff_[index].State = LOADING_STATES.DONE;
         }
         Report_();
     }
@@ -184,21 +189,21 @@ var CreateStuffLoader = function()
     var DownloadBase64Image_ = function(index)
     {
         if(!utils_.addBase64Image(stuff_[index].Src, CreateOnDoneCallback_(index)))
-            OnDone_();
+            OnDone_(null,index);
     }
 
 
     var DownloadBase64Audio_ = function(index)
     {
         if(!utils_.addBase64Audio(stuff_[index].Src, CreateOnDoneCallback_(index)))
-            OnDone_();
+            OnDone_(null,index);
     }
 
 
     var DownloadScript_ = function(index)
     {
         if(!utils_.addScript(stuff_[index].Src, CreateOnDoneCallback_(index)))
-            OnDone_();
+            OnDone_(null,index);
     }
 
     /***********************/
@@ -219,24 +224,31 @@ var CreateStuffLoader = function()
     {
         for(var i in stuff_)
             ++nbElements_;
-
+        
         if(!nbElements_)
-            callback_.call(context_ || window);
+        {
+            callback.call(context || window);
+            return;
+        }
 
         callback_ = callback;
         context_ = context;
         reportProgressCallback_ = reportProgressCallback;
 
+
         Report_();
         for(var i in stuff_)
         {
-            switch (stuff_[i].Type)
+            if(stuff_[i].State == LOADING_STATES.WAITING)
             {
-                case RESOURCE_TYPES.IMAGE: { DownloadImage_(i); break; }
-                case RESOURCE_TYPES.BASE64AUDIO: { DownloadBase64Audio_(i); break; }
-                case RESOURCE_TYPES.BASE64IMAGE: { DownloadBase64Image_(i); break; }
-                case RESOURCE_TYPES.SCRIPT: { DownloadScript_(i); break; }
-            };
+                switch (stuff_[i].Type)
+                {
+                    case RESOURCE_TYPES.IMAGE: { DownloadImage_(i); break; }
+                    case RESOURCE_TYPES.BASE64AUDIO: { DownloadBase64Audio_(i); break; }
+                    case RESOURCE_TYPES.BASE64IMAGE: { DownloadBase64Image_(i); break; }
+                    case RESOURCE_TYPES.SCRIPT: { DownloadScript_(i); break; }
+                };
+            }
         }
         stuff_ = {};
     }

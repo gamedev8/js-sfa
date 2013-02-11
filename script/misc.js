@@ -71,15 +71,15 @@ function AutoApplyFlip(element,applied)
 }
 
 function Alert(text)
-{   
-    if(!!console && !!console.log)
-        console.log(text);
+{
+    //if(!!console && !!console.log)
+    //    console.log(text);
     
 }
 function AlertError(text)
 {
-    if(!!console && !!console.error)
-        console.error(text);
+    //if(!!console && !!console.error)
+    //    console.error(text);
 }
 
 var announcer_ = CreateAnnouncer();
@@ -137,8 +137,8 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    user1_.setChar(CHARACTERS.SAGAT);
-    user2_.setChar(CHARACTERS.RYU);
+    user1_.setChar(CHARACTERS.MBISON);
+    user2_.setChar(CHARACTERS.KEN);
 
     game_.startMatch(false,[0],[1], stages_["ryu"]);
 }

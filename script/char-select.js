@@ -561,15 +561,15 @@ var CreateCharSelect = function(users)
             var teamMember = users[playerIndex];
 
 
-            var char = opponents[i];
+            var ch = opponents[i];
 
-            //var isAlternate = (otherUser.Selected == char) ? !otherUser.IsAlternate : (getRand(100) > 50);
-            var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == char) && !users[a].isAlternateChar(); });
+            //var isAlternate = (otherUser.Selected == ch) ? !otherUser.IsAlternate : (getRand(100) > 50);
+            var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
 
-            if(char == CHARACTERS.SAGAT)
+            if(ch == CHARACTERS.SAGAT)
                 isAlternate = false;
 
-            teamMember.setChar(char,isAlternate,true);
+            teamMember.setChar(ch,isAlternate,true);
             team.push(playerIndex);
         }
         return team;
@@ -584,7 +584,6 @@ var CreateCharSelect = function(users)
         }
     }
 
-    /**/
     CharSelect.prototype.queueUser1MoveSound = function(value) { soundManager_.queueSound("audio/misc/p-select-move-0.zzz"); }
     CharSelect.prototype.queueUser1ChooseSound = function(value) { soundManager_.queueSound("audio/misc/p-select-choose-0.zzz"); }
     CharSelect.prototype.queueUser2MoveSound = function(value) { soundManager_.queueSound("audio/misc/p-select-move-1.zzz"); }
@@ -592,6 +591,7 @@ var CreateCharSelect = function(users)
 
     CharSelect.prototype.loadUserAssets = function(users)
     {
+        /*
         for(var i = 0; i < users.length; ++i)
         {
             var user = users[i];
@@ -603,6 +603,7 @@ var CreateCharSelect = function(users)
                 stuffLoader_.queue("script/player-" + folder + "-spritedata.js",RESOURCE_TYPES.SCRIPT);
             }
         }
+        */
     }
 
     CharSelect.prototype.loadAssets = function()

@@ -24,9 +24,9 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
     }
 
     /*Adds a frame to the move*/
-    BaseAnimation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
+    BaseAnimation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
     {
-        this.addFrame(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
+        this.addFrame(player,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
         var currentFrame = this.Frames[this.Frames.length-1];
         currentFrame.SoundFilename = soundFilename;
         currentFrame.SoundVolume = volume;
@@ -40,7 +40,7 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
     }
 
     /*Adds a frame to the move*/
-    BaseAnimation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
+    BaseAnimation.prototype.addFrame = function(player,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
     {
         if(!!this.Frames.length > 0)
             this.lastFrameOffset += this.Frames[this.Frames.length - 1].Frames;
@@ -52,7 +52,7 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
         if(shadowImage == "" && !!player)
             shadowImage = player.DefaultShadowImageSrc;
         ++player.NbFrames;
-        this.Frames[this.Frames.length] = CreateFrame(this.Frames.length,player.getNextFrameID(),shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
+        this.Frames[this.Frames.length] = CreateFrame(this.Frames.length,player.getNextFrameID(),shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
         this.NbFrames += this.Frames[this.Frames.length - 1].Frames;
 
         var currentFrame = this.Frames[this.Frames.length-1];
@@ -103,14 +103,14 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
     }
 
     /*Adds a frame multiple times, and adds the sound effect on the first frame only.*/
-    BaseAnimation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
+    BaseAnimation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
     {
         var imageID = 0;
         for(var i = 0; i < nbFrames; ++i)
         {
             if(i == 0)
             {
-                this.addFrame(player,shadowOffsetX,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
+                this.addFrame(player,shadowOffset,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
                 var currentFrame = this.Frames[this.Frames.length-1];
                 currentFrame.SoundFilename = soundFilename;
                 currentFrame.SoundVolume = volume;
@@ -119,7 +119,7 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
             }
             else
             {
-                this.addFrame(player,shadowOffsetX,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,0,0);
+                this.addFrame(player,shadowOffset,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,0,0);
                 this.Frames[this.Frames.length-1].ImageID = imageID;
             }
         }
@@ -128,14 +128,14 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
 
 
     /*Adds a frame multiple times*/
-    BaseAnimation.prototype.addRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
+    BaseAnimation.prototype.addRepeatingFrame = function(player,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
     {
         for(var i = 0; i < nbFrames; ++i)
         {
             if(i == 0)
-                this.addFrame(player,shadowOffsetX,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
+                this.addFrame(player,shadowOffset,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
             else
-                this.addFrame(player,shadowOffsetX,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,0,0);
+                this.addFrame(player,shadowOffset,shadowImage,image,1,flagsToSet,flagsToClear,x,y,priority,baseDamage,null,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,0,0);
         }
     }
     /*Returns the frame that should be run at a given time*/

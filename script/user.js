@@ -232,9 +232,9 @@ User.prototype.isRequestingCharSelect = function()
     return this.IsRequestingCharSelect;
 }
 
-User.prototype.getChar = function(char, isAlternate, isAI)
+User.prototype.getChar = function(ch, isAlternate, isAI)
 {
-    switch(char)
+    switch(ch)
     {
         case CHARACTERS.RANDOM1:
         case CHARACTERS.RANDOM2:
@@ -247,21 +247,21 @@ User.prototype.getChar = function(char, isAlternate, isAI)
                 case "mbison": { return CHARACTERS.MBISON; }
             };
         }
-        default: return char;
+        default: return ch;
     }
 }
 
-User.prototype.setChar = function(char, isAlternate, isAI)
+User.prototype.setChar = function(ch, isAlternate, isAI)
 {
     var name = "";
     if(this.isInStoryMode())
     {
-        char = this.getChar(this.Selected);
+        ch = this.getChar(this.Selected);
         isAlternate = this.IsAlternate;
         isAI = this.IsAI;
     }
 
-    switch(char)
+    switch(ch)
     {
         case CHARACTERS.KEN: { name = "ken"; break;}
         case CHARACTERS.RYU: { name = "ryu"; break;}
@@ -281,7 +281,7 @@ User.prototype.setChar = function(char, isAlternate, isAI)
         }
     }
     this.IsAlternate = isAlternate;
-    this.Selected = char;
+    this.Selected = ch;
     this.CurrentStance = name + "_selected";
     this.Folder = name + (!!isAlternate ? "2" : "");
     this.IsAI = (isAI === undefined) ? this.IsAI : isAI;
@@ -415,6 +415,10 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     }
 
     if(game_.gameLoopState() != GAME_STATES.CHAR_SELECT)
+    {
+        return;
+    }
+    else if(!this.IsInCharSelect)
     {
         return;
     }

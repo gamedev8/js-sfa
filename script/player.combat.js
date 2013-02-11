@@ -543,7 +543,34 @@ Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,da
     if(!!isGrapple)
         this.setPendingGrapple(true);
 
-    var details = new ActionDetails(this.CurrentAnimation.Animation.OverrideFlags,this,who,isProjectile,isGrapple,this.CurrentAnimation.StartFrame,frame,otherPlayer);
+    var hit = new RegisteredHit();
+    hit.AttackFlags = attackFlags;
+    hit.HitState = hitState;
+    hit.Flags = flags;
+    hit.Frame = frame - 2;
+    hit.StartFrame = this.CurrentAnimation.StartFrame;
+    hit.Damage = damage;
+    hit.EnergyToAdd = energyToAdd;
+    hit.IsProjectile = isProjectile;
+    hit.HitX = hitX;
+    hit.HitY = hitY;
+    hit.Who = who;
+    hit.AttackDirection = attackDirection;
+    hit.HitID = hitID;
+    hit.AttackID = attackID;
+    hit.MoveOverrideFlags = moveOverrideFlags;
+    hit.AttackForceX = fx || 0;
+    hit.AttackForceY = fy || 0;
+    hit.BehaviorFlags = behaviorFlags;
+    hit.InvokedAnimationName = invokedAnimationName;
+    hit.HitSound = hitSound || 0;
+    hit.BlockSound = blockSound || 0;
+    hit.OtherPlayer = otherPlayer;
+    hit.NbFreeze = nbFreeze;
+    hit.MaxHits = maxHits;
+    hit.OtherParams = otherParams;
+
+    var details = new ActionDetails(hit,this.CurrentAnimation.Animation.OverrideFlags,this,who,isProjectile,isGrapple,this.CurrentAnimation.StartFrame,frame,otherPlayer);
     if(hasFlag(attackFlags,ATTACK_FLAGS.NO_DELAY))
     {
         details.NoFrameDelay = true;
@@ -572,33 +599,33 @@ Player.prototype.checkPendingHit = function()
     }
 }
 
-Player.prototype.registerHit = function(frame)
+Player.prototype.registerHit = function(frame, registeredHit)
 {
-    this.takeHit(this.RegisteredHit.AttackFlags
-                ,this.RegisteredHit.HitState
-                ,this.RegisteredHit.Flags
-                ,this.RegisteredHit.StartFrame
+    this.takeHit(registeredHit.AttackFlags
+                ,registeredHit.HitState
+                ,registeredHit.Flags
+                ,registeredHit.StartFrame
                 ,frame
-                ,this.RegisteredHit.Damage
-                ,this.RegisteredHit.EnergyToAdd
-                ,this.RegisteredHit.IsProjectile
-                ,this.RegisteredHit.HitX
-                ,this.RegisteredHit.HitY
-                ,this.RegisteredHit.AttackDirection
-                ,this.RegisteredHit.Who
-                ,this.RegisteredHit.HitID
-                ,this.RegisteredHit.AttackID
-                ,this.RegisteredHit.MoveOverrideFlags
-                ,this.RegisteredHit.AttackForceX
-                ,this.RegisteredHit.AttackForceY
-                ,this.RegisteredHit.OtherPlayer
-                ,this.RegisteredHit.BehaviorFlags
-                ,this.RegisteredHit.InvokedAnimationName
-                ,this.RegisteredHit.HitSound
-                ,this.RegisteredHit.BlockSound
-                ,this.RegisteredHit.NbFreeze
-                ,this.RegisteredHit.MaxHits
-                ,this.RegisteredHit.OtherParams
+                ,registeredHit.Damage
+                ,registeredHit.EnergyToAdd
+                ,registeredHit.IsProjectile
+                ,registeredHit.HitX
+                ,registeredHit.HitY
+                ,registeredHit.AttackDirection
+                ,registeredHit.Who
+                ,registeredHit.HitID
+                ,registeredHit.AttackID
+                ,registeredHit.MoveOverrideFlags
+                ,registeredHit.AttackForceX
+                ,registeredHit.AttackForceY
+                ,registeredHit.OtherPlayer
+                ,registeredHit.BehaviorFlags
+                ,registeredHit.InvokedAnimationName
+                ,registeredHit.HitSound
+                ,registeredHit.BlockSound
+                ,registeredHit.NbFreeze
+                ,registeredHit.MaxHits
+                ,registeredHit.OtherParams
                 );
 
 }

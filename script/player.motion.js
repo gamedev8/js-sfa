@@ -153,7 +153,7 @@ Player.prototype.setX = function(value)
     this.X = value;
     this.moveCircle();
 }
-Player.prototype.show = function() { this.setDisplay(true); }
+Player.prototype.show = function() { this.setDisplay(true); if(!!this.IsAI) {this.enableAI();} }
 Player.prototype.hide = function() { this.setDisplay(false); }
 Player.prototype.setDisplay = function(isVisible)
 {

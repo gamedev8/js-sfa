@@ -26,7 +26,7 @@ var CreateGame = function()
     var keyboardState_ = {};
     var buttonState_ = {};
     var lastTime_ = 0;
-    var speed_ = CONSTANTS.NORMAL_SPEED;
+    var speed_ = BrowserDetect.browser == "Chrome" ? CONSTANTS.FAST_SPEED : CONSTANTS.NORMAL_SPEED;
     var targetFPS_ = CONSTANTS.TARGET_FPS;
     var text_ = null;
     var state_ = 0;
@@ -53,7 +53,7 @@ var CreateGame = function()
         lastTime_ = this.getCurrentTime();
         this.initGame();
         match_ = null;
-        this.UsingGamepads = !!Gamepad.supported;
+        this.UsingGamepads = !!window.Gamepad && !!Gamepad.supported;
         this.VCR = vcr_;
     }
 
@@ -294,9 +294,9 @@ var CreateGame = function()
         }
 
         match_ = CreateMatch(a,b,stage);
+        managed_ = match_;
         if(vcr_.isPlaying())
             match_.setRound(vcr_.getData().Round);
-        managed_ = match_;
         announcer_.setMatch(match_);
         this.showElements();
 
@@ -399,7 +399,7 @@ var CreateGame = function()
         this.stop();
         this.releaseText();
         announcer_.release();
-        speed_ = CONSTANTS.NORMAL_SPEED;
+        this.resetSpeed();
         if(!!charSelect_)
             charSelect_.release();
         if(!!match_)
@@ -407,13 +407,17 @@ var CreateGame = function()
         if(!!insertCoinScreen_)
             insertCoinScreen_.release();
     }
-    /*Increases the game loop speed*/
+    Game.prototype.resetSpeed = function()
+    {
+        speed_ = BrowserDetect.browser == "Chrome" ? CONSTANTS.FAST_SPEED : CONSTANTS.NORMAL_SPEED;
+    }
+    //Increases the game loop speed
     Game.prototype.speedUp = function()
     {
         if(speed_ > CONSTANTS.MIN_DELAY)
             speed_ -= CONSTANTS.SPEED_INCREMENT;
     }
-    /*Decreases the game loop speed*/
+    //Decreases the game loop speed
     Game.prototype.slowDown = function()
     {
         if(speed_ < CONSTANTS.MAX_DELAY)
@@ -689,7 +693,6 @@ var CreateGame = function()
         }
         else if(!match_.isMatchOver(frame_))
         {
-            //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             if(gameLoopState_ != GAME_STATES.MATCH)
                 return;
 
@@ -701,6 +704,7 @@ var CreateGame = function()
         }
         else
         {
+            window.clearTimeout(nextTimeout_);
             match_.handleMatchOver(frame_);
         }
     }
