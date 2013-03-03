@@ -101,15 +101,15 @@ Player.prototype.setImgRect = function()
 }
 Player.prototype.isFacingProjectile = function(projectile)
 {
-    if(this.Direction == -1  && projectile.Direction ==  1 && this.RightOffset < projectile.getLeftX()) return true;
-    if(this.Direction ==  1  && projectile.Direction == -1 && this.LeftOffset  > projectile.getRightX()) return true;
+    if(this.Direction == -1  && projectile.Direction ==  1 && this.LeftOffset < projectile.getRightX()) return true;
+    if(this.Direction ==  1  && projectile.Direction == -1 && this.RightOffset  > projectile.getLeftX()) return true;
 
     return false;
 }
 Player.prototype.isFacingPlayer = function(otherPlayer)
 {
-    if(this.Direction == -1  && otherPlayer.Direction ==  1 && this.RightOffset < otherPlayer.LeftOffset) return true;
-    if(this.Direction ==  1  && otherPlayer.Direction == -1 && this.LeftOffset  > otherPlayer.RightOffset) return true;
+    if(this.Direction == -1  && otherPlayer.Direction ==  1 && this.LeftOffset < otherPlayer.RightOffset) return true;
+    if(this.Direction ==  1  && otherPlayer.Direction == -1 && this.RightOffset  > otherPlayer.LeftOffset) return true;
 
     return false;
 }

@@ -692,6 +692,46 @@ Player.prototype.handleAI = function(frame)
         this.Ai.frameMove(frame);
 }
 
+Player.prototype.checkVulnerable = function(frame)
+{
+    if(this.isCurrentMoveAttack()
+        && !this.isCurrentMoveProjectile()
+        && !this.IsInAttackFrame
+        && !this.isBlocking()
+        && !this.isMobile()
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_ATTACKS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_COLLISIONS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE)
+        )
+    {
+        this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
+        return true;
+    }
+
+    return false;
+
+}
+
+Player.prototype.checkFloater = function(frame)
+{
+    if(!!this.isAirborne()
+        && !this.isCurrentMoveAttack()
+        && !this.isCurrentMoveProjectile()
+        && !this.IsInAttackFrame
+        && !this.isBlocking()
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_ATTACKS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_COLLISIONS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE))
+    {
+        this.onFloatingFn(frame,this.getFrontX(),this.getMidY());
+        return true;
+    }
+
+    return false;
+}
+
 Player.prototype.onFrameMove = function(frame,stageX,stageY)
 {
     if(!this.IsPaused)
@@ -704,6 +744,8 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
         this.frameMove(frame,stageX,stageY);
         if(!!this.IsInAttackFrame)
             this.handleAttack(frame, this.CurrentFrame);
+        else if(!this.checkVulnerable(frame))
+            this.checkFloater(frame);
         if(!!this.GrappledPlayer)
             this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)

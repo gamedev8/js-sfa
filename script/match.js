@@ -385,7 +385,8 @@ var CreateMatch = function(team1,team2,stage)
 
         var onStartAttackEnemies   = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyStartAttack(frame,this); } } }
         var onContinueAttackEnemies= function(thisValue,otherTeam) { return function(frame,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyContinueAttack(frame,this,hitPoints); } } }
-        var onVulnerable           = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyVulerable(frame,this); } } }
+        var onVulnerable           = function(thisValue,otherTeam) { return function(frame,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyVulerable(frame,this,x,y); } } }
+        var onFloating             = function(thisValue,otherTeam) { return function(frame,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyFloating(frame,this,x,y); } } }
         var onEndAttackEnemies     = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyEndAttack(frame,this); } } }
         var onDizzy                = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyDizzy(frame,this); } } }
 
@@ -419,6 +420,7 @@ var CreateMatch = function(team1,team2,stage)
         player.onStartAttackEnemiesFn = onStartAttackEnemies(this,otherTeam);
         player.onContinueAttackEnemiesFn = onContinueAttackEnemies(this,otherTeam);
         player.onVulnerableFn = onVulnerable(this,otherTeam);
+        player.onFloatingFn = onFloating(this,otherTeam);
         player.onEndAttackEnemiesFn = onEndAttackEnemies(this,otherTeam);
         player.onDizzyFn = onDizzy(this,otherTeam);
 

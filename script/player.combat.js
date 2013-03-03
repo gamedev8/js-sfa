@@ -1,6 +1,9 @@
 Player.prototype.canBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK); }
 Player.prototype.canAirBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK); }
 Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
+Player.prototype.isCurrentMoveAttack = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.BaseAnimation.IsAttack; }
+Player.prototype.isCurrentMoveProjectile = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && (this.CurrentAnimation.Animation.ProjectileId !== null && this.CurrentAnimation.Animation.ProjectileId !== undefined); }
+Player.prototype.isProjectilePending = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectilePending; }
 Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW); }
 Player.prototype.hasRegisteredHit = function() { return !!this.RegisteredHit.HitID; }
 Player.prototype.hasBlueFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE); }
@@ -484,7 +487,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         this.MustClearAllowBlock = false;
         this.IsInAttackFrame = false;
         this.onEndAttackFn(this.CurrentAnimation.ID);
-        this.onVulnerableFn(frame);
+        //this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
     }
     if(hasFlag(moveFrame.FlagsToSet.Combat,COMBAT_FLAGS.CAN_BE_AIR_BLOCKED))
     {
@@ -496,7 +499,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         this.MustClearAllowAirBlock = false;
         this.IsInAttackFrame = false;
         this.onEndAirAttackFn(this.CurrentAnimation.ID);
-        this.onVulnerableFn(frame);
+        //this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
     }
     this.onContinueAttackEnemiesFn(frame,hitPoints);
 

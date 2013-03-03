@@ -194,7 +194,7 @@ var CreateInsertCoinScreen = function(u1,u2)
 
         if((!!u1 && !user1_.hasCredits()) || (!!user2_ && !user2_.hasCredits()))
         {
-            if((frame % 1000) == 0)
+            if(!__debugMode && (frame % 1000) == 0)
             {
                 return game_.startRandomMatch();
             }

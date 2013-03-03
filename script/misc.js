@@ -9,12 +9,14 @@
 
 var getRand = function(max)
 {
-    return (Math.random() * (max || 100)) >> 0;
+    if(max === 0)
+        return 0;
+    return Math.floor((Math.random() * (max || 100)));
 }
 
 var rand = function(min, max)
 {
-    return min + (Math.random() * (max - min)) >> 0;
+    return min + Math.floor((Math.random() * (max - min)));
 }
 
 var StageParams = function(key, name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0YOffset, bg1YOffset)
@@ -137,8 +139,8 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    user1_.setChar(CHARACTERS.RYU,true,true);
-    user2_.setChar(CHARACTERS.RYU,false,true);
+    user1_.setChar(CHARACTERS.RYU,false,false);
+    user2_.setChar(CHARACTERS.SAGAT,false,true);
 
     game_.startMatch(false,[0],[1], stages_["sodom"]);
 }

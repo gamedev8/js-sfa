@@ -566,9 +566,9 @@ Player.prototype.createSagat = function(user)
     jump.Vy = (jumpY);
 
     jump.addRepeatingFrame(player,0,"",folder + "/crouch-0.png",4);
-    jump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",5,{ Pose: POSE_FLAGS.AIRBORNE }).clip({Bottom:80});;
-    jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",3).clip({Bottom:80});
-    jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",4);
+    jump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",5,{ Pose: POSE_FLAGS.AIRBORNE }).clip({Bottom:180});;
+    jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",3).clip({Bottom:100});
+    jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",4).clip({Bottom:80});
     jump.addRepeatingFrame(player,0,"",folder + "/jump-3.png",6);
     jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",3);
     jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",6);
@@ -586,9 +586,9 @@ Player.prototype.createSagat = function(user)
     f_jump.Vy = (jumpY);
 
     f_jump.addRepeatingFrame(player,0,"",folder + "/crouch-0.png",4);
-    f_jump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",5,{ Pose: POSE_FLAGS.AIRBORNE_FB }).clip({Bottom:80});;
-    f_jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",3).clip({Bottom:80});
-    f_jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",4);
+    f_jump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",5,{ Pose: POSE_FLAGS.AIRBORNE_FB }).clip({Bottom:180});;
+    f_jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",3).clip({Bottom:100});
+    f_jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",4).clip({Bottom:80});
     f_jump.addRepeatingFrame(player,0,"",folder + "/jump-3.png",6);
     f_jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",3);
     f_jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",6);
@@ -605,9 +605,9 @@ Player.prototype.createSagat = function(user)
     b_jump.Vy = (jumpY);
 
     b_jump.addRepeatingFrame(player,0,"",folder + "/crouch-0.png",4);
-    b_jump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",5,{ Pose: POSE_FLAGS.AIRBORNE_FB }).clip({Bottom:80});;
-    b_jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",3).clip({Bottom:80});
-    b_jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",4);
+    b_jump.addRepeatingFrame(player,0,"",folder + "/jump-0.png",5,{ Pose: POSE_FLAGS.AIRBORNE_FB }).clip({Bottom:180});;
+    b_jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",3).clip({Bottom:100});
+    b_jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",4).clip({Bottom:80});
     b_jump.addRepeatingFrame(player,0,"",folder + "/jump-3.png",6);
     b_jump.addRepeatingFrame(player,0,"",folder + "/jump-2.png",3);
     b_jump.addRepeatingFrame(player,0,"",folder + "/jump-1.png",6);
@@ -774,10 +774,10 @@ Player.prototype.createSagat = function(user)
         fireball.addFrame(player,0,"200",folder + "/fireball-4.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
         fireball.addFrame(player,0,"200",folder + "/fireball-5.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
         fireball.addFrame(player,0,"200",folder + "/fireball-6.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
-        fireball.addFrame(player,0,"264",folder + "/fireball-7.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
-        fireball.addFrame(player,0,"264",folder + "/fireball-8.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
-        fireball.addFrameWithSound(player,1,"audio/sagat/tiger-high.zzz",0,"264",folder + "/fireball-9.png",1,{Combat:COMBAT_FLAGS.PENDING_ATTACK|COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},0,0,0,0,0,player.Projectiles.length-1);
-        fireball.addFrameWithSound(player,1,"audio/misc/projectile-0.zzz",0,"264",folder + "/fireball-8.png",26,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.CAN_BE_BLOCKED});
+        fireball.addFrame(player,0,"264",folder + "/fireball-7.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK}).clip({Front:100});
+        fireball.addFrame(player,0,"264",folder + "/fireball-8.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK}).clip({Front:100});
+        fireball.addFrameWithSound(player,1,"audio/sagat/tiger-high.zzz",0,"264",folder + "/fireball-9.png",1,{Combat:COMBAT_FLAGS.PENDING_ATTACK|COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},0,0,0,0,0,player.Projectiles.length-1).clip({Front:100});
+        fireball.addFrameWithSound(player,1,"audio/misc/projectile-0.zzz",0,"264",folder + "/fireball-8.png",26,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.CAN_BE_BLOCKED}).clip({Front:100});
     }
 
 
@@ -862,11 +862,11 @@ Player.prototype.createSagat = function(user)
         fireball.addFrame(player,0,"200",folder + "/cfireball-3.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
         fireball.addFrame(player,0,"200",folder + "/cfireball-4.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
         fireball.addFrame(player,0,"200",folder + "/cfireball-5.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
-        fireball.addFrame(player,0,"200",folder + "/cfireball-6.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},MISC_FLAGS.NONE,0,0,0,0,0,20);
-        fireball.addFrame(player,0,"200",folder + "/cfireball-7.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},MISC_FLAGS.NONE,0,0,0,0,0,20);
-        fireball.addFrame(player,0,"200",folder + "/cfireball-7.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},MISC_FLAGS.NONE,0,0,0,0,0,20);
-        fireball.addFrameWithSound(player,1,"audio/sagat/tiger-high.zzz",0,"200",folder + "/cfireball-7.png",1,{Combat:COMBAT_FLAGS.PENDING_ATTACK|COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},MISC_FLAGS.NONE,0,0,0,0,player.Projectiles.length-1,20);
-        fireball.addFrameWithSound(player,1,"audio/misc/projectile-0.zzz",0,"200",folder + "/cfireball-7.png",26,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.CAN_BE_BLOCKED},MISC_FLAGS.NONE,0,0,0,0,20);
+        fireball.addFrame(player,0,"200",folder + "/cfireball-6.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},MISC_FLAGS.NONE,0,0,0,0,0,20).clip({Front:100});
+        fireball.addFrame(player,0,"200",folder + "/cfireball-7.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},MISC_FLAGS.NONE,0,0,0,0,0,20).clip({Front:100});
+        fireball.addFrame(player,0,"200",folder + "/cfireball-7.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},MISC_FLAGS.NONE,0,0,0,0,0,20).clip({Front:100});
+        fireball.addFrameWithSound(player,1,"audio/sagat/tiger-high.zzz",0,"200",folder + "/cfireball-7.png",1,{Combat:COMBAT_FLAGS.PENDING_ATTACK|COMBAT_FLAGS.SPAWN_PROJECTILE|COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.STOP_SLIDE_BACK},MISC_FLAGS.NONE,0,0,0,0,player.Projectiles.length-1,20).clip({Front:100});
+        fireball.addFrameWithSound(player,1,"audio/misc/projectile-0.zzz",0,"200",folder + "/cfireball-7.png",26,MISC_FLAGS.NONE,{Combat:COMBAT_FLAGS.CAN_BE_BLOCKED},MISC_FLAGS.NONE,0,0,0,0,20).clip({Front:100});
     }
 
     //tiger knee
