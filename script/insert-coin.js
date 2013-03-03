@@ -196,7 +196,7 @@ var CreateInsertCoinScreen = function(u1,u2)
         {
             if((frame % 1000) == 0)
             {
-                game_.loadVHS();
+                return game_.startRandomMatch();
             }
             else if((frame % 80) == 0)
             {

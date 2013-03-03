@@ -281,6 +281,7 @@ var OVERRIDE_FLAGS =
 var QUIT_MATCH = 
 {
     GOTO_STORYMODE:1
+    ,GOTO_INSERTCOIN:2
 };
 
 var STAGE = 

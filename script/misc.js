@@ -137,10 +137,10 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    user1_.setChar(CHARACTERS.MBISON);
-    user2_.setChar(CHARACTERS.KEN);
+    user1_.setChar(CHARACTERS.RYU,true,true);
+    user2_.setChar(CHARACTERS.RYU,false,true);
 
-    game_.startMatch(false,[0],[1], stages_["ryu"]);
+    game_.startMatch(false,[0],[1], stages_["sodom"]);
 }
 
 //multi player battle 

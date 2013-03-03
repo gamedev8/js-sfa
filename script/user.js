@@ -118,15 +118,19 @@ User.prototype.setTeam = function(value)
 
 User.prototype.enableStoryMode = function()
 {
-    this.IsInStoryMode = true;
+    if(!this.IsAI)
+        this.IsInStoryMode = true;
 }
 
 User.prototype.advanceStoryMode = function()
 {
-    if(!!this.IsInStoryMode)
-        this.StoryMode.incLevel();
-    else
-        this.IsInStoryMode = true;
+    if(!this.IsAI)
+    {
+        if(!!this.IsInStoryMode)
+            this.StoryMode.incLevel();
+        else
+            this.IsInStoryMode = true;
+    }
 }
 
 User.prototype.disableStoryMode = function()

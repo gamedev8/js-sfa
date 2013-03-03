@@ -68,6 +68,25 @@ var CreateGame = function()
     Game.prototype.getMatch = function() { return match_; }
     Game.prototype.getCharSelect = function() { return charSelect_; }
 
+    Game.prototype.startRandomMatch = function()
+    {
+        var chars = [0,3,14,0,3];
+        var stages = ["ken", "ryu", "sodom", "dramatic_battle", "akuma", "sagat"];
+
+        var t1 = [2];
+        var t2 = [3];
+
+        var p1 = chars.splice(getRand(chars.length),1)[0];
+        var p2 = chars.splice(getRand(chars.length),1)[0];
+
+        user3_.setChar(p1,false,true);
+        user4_.setChar(p2,p1 == p2,true);
+
+        var stage = stages_[stages[getRand(stages.length)]];
+
+        this.startMatch(false,t1,t2,stage)
+    }
+
     Game.prototype.loadVHS = function(id)
     {
         //function to call when the vhs is done playing

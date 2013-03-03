@@ -16,6 +16,7 @@ var CreateTeam = function(num)
     var wins_ = 0;
     var loses_ = 0;
     var draws_ = 0;
+    var isAI_ = true;
 
     var Team = function(num)
     {
@@ -25,14 +26,23 @@ var CreateTeam = function(num)
     Team.prototype.getGame = function() { return game_; }
     Team.prototype.getPlayer = function(value) { return this.getPlayers()[value]; }
     Team.prototype.getPlayers = function() { return players_; }
+    Team.prototype.getIsAI = function() { return isAI_; }
     Team.prototype.setPlayers = function(value)
     {
+        isAI_ = value.every(function(a)
+            {
+                return !!a && a.User.IsAI;
+            });
+
         players_ = value;
         this.setPlayerIndexes();
         nbPlayers_ = players_.length;
     }
     Team.prototype.addPlayer = function(value)
     {
+        if(!value.User.IsAI)
+            isAI_ = false;
+
         players_.push(value);
         this.setPlayerIndexes();
         nbPlayers_ = players_.length;
