@@ -206,12 +206,12 @@
 
 
 
-    SagatAI.prototype.throwSuperFireball = function()
+    SagatAI.prototype.throwSuperFireball = function(forced)
     {
         var energyLevel = this.AI.Player.getEnergyLevel();
         if(energyLevel > 0)
         {
-            if(getRand() > 50)
+            if((getRand() > 50) || !!forced)
             {
                 var which = Math.floor(Math.random() * energyLevel) + 1
                 switch(which)
@@ -354,7 +354,17 @@
         {
             var dist = this.AI.Player.getDistanceFromSq(x,y);
 
-            //console.log(dist);
+
+            this.reset();
+            var rnd = getRand();
+            if(rnd > 80)
+            {
+                if(!this.throwSuperFireball(true))
+                    this.executeFireball();
+                this.AI.setProjectileReactBusy();
+                return;
+            }
+
 
             //jump in
             if(dist < 150000 && dist > 90000)
@@ -408,11 +418,19 @@
 
             //console.log(dist);
 
-            if(dist > 85000)
+            if(dist > 55000)
             {
                 this.reset();
                 var rnd = getRand();
-                this.executeFireball();
+                if(rnd > 70)
+                {
+                    this.executeFireball();
+                }
+                else
+                {
+                    if(!this.throwSuperFireball(true))
+                        this.executeFireball();
+                }
                 this.AI.setProjectileReactBusy();
                 return;
             }

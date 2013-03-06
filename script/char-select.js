@@ -566,9 +566,6 @@ var CreateCharSelect = function(users)
             //var isAlternate = (otherUser.Selected == ch) ? !otherUser.IsAlternate : (getRand(100) > 50);
             var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
 
-            if(ch == CHARACTERS.SAGAT)
-                isAlternate = false;
-
             teamMember.setChar(ch,isAlternate,true);
             team.push(playerIndex);
         }

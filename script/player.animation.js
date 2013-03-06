@@ -110,10 +110,10 @@ Player.prototype.addBigDirtAnimation = function()
     return this.OtherAnimations.BigDirt[this.OtherAnimations.BigDirt.length-1].Animation;
 }
 /*sets the current animation by looking up the name of the animation - this function can be called by AI*/
-Player.prototype.executeAnimation = function(name)
+Player.prototype.executeAnimation = function(name, forced)
 {
     var animation = null;
-    if(this.Flags.Player.has(PLAYER_FLAGS.MOBILE))
+    if(!!forced || (!this.ForceImmobile && (this.isMobile() || this.allowInterupt())))
     {
         var currentEnergy = this.getEnergyFn();
 
@@ -124,13 +124,9 @@ Player.prototype.executeAnimation = function(name)
 
             var move = this.Moves[i];
             if(this.Moves[i].BaseAnimation.Name == name)
-            {
                 animation = this.Moves[i];
-            }
             else
-            {
                 continue;
-            }
 
 
             if(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract)

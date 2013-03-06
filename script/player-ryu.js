@@ -943,6 +943,7 @@ Player.prototype.createRyu = function(user)
         else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
 
         var fireball = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"fireball p" + (x+1),25,[BUTTONS.CROUCH,BUTTONS.CROUCH|BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD|button],0,true);
+        fireball.IsProjectile = true;
         fireball.ProjectileId = player.Projectiles.length-1;
         fireball.ButtonCount = 5;
         fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
@@ -1095,6 +1096,7 @@ Player.prototype.createRyuSuperMoves = function(player)
         else if(x == 2) {button = BUTTONS.HARD_PUNCH;}
 
         var s_fireball = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"super fireball p" + (x+1),50,[BUTTONS.CROUCH,BUTTONS.CROUCH|BUTTONS.FORWARD,BUTTONS.FORWARD,0,BUTTONS.CROUCH,BUTTONS.CROUCH|BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD|button],CONSTANTS.MAX_PRIORITY,true);
+        s_fireball.IsProjectile = true;
         s_fireball.ButtonCount = 10;
         s_fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);
         s_fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);

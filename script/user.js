@@ -287,8 +287,6 @@ User.prototype.setChar = function(ch, isAlternate, isAI)
         }
     }
     this.IsAlternate = isAlternate;
-    if(ch == CHARACTERS.SAGAT)
-        this.IsAlternate = false;
     this.Selected = ch;
     this.CurrentStance = name + "_selected";
     this.Folder = name + (!!isAlternate ? "2" : "");

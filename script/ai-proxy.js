@@ -34,6 +34,7 @@ var CreateAIProxy = function()
     AIProxy.prototype.frameMove = function(frame) { managed_.frameMove(frame); }
     AIProxy.prototype.onNewRound = function() { managed_.onNewRound(); }
     AIProxy.prototype.onAnimationChanged = function(name) { managed_.onAnimationChanged(name); }
+    AIProxy.prototype.execute = function(sequence) { managed_.execute(sequence); }
 
     return new AIProxy();
 }

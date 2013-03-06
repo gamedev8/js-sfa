@@ -169,7 +169,10 @@ Player.prototype.setDisplay = function(isVisible)
     }
 }
 Player.prototype.alignX = function(deltaX) { this.X += (deltaX * -this.Direction); }
-
+Player.prototype.checkGroundY = function()
+{
+    this.setGroundY(this.getStage().getGroundY());
+}
 Player.prototype.setImageX = function(value) {if(this.Direction > 0){this.SpriteElement.style.right = value+"px"; } else {this.SpriteElement.style.left = value+"px";}}
 Player.prototype.setImageY = function(value) { this.SpriteElement.style.bottom = value+"px"; }
 Player.prototype.isCrouching = function() { return this.Flags.Pose.has(POSE_FLAGS.CROUCHING); }

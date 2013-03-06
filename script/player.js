@@ -166,9 +166,9 @@ Player.prototype.loadAssets = function(name,folder,loadProjectiles)
 {
     stuffLoader_.queue((this.Name || name).toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
     //stuffLoader_.queue("script/" + (this.Name || name).toLowerCase() + "-ai.js",RESOURCE_TYPES.SCRIPT);
-    stuffLoader_.queue("images/misc/" + (this.Folder || name).toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
-    stuffLoader_.queue("images/misc/" + (this.Folder || name).toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-    stuffLoader_.queue("images/misc/" + (this.Folder || name).toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
     if(!!loadProjectiles || this.Projectiles.length > 0)
         stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
 
@@ -741,6 +741,7 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
         this.decreaseDizziness(frame);
         this.sendAttackAlerts(frame);
         this.checkForInterupt(frame);
+        this.checkGroundY();
         this.frameMove(frame,stageX,stageY);
         if(!!this.IsInAttackFrame)
             this.handleAttack(frame, this.CurrentFrame);

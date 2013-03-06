@@ -964,6 +964,7 @@ Player.prototype.createKen = function(user)
         else if (x == 2) { button = BUTTONS.HARD_PUNCH; }
 
         var fireball = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING | POSE_FLAGS.WALKING_BACKWARD | POSE_FLAGS.WALKING_FORWARD | POSE_FLAGS.ALLOW_INTERUPT_1,"fireball p" + x,25,[BUTTONS.CROUCH,BUTTONS.CROUCH | BUTTONS.FORWARD,BUTTONS.FORWARD,BUTTONS.FORWARD | button],0,true);
+        fireball.IsProjectile = true;
         fireball.ProjectileId = player.Projectiles.length-1;
         fireball.ButtonCount = 5;
         fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED}]);

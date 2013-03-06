@@ -68,7 +68,7 @@ var CreateInsertCoinScreen = function(u1,u2)
         Player.prototype.loadAssets("ken","ken",true);
         Player.prototype.loadAssets("ken","ken2",true);
         Player.prototype.loadAssets("sagat","sagat",true);
-        //Player.prototype.loadAssets("sagat","sagat2",true);
+        Player.prototype.loadAssets("sagat","sagat2",true);
         Player.prototype.loadAssets("mbison","mbison",true);
         Player.prototype.loadAssets("mbison","mbison2",true);
 

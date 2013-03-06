@@ -2,7 +2,7 @@ Player.prototype.canBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.A
 Player.prototype.canAirBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK); }
 Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
 Player.prototype.isCurrentMoveAttack = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.BaseAnimation.IsAttack; }
-Player.prototype.isCurrentMoveProjectile = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && (this.CurrentAnimation.Animation.ProjectileId !== null && this.CurrentAnimation.Animation.ProjectileId !== undefined); }
+Player.prototype.isCurrentMoveProjectile = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectile; }
 Player.prototype.isProjectilePending = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectilePending; }
 Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW); }
 Player.prototype.hasRegisteredHit = function() { return !!this.RegisteredHit.HitID; }
@@ -183,7 +183,7 @@ Player.prototype.removeBlockableAirAttack = function(attackId)
 Player.prototype.removeBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
     this.setAllowBlock(attackId,frame,isAllowed,x,y,hitPoints);
-    this.onEnemyEndAttack(frame);
+    this.onEnemyEndAttack(frame, this);
 }
 Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
@@ -193,7 +193,7 @@ Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,en
 Player.prototype.removeAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
     this.setAllowAirBlock(attackId,frame,isAllowed,x,y,hitPoints);
-    this.onEnemyEndAttack(frame);
+    this.onEnemyEndAttack(frame, this);
 }
 Player.prototype.allowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
@@ -1070,7 +1070,7 @@ Player.prototype.forceWinAnimation = function(frame)
 {
     var name = this.WinAnimationNames[Math.ceil(Math.random() * this.WinAnimationNames.length) - 1];
     if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
-    this.executeAnimation(name);
+    this.executeAnimation(name, true);
     this.clearInput();
 }
 /*Player is defeated*/

@@ -148,6 +148,7 @@
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"fb1"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:33, B:"k3"}, {A:20, B:"u1"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:20, B:"hk3"}]
+            ,[{A:5, B:"jump_in",C:100,D:100}, {A:15, B:"hk3", H:true}, {A:25, B:"k1"}, {A:13, B:"k2"}, {A:30, B:"u3"}]
             /*cross up*/
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:32, B:"k2"}, {A:24,B:"lk3"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"u3"}]
@@ -682,7 +683,7 @@
             }
 
             var rnd = getRand();
-            this.proact(frame);
+            //this.proact(frame);
 
             this.AI.JustAttacked = false;
             this.AI.JustBecameMobile = (this.AI.JustBecameMobile > 0) ? this.AI.JustBecameMobile - 1 : 0;

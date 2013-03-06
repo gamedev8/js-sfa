@@ -140,7 +140,7 @@ InitUsers();
 function StartQuickMatch()
 {
     user1_.setChar(CHARACTERS.RYU,false,false);
-    user2_.setChar(CHARACTERS.SAGAT,false,true);
+    user2_.setChar(CHARACTERS.KEN,false,true);
 
     game_.startMatch(false,[0],[1], stages_["sodom"]);
 }
@@ -149,7 +149,7 @@ function StartQuickMatch()
 function StartDramaticBattle()
 {
     user1_.setChar(CHARACTERS.RYU);
-    user2_.setChar(CHARACTERS.KEN);
+    user2_.setChar(CHARACTERS.MBISON);
 
     game_.startMatch(false,[0],[1], stages_["mbison"]);
 }
