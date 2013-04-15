@@ -258,12 +258,15 @@ User.prototype.getChar = function(ch, isAlternate, isAI)
     }
 }
 
+<<<<<<< HEAD
 User.prototype.forceSetChar = function(ch, isAlternate, isAI)
 {
     this.Selected = ch;
     this.setChar(ch, isAlternate, isAI);
 }
 
+=======
+>>>>>>> js-sfa/master
 User.prototype.setChar = function(ch, isAlternate, isAI)
 {
     var name = "";

@@ -27,7 +27,10 @@ var CreateGame = function()
     var buttonState_ = {};
     var lastTime_ = 0;
     var speed_ = BrowserDetect.browser == "Chrome" ? CONSTANTS.FAST_SPEED : CONSTANTS.NORMAL_SPEED;
+<<<<<<< HEAD
     var defaultSpeed_ = speed_;
+=======
+>>>>>>> js-sfa/master
     var targetFPS_ = CONSTANTS.TARGET_FPS;
     var text_ = null;
     var state_ = 0;
@@ -337,6 +340,11 @@ var CreateGame = function()
 
         match_ = CreateMatch(a,b,stage);
         managed_ = match_;
+<<<<<<< HEAD
+=======
+        if(vcr_.isPlaying())
+            match_.setRound(vcr_.getData().Round);
+>>>>>>> js-sfa/master
         announcer_.setMatch(match_);
         this.showElements();
 
@@ -445,6 +453,13 @@ var CreateGame = function()
         if(!!insertCoinScreen_)
             insertCoinScreen_.release();
     }
+<<<<<<< HEAD
+=======
+    Game.prototype.resetSpeed = function()
+    {
+        speed_ = BrowserDetect.browser == "Chrome" ? CONSTANTS.FAST_SPEED : CONSTANTS.NORMAL_SPEED;
+    }
+>>>>>>> js-sfa/master
     //Increases the game loop speed
     Game.prototype.speedUp = function()
     {

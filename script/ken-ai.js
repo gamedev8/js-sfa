@@ -683,7 +683,7 @@
             }
 
             var rnd = getRand();
-            this.proact(frame);
+            //this.proact(frame);
 
             this.AI.JustAttacked = false;
             this.AI.JustBecameMobile = (this.AI.JustBecameMobile > 0) ? this.AI.JustBecameMobile - 1 : 0;

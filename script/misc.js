@@ -80,7 +80,11 @@ function IsFlipped(element)
 function Alert(text)
 {
     //if(!!console && !!console.log)
+<<<<<<< HEAD
         //console.log(text);
+=======
+    //    console.log(text);
+>>>>>>> js-sfa/master
     
 }
 function AlertError(text)
@@ -144,10 +148,17 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
+<<<<<<< HEAD
     user1_.setChar(CHARACTERS.AKUMA,false,false);
     user2_.setChar(CHARACTERS.KEN,false,false);
 
     game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["sagat"]);
+=======
+    user1_.setChar(CHARACTERS.RYU,false,false);
+    user2_.setChar(CHARACTERS.KEN,false,true);
+
+    game_.startMatch(false,[0],[1], stages_["sodom"]);
+>>>>>>> js-sfa/master
 }
 
 //multi player battle 

@@ -110,10 +110,17 @@ Player.prototype.addBigDirtAnimation = function()
     return this.OtherAnimations.BigDirt[this.OtherAnimations.BigDirt.length-1].Animation;
 }
 /*sets the current animation by looking up the name of the animation - this function can be called by AI*/
+<<<<<<< HEAD
 Player.prototype.executeAnimation = function(name, forced, ignoreImmobile)
 {
     var animation = null;
     if(!!forced || (this.isMobile() || this.allowInterupt()))
+=======
+Player.prototype.executeAnimation = function(name, forced)
+{
+    var animation = null;
+    if(!!forced || (!this.ForceImmobile && (this.isMobile() || this.allowInterupt())))
+>>>>>>> js-sfa/master
     {
         if(!!this.ForceImmobile && !ignoreImmobile)
             return false;

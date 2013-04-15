@@ -249,9 +249,13 @@ var COMBO_FLAGS =
 {
     BLUE_FIRE_ON_FIRST_HIT:1 << 1
     ,RED_FIRE_ON_MAX_HIT:1 << 2
+<<<<<<< HEAD
     ,RED_FIRE_SOUND_ON_MAX_HIT:1 << 3
     ,SHORT_DELAY_ON_FIRST_HIT:1 << 4
     ,KNOCKDOWN_ON_MAX_HIT:1 << 5
+=======
+    ,SHORT_DELAY_ON_FIRST_HIT:1 << 3
+>>>>>>> js-sfa/master
 };
 var MOVE_FLAGS = 
 {
@@ -355,19 +359,30 @@ var ATTACK_STATE = {
 var CONSTANTS =
 {
     DEFAULT_SHADOW_Y:42
+<<<<<<< HEAD
     ,DEFAULT_FIRE_HITSTOP:10
     ,MAX_STORY_MODE_LEVEL:4
+=======
+    ,MAX_STORY_MODE_LEVEL:3
+>>>>>>> js-sfa/master
     ,TRIP_SLIDEFACTOR:0.1
     ,TRIP_SLIDEFORCE:0
     ,GRAPPLE_DISTANCE:50
     ,GROUND_FRAMES_FOR_GRAPPLE:20
     ,MOBILE_FRAMES_FOR_GRAPPLE:20
     ,MAX_SPEED:0
+<<<<<<< HEAD
     ,MAX_PRIORITY:(1 << 30)
     ,NORMAL_SPEED:(1000 / 60)
     ,FAST_SPEED:(1000 / 70)
     ,SLOW_SPEED:(1000 / 45)
     ,ROUND_OVER_SPEED:75
+=======
+    ,MAX_PRIORITY:1 << 30
+    ,NORMAL_SPEED:1000 / 60
+    ,FAST_SPEED:1000 / 70
+    ,SLOW_SPEED:70
+>>>>>>> js-sfa/master
     ,MAX_FRAME:100000000000000 /*round will end when Game.prototype.frame reaches this value*/
     ,TARGET_FPS:60
     ,MS_PER_SEC:1000

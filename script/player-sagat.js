@@ -853,7 +853,12 @@ Player.prototype.createSagat = function(user)
 
         fireball.OverrideFlags = new MoveOverrideFlags();
         fireball.IsSpecialMove = true;
+<<<<<<< HEAD
         fireball.EnergyToAdd = 5;
+=======
+        fireball.IgnoreDepressedKeys = true;
+        fireball.EnergyToAdd = (5);
+>>>>>>> js-sfa/master
         fireball.Flags = ({Combat:COMBAT_FLAGS.PROJECTILE_ACTIVE|COMBAT_FLAGS.MULTI_PROJECTILE});
         fireball.addFrame(player,0,"",folder + "/cfireball-0.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK},{Player:PLAYER_FLAGS.MOBILE});
         fireball.addFrame(player,0,"",folder + "/cfireball-1.png",1,{Combat: COMBAT_FLAGS.PENDING_ATTACK});
@@ -1070,14 +1075,21 @@ var createSagatSuperMoves = function(player)
         projectile.CanJuggle = true;
         projectile.MaxHits = x + 4;
         projectile.LocalHitStopData = {};
+<<<<<<< HEAD
         projectile.DefaultLocalHitStop = 2;
         projectile.DefaultHitStop = 1;
+=======
+        projectile.DefaultLocalHitStop = 3;
+>>>>>>> js-sfa/master
         projectile.AttackState = ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE_HARD;
         projectile.HitState = HIT_FLAGS.LOW;
         projectile.FlagsToSend = ATTACK_FLAGS.HARD;
         projectile.EnergyToAdd = (10);
+<<<<<<< HEAD
         projectile.Params = {EnemyHitStop:1,AirborneEnemyHitStop:10};
 
+=======
+>>>>>>> js-sfa/master
         if(x == 0)
             projectile.FlagsToSend |= ATTACK_FLAGS.SUPER|ATTACK_FLAGS.PROJECTILE;
         else if(x == 1)
@@ -1085,7 +1097,11 @@ var createSagatSuperMoves = function(player)
         else if(x == 2)
         {
             projectile.FlagsToSend |= ATTACK_FLAGS.SUPER|ATTACK_FLAGS.PROJECTILE;
+<<<<<<< HEAD
             projectile.Params.Combo = COMBO_FLAGS.RED_FIRE_ON_MAX_HIT;
+=======
+            projectile.Params = {Combo:COMBO_FLAGS.RED_FIRE_ON_MAX_HIT};
+>>>>>>> js-sfa/master
         }
         projectile.BaseDamage = 25;
 
@@ -1126,6 +1142,10 @@ var createSagatSuperMoves = function(player)
         s_fireball.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.NONE},{Button:BUTTONS.FORWARD,State:BUTTON_STATE.PRESSED},{Button:button,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
 
         s_fireball.IsSuperMove = true;
+<<<<<<< HEAD
+=======
+        s_fireball.IgnoreDepressedKeys = true;
+>>>>>>> js-sfa/master
         s_fireball.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.NONE);
 
 

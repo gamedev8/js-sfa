@@ -268,6 +268,7 @@ var CreateMatch = function(team1,team2,stage)
         if(this.getGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
         {
             //check to see if the match is over
+<<<<<<< HEAD
             if(state_ != MATCH_STATES.PRACTICE_MODE)
             {
                 if(teamA_.getWins() == game_.getMaxWinsPerMatch())
@@ -294,6 +295,31 @@ var CreateMatch = function(team1,team2,stage)
 
                     return;
                 }
+=======
+            if(teamA_.getWins() == game_.getMaxWinsPerMatch())
+            {
+                teamA_.advanceStoryMode();
+                teamB_.disableStoryMode();
+                
+                if(!teamA_.getIsAI())
+                    this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
+                else
+                    this.forceQuit(QUIT_MATCH.GOTO_INSERTCOIN)
+
+                return;
+            }
+            else if(teamB_.getWins() == game_.getMaxWinsPerMatch())
+            {
+                teamA_.disableStoryMode();
+                teamB_.advanceStoryMode();
+
+                if(!teamB_.getIsAI())
+                    this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
+                else
+                    this.forceQuit(QUIT_MATCH.GOTO_INSERTCOIN)
+
+                return;
+>>>>>>> js-sfa/master
             }
 
             game_.showLoading(true);
@@ -458,6 +484,10 @@ var CreateMatch = function(team1,team2,stage)
         stage_.start();
         faceoff_.init();
         announcer_.init();
+<<<<<<< HEAD
+=======
+
+>>>>>>> js-sfa/master
         teamA_.setPlayers(team1);
         teamB_.setPlayers(team2);
         this.initText();
@@ -678,6 +708,7 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.render = function(frame)
     {
 
+<<<<<<< HEAD
         if(!this.isSuperMoveActive())
             stage_.render();
 
@@ -686,6 +717,10 @@ var CreateMatch = function(team1,team2,stage)
 
         teamA_.render(frame,stageDeltaX,stageDeltaY);
         teamB_.render(frame,stageDeltaX,stageDeltaY);
+=======
+        teamA_.render(frame,stage_.getDeltaX(),stage_.getDeltaY());
+        teamB_.render(frame,stage_.getDeltaX(),stage_.getDeltaY());
+>>>>>>> js-sfa/master
 
 
         if(!isPresented_ && (frame > CONSTANTS.PRESENT_DELAY))
