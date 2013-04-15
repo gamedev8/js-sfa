@@ -41,12 +41,12 @@ MoveOverrideFlags.prototype.hasAllowOverrideFlag = function(flag) { return !!fla
 MoveOverrideFlags.prototype.hasOverrideFlag = function(flag) { return !!flag && hasFlag(this.OverrideFlags,flag); }
 
 
-var ActionDetails = function(overrideFlags,player,otherID,isProjectile,isGrapple,startFrame,frame,otherPlayer)
+var ActionDetails = function(registeredHit,overrideFlags,player,otherID,isProjectile,isGrapple,startFrame,frame,otherPlayer)
 {
     this.MoveOverrideFlags = overrideFlags;
     this.Frame = frame || 0;
     this.OtherAttackStartFrame = startFrame;
-
+    this.RegisteredHit = registeredHit;
     this.Key = this.getKey(player.Id,otherID);
     this.IsProjectile = isProjectile;
     this.IsGrapple = isGrapple;
@@ -95,27 +95,73 @@ HitSystem.prototype.canHit = function(key,index)
     var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
     var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
 
-    var retVal  = true;
-    if(!!first.OtherPlayer && !!first.Player.CurrentAnimation.Animation)
+    var retVal = true;
+    if(!!first.OtherPlayer && !!first.Player.CurrentAnimation.Animation && !first.IsProjectile)
     {
         //grapples can not be overriden
-        if(first.IsGrapple || (!!second && second.IsGrapple))
-            return true;
         if(first.Player.isGrappling())
             return false;
+        if(first.IsGrapple || (!!second && second.IsGrapple))
+            return true;
         var flags = first.Player.CurrentAnimation.Animation.OverrideFlags;
-
-        var isHitOverriden = 
-            (flags.hasOverrideFlag(OVERRIDE_FLAGS.ALL) /*overrides all*/ 
-                && ((!second || !second.MoveOverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN)) /*but it can't override shoryuken*/
-                    && !first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN))) /*but it can't override shoryuken*/
-            ||
-            (!flags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) 
-                && flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)); /*overrides yours*/
-
-        return !isHitOverriden || !!first.Player.IgnoreOverrides;
+        var otherFlags = first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags;
 
 
+        var imDoingUppercut = first.Player.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN);
+        var youreDoingUppercut = first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN);
+
+        var canIOverrideYou = (!flags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) 
+                && flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags) /*overrides yours*/
+                && !otherFlags.hasOverrideFlag(first.Player.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)) /*overrides mine (if both moves override each other, then both should hit)*/
+            ;
+
+        var canYouOverrideMe = (!otherFlags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) 
+                && otherFlags.hasOverrideFlag(first.Player.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)
+                && !flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags));
+
+        var iDidFirstJumpInAttack = (first.Player.CurrentAnimation.Animation.BaseAnimation.IsAttack && first.OtherPlayer.CurrentAnimation.Animation.BaseAnimation.IsAttack
+                && first.Player.isAirborne()
+                && !first.OtherPlayer.isAirborne()
+                && (first.Player.CurrentAnimation.StartFrame < first.OtherPlayer.CurrentAnimation.StartFrame))
+            ;
+
+        var youDidFirstJumpInAttack = (first.Player.CurrentAnimation.Animation.BaseAnimation.IsAttack && first.OtherPlayer.CurrentAnimation.Animation.BaseAnimation.IsAttack
+                && first.OtherPlayer.isAirborne()
+                && !first.Player.isAirborne()
+                && (first.OtherPlayer.CurrentAnimation.StartFrame < first.Player.CurrentAnimation.StartFrame))
+            ;
+
+        var canYourHProjectileHit = (otherFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.HPROJECTILE)) && !second;
+
+        //if we aren't facing our attacker, then we can't override
+        if((first.OtherPlayer.Direction == -1 && first.Player.Direction  != 1)
+            || (first.OtherPlayer.Direction == 1 && first.Player.Direction  != -1))
+            return true;
+
+        //after all attack frames in a move are finished - IgnoreOverrides will be set to true
+        if(!!first.Player.IgnoreOverrides)
+            return true;
+
+        //ken and ryu's uppercut can not be overriden
+        if(!!imDoingUppercut && !youreDoingUppercut)
+            return false;
+        else if(!!youreDoingUppercut)
+            return true;
+
+        if(!!canYourHProjectileHit)
+            return true;
+        
+        //special overrides
+        if(!!canYouOverrideMe)
+            return true;
+        else if(!!canIOverrideYou)
+            return false;
+
+        //the first attack on a jump in should hit
+        if(!!iDidFirstJumpInAttack)
+            return false;
+        else if(!!youDidFirstJumpInAttack)
+            return true;
     }
     return retVal;
 }
@@ -161,7 +207,7 @@ HitSystem.prototype.frameMove = function(frame)
             if(!!item[0] && canP1Hit)
             {
                 //player 1 registers action
-                item[0].Player.registerHit(frame);
+                item[0].Player.registerHit(frame,item[0].RegisteredHit);
             }
             else if(!!item[0])
             {
@@ -171,7 +217,7 @@ HitSystem.prototype.frameMove = function(frame)
             if(!!item[1] && canP2Hit)
             {
                 //player 2 registers action
-                item[1].Player.registerHit(frame);
+                item[1].Player.registerHit(frame,item[1].RegisteredHit);
             }
             else if(!!item[1])
             {
@@ -186,6 +232,8 @@ HitSystem.prototype.frameMove = function(frame)
 
 HitSystem.prototype.register = function(details)
 {
+    if(details.IsProjectile)
+        details.Key += "_" + details.Frame.toString();
     if(!this.Actions[details.Key])
         this.Actions[details.Key] = {ActionFrame:details.Frame + (!!details.NoFrameDelay ? 0 : this.ActionFrameDelay)}
     if(!this.Actions[details.Key][0] || (this.Actions[details.Key][0].PlayerID == details.PlayerID))

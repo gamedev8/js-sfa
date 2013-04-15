@@ -1,6 +1,6 @@
 ﻿var CreateStoryMode = function()
 {
-    var levelsPassed_ = [false,false,false,false];
+    var levelsPassed_ = [false,false,false,false,false];
     var level_ = 0;
 
     var StoryModeHandler = function()
@@ -30,8 +30,9 @@
             {
                 case 0: { return ["images/misc/misc/char-ryu-r.png"]; break;}
                 case 1: { return ["images/misc/misc/char-ken-r.png"]; break;}
-                case 2: { return ["images/misc/misc/char-mbison-r.png"]; break;}
-                case 3: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
+                case 2: { return ["images/misc/misc/char-sagat-r.png"]; break;}
+                case 3: { return ["images/misc/misc/char-mbison-r.png"]; break;}
+                case 4: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
                 default : { return ["images/misc/misc/question-0.png"]; break;}
             }
         }
@@ -44,8 +45,9 @@
         {
             case 0: { return [CHARACTERS.RYU]; break;}
             case 1: { return [CHARACTERS.KEN]; break;}
-            case 2: { return [CHARACTERS.MBISON]; break;}
-            case 3: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
+            case 2: { return [CHARACTERS.SAGAT]; break;}
+            case 3: { return [CHARACTERS.MBISON]; break;}
+            case 4: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
             default : { return [CHARACTERS.RYU]; break;}
         }
 
@@ -118,15 +120,19 @@ User.prototype.setTeam = function(value)
 
 User.prototype.enableStoryMode = function()
 {
-    this.IsInStoryMode = true;
+    if(!this.IsAI)
+        this.IsInStoryMode = true;
 }
 
 User.prototype.advanceStoryMode = function()
 {
-    if(!!this.IsInStoryMode)
-        this.StoryMode.incLevel();
-    else
-        this.IsInStoryMode = true;
+    if(!this.IsAI)
+    {
+        if(!!this.IsInStoryMode)
+            this.StoryMode.incLevel();
+        else
+            this.IsInStoryMode = true;
+    }
 }
 
 User.prototype.disableStoryMode = function()
@@ -232,9 +238,9 @@ User.prototype.isRequestingCharSelect = function()
     return this.IsRequestingCharSelect;
 }
 
-User.prototype.getChar = function(char, isAlternate, isAI)
+User.prototype.getChar = function(ch, isAlternate, isAI)
 {
-    switch(char)
+    switch(ch)
     {
         case CHARACTERS.RANDOM1:
         case CHARACTERS.RANDOM2:
@@ -245,28 +251,36 @@ User.prototype.getChar = function(char, isAlternate, isAI)
                 case "ken": { return CHARACTERS.KEN; }
                 case "sagat": { return CHARACTERS.SAGAT; }
                 case "mbison": { return CHARACTERS.MBISON; }
+                case "akuma": { return CHARACTERS.AKUMA; }
             };
         }
-        default: return char;
+        default: return ch;
     }
 }
 
-User.prototype.setChar = function(char, isAlternate, isAI)
+User.prototype.forceSetChar = function(ch, isAlternate, isAI)
+{
+    this.Selected = ch;
+    this.setChar(ch, isAlternate, isAI);
+}
+
+User.prototype.setChar = function(ch, isAlternate, isAI)
 {
     var name = "";
     if(this.isInStoryMode())
     {
-        char = this.getChar(this.Selected);
+        ch = this.getChar(this.Selected);
         isAlternate = this.IsAlternate;
         isAI = this.IsAI;
     }
 
-    switch(char)
+    switch(ch)
     {
         case CHARACTERS.KEN: { name = "ken"; break;}
         case CHARACTERS.RYU: { name = "ryu"; break;}
         case CHARACTERS.SAGAT: { name = "sagat"; break;}
         case CHARACTERS.MBISON: { name = "mbison"; break;}
+        case CHARACTERS.AKUMA: { name = "akuma"; break;}
 
         case CHARACTERS.RANDOM1:
         case CHARACTERS.RANDOM2:
@@ -277,11 +291,12 @@ User.prototype.setChar = function(char, isAlternate, isAI)
                 case "ken": { return this.setChar(CHARACTERS.KEN, isAlternate, isAI); }
                 case "sagat": { return this.setChar(CHARACTERS.SAGAT, isAlternate, isAI); }
                 case "mbison": { return this.setChar(CHARACTERS.MBISON, isAlternate, isAI); }
+                case "akuma": { return this.setChar(CHARACTERS.AKUMA, isAlternate, isAI); }
             };
         }
     }
     this.IsAlternate = isAlternate;
-    this.Selected = char;
+    this.Selected = ch;
     this.CurrentStance = name + "_selected";
     this.Folder = name + (!!isAlternate ? "2" : "");
     this.IsAI = (isAI === undefined) ? this.IsAI : isAI;
@@ -418,6 +433,10 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
         return;
     }
+    else if(!this.IsInCharSelect)
+    {
+        return;
+    }
 
     if(!!isDown)
     {
@@ -438,6 +457,7 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
                 if(this.CurrentStance == "ken"
                     || this.CurrentStance == "ryu"
                     || this.CurrentStance == "sagat"
+                    || this.CurrentStance == "akuma"
                     || this.CurrentStance == "mbison")
                 {
                     this.IsCharSelected = true;
@@ -496,6 +516,7 @@ User.prototype.onSelectChar = function(direction)
             case "ken_selected": this.Selected = CHARACTERS.KEN; break;
             case "ryu_selected": this.Selected = CHARACTERS.RYU; break;
             case "sagat_selected": this.Selected = CHARACTERS.SAGAT; break;
+            case "akuma_selected": this.Selected = CHARACTERS.AKUMA; break;
             case "mbison_selected": this.Selected = CHARACTERS.MBISON; break;
         };
     }
@@ -517,10 +538,8 @@ User.prototype.setPositions = function()
         case "rose": { this.setPositionValues ("-3px","17px","2px","0px",-32,32); break; }
         case "sagat": { this.setPositionValues ("7px","17px","10px","0px",16,28); break; }
         case "mbison": { this.setPositionValues ("7px","17px","10px","0px",-36,17); break; }
-        /*
-        case "akuma": { break; }
+        case "akuma": { this.setPositionValues ("7px","17px","27px","0px",10,32); break; }
         case "dan": { break; }
-        */
     };
 }
 
@@ -540,18 +559,16 @@ User.prototype.showCharacter = function()
         case CHARACTERS.ROSE: { this.CurrentStance = "rose"; break; }
         case CHARACTERS.SAGAT: { this.CurrentStance = "sagat"; break; }
         case CHARACTERS.RANDOM2: { this.RandomSelect = this.RandomSelect || 1; break; }
-        case CHARACTERS.MBISON: { this.CurrentStance = "mbison"; break; }
-        /*
-        case CHARACTERS.AKUMA: { break; }
+        case CHARACTERS.MBISON: { this.CurrentStance = "mbison"; this.RandomSelect = this.RandomSelect || 1; break; }
+        case CHARACTERS.AKUMA: { this.CurrentStance = "akuma"; this.RandomSelect = this.RandomSelect || 1; break; }
         case CHARACTERS.DAN: { break; }
-        */
     };
 
     this.setPositions();
 
+    spriteLookup_.set(this.NameElement.Element, "images/misc/misc/name-" + this.CurrentStance + ".png");
     spriteLookup_.set(this.PortriatElement.Element, "images/misc/misc/p2-select-" + this.CurrentStance + ".png");
     spriteLookup_.set(this.ShadowElement.Element, "images/misc/misc/" + this.CurrentStance + "-shadow.png");
-    spriteLookup_.set(this.NameElement.Element, "images/misc/font3/name-" + this.CurrentStance + ".png");
 
     if(!this.IsCharSelected && !!this.RandomSelect)
     {
@@ -576,6 +593,7 @@ User.prototype.getPlayer = function()
         case CHARACTERS.RYU: { retVal = Player.prototype.createRyu(this); break; }
         case CHARACTERS.KEN: { retVal = Player.prototype.createKen(this); break; }
         case CHARACTERS.SAGAT: { retVal = Player.prototype.createSagat(this); break; }
+        case CHARACTERS.AKUMA: { retVal = Player.prototype.createAkuma(this); break; }
         case CHARACTERS.MBISON: { retVal = Player.prototype.createMBison(this); break; }
         /*
         case CHARACTERS.CHUNLI: { retVal = Player.prototype.createChunLi(this); break; }
@@ -619,6 +637,11 @@ User.prototype.show = function() {this.setDisplay(true);}
 //selecting a character
 User.prototype.frameMove = function(frame)
 {
+}
+
+//renders the users selected items
+User.prototype.render = function(frame)
+{
     if(!this.IsCharSelected && !!this.RandomSelect && (frame % 5 == 0))
     {
         this.CurrentStance = CHAR_NAMES[this.RandomSelect-1]
@@ -626,11 +649,7 @@ User.prototype.frameMove = function(frame)
         if(++this.RandomSelect > CHAR_NAMES.length)
             this.RandomSelect = 1;
     }
-}
 
-//renders the users selected items
-User.prototype.render = function(frame)
-{
     if(this.PlayerNdx == 1)
     {
         this.ShadowElement.Element.style.left = this.ShadowElement.X;
@@ -686,6 +705,25 @@ User.prototype.addStanceAnimations = function()
         this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-0.png",5);
         this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-1.png",5);
         this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-2.png",CONSTANTS.MAX_FRAME);
+
+        this.Animations["akuma"] = CreateBasicAnimation("akuma_stance",[],true);
+        this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-0.png",5);
+        this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-1.png",5);
+        this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-2.png",5);
+        this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-3.png",5);
+        this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-2.png",5);    
+        this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-1.png",5);
+        this.Animations["akuma_selected"] = CreateBasicAnimation("akuma_selected",[],true);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-0.png",8).flip();
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-1.png",8).flip();
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-2.png",6);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-3.png",4);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-4.png",4);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-5.png",4);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-6.png",4);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-7.png",4);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-8.png",4);
+        this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-9.png",CONSTANTS.MAX_FRAME);
 
         this.Animations["mbison"] = CreateBasicAnimation("ken_stance",[],true);
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-0.png",5);

@@ -49,9 +49,9 @@ var CreateGenericAI = function(player)
         this.Player = null;
     }
 
-    GenericAI.prototype.createAction = function(frame,flags,input,name,dist,mustHit)
+    GenericAI.prototype.createAction = function(frame,flags,input,name,dist,mustHit,move)
     {
-        return {Flags:flags||0,MoveName:name||0,Frame:frame||0,Input:input||[],Distance:dist,IsActive:false,MustHit:mustHit};
+        return {Flags:flags||0,MoveName:name||0,Frame:frame||0,Input:input||[],Distance:dist,IsActive:false,MustHit:mustHit,Move:move};
     }
 
 
@@ -261,9 +261,9 @@ var CreateGenericAI = function(player)
     }
 
 
-    GenericAI.prototype.sendInput = function(flags, frame, input, mustHit)
+    GenericAI.prototype.sendInput = function(flags, frame, input, mustHit,move)
     {
-        this.Actions.push(this.createAction(frame,flags,input,undefined,undefined,mustHit));
+        this.Actions.push(this.createAction(frame,flags,input,undefined,undefined,mustHit,move));
     }
 
     GenericAI.prototype.pressBlock = function()

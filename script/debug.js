@@ -112,30 +112,45 @@ function GetDebugInstance(game)
         game_.pause();
     }
 
+    var spnIndex = window.document.getElementById("spnIndex");
     var txtX = window.document.getElementById("txtX");
     var txtY = window.document.getElementById("txtY");
+    var txtShadow = window.document.getElementById("txtShadow");
+    var txtShadowOffsetX = window.document.getElementById("txtShadowOffsetX");
+    var txtShadowOffsetY = window.document.getElementById("txtShadowOffsetY");
 
 
-    Debug.prototype.setOffsets = function(x,y)
+    Debug.prototype.readFrameData = function(frame)
     {
-        txtX.value = +x;
-        txtY.value = +y;
+        //.ImageOffsetX,this.CurrentFrame.ImageOffsetY,this.CurrentFrame.ShadowImageSrc
+
+        spnIndex.innerHTML = frame.Index;
+        txtX.value = +frame.ImageOffsetX;
+        txtY.value = +frame.ImageOffsetY;
+        txtShadow.value = frame.ShadowImageSrc.match(/[\d]+/)[0];
+        txtShadowOffsetX.value = +frame.ShadowOffset.X;
+        txtShadowOffsetY.value = +frame.ShadowOffset.Y;
     }
 
-    Debug.prototype.p1SetFrameOffsets = function()
+    Debug.prototype.setFrameData = function()
     {
         var x = window.document.getElementById("txtX").value;
         var y = window.document.getElementById("txtY").value;
+        var s = window.document.getElementById("txtShadow").value;
+        var sx = window.document.getElementById("txtShadowOffsetX").value;
+        var sy = window.document.getElementById("txtShadowOffsetY").value;
 
         if(!!+x || x === 0)
-        {
             debug_.p1().CurrentFrame.ImageOffsetX = +x;
-        }
         if(!!+y || y === 0)
-        {
             debug_.p1().CurrentFrame.ImageOffsetY = +y;
-        }
-    }
+        if(!!s)
+            debug_.p1().CurrentFrame.ShadowImageSrc = "images/misc/misc/shadow-" + s + ".png";
+        if(!!+sx || sx === 0)
+            debug_.p1().CurrentFrame.ShadowOffset.X = +sx;
+        if(!!+sy || sy === 0)
+            debug_.p1().CurrentFrame.ShadowOffset.Y = +sy;
+   }
 
     Debug.prototype.keyCount = 1000;
 

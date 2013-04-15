@@ -1,7 +1,10 @@
 Player.prototype.canBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK); }
 Player.prototype.canAirBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK); }
 Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
-Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW); }
+Player.prototype.isCurrentMoveAttack = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.BaseAnimation.IsAttack; }
+Player.prototype.isCurrentMoveProjectile = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectile; }
+Player.prototype.isProjectilePending = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectilePending; }
+Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW) && !this.Flags.Juggle.has(JUGGLE_FLAGS.IGNORE); }
 Player.prototype.hasRegisteredHit = function() { return !!this.RegisteredHit.HitID; }
 Player.prototype.hasBlueFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE); }
 Player.prototype.hasRedFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE); }
@@ -42,7 +45,6 @@ Player.prototype.canJuggle = function(other,attackId,juggleGroup)
         {
             return false;
         }
-
         if(other.isDead() && this.Flags.Juggle.has(JUGGLE_FLAGS.DEAD))
         {
             return true;
@@ -180,7 +182,7 @@ Player.prototype.removeBlockableAirAttack = function(attackId)
 Player.prototype.removeBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
     this.setAllowBlock(attackId,frame,isAllowed,x,y,hitPoints);
-    this.onEnemyEndAttack(frame);
+    this.onEnemyEndAttack(frame, this);
 }
 Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
@@ -190,7 +192,7 @@ Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,en
 Player.prototype.removeAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
     this.setAllowAirBlock(attackId,frame,isAllowed,x,y,hitPoints);
-    this.onEnemyEndAttack(frame);
+    this.onEnemyEndAttack(frame, this);
 }
 Player.prototype.allowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
@@ -467,6 +469,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
     }
     if(!!moveFrame.IsPendingAttack)
     {
+        //this is used for the AI
         hitPoints = [];
         if(this.Direction < 0)
             hitPoints.push({x:rect.Right,y:rect.Bottom});
@@ -484,7 +487,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         this.MustClearAllowBlock = false;
         this.IsInAttackFrame = false;
         this.onEndAttackFn(this.CurrentAnimation.ID);
-        this.onVulnerableFn(frame);
+        //this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
     }
     if(hasFlag(moveFrame.FlagsToSet.Combat,COMBAT_FLAGS.CAN_BE_AIR_BLOCKED))
     {
@@ -496,7 +499,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         this.MustClearAllowAirBlock = false;
         this.IsInAttackFrame = false;
         this.onEndAirAttackFn(this.CurrentAnimation.ID);
-        this.onVulnerableFn(frame);
+        //this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
     }
     this.onContinueAttackEnemiesFn(frame,hitPoints);
 
@@ -504,6 +507,9 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         Combo:this.Flags.Combo.Value
         ,HitJuggleGroup:this.CurrentAnimation.Animation.HitJuggleGroup
         ,ForceHitFx:moveFrame.ForceHitFx
+        ,EnemyHitStop:moveFrame.EnemyHitStop || 0
+        ,HitReact:this.CurrentAnimation.Animation.Flags.HitReact || moveFrame.FlagsToSet.HitReact
+        ,UseCurrentJump:this.CurrentAnimation.Animation.UseCurrentJump
     };
 
 
@@ -543,7 +549,34 @@ Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,da
     if(!!isGrapple)
         this.setPendingGrapple(true);
 
-    var details = new ActionDetails(this.CurrentAnimation.Animation.OverrideFlags,this,who,isProjectile,isGrapple,this.CurrentAnimation.StartFrame,frame,otherPlayer);
+    var hit = new RegisteredHit();
+    hit.AttackFlags = attackFlags;
+    hit.HitState = hitState;
+    hit.Flags = flags;
+    hit.Frame = frame - 2;
+    hit.StartFrame = this.CurrentAnimation.StartFrame;
+    hit.Damage = damage;
+    hit.EnergyToAdd = energyToAdd;
+    hit.IsProjectile = isProjectile;
+    hit.HitX = hitX;
+    hit.HitY = hitY;
+    hit.Who = who;
+    hit.AttackDirection = attackDirection;
+    hit.HitID = hitID;
+    hit.AttackID = attackID;
+    hit.MoveOverrideFlags = moveOverrideFlags;
+    hit.AttackForceX = fx || 0;
+    hit.AttackForceY = fy || 0;
+    hit.BehaviorFlags = behaviorFlags;
+    hit.InvokedAnimationName = invokedAnimationName;
+    hit.HitSound = hitSound || 0;
+    hit.BlockSound = blockSound || 0;
+    hit.OtherPlayer = otherPlayer;
+    hit.NbFreeze = nbFreeze;
+    hit.MaxHits = maxHits;
+    hit.OtherParams = otherParams;
+
+    var details = new ActionDetails(hit,this.CurrentAnimation.Animation.OverrideFlags,this,who,isProjectile,isGrapple,this.CurrentAnimation.StartFrame,frame,otherPlayer);
     if(hasFlag(attackFlags,ATTACK_FLAGS.NO_DELAY))
     {
         details.NoFrameDelay = true;
@@ -572,33 +605,33 @@ Player.prototype.checkPendingHit = function()
     }
 }
 
-Player.prototype.registerHit = function(frame)
+Player.prototype.registerHit = function(frame, registeredHit)
 {
-    this.takeHit(this.RegisteredHit.AttackFlags
-                ,this.RegisteredHit.HitState
-                ,this.RegisteredHit.Flags
-                ,this.RegisteredHit.StartFrame
+    this.takeHit(registeredHit.AttackFlags
+                ,registeredHit.HitState
+                ,registeredHit.Flags
+                ,registeredHit.StartFrame
                 ,frame
-                ,this.RegisteredHit.Damage
-                ,this.RegisteredHit.EnergyToAdd
-                ,this.RegisteredHit.IsProjectile
-                ,this.RegisteredHit.HitX
-                ,this.RegisteredHit.HitY
-                ,this.RegisteredHit.AttackDirection
-                ,this.RegisteredHit.Who
-                ,this.RegisteredHit.HitID
-                ,this.RegisteredHit.AttackID
-                ,this.RegisteredHit.MoveOverrideFlags
-                ,this.RegisteredHit.AttackForceX
-                ,this.RegisteredHit.AttackForceY
-                ,this.RegisteredHit.OtherPlayer
-                ,this.RegisteredHit.BehaviorFlags
-                ,this.RegisteredHit.InvokedAnimationName
-                ,this.RegisteredHit.HitSound
-                ,this.RegisteredHit.BlockSound
-                ,this.RegisteredHit.NbFreeze
-                ,this.RegisteredHit.MaxHits
-                ,this.RegisteredHit.OtherParams
+                ,registeredHit.Damage
+                ,registeredHit.EnergyToAdd
+                ,registeredHit.IsProjectile
+                ,registeredHit.HitX
+                ,registeredHit.HitY
+                ,registeredHit.AttackDirection
+                ,registeredHit.Who
+                ,registeredHit.HitID
+                ,registeredHit.AttackID
+                ,registeredHit.MoveOverrideFlags
+                ,registeredHit.AttackForceX
+                ,registeredHit.AttackForceY
+                ,registeredHit.OtherPlayer
+                ,registeredHit.BehaviorFlags
+                ,registeredHit.InvokedAnimationName
+                ,registeredHit.HitSound
+                ,registeredHit.BlockSound
+                ,registeredHit.NbFreeze
+                ,registeredHit.MaxHits
+                ,registeredHit.OtherParams
                 );
 
 }
@@ -711,6 +744,17 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     var slideAmount = 0;
     var hitStop = 1;
     var isSpecial = hasFlag(attackFlags, ATTACK_FLAGS.SPECIAL) || !!isProjectile;
+    var ignoreRedFireSound = true;
+    var wasBlocked = false;
+
+    var enemyHitStop = 0;
+    if(!!otherParams && !!otherParams.EnemyHitStop)
+    {
+        enemyHitStop = otherParams.EnemyHitStop;
+        if(this.isAirborne() && !!otherParams.AirborneEnemyHitStop)
+            enemyHitStop = otherParams.AirborneEnemyHitStop;
+    }
+
 
     if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_START))
     {
@@ -741,6 +785,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         || hasFlag(attackFlags,ATTACK_FLAGS.HITS_HIGH) && this.isBlockingHigh()
         || !hasFlag(attackFlags,ATTACK_FLAGS.HITS_LOW) && !hasFlag(attackFlags,ATTACK_FLAGS.HITS_HIGH) && this.isBlocking())
     {
+        wasBlocked = true;
         this.stopGettingDizzy();
         /*allow special moves to do some damage*/
         if(!!isSpecial)
@@ -756,8 +801,8 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_LIGHT_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_MEDIUM_HRSLIDE / 2;}
         if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {slideAmount = CONSTANTS.DEFAULT_CROUCH_HARD_HRSLIDE / 2;}
-        this.FreezeUntilFrame = frame + nbFreeze; //(nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
-        this.ShakeUntilFrame = frame + nbFreeze; //(nbFreeze || (this.BaseTakeHitDelay * hitStop));
+        this.FreezeUntilFrame = frame + (enemyHitStop || nbFreeze); //(nbFreeze || CONSTANTS.DEFAULT_BLOCK_FREEZE_FRAME_COUNT);
+        this.ShakeUntilFrame = frame + (enemyHitStop || nbFreeze); //(nbFreeze || (this.BaseTakeHitDelay * hitStop));
         //notify AI
         this.onBlocked();
         if(!!otherPlayer)
@@ -781,13 +826,28 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
             this.incCombo(attackID);
             if(!!otherParams.Combo && !!this.Hits[attackID])
             {
-                if(hasFlag(otherParams.Combo,COMBO_FLAGS.RED_FIRE_ON_MAX_HIT) && !!maxHits && (this.Hits[attackID].Nb >= maxHits))
+                if(hasFlag(otherParams.Combo,COMBO_FLAGS.RED_FIRE_SOUND_ON_MAX_HIT) && !!maxHits && (this.Hits[attackID].Nb >= maxHits))
                 {
                     attackFlags |= ATTACK_FLAGS.RED_FIRE;
+                    ignoreRedFireSound = false;
+                }
+                else if(hasFlag(otherParams.Combo,COMBO_FLAGS.RED_FIRE_SOUND_ON_MAX_HIT))
+                {
+                    attackFlags |= ATTACK_FLAGS.RED_FIRE_NO_SOUND;
+                    ignoreRedFireSound = true;
+                }
+                else if(hasFlag(otherParams.Combo,COMBO_FLAGS.RED_FIRE_ON_MAX_HIT) && !!maxHits && (this.Hits[attackID].Nb >= maxHits))
+                {
+                    attackFlags |= ATTACK_FLAGS.RED_FIRE;
+                    ignoreRedFireSound = false;
                 }
                 else if(hasFlag(otherParams.Combo,COMBO_FLAGS.BLUE_FIRE_ON_FIRST_HIT) && (this.Hits[attackID].Nb == 1))
                 {
                     attackFlags |= ATTACK_FLAGS.BLUE_FIRE;
+                }
+                else if(hasFlag(otherParams.Combo,COMBO_FLAGS.KNOCKDOWN_ON_MAX_HIT) && !!maxHits && (this.Hits[attackID].Nb >= maxHits))
+                {
+                    attackFlags |= ATTACK_FLAGS.KNOCKDOWN;
                 }
             }
         }
@@ -795,7 +855,9 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         if(!!energyToAdd && !(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)))
             energyToAdd = Math.ceil(energyToAdd/2);
         if(!(hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)))
-            this.ShakeUntilFrame = frame + nbFreeze; //(nbFreeze || (this.BaseTakeHitDelay * hitStop));
+        {
+            this.ShakeUntilFrame = frame + (enemyHitStop || nbFreeze); //(nbFreeze || (this.BaseTakeHitDelay * hitStop));
+        }
 
         if(this.Flags.Pose.has(POSE_FLAGS.CROUCHING))
         {
@@ -835,7 +897,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     else
         relAttackDirection = this.getAttackDirection(attackDirection);
 
-    if(!__debugMode && !__noDamage)
+    if(!__noDamage)
         this.takeDamage(damage);
     this.changeEnergy(energyToAdd);
     if(this.isDead() && !this.IsLosing)
@@ -857,16 +919,18 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
             
             if(!!flags) { this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection); }
 
-            if(this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE)) { ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true);}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.BLUE_FIRE)) { ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);}
-            else if(this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE) || hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE_NO_SOUND)) { ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true);}
-            else if(hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE)) { ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy); }
+            if(this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE)) { enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP; ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true);}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.BLUE_FIRE)) { enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP; ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);}
+            else if(this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE) || hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE_NO_SOUND)) { enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP; ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreRedFireSound);}
+            else if(hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE)) { enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP; ignoreDeadAnimation = true; attackDirection = this.getRelativeDirection(attackDirection);this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy); }
+            this.ShakeUntilFrame = frame + (enemyHitStop || nbFreeze);
         }
         if(hasFlag(flags,ATTACK_FLAGS.SUPER) || hasFlag(attackFlags,ATTACK_FLAGS.SUPER))
             announcer_.runSuperComboFinish();
         else
             this.queueHitSound(hitSound);
         this.forceLose(attackDirection,ignoreDeadAnimation);
+        this.setHoldFrame(enemyHitStop || nbFreeze);        
         return;
     }
 
@@ -885,8 +949,8 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     {
         this.setBeingGrappled(false);
         attackDirection = -this.getRelativeDirection(attackDirection);
-        this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
-        hitStop = 0;
+        this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
+        enemyHitStop = 0;
     }
     else if(this.isBlocking())
     {
@@ -903,28 +967,54 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         attackDirection = this.getRelativeDirection(attackDirection);
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true);
+        this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true,otherParams);
+        enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP;;
     }
     else if(this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE) || hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE_NO_SOUND))
     {
         attackDirection = this.getRelativeDirection(attackDirection);
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,true);
+        this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreRedFireSound,otherParams);
+        enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP;;
     }
     else if(hasFlag(attackFlags,ATTACK_FLAGS.BLUE_FIRE))
     {
         attackDirection = this.getRelativeDirection(attackDirection);
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+        this.blueKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
+        enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP;;
     }
     else if(hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE))
     {
         attackDirection = this.getRelativeDirection(attackDirection);
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+        this.redKnockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
+        enemyHitStop = CONSTANTS.DEFAULT_FIRE_HITSTOP;;
+    }
+    else if(!!otherParams.HitReact && (
+            (hasFlag(otherParams.HitReact,HIT_REACT.AIRBORNE_EJECT) && this.isAirborne())
+            || (hasFlag(otherParams.HitReact,HIT_REACT.EJECT))
+        ))
+    {
+        if(hasFlag(otherParams.HitReact,HIT_REACT.EJECT))
+        {
+            attackDirection = this.getRelativeDirection(attackDirection);
+
+            if(!!flags)
+                this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
+            this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
+        }
+        if(hasFlag(otherParams.HitReact,HIT_REACT.AIRBORNE_EJECT) && this.isAirborne())
+        {
+            attackDirection = this.getRelativeDirection(attackDirection);
+
+            if(!!flags)
+                this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
+            this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
+        }
     }
     else if(hasFlag(attackFlags,ATTACK_FLAGS.TRIP))
     {
@@ -1020,13 +1110,27 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
     if(hasFlag(attackFlags,ATTACK_FLAGS.NO_HIT_DELAY))
     {
-        hitStop = 0;
+        enemyHitStop = 0;
         nbFreeze = 0;
     }
 
-    this.setHoldFrame(nbFreeze);// || (this.BaseTakeHitDelay * hitStop));
+    this.setHoldFrame(enemyHitStop || nbFreeze);// || (this.BaseTakeHitDelay * hitStop));
     if(!this.isBlocking())
         this.queueHitSound(hitSound);
+
+    if((-1 == this.getMatch().getDefeatedTeam()) && !wasBlocked && isProjectile)
+    {
+        var nbFrames = 20;
+        var speed = 0;
+
+        if(!!otherParams.GameSpeedOnHit)
+        {
+            nbFrames = otherParams.GameSpeedOnHit.NbFrames || 20;
+            speed = otherParams.GameSpeedOnHit.Speed || 0;
+        }
+        game_.goSlow(nbFrames,speed);
+    }
+
 
     return true;
 }
@@ -1040,7 +1144,7 @@ Player.prototype.forceWinAnimation = function(frame)
 {
     var name = this.WinAnimationNames[Math.ceil(Math.random() * this.WinAnimationNames.length) - 1];
     if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
-    this.executeAnimation(name);
+    this.executeAnimation(name, true, true);
     this.clearInput();
 }
 /*Player is defeated*/
@@ -1156,58 +1260,62 @@ Player.prototype.abortThrow = function()
     }
 }
 /*Player gets knocked down*/
-Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
+Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound,otherParams)
 {
     var move = this.Moves[this.MoveNdx.Eject];
     if(!!move)
     {
         //attackDirection = this.getRelativeDirection(attackDirection);
         var direction = this.getAttackDirection(attackDirection);
-        this.setCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.Direction, AttackDirection:direction, Vx:move.Vx * fx, Vy:move.Vy * fy});
+        if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
+            this.setCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.Direction, AttackDirection:direction, Vx:move.Vx * fx, Vy:move.Vy * fy});
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
-        this.performJump(direction * move.Vx * fx,move.Vy * fy);
+        this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
     }
 }
 /*Player gets knocked down*/
-Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
+Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound,otherParams)
 {
     var move = this.Moves[this.MoveNdx.KnockDown];
     if(!!move)
     {
         this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
-        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
+        if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
+            this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
-        this.performJump(direction * move.Vx * fx,move.Vy * fy);
+        this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
     }
 }
 /*Player turns blue and gets knocked down*/
-Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound)
+Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound,otherParams)
 {
     var move = this.Moves[this.MoveNdx.BlueFire];
     if(!!move)
     {
         this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
-        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
+        if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
+            this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
-        this.performJump(direction * move.Vx * fx,move.Vy * fy);
+        this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
         this.Flags.Player.add(PLAYER_FLAGS.BLUE_FIRE);
         if(!ignoreSound)
             this.queueLightFireSound();
     }
 }
 /*Player turns red and gets knocked down*/
-Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound)
+Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,ignoreSound,otherParams)
 {
     var move = this.Moves[this.MoveNdx.RedFire];
     if(!!move)
     {
         this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
-        this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
+        if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
+            this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
-        this.performJump(direction * move.Vx * fx,move.Vy * fy);
+        this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
         this.Flags.Player.add(PLAYER_FLAGS.RED_FIRE);
         if(!ignoreSound)
             this.queueLightFireSound();

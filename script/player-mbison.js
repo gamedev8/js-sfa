@@ -51,7 +51,7 @@ Player.prototype.createMBison = function(user)
 
     var win3 = player.addAnimation(MISC_FLAGS.NONE,"win 3",0,["win3"],0,false);
     win3.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    win3.KeepAirborneFunctions = true;
+    win3.KeepCurrentAirborneFunctions = true;
     win3.AirborneStartDeltaY = 300;
     win3.Vy = 1;
     win3.Vx = 0;
@@ -278,7 +278,7 @@ Player.prototype.createMBison = function(user)
     hitReact_eject.Vx = (35);
     hitReact_eject.Vy = (200);
     hitReact_eject.addFrame(player,0,"",folder + "/hit-floored-0.png",32,{Player:PLAYER_FLAGS.INVULNERABLE},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_eject.addFrame(player,0,"",folder + "/hit-floored-1.png",CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE});
+    hitReact_eject.addFrame(player,0,"",folder + "/hit-floored-1.png",CONSTANTS.FRAME_MAX,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE,Juggle:JUGGLE_FLAGS.IGNORE});
     hitReact_eject.chain(hitReact_bounce);
 
 
@@ -563,9 +563,9 @@ Player.prototype.createMBison = function(user)
     k1.ButtonSequence.push([{Button:BUTTONS.LIGHT_KICK,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     k1.ButtonCount = 1;
     k1.Flags = ({Pose:POSE_FLAGS.STANDING,Player:PLAYER_FLAGS.MOVE_TO_BACK});
-    k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
+    k1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING);
     k1.addFrame(player,0,"",folder + "/k1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,1,-10);
-    k1.addFrame(player,0,"",folder + "/k1-1.png",7,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,30,null,54,-1,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.LOW,x: 270,y: 185 },{ state: HIT_FLAGS.LOW,x: 290,y: 95}],ATTACK_FLAGS.LIGHT,1,1,10);
+    k1.addFrame(player,0,"",folder + "/k1-1.png",7,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LK },MISC_FLAGS.NONE,0,0,0,30,null,54,-1,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.LOW,x: 270,y: 185 },{ state: HIT_FLAGS.LOW,x: 290,y: 95},{ state: HIT_FLAGS.LOW,x: 220,y: 145}],ATTACK_FLAGS.LIGHT,1,1,10);
     k1.endBlock();
     k1.addFrame(player,0,"",folder + "/turn-2.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-10,-11);
 
@@ -574,7 +574,7 @@ Player.prototype.createMBison = function(user)
     k2.ButtonCount = 1;
     k2.Flags = ({Pose:POSE_FLAGS.STANDING,Player:PLAYER_FLAGS.MOVE_TO_BACK});
     k2.setMediumAttack();
-    k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
+    k2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING);
     k2.addFrame(player,0,"",folder + "/k1-0.png",4,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,1,-10);
     k2.addFrame(player,0,"",folder + "/k2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,40,10);
     k2.addFrame(player,0,"",folder + "/k2-1.png",8,{SwingSound:SWINGSOUND.MP,Pose:POSE_FLAGS.ALLOW_INTERUPT_1,Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.MK},MISC_FLAGS.NONE,0,0,0,30,null,40,0,ATTACK_FLAGS.MEDIUM,[{state:HIT_FLAGS.LOW,x:230,y:165},{state:HIT_FLAGS.LOW,x:300,y:165},{state:HIT_FLAGS.LOW,x:370,y:165}],ATTACK_FLAGS.MEDIUM,CONSTANTS.SECOND_HIT,1,8);
@@ -601,7 +601,7 @@ Player.prototype.createMBison = function(user)
     p1.ButtonSequence.push([{Button:BUTTONS.LIGHT_PUNCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.ATTACKBUTTON_FRAMES}]);
     p1.ButtonCount = 1;
     p1.Flags = ({Pose:POSE_FLAGS.STANDING,Player:PLAYER_FLAGS.MOVE_TO_BACK});
-    p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
+    p1.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING);
     p1.addFrame(player,0,"",folder + "/p1-0.png",2,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-3,-11);
     p1.addFrame(player,0,"",folder + "/p1-1.png",3,{ SwingSound:SWINGSOUND.LP,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,30,null,-15,-11,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.LOW,x: 220,y: 193 },{ state: HIT_FLAGS.HIGH,x: 320,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
     p1.addFrame(player,0,"",folder + "/p1-2.png",3,{ Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.ALLOW_INTERUPT_1,HitSound:HITSOUND.LP },MISC_FLAGS.NONE,0,0,0,30,null,-25,-11,ATTACK_FLAGS.LIGHT,[{ state: HIT_FLAGS.LOW,x: 220,y: 193 },{ state: HIT_FLAGS.HIGH,x: 320,y: 193}],ATTACK_FLAGS.LIGHT,1,1,10);
@@ -614,7 +614,7 @@ Player.prototype.createMBison = function(user)
     p2.ButtonCount = 1;
     p2.Flags = ({Pose:POSE_FLAGS.STANDING,Player:PLAYER_FLAGS.MOVE_TO_BACK});
     p2.setMediumAttack();
-    p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING,OVERRIDE_FLAGS.AIRBORNE);
+    p2.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.CROUCHING);
     p2.addFrame(player,0,"",folder + "/p2-0.png",3,MISC_FLAGS.NONE,{ Player: PLAYER_FLAGS.MOBILE },0,0,0,0,null,-60,-11);
     p2.addFrame(player,0,"",folder + "/p2-1.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-60,-11);
     p2.addFrame(player,0,"",folder + "/p2-3.png",2,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-6,-11);
@@ -764,7 +764,7 @@ Player.prototype.createMBison = function(user)
     var psychoGlove = player.addAnimation(POSE_FLAGS.AIR_COMBO_1,"psycho glove",0,[BUTTONS.HARD_PUNCH],0,true,true);
     psychoGlove.ButtonSequence.push([{Button:[BUTTONS.HARD_PUNCH,BUTTONS.MEDIUM_PUNCH],State:BUTTON_STATE.PRESSED}]);
     psychoGlove.ButtonCount = 1;
-    psychoGlove.KeepAirborneFunctions = true;
+    psychoGlove.KeepCurrentAirborneFunctions = true;
     psychoGlove.addAlternateKeySequence([BUTTONS.LIGHT_PUNCH]);
     psychoGlove.addAlternateKeySequence([BUTTONS.MEDIUM_PUNCH]);
     psychoGlove.addFrameWithSound(player,1,"audio/mbison/thrust-0.zzz",0,"",folder + "/head_stomp-8.png",6,{Combat:COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP},MISC_FLAGS.NONE,0,0,0,20,null,0,0,ATTACK_FLAGS.HITS_HIGH|ATTACK_FLAGS.HARD,[{state:HIT_FLAGS.LOW,x:220,y:0,Fx : airKnockBackX,Fy : 0},{state:HIT_FLAGS.LOW,x:160,y:0,Fx : airKnockBackX,Fy : 0}],ATTACK_FLAGS.HARD,1,1,20);
@@ -862,7 +862,7 @@ Player.prototype.createMBison = function(user)
     psychoGloveDismount.chain(psychoGlove);
 
 
-    var psychoGloveJump = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"head stomp",CONSTANTS.MAX_FRAME,[BUTTONS.CROUCH|BUTTONS.CHARGE,0,BUTTONS.JUMP,BUTTONS.JUMP|BUTTONS.HARD_PUNCH],0,true,true);
+    var psychoGloveJump = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.ALLOW_INTERUPT_1,"psycho glove jump",CONSTANTS.MAX_FRAME,[BUTTONS.CROUCH|BUTTONS.CHARGE,0,BUTTONS.JUMP,BUTTONS.JUMP|BUTTONS.HARD_PUNCH],0,true,true);
     psychoGloveJump.ButtonSequence.push([btn(BUTTONS.CROUCH,BUTTON_STATE.PRESSED,CONSTANTS.NBCHARGE_FRAMES)]);
     psychoGloveJump.ButtonSequence.push([btn(BUTTONS.CROUCH,BUTTON_STATE.NONE),btn(BUTTONS.JUMP,BUTTON_STATE.PRESSED,0,CONSTANTS.NBINTERIM_FRAMES),btn([BUTTONS.LIGHT_PUNCH,BUTTONS.MEDIUM_PUNCH,BUTTONS.HARD_PUNCH],BUTTON_STATE.PRESSED)]);
     psychoGloveJump.ButtonCount = 3;
@@ -1021,11 +1021,10 @@ Player.prototype.createMBison = function(user)
         else if(x == 1) psycho_crusher.MaxNbHits = 4;
         else if(x == 0) psycho_crusher.MaxNbHits = 3;
         psycho_crusher.IsSuperMove = true;
-        psycho_crusher.IgnoreDepressedKeys = true;
         psycho_crusher.MaintainYPosition = true;
         psycho_crusher.EnergyToSubtract = CONSTANTS.ONE_LEVEL * (x + 1);
 
-        psycho_crusher.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.NONE);
+        psycho_crusher.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.HPROJECTILE,OVERRIDE_FLAGS.NONE);
         psycho_crusher.Vy = 50;
         psycho_crusher.Vx = 50;
         psycho_crusher.AirborneStartDeltaY = 30;
@@ -1105,7 +1104,7 @@ Player.prototype.createMBison = function(user)
     for(var x = 0; x < 3; ++x)
     {
         xSpeed = x + 10;
-        var projectile = player.addProjectile("projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("projectile",160,180,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;

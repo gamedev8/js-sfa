@@ -1,4 +1,4 @@
-﻿var CreateKenAI = function(player)
+﻿var CreateSagatAI = function(player)
 {
     //*****************************************************
     //******************  PRIVATE STATE    ****************
@@ -14,7 +14,6 @@
         ,RESET: 1 << 7
         ,JUMP_IN: 1 << 8
         ,CANCEL_IF_ANIMATION_CHANGED: 1 << 9
-        ,ROLL_TO_ENEMY: 1 << 10
     };
 
     //private member
@@ -28,18 +27,19 @@
     var hardFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:64} ];
 
     //private member
-    var lightSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.LIGHT_KICK} ];
-    var mediumSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.MEDIUM_KICK} ];
-    var hardSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.HARD_KICK} ];
-
-    var hardRollInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.HARD_PUNCH} ];
-    var mediumRollInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ];
-    var lightRollInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.LIGHT_PUNCH} ];
+    var lightLowFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:128} ];
+    var mediumLowFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:256} ];
+    var hardLowFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:512} ];
 
     //private member
     var lightUppercutInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:16} ];
     var mediumUppercutInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:32} ];
     var hardUppercutInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:64} ];
+
+    //private member
+    var lightTiggerKneeInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:128} ];
+    var mediumTiggerKneeInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:256} ];
+    var hardTiggerKneeInput_ = [ {IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:true,Button:512} ];
 
     var kicks_ = [ [ {IsDown:true,Button:BUTTONS.LIGHT_KICK} ] ,[ {IsDown:true,Button:BUTTONS.MEDIUM_KICK} ] ,[ {IsDown:true,Button:BUTTONS.HARD_KICK} ] ];
     var punches_ = [ [ {IsDown:true,Button:BUTTONS.LIGHT_PUNCH} ] ,[ {IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ] ,[ {IsDown:true,Button:BUTTONS.HARD_PUNCH} ], [ {IsDown:true,Button:BUTTONS.FORWARD}, {IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ] ];
@@ -69,19 +69,23 @@
 
 
     //
-    var KenAI = function()
+    var SagatAI = function()
     {
         this.AI = CreateGenericAI(player);
         this.initCombos();
     }
 
-    KenAI.prototype.initCombos = function()
+    SagatAI.prototype.initCombos = function()
     {
         this.AI.SingleMoves = {
             "u1" : [{A:0, B:"u1"}]
             ,"u2" : [{A:0, B:"u2"}]
             ,"u3" : [{A:0, B:"u3"}]
+            ,"tk1" : [{A:0, B:"tk1"}]
+            ,"tk2" : [{A:0, B:"tk2"}]
+            ,"tk3" : [{A:0, B:"tk3"}]
             ,"lp3" : [{A:0, B:"lp3"}]
+            ,"lk3" : [{A:0, B:"lk3"}]
             ,"p1" : [{A:0, B:"p1"}]
             ,"p2" : [{A:0, B:"p2"}]
             ,"p3" : [{A:0, B:"p3"}]
@@ -91,7 +95,8 @@
         };
 
         this.AI.VeryCloseCombos = [
-             [{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE,D:-999}, {A:0,B:"t1"}]
+             //[{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE,D:-999}, {A:0,B:"t1"}]
+            [{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"lk3"}]
             ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
             ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
             ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
@@ -143,72 +148,70 @@
         this.AI.JumpInCombos = [
             [{A:5, B:"jump_in", C:100,D:-999}, {A:35, B:"k3"}, {A:20, B:"lk3"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:35, B:"k3"}, {A:20, B:"lk2"}, {A:14, B:"lk3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"hk3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"u3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"fb1"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:33, B:"k3"}, {A:20, B:"u1"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:20, B:"hk3"}]
-            ,[{A:5, B:"jump_in",C:100,D:100}, {A:15, B:"hk3", H:true}, {A:25, B:"k1"}, {A:13, B:"k2"}, {A:30, B:"u3"}]
-            /*cross up*/
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:32, B:"k2"}, {A:24,B:"lk3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"u3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"fb1"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"hk3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"lk3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:11,B:"lk1"}, {A:18,B:"lk3"}]
         ];
 
         this.AI.CounterProjectileCombos = [
-            [{A:5, B:"fj"}, {A:28, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"p2"}, {A:15,B:"sfb3"}]
-            ,[{A:5, B:"fj"}, {A:27, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:27, B:"k3"}, {A:21,B:"lk3"}]
-            ,[{A:2, B:"fj"}, {A:5, B:"hk3"}]
-            ,[{A:2, B:"fj"}, {A:5, B:"hk2"}]
+            [{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23, B:"lk3"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"k2"}, {A:15,B:"sfb3"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"k3"}]
         ];
 
         this.AI.CounterCloseProjectileCombos = [
-            [{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"k2"}, {A:14,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2"}, {A:14,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"lk2"}, {A:14,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2"}, {A:14,B:"k3"}, {A:12,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2"}, {A:14,B:"u3"}]
-            ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:20, B:"p3"}, {A:28,B:"lk3"}]
-            ,[{A:2, B:"fj"}, {A:20, B:"hk3"}]
-            ,[{A:2, B:"fj"}, {A:20, B:"hk2"}]
-            ,[{A:0, B:"roll2_in"}]
+            [{A:5, B:"fj"}, {A:25, B:"k3"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"k3"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"lk3"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"k3"}, {A:14,B:"tk1"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"k3"}]
         ];
 
-        this.AI.RollInCombos = [
-            [{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2"}]
-            ,[{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2"}, {A:9,B:"fb3"}]
-            ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3"}]
-            ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3"}, {A:9,B:"fb3"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk3"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2"}, {A:9,B:"fb3"}]
-            ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2"}, {A:9,B:"fb3"}]
-            ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:15, B:"k3"}]
-            ,[{A:0,B:"roll3_in", C:90}, {A:0,B:"lk2", H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2"}, {A:9,B:"hk1"}]
-            ,[{A:0,B:"roll3_in"}, {A:5, B:"fb3"}]
-            ,[{A:0,B:"roll3_in"}, {A:10, B:"fb3"}]
-            ,[{A:0,B:"roll3_in"}, {A:15, B:"fb3"}]
+        this.AI.CounterVeryCloseProjectileCombos = [
+            [{A:0, B:"lk3"}]
+            ,[{A:0, B:"k2"}]
+            ,[{A:0, B:"k2"}, {A:10, B:"lk3"}]
+            ,[{A:0, B:"k2"}]
         ];
 
-        this.AI.CounterCloseJumpInCombos = [
-            [{A:0,B:"roll1_in"}]
-            ,[{A:0,B:"roll2_in"}]
+        this.AI.CounterVeryVeryCloseProjectileCombos = [
+            [{A:0, B:"lk1"}, {A:10, B:"tk1"}]
+            ,[{A:0, B:"lk1"}, {A:10, B:"lk2"}]
+            ,[{A:0, B:"lk1"}, {A:10, B:"lk2"}, {A:15, B:"lk3"}]
+            ,[{A:0, B:"lk1"}, {A:10, B:"lk2"}, {A:15, B:"lp3"}]
+            ,[{A:0, B:"lk3"}]
+        ];
+
+        this.AI.ReactAirborneCombos = [
+            [{A:0,B:"u3"}]
+            ,[{A:0,B:"tk3"}]
+            ,[{A:0,B:"p2"}]
+            ,[{A:0,B:"k3"}]
+            ,[{A:0,B:"k3"}]
+        ];
+
+        this.AI.ReactNotAirborneCombos = [
+            [{A:0,B:"tk1"}]
+            ,[{A:0,B:"k1"}]
+            ,[{A:0,B:"k2"}]
+            ,[{A:0,B:"k2"}, {A:10, B:"lk3"}]
+            ,[{A:0,B:"lk3"}]
+            ,[{A:0,B:"lk3"}]
+        ];
+
+        this.AI.FloatCounters = [
+            [{A:0,B:"u3"}]
+            ,[{A:0,B:"k3"}]
+            ,[{A:0,B:"k3"}]
+            ,[{A:0,B:"k3"}]
         ];
     }
 
 
 
-    KenAI.prototype.throwSuperFireball = function()
+    SagatAI.prototype.throwSuperFireball = function(forced)
     {
         var energyLevel = this.AI.Player.getEnergyLevel();
         if(energyLevel > 0)
         {
-            if(getRand() > 50)
+            if((getRand() > 50) || !!forced)
             {
                 var which = Math.floor(Math.random() * energyLevel) + 1
                 switch(which)
@@ -225,11 +228,11 @@
         return false;
     }
 
-    KenAI.prototype.getForwardKey = function() {this.AI.Player.MustChangeDirection ? BUTTONS.BACK : BUTTONS.FORWARD;}
-    KenAI.prototype.wanderForward = function(nbFrames) { this.AI.Actions.push(this.AI.createAction(0,null,fwd_)); this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.CLEAR_INPUT)); }
-    KenAI.prototype.wanderBackward = function(nbFrames) { this.AI.Actions.push(this.AI.createAction(0,null,bk_)); this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.CLEAR_INPUT)); }
+    SagatAI.prototype.getForwardKey = function() {this.AI.Player.MustChangeDirection ? BUTTONS.BACK : BUTTONS.FORWARD;}
+    SagatAI.prototype.wanderForward = function(nbFrames) { this.AI.Actions.push(this.AI.createAction(0,null,fwd_)); this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.CLEAR_INPUT)); }
+    SagatAI.prototype.wanderBackward = function(nbFrames) { this.AI.Actions.push(this.AI.createAction(0,null,bk_)); this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.CLEAR_INPUT)); }
 
-    KenAI.prototype.executeThrow = function(which,igoreMoveToEnemy)
+    SagatAI.prototype.executeThrow = function(which,igoreMoveToEnemy)
     {
         if(!igoreMoveToEnemy)
             this.AI.moveToEnemy();
@@ -241,11 +244,11 @@
         this.AI.Actions.push(this.AI.createAction(CONSTANTS.ATTACKBUTTON_FRAMES,FLAGS.CLEAR_INPUT));
     }
 
-    KenAI.prototype.executeFireball = function(rnd)
+    SagatAI.prototype.executeFireball = function(rnd)
     {
         if(!this.AI.Player.isMobile())
             return false;
-        if(rnd > 66)
+        if(rnd > 50)
         {
             this.AI.Actions.push(this.AI.createAction(0,FLAGS.CLEAR_INPUT,lightFireballInput_));
             this.AI.Actions.push(this.AI.createAction(1,FLAGS.CLEAR_INPUT));
@@ -259,71 +262,89 @@
         }
     }
 
-    //AI player will roll to the enemy it is facing
-    KenAI.prototype.hardRollInToEnemy = function(nbFrames,dist) { this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.ROLL_TO_ENEMY|FLAGS.CANCEL_IF_ANIMATION_CHANGED,hardRollInput_,"roll p3",dist)); }
-    KenAI.prototype.mediumRollInToEnemy = function(nbFrames,dist) { this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.ROLL_TO_ENEMY|FLAGS.CANCEL_IF_ANIMATION_CHANGED,mediumRollInput_,"roll p2",dist)); }
-    KenAI.prototype.lightRollInToEnemy = function(nbFrames,dist) { this.AI.Actions.push(this.AI.createAction(nbFrames,FLAGS.ROLL_TO_ENEMY|FLAGS.CANCEL_IF_ANIMATION_CHANGED,lightRollInput_,"roll p1",dist)); }
+    SagatAI.prototype.executeLowFireball = function(rnd)
+    {
+        if(!this.AI.Player.isMobile())
+            return false;
+        if(rnd > 50)
+        {
+            this.AI.Actions.push(this.AI.createAction(0,FLAGS.CLEAR_INPUT,lightLowFireballInput_));
+            this.AI.Actions.push(this.AI.createAction(1,FLAGS.CLEAR_INPUT));
+            return true;
+        }
+        else
+        {
+            this.AI.Actions.push(this.AI.createAction(0,FLAGS.CLEAR_INPUT,hardLowFireballInput_));
+            this.AI.Actions.push(this.AI.createAction(1,FLAGS.CLEAR_INPUT));
+            return true;
+        }
+    }
 
 
-    KenAI.prototype.parseAndSendInput = function()
+    SagatAI.prototype.parseAndSendInput = function()
     {
         return this.AI.parseAndSendInput();
     }
 
-    KenAI.prototype.onNewRound = function()
+    SagatAI.prototype.onNewRound = function()
     {
         this.AI.reset();
     }
 
-    KenAI.prototype.reset = function()
+    SagatAI.prototype.reset = function()
     {
         this.AI.reset();
     }
 
-    KenAI.prototype.test = function()
+    SagatAI.prototype.test = function()
     {
     }
 
-    KenAI.prototype.clearInput = function()
+    SagatAI.prototype.clearInput = function()
     {
         this.AI.clearInput();
     }
 
-    KenAI.prototype.onStartNonAttack = function(frame, attacker)
+    SagatAI.prototype.onStartNonAttack = function(frame, attacker)
     {
         this.AI.onStartNonAttack(frame,attacker);
     }
     //fired when the player gets hit
-    KenAI.prototype.onTakeHit = function(frame, attacker)
+    SagatAI.prototype.onTakeHit = function(frame, attacker)
     {
         this.AI.onTakeHit(frame, attacker);
     }
     //fired when the player gets hit
-    KenAI.prototype.onBlocked = function(frame, attacker)
+    SagatAI.prototype.onBlocked = function(frame, attacker)
     {
         this.AI.onBlocked(frame,attacker);
     }
     //fired when any enemy attack ends
-    KenAI.prototype.onEnemyEndAttack = function(frame, attacker)
+    SagatAI.prototype.onEnemyEndAttack = function(frame, attacker)
     {
-        this.reactAirborne(frame,attacker);
         this.AI.clearInput();
+        //this.react(frame,attacker);
     }
     //fired when any enemy attack ends
-    KenAI.prototype.onEnemyVulnerable = function(frame, attacker)
+    SagatAI.prototype.onEnemyVulnerable = function(frame, attacker, x, y)
     {
-        this.AI.clearInput();
-        this.react(frame, attacker)
+        this.react(frame, attacker, true, x, y)
+    }
+    //fired when any enemy attack ends
+    SagatAI.prototype.onEnemyFloating = function(frame, attacker, x, y)
+    {
+        this.reactFloat(frame, attacker, x, y)
     }
     //fired every frame an enemy attack is pending
-    KenAI.prototype.onEnemyAttackPending = function(frame,x,y,player,isSuperMove)
+    SagatAI.prototype.onEnemyAttackPending = function(frame,x,y,player,isSuperMove)
     {
     }
     //fired every frame an enemy projectile is pending
-    KenAI.prototype.onEnemyProjectilePending = function(frame,x,y,player,isSuperMove)
+    SagatAI.prototype.onEnemyProjectilePending = function(frame,x,y,player,isSuperMove)
     {
         //just before the projectile is actually thrown, the attacker will be used instead of the projectile
         //if the player is facing the projectile, then counter it
+        var nbFrames = frame - player.CurrentAnimation.StartFrame;
         if(!this.AI.isProjectileReactBusy() 
             && !this.AI.Player.isAirborne() 
             && !this.AI.Player.isBlocking() 
@@ -333,16 +354,26 @@
         {
             var dist = this.AI.Player.getDistanceFromSq(x,y);
 
-            //console.log(dist);
+
+            this.reset();
+            var rnd = getRand();
+            if(rnd > 45)
+            {
+                if(!this.throwSuperFireball(true))
+                    this.executeFireball();
+                this.AI.setProjectileReactBusy();
+                return;
+            }
+
 
             //jump in
-            if(dist < 150000 && dist > 81000)
+            if(dist < 150000 && dist > 90000)
             {
                 this.reset();
                 this.doCounterCloseProjectileCombo();
                 this.AI.setProjectileReactBusy();
             }
-            else if(dist < 250000 && dist > 81000)
+            else if(dist < 250000 && dist > 90000)
             {
                 this.reset();
                 this.doCounterProjectileCombo();
@@ -350,24 +381,29 @@
             }
             else if(dist < 20000)
             {
-                var rnd = getRand();
-                if(rnd > 50)
-                {
-                    this.doMove("u1");
-                }
-                else
-                {
-                    this.reset();
-                    if(!this.throwSuperFireball(true))
-                        this.doMove("u1");
-                    this.AI.setProjectileReactBusy();
-                }
+                //Don't try to counter if we can not get a move off in time.
+                if(nbFrames > 1)
+                    return;
+
+                this.reset();
+                this.doCounterVeryVeryCloseProjectileCombo();
+                this.AI.setProjectileReactBusy();
+            }
+            else if(dist < 75000)
+            {
+                //Don't try to counter if we can not get a move off in time.
+                if(nbFrames > 1)
+                    return;
+
+                this.reset();
+                this.doCounterVeryCloseProjectileCombo();
+                this.AI.setProjectileReactBusy();
             }
         }
         //this.AI.onEnemyProjectileMoved(frame,x,y,projectile,isSuperMove);
     }
     //fired every frame an ememy projectile is active
-    KenAI.prototype.onEnemyProjectileMoved = function(frame,id,x,y,projectile,isSuperMove)
+    SagatAI.prototype.onEnemyProjectileMoved = function(frame,id,x,y,projectile,isSuperMove)
     {
         if(!!this.AI.IgnoreProjectileGone)
             return;
@@ -382,172 +418,164 @@
 
             //console.log(dist);
 
-            if(dist > 85000)
+            if(dist > 55000)
             {
                 this.reset();
                 var rnd = getRand();
-                this.executeFireball();
+                if(rnd > 70)
+                {
+                    this.executeFireball();
+                }
+                else
+                {
+                    if(!this.throwSuperFireball(true))
+                        this.executeFireball();
+                }
                 this.AI.setProjectileReactBusy();
                 return;
-            }
-            else
-            {
-                //jump straight up, over the projectile
-                this.AI.IgnoreProjectileGone = true;
-                switch(projectile.XSpeed)
-                {
-                    case 10: { if(dist < 74000 && dist > 64000) { this.reset(); this.AI.jumpUp(); this.AI.setProjectileReactBusy(); return; } break; }
-                    case 11: { if(dist < 92000 && dist > 64000) { this.reset(); this.AI.jumpUp(); this.AI.setProjectileReactBusy(); return; } break; }
-                    case 12: { if(dist < 92000 && dist > 64000) { this.reset(); this.AI.jumpUp(); this.AI.setProjectileReactBusy(); return; } break; }
-                }
             }
         }
         this.AI.onEnemyProjectileMoved(frame,x,y,projectile,isSuperMove);
     }
     //fired when a projectile is off screen
-    KenAI.prototype.onEnemyProjectileGone = function(frame, id)
+    SagatAI.prototype.onEnemyProjectileGone = function(frame, id)
     {
         this.AI.onEnemyProjectileGone();
     }
     //fired when an enemy has been hit
-    KenAI.prototype.onAttackStateChanged = function(who,state)
+    SagatAI.prototype.onAttackStateChanged = function(who,state)
     {
         this.AI.onAttackStateChanged(who,state);
     }
     //fired every attack frame
-    KenAI.prototype.onEnemyContinueAttack = function(frame, attacker, hitPoints)
+    SagatAI.prototype.onEnemyContinueAttack = function(frame, attacker, hitPoints)
     {
         this.AI.onEnemyContinueAttack(frame,attacker,hitPoints);
-        this.reactAirborne(frame,attacker);
     }
 
     //fired at the start of any enemy attack
-    KenAI.prototype.onEnemyStartAttack = function(frame, attacker)
+    SagatAI.prototype.onEnemyStartAttack = function(frame, attacker)
     {
         this.AI.onEnemyStartAttack(frame,attacker);
     }
 
     //fired at the start of any enemy attack
-    KenAI.prototype.onStartAttack = function()
+    SagatAI.prototype.onStartAttack = function()
     {
         this.AI.onStartAttack();
     }
 
     //fired at the end of any attack
-    KenAI.prototype.onAnimationEnded = function(name)
+    SagatAI.prototype.onAnimationEnded = function(name)
     {
         this.AI.onAnimationEnded();
     }
 
     //fired at the start of any attack
-    KenAI.prototype.onAnimationChanged = function(name)
+    SagatAI.prototype.onAnimationChanged = function(name)
     {
         this.AI.onAnimationChanged(name);
     }
 
-    KenAI.prototype.reactAirborne = function(frame,attacker)
+    SagatAI.prototype.reactFloat = function(frame,attacker,x,y)
     {
-        var retVal = false;
-
-        if(!this.AI.Player.isMobile())
-            return retVal;
-
-        if(!this.AI.Player.isBlocking())
+        if(this.AI.Player.isFacingPlayer(attacker))
         {
-            if(this.AI.isAirborneReactBusy())
+            retVal = true;
+
+            if(this.AI.Player.isBlocking())
+            {
+                this.reset();
                 return retVal;
-        }
-        
-        var nbFrames = this.AI.Player.isBlocking() ? 4 : 0;
-        var item = this.AI.getClosestAirborneEnemy();
+            }
 
-        var rnd = getRand();
-        if(item.X < 50)
-        {
-            this.AI.reset();
-            if(rnd > 66)
+            var dist = this.AI.Player.getDistanceFromSq(x,y);
+
+            if(dist < 80000)
             {
-                this.doMove("lp3");
-                retVal = true;
+                this.reset();
+                this.doCounterFloat();
+                this.AI.setAttackReactBusy();
+                return retVal;
             }
-            else if(rnd > 25 || (!!attacker))
-            {
-                this.doMove("u1");
-                retVal = true;
-            }
-            this.AI.setAirborneReactBusy();
         }
-        else if(item.X < 100)
+    }
+
+    SagatAI.prototype.reactAirborne = function(frame,attacker,isEnemyVulernerable,x,y)
+    {
+        var retVal = false;
+        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker))
         {
-            if(!!attacker)
+            if(!!isEnemyVulernerable)
             {
-                this.AI.reset();
-                if(rnd > 50)
+                retVal = true;
+
+                if(this.AI.Player.isBlocking())
                 {
-                    this.doMove("u3");
-                    retVal = true;
+                    this.reset();
+                    return retVal;
                 }
-                else if(rnd > 40)
+
+                var dist = this.AI.Player.getDistanceFromSq(x,y);
+
+                if(dist < 120000)
                 {
-                    this.doMove("u2");
-                    retVal = true;
-                }
-                else if(rnd > 30)
-                {
-                    this.doMove("u1");
-                    retVal = true;
-                }
-                else
-                {
-                    this.doCloseJumpInCounterCombo(getRand(this.AI.CounterCloseJumpInCombos.length-1));
-                    retVal = true;
-                }
-                this.AI.setAirborneReactBusy();
-            }
-            else
-            {
-                if(rnd > 80)
-                {
-                    this.AI.reset();
-                    this.doCloseJumpInCounterCombo(getRand(this.AI.CounterCloseJumpInCombos.length-1));
-                    retVal = true;
-                    this.AI.setAirborneReactBusy();
+                    this.reset();
+                    this.doCounterAirborneCombo();
+                    this.AI.setAttackReactBusy();
+                    return retVal;
                 }
             }
         }
         return retVal;
     }
 
-    KenAI.prototype.reactNotAirborne = function(frame,attacker)
+    SagatAI.prototype.reactNotAirborne = function(frame,attacker,isEnemyVulernerable,x,y)
     {
         var retVal = false;
         if(!this.AI.Player.isMobile())
             return retVal;
 
-        //this.doCombo1();
+        if(!!isEnemyVulernerable && this.AI.Player.isFacingPlayer(attacker))
+        {
+            retVal = true;
 
-        var rnd = getRand();
-        if(rnd > 50)
-        {
-        }
-        else
-        {
+            if(this.AI.Player.isBlocking())
+            {
+                this.reset();
+                return retVal;
+            }
+
+            var dist = this.AI.Player.getDistanceFromSq(x,y);
+
+            if(dist < 100000)
+            {
+                this.reset();
+                this.doCounterNotAirborneCombo();
+                this.AI.setAttackReactBusy();
+                return retVal;
+            }
         }
 
         return retVal;
     }
 
 
-    KenAI.prototype.doMove = function(key) { this.execute(this.AI.SingleMoves[key]); }
-    KenAI.prototype.doCloseCombo = function(key) { this.execute(this.AI.CloseCombos[key]); }
-    KenAI.prototype.doVeryCloseCombo = function(key) { this.execute(this.AI.VeryCloseCombos[key]); }
-    KenAI.prototype.doJumpInCombo = function(key) { this.execute(this.AI.JumpInCombos[key]); }
-    KenAI.prototype.doRollInCombo = function(key) { this.execute(this.AI.RollInCombos[key]); }
-    KenAI.prototype.doCloseJumpInCounterCombo = function(key) { this.execute(this.AI.CounterCloseJumpInCombos[key]); }
-    KenAI.prototype.doCounterProjectileCombo = function(key) { this.execute(this.AI.CounterProjectileCombos[getRand(this.AI.CounterProjectileCombos.length-1)]); }
-    KenAI.prototype.doCounterCloseProjectileCombo = function(key) { this.execute(this.AI.CounterCloseProjectileCombos[getRand(this.AI.CounterCloseProjectileCombos.length-1)]); }
+    SagatAI.prototype.doMove = function(key) { this.execute(this.AI.SingleMoves[key]); }
+    SagatAI.prototype.doCloseCombo = function(key) { this.execute(this.AI.CloseCombos[key]); }
+    SagatAI.prototype.doVeryCloseCombo = function(key) { this.execute(this.AI.VeryCloseCombos[key]); }
+    SagatAI.prototype.doJumpInCombo = function(key) { this.execute(this.AI.JumpInCombos[key]); }
+    SagatAI.prototype.doCounterProjectileCombo = function(key) { this.execute(this.AI.CounterProjectileCombos[getRand(this.AI.CounterProjectileCombos.length-1)]); }
+    SagatAI.prototype.doCounterCloseProjectileCombo = function(key) { this.execute(this.AI.CounterCloseProjectileCombos[getRand(this.AI.CounterCloseProjectileCombos.length-1)]); }
+    SagatAI.prototype.doCounterVeryCloseProjectileCombo = function(key) { this.execute(this.AI.CounterVeryCloseProjectileCombos[getRand(this.AI.CounterVeryCloseProjectileCombos.length-1)]); }
+    SagatAI.prototype.doCounterVeryVeryCloseProjectileCombo = function(key) { this.execute(this.AI.CounterVeryVeryCloseProjectileCombos[getRand(this.AI.CounterVeryVeryCloseProjectileCombos.length-1)]); }
+    SagatAI.prototype.doCounterAirborneCombo = function(key) { this.execute(this.AI.ReactAirborneCombos[getRand(this.AI.ReactAirborneCombos.length-1)]); }
+    SagatAI.prototype.doCounterNotAirborneCombo = function(key) { this.execute(this.AI.ReactNotAirborneCombos[getRand(this.AI.ReactNotAirborneCombos.length-1)]); }
+    SagatAI.prototype.doRandomCloseCombo = function(key) { this.execute(this.AI.VeryCloseCombos[getRand(this.AI.VeryCloseCombos.length-1)]); }
+    SagatAI.prototype.doRandomVeryCloseCombo = function(key) { this.execute(this.AI.CloseCombos[getRand(this.AI.CloseCombos.length-1)]); }
+    SagatAI.prototype.doCounterFloat = function(key) { this.execute(this.AI.FloatCounters[getRand(this.AI.FloatCounters.length-1)]); }
 
-    KenAI.prototype.execute = function(sequence)
+    SagatAI.prototype.execute = function(sequence)
     {
         var input = null;
         for(var i = 0; i < sequence.length; ++i)
@@ -555,9 +583,6 @@
             input = null;
             switch(sequence[i].B)
             {
-                case "roll3_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.hardRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
-                case "roll2_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.mediumRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
-                case "roll1_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.lightRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
                 case "j" : { this.AI.jumpUp(); break; } case "fj" : { this.AI.jumpTowardEnemy(); break; } case "bj" : { this.AI.jumpAwayFromEnemy(); break; }
                 case "get_close" : { this.AI.moveToEnemy(0,sequence[i].C); break; } case "jump_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].D || this.AI.TOO_CLOSE)) { return; }; this.AI.jumpInToEnemy(0,sequence[i].C); break; }
                 case "lp1" : { input = lowPunches_[0]; break; } case "lp2" : { input = lowPunches_[1]; break; } case "lp3" : { input = lowPunches_[2]; break; }
@@ -565,41 +590,46 @@
                 case "k1" : { input = kicks_[0]; break; } case "k2" : { input = kicks_[1]; break; } case "k3" : { input = kicks_[2]; break; }
                 case "lk1" : { input = lowKicks_[0]; break; } case "lk2" : { input = lowKicks_[1]; break; } case "lk3" : { input = lowKicks_[2]; break; }
                 case "fb1" : { input = lightFireballInput_; break; } case "fb2" : { input = mediumFireballInput_; break; } case "fb3" : { input = hardFireballInput_; break; }
+                case "lfb1" : { input = lightLowFireballInput_; break; } case "lfb2" : { input = mediumLowFireballInput_; break; } case "lfb3" : { input = hardLowFireballInput_; break; }
                 case "sfb1" : { input = lightSuperFireballInput_; break; } case "sfb2" : { input = mediumSuperFireballInput_; break; } case "sfb3" : { input = hardSuperFireballInput_; break; }
-                case "hk1" : { input = lightSKickInput_; break; } case "hk2" : { input = mediumSKickInput_; break; } case "hk3" : { input = hardSKickInput_; break; }
+                case "tk1" : { input = lightTiggerKneeInput_; break; } case "tk2" : { input = mediumTiggerKneeInput_; break; } case "tk3" : { input = hardTiggerKneeInput_; break; }
                 case "u1" : { input = lightUppercutInput_; break; } case "u2" : { input = mediumUppercutInput_; break; } case "u3" : { input = hardUppercutInput_; break; }
                 case "t1" : { this.executeThrow(0,true); break; }
+                default : continue;
             };
             this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H);
         }
         this.AI.sendInput(FLAGS.CLEAR_INPUT,2);
     }
 
-    KenAI.prototype.onEnemyDizzy = function(frame,attacker)
+    SagatAI.prototype.onEnemyDizzy = function(frame,attacker)
     {
         this.AI.reset();
         this.throwSuperFireball();
         this.AI.setBusy();
     }
 
-    KenAI.prototype.react = function(frame,attacker)
+    SagatAI.prototype.react = function(frame,attacker, isEnemyVulernerable, x, y)
     {
-        if(!this.AI.Player.isMobile())
-            return;
-        if(!!this.reactAirborne(frame,attacker))
+        if(!this.AI.isAttackReactBusy())
         {
-        }
-        else if(!!this.reactNotAirborne(frame,null))
-        {
+            if(!this.AI.Player.isMobile())
+                return;
+            if(!!this.reactAirborne(frame, attacker, isEnemyVulernerable, x, y))
+            {
+            }
+            else if(!!this.reactNotAirborne(frame,attacker, isEnemyVulernerable, x, y))
+            {
+            }
         }
     }
 
-    KenAI.prototype.proact = function(frame)
+    SagatAI.prototype.proact = function(frame)
     {
         if(!this.AI.Player.isMobile())
             return;
 
-        if(!!this.reactAirborne(frame,null))
+        if(!!this.AI.isAttackReactBusy())
             return;
 
         var item = this.AI.getClosestEnemy();
@@ -613,6 +643,14 @@
         if(item.X < CONSTANTS.GRAPPLE_DISTANCE)
         {
             this.AI.reset();
+            if (item.Player.isThrowable() && (rnd > 60))
+                this.doVeryCloseCombo(0);
+            else if(rnd > 20)
+                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
+            else if(rnd > 10)
+                this.wanderBackward(50);
+
+            /*
             if(item.Player.isThrowable() && (this.AI.JustBecameMobile > 0))
             {
                 this.doVeryCloseCombo(0);
@@ -627,6 +665,7 @@
                     this.wanderBackward(50);
                 this.AI.setBusy();
             }
+            */
         }
         else if(!!this.AI.isBusy())
         {
@@ -636,11 +675,13 @@
         {
             this.AI.reset();
             if(rnd > 70)
-                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
+                this.doRandomCloseCombo();
             else if(rnd > 30)
                 this.wanderBackward(50);
-            else
+            else if(rnd > 15)
                 this.executeFireball(getRand());
+            else
+                this.executeLowFireball(getRand());
             this.AI.setBusy();
         }
         else if(item.X < 350)
@@ -649,26 +690,28 @@
             if(rnd > 95)
                 this.wanderBackward(50);
             else if(rnd > 80)
-                this.doJumpInCombo(getRand(this.AI.JumpInCombos.length-1));
-            else if(rnd > 60)
-                this.doRollInCombo(getRand(this.AI.RollInCombos.length-1));
-            else if(rnd > 30)
-                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
-            else
+                this.doRandomVeryCloseCombo();
+            else if(rnd > 50)
+                this.doRandomCloseCombo();
+            else if(rnd > 25)
                 this.executeFireball(getRand());
+            else
+                this.executeLowFireball(getRand());
             this.AI.setBusy();
         }
         else
         {
             this.AI.reset();
-            if(rnd > 80)
-                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
-            else
+            if(rnd > 70)
+                this.doRandomCloseCombo();
+            else if(rnd > 30)
                 this.executeFireball(getRand());
+            else
+                this.executeLowFireball(getRand());
         }
     }
 
-    KenAI.prototype.process = function(frame)
+    SagatAI.prototype.process = function(frame)
     {
         if(!this.AI.AllowOverrideBlock && !this.AI.Player.canBlock())
             this.AI.AllowOverrideBlock = true;
@@ -691,14 +734,14 @@
     }
 
 
-    KenAI.prototype.frameMove = function(frame)
+    SagatAI.prototype.frameMove = function(frame)
     {
         this.handleCombo(frame);
         this.process(frame);
     }
 
 
-    KenAI.prototype.handleCombo = function(frame)
+    SagatAI.prototype.handleCombo = function(frame)
     {
         if(this.AI.Actions.length > 0)
         {
@@ -718,5 +761,5 @@
         }
     }
 
-    return new KenAI();
+    return new SagatAI();
 }

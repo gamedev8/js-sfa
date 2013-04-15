@@ -1,4 +1,4 @@
-﻿var CHAR_NAMES = ["ryu","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat","mbison"];
+﻿var CHAR_NAMES = ["ryu","akuma","chunli","charlie","ken","guy","birdie","sodom","adon","rose","sagat","mbison"];
 
 var BUTTONS = 
 {
@@ -93,6 +93,12 @@ var ALERT_FLAGS = {
     DIZZY:1 << 1
 }
 
+var MATCH_STATES = 
+{
+    NONE:0
+    ,PRACTICE_MODE:1
+};
+
 var PLAYER_FLAGS = 
 {
     MOBILE:1 << 0
@@ -157,6 +163,8 @@ var POSE_FLAGS =
     ,ALLOW_OVERLAP:1 << 22
     ,QUICK_CHANGE_DIRECTION:1 << 23
     ,FORCE_CHANGE_TARGET:1 << 24
+    ,FREEZE:1 << 25
+    ,AIR_MISC_0:1 << 26
 }
 
 
@@ -180,6 +188,12 @@ var COMBAT_FLAGS =
     ,PENDING_ATTACK:1 << 15
     ,IGNORE_CLEAR_FIRE:1 << 16
     ,MULTI_PROJECTILE:1 << 17
+}
+
+var HIT_REACT = 
+{
+    EJECT:1
+    ,AIRBORNE_EJECT:2
 }
 
 var AI_FLAGS =
@@ -229,11 +243,15 @@ var ATTACK_FLAGS =
     ,RED_FIRE_ON_MAX_HIT:1 << 28
     ,RED_FIRE_NO_SOUND:1 << 29
     ,OVERRIDE_INVULNERABLE:1 << 30
+    ,SLOW_DOWN_GAME:1 << 31
 };
 var COMBO_FLAGS = 
 {
     BLUE_FIRE_ON_FIRST_HIT:1 << 1
     ,RED_FIRE_ON_MAX_HIT:1 << 2
+    ,RED_FIRE_SOUND_ON_MAX_HIT:1 << 3
+    ,SHORT_DELAY_ON_FIRST_HIT:1 << 4
+    ,KNOCKDOWN_ON_MAX_HIT:1 << 5
 };
 var MOVE_FLAGS = 
 {
@@ -254,11 +272,13 @@ var JUGGLE_FLAGS =
     ,ALLOW:1 << 1
     ,ALIVE:1 << 2
     ,DEAD:1 << 3
+    ,IGNORE:1 << 31
 };
 
 var JUGGLE_GROUP = 
 {
     UPPERCUT:1
+    ,SPINKICK:2
 };
 
 var OVERRIDE_FLAGS = 
@@ -280,6 +300,7 @@ var OVERRIDE_FLAGS =
 var QUIT_MATCH = 
 {
     GOTO_STORYMODE:1
+    ,GOTO_INSERTCOIN:2
 };
 
 var STAGE = 
@@ -291,7 +312,7 @@ var STAGE =
     ,MAX_STAGEX:768
     ,START_X:150
     ,START_X_OFFSET:50
-    ,FLOORY:57
+    ,FLOORY:59
     ,VERT_SCROLL_Y:180
     ,SCROLLY_FACTOR:0.5
     ,CSSWIDTH:768
@@ -333,16 +354,20 @@ var ATTACK_STATE = {
 
 var CONSTANTS =
 {
-    MAX_STORY_MODE_LEVEL:3
+    DEFAULT_SHADOW_Y:42
+    ,DEFAULT_FIRE_HITSTOP:10
+    ,MAX_STORY_MODE_LEVEL:4
     ,TRIP_SLIDEFACTOR:0.1
     ,TRIP_SLIDEFORCE:0
     ,GRAPPLE_DISTANCE:50
     ,GROUND_FRAMES_FOR_GRAPPLE:20
     ,MOBILE_FRAMES_FOR_GRAPPLE:20
     ,MAX_SPEED:0
-    ,MAX_PRIORITY:1 << 30
-    ,NORMAL_SPEED:1000 / 60
-    ,SLOW_SPEED:70
+    ,MAX_PRIORITY:(1 << 30)
+    ,NORMAL_SPEED:(1000 / 60)
+    ,FAST_SPEED:(1000 / 70)
+    ,SLOW_SPEED:(1000 / 45)
+    ,ROUND_OVER_SPEED:75
     ,MAX_FRAME:100000000000000 /*round will end when Game.prototype.frame reaches this value*/
     ,TARGET_FPS:60
     ,MS_PER_SEC:1000
@@ -360,8 +385,8 @@ var CONSTANTS =
     ,DIZZY_INC:30
     ,DECREASE_DIZZY:-1
     ,LIGHT_INCREASE_DIZZY:1
-    ,MEDIUM_INCREASE_DIZZY:10
-    ,HARD_INCREASE_DIZZY:20
+    ,MEDIUM_INCREASE_DIZZY:5
+    ,HARD_INCREASE_DIZZY:10
     ,MAX_KEYSTATES:15
     ,MAX_KEY_LIFE:20
     ,EXACT_MATCH:2
@@ -616,6 +641,7 @@ var KEYS =
     ,M:77
     ,L:76
     ,O:79
+    ,COMMA:188
 
     ,SPACE:32
     ,CNTRL:17

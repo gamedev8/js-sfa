@@ -9,12 +9,14 @@
 
 var getRand = function(max)
 {
-    return (Math.random() * (max || 100)) >> 0;
+    if(max === 0)
+        return 0;
+    return Math.floor((Math.random() * (max || 100)));
 }
 
 var rand = function(min, max)
 {
-    return min + (Math.random() * (max - min)) >> 0;
+    return min + Math.floor((Math.random() * (max - min)));
 }
 
 var StageParams = function(key, name, bg0XOffset, maxLeftScroll, maxRightScroll, bg0YOffset, bg1YOffset)
@@ -70,16 +72,21 @@ function AutoApplyFlip(element,applied)
     }
 }
 
+function IsFlipped(element)
+{
+    return !!element && element.className.indexOf(" flipped") != -1;
+}
+
 function Alert(text)
-{   
-    if(!!console && !!console.log)
-        console.log(text);
+{
+    //if(!!console && !!console.log)
+        //console.log(text);
     
 }
 function AlertError(text)
 {
-    if(!!console && !!console.error)
-        console.error(text);
+    //if(!!console && !!console.error)
+    //    console.error(text);
 }
 
 var announcer_ = CreateAnnouncer();
@@ -122,7 +129,7 @@ function InitUsers()
     var val = 10000000;
 
     window.user1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,KEYS.CNTRL,KEYS.ENTER);
-    window.user2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.B,KEYS.N,KEYS.M,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
+    window.user2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.N,KEYS.M,KEYS.COMMA,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
     window.user3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
 
     val += 100;
@@ -137,17 +144,17 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    user1_.setChar(CHARACTERS.SAGAT);
-    user2_.setChar(CHARACTERS.RYU);
+    user1_.setChar(CHARACTERS.AKUMA,false,false);
+    user2_.setChar(CHARACTERS.KEN,false,false);
 
-    game_.startMatch(false,[0],[1], stages_["ryu"]);
+    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["sagat"]);
 }
 
 //multi player battle 
 function StartDramaticBattle()
 {
     user1_.setChar(CHARACTERS.RYU);
-    user2_.setChar(CHARACTERS.KEN);
+    user2_.setChar(CHARACTERS.MBISON);
 
     game_.startMatch(false,[0],[1], stages_["mbison"]);
 }

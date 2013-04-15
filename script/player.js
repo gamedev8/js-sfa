@@ -10,6 +10,8 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.StandingClip = {Top:0,Bottom:0,Front:0,Back:0};
     this.ShadowX = "";
     this.LastShadowX = "";
+    this.ShadowY = "";
+    this.LastShadowY = "";
     this.DefaultShadowOffset = 0;
     this.Mass = 1;
     this.JumpSpeed = 1;
@@ -153,12 +155,25 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
         HitReact: {}
     };
 
-    this.loadAssets();
+    //this.loadAssets();
     this.createElement();
     this.reset();
     this.addGenericAnimations();
     this.setImgRect();
 }
+
+Player.prototype.loadAssets = function(name,folder,loadProjectiles)
+{
+    stuffLoader_.queue((this.Name || name).toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
+    //stuffLoader_.queue("script/" + (this.Name || name).toLowerCase() + "-ai.js",RESOURCE_TYPES.SCRIPT);
+    stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
+    stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
+    if(!!loadProjectiles || this.Projectiles.length > 0)
+        stuffLoader_.queue("images/misc/" + (this.Folder || folder).toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
+
+}
+
 Player.prototype.sortAnimations = function()
 {
     this.Throws.sort(function(a,b) {
@@ -234,6 +249,7 @@ Player.prototype.getName = function() { return this.Name; }
 
 Player.prototype.enableAI = function(createAiFn)
 {
+    this.IsAI = true;
     this.Ai.enableAI(this, createAiFn || (window["Create" + this.Name[0].toUpperCase() + this.Name.substring(1) + "AI"]));
     if(!!this.getMatch())
         this.getMatch().checkAIMatch();
@@ -676,6 +692,46 @@ Player.prototype.handleAI = function(frame)
         this.Ai.frameMove(frame);
 }
 
+Player.prototype.checkVulnerable = function(frame)
+{
+    if(this.isCurrentMoveAttack()
+        && !this.isCurrentMoveProjectile()
+        && !this.IsInAttackFrame
+        && !this.isBlocking()
+        && !this.isMobile()
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_ATTACKS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_COLLISIONS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE)
+        )
+    {
+        this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
+        return true;
+    }
+
+    return false;
+
+}
+
+Player.prototype.checkFloater = function(frame)
+{
+    if(!!this.isAirborne()
+        && !this.isCurrentMoveAttack()
+        && !this.isCurrentMoveProjectile()
+        && !this.IsInAttackFrame
+        && !this.isBlocking()
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_ATTACKS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_COLLISIONS)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
+        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE))
+    {
+        this.onFloatingFn(frame,this.getFrontX(),this.getMidY());
+        return true;
+    }
+
+    return false;
+}
+
 Player.prototype.onFrameMove = function(frame,stageX,stageY)
 {
     if(!this.IsPaused)
@@ -685,9 +741,12 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
         this.decreaseDizziness(frame);
         this.sendAttackAlerts(frame);
         this.checkForInterupt(frame);
+        this.checkGroundY();
         this.frameMove(frame,stageX,stageY);
         if(!!this.IsInAttackFrame)
             this.handleAttack(frame, this.CurrentFrame);
+        else if(!this.checkVulnerable(frame))
+            this.checkFloater(frame);
         if(!!this.GrappledPlayer)
             this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)
@@ -772,13 +831,16 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
             {
                 if(currentFrame.isSettingAirborneFlag())
                 {
-                    if(!this.isAirborne() || hasFlag(currentFrame.FlagsToSet.Pose,POSE_FLAGS.FORCE_START_AIRBORNE))
+                    if(!this.isAirborne() || hasFlag(currentFrame.FlagsToSet.Pose,POSE_FLAGS.FORCE_START_AIRBORNE) || !!currentFrame.Jump)
                     {
                         var direction = 1;
                         if(hasFlag(currentFrame.FlagsToSet.Player,PLAYER_FLAGS.USE_ATTACK_DIRECTION))
                             direction = this.CurrentAnimation.AttackDirection;
-                        //this.performJump(direction * this.CurrentAnimation.Animation.Vx,this.CurrentAnimation.Animation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier());
-                        this.performJump(direction * this.CurrentAnimation.Vx,this.CurrentAnimation.Vy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.AirborneStartDeltaY,this.CurrentAnimation.Animation.UseJumpSpeed);
+
+                        var fx = !!currentFrame.Jump ? currentFrame.Jump.Fx : this.CurrentAnimation.Vx;
+                        var fy = !!currentFrame.Jump ? currentFrame.Jump.Fy : this.CurrentAnimation.Vy;
+                        
+                        this.performJump(direction * fx,fy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.AirborneStartDeltaY,this.CurrentAnimation.Animation.UseJumpSpeed,this.CurrentAnimation.Animation.UseJumpT);
                     }
                     else
                     {
@@ -835,6 +897,8 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
                     this.forceNextFrame(frame);
                     //must clear frame because the current frame has a HOLD_FRAME flag
                     this.setCurrentFrame(null,frame);
+                    this.CurrentAnimation.StartFrame -= 1;
+                    return this.frameMove(frame,stageX,stageY);
                 }
             }
             //Does the move require the key to be held?

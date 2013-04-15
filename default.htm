@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Street Figther Alpha - Web</title>
-    <link rel="StyleSheet" type="text/css" href="_css/sfa.css" />
+    <link rel="StyleSheet" type="text/css" href="css/sfa.css" />
 </head>
 <body>
     <div id="pnlStage" class="stage" style="width:768px;">
@@ -68,14 +68,18 @@
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div id="pnlMenu" class="menu">
-        <input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="go" />
+        <input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />
     </div>
     <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
         <input type="button" onclick="debug_.p1StepFrame();" value=">>"/>
+        <br />#: <span id="spnIndex"></span>
         <br />X: <input id="txtX" />
         <br />Y: <input id="txtY" />
-        <input type="button" onclick="debug_.p1SetFrameOffsets()" value="Set"/>
+        <br />S: <input id="txtShadow" />
+        <br />Sx:<input id="txtShadowOffsetX" />
+        <br />Sy:<input id="txtShadowOffsetY" />
+        <input type="button" onclick="debug_.setFrameData()" value="Set"/>
     </div>
     <script type="text/javascript">
         var __debugMode = false;
@@ -93,15 +97,15 @@
             window.document.getElementById("cmdGo").style.display = "";
         }
     </script>
-
-    <script type="text/javascript" src="script/api/gamepad.js"></script>
+    <script type="text/javascript" src="script/browserDetect.js"></script>
+    <script type="text/javascript" src="script/gamepad.js"></script>
     <script type="text/javascript" src="script/values.js"></script>
     <script type="text/javascript" src="script/flags.js"></script>
     <script type="text/javascript" src="script/user.js"></script>
     <script type="text/javascript" src="script/vcr.js"></script>
     <script type="text/javascript" src="script/fonts.js"></script>
     <script type="text/javascript" src="script/stuff-loader.js"></script>
-    <script type="text/javascript" src="script/audio/base64-binary.js"></script>
+    <script type="text/javascript" src="script/base64-binary.js"></script>
     <script type="text/javascript" src="script/webAudioManager.js"></script>
     <script type="text/javascript" src="script/soundmanager.js"></script>
     <script type="text/javascript" src="script/fontsystem.js"></script>
@@ -130,20 +134,33 @@
     <script type="text/javascript" src="script/player.debug.js"></script>
     <script type="text/javascript" src="script/player-common.js"></script>
     <script type="text/javascript" src="script/player.ai.js"></script>
-    <!--<script type="text/javascript" src="script/player-ken.js"></script>
-    <script type="text/javascript" src="script/player-ken-spritedata.js"></script>
-    <script type="text/javascript" src="script/player-ken2-spritedata.js"></script>
-    <script type="text/javascript" src="script/player-ryu.js"></script>
-    <script type="text/javascript" src="script/player-ryu-spritedata.js"></script>
-    <!--<script type="text/javascript" src="script/player-mbison.js"></script>-->
     <script type="text/javascript" src="script/generic-ai.js"></script>
     <script type="text/javascript" src="script/ai-proxy.js"></script>
-    <script type="text/javascript" src="script/ryu-ai.js"></script>
-    <script type="text/javascript" src="script/ken-ai.js"></script>
-    <script type="text/javascript" src="script/mbison-ai.js"></script>
     <script type="text/javascript" src="script/debug.js"></script>
     <script type="text/javascript" src="script/load-spritedata.js"></script>
     <script type="text/javascript" src="script/misc.js"></script>
+    <script type="text/javascript" src="script/player-ryu.js"></script>
+    <script type="text/javascript" src="script/ryu-ai.js"></script>
+    <script type="text/javascript" src="script/player-ryu-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-ryu2-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-ken.js"></script>
+    <script type="text/javascript" src="script/ken-ai.js"></script>
+    <script type="text/javascript" src="script/player-ken-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-ken2-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-sagat.js"></script>
+    <script type="text/javascript" src="script/player-sagat-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-sagat2-spritedata.js"></script>
+    <script type="text/javascript" src="script/sagat-ai.js"></script>
+    <script type="text/javascript" src="script/player-mbison.js"></script>
+    <script type="text/javascript" src="script/mbison-ai.js"></script>
+    <script type="text/javascript" src="script/player-mbison-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-mbison2-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-akuma.js"></script>
+    <script type="text/javascript" src="script/akuma-ai.js"></script>
+    <script type="text/javascript" src="script/player-akuma-spritedata.js"></script>
+    <script type="text/javascript" src="script/player-akuma2-spritedata.js"></script>
+
+
     <audio id="myaudio">
     HTML5 audio not supported
     </audio>

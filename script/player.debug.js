@@ -61,7 +61,7 @@ Player.prototype.renderDebugInfo = function()
     }
 
 
-    var rect = this.getRect();
+    var rect = this.ImgBBox;//this.getRect();
     this.Rect.style.bottom = rect.Bottom + "px";
 
     if(this.Direction == -1)

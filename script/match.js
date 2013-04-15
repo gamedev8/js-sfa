@@ -4,6 +4,7 @@ function _c4(a,b,c,d) { return String.prototype.concat(String.prototype.concat(S
 /* Encapulates a new match */
 var CreateMatch = function(team1,team2,stage)
 {
+    var state_ = MATCH_STATES.NONE;
     var defeatedTeam_ = -1;
     var isRoundOver_ = false;
     var gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
@@ -39,7 +40,7 @@ var CreateMatch = function(team1,team2,stage)
 
     var Match = function()
     {
-        stage_ = new Stage();
+        stage_ = CreateStage();
         teamA_ = CreateTeam(1);
         teamB_ = CreateTeam(2);
         this.loadAssets();
@@ -58,6 +59,8 @@ var CreateMatch = function(team1,team2,stage)
             function(player) { return player.Ai.isRunning(); }));
 
     }
+    Match.prototype.setState = function(state) { state_ = state || MATCH_STATES.NONE; }
+    Match.prototype.clearState = function() { state_ = 0; }
     Match.prototype.forceQuit = function(reason) { forceQuit_ = true; forceQuitReason_ = reason; }
     Match.prototype.mustQuit = function() { return forceQuit_; }
     Match.prototype.getQuitReason = function() { return forceQuitReason_; }
@@ -93,15 +96,15 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.getStage = function() { return stage_; }
     Match.prototype.resetKeys = function()
     {
-        for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-            this.getTeamA().getPlayer(i).clearInput();
-        for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-            this.getTeamB().getPlayer(i).clearInput();
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
+            teamA_.getPlayer(i).clearInput();
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
+            teamB_.getPlayer(i).clearInput();
     }
     Match.prototype.playerCount = function()
     {
         if(this.getPlayerCount())
-            this.setPlayerCount(this.getTeamA().getPlayers().length + this.getTeamB().getPlayers().length);
+            this.setPlayerCount(teamA_.getPlayers().length + teamB_.getPlayers().length);
 
         return this.getPlayerCount();
         
@@ -111,8 +114,8 @@ var CreateMatch = function(team1,team2,stage)
 
     Match.prototype.initText = function()
     {
-        this.getTeamA().initText();
-        this.getTeamB().initText();
+        teamA_.initText();
+        teamB_.initText();
     }
 
 
@@ -138,8 +141,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {this.getTeamA().getHealthbar().change(changeAmount); break; }
-            case CONSTANTS.TEAM2: {this.getTeamB().getHealthbar().change(changeAmount); break; }
+            case CONSTANTS.TEAM1: {teamA_.getHealthbar().change(changeAmount); break; }
+            case CONSTANTS.TEAM2: {teamB_.getHealthbar().change(changeAmount); break; }
         };
     }
     /*Changes the energy value for a team*/
@@ -147,8 +150,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {this.getTeamA().getEnergybar().change(changeAmount); break; }
-            case CONSTANTS.TEAM2: {this.getTeamB().getEnergybar().change(changeAmount); break; }
+            case CONSTANTS.TEAM1: {teamA_.getEnergybar().change(changeAmount); break; }
+            case CONSTANTS.TEAM2: {teamB_.getEnergybar().change(changeAmount); break; }
         };
     }
     /*Returns the health for a team*/
@@ -156,8 +159,8 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {return this.getTeamA().getHealthbar().getAmount();}
-            case CONSTANTS.TEAM2: {return this.getTeamB().getHealthbar().getAmount();}
+            case CONSTANTS.TEAM1: {return teamA_.getHealthbar().getAmount();}
+            case CONSTANTS.TEAM2: {return teamB_.getHealthbar().getAmount();}
         }
     }
     /*Returns the energy for a team*/
@@ -165,18 +168,18 @@ var CreateMatch = function(team1,team2,stage)
     {
         switch(team)
         {
-            case CONSTANTS.TEAM1: {return this.getTeamA().getEnergybar().getAmount();}
-            case CONSTANTS.TEAM2: {return this.getTeamB().getEnergybar().getAmount();}
+            case CONSTANTS.TEAM1: {return teamA_.getEnergybar().getAmount();}
+            case CONSTANTS.TEAM2: {return teamB_.getEnergybar().getAmount();}
         }
     }
     /*returns the highest Y value*/
     Match.prototype.getHighestY = function()
     {
         var retVal = 0;
-        for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-            retVal = this.getTeamA().getPlayer(i).Y > retVal ? this.getTeamA().getPlayer(i).Y : retVal;
-        for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-            retVal = this.getTeamB().getPlayer(i).Y > retVal ? this.getTeamB().getPlayer(i).Y : retVal;
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
+            retVal = teamA_.getPlayer(i).Y > retVal ? teamA_.getPlayer(i).Y : retVal;
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
+            retVal = teamB_.getPlayer(i).Y > retVal ? teamB_.getPlayer(i).Y : retVal;
         return retVal;
     }
     /*Gets the current frame*/
@@ -192,26 +195,27 @@ var CreateMatch = function(team1,team2,stage)
 
         this.setAllowInput(false);
         var frame = game_.getCurrentFrame();
-        game_.setSpeed(CONSTANTS.SLOW_SPEED);
+        game_.setSpeed(CONSTANTS.ROUND_OVER_SPEED);
         this.setDefeatedTeam(team);
+
         switch(this.getDefeatedTeam())
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-                    if(this.getTeamA().getPlayer(i).Id != loseIgnoreId)
-                        this.getTeamA().getPlayer(i).forceLose(attackDirection);
-                for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-                    this.getTeamB().getPlayer(i).justWon(frame);
+                for(var i = 0; i < teamA_.getPlayers().length; ++i)
+                    if(teamA_.getPlayer(i).Id != loseIgnoreId)
+                        teamA_.getPlayer(i).forceLose(attackDirection);
+                for(var i = 0; i < teamB_.getPlayers().length; ++i)
+                    teamB_.getPlayer(i).justWon(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-                    if(this.getTeamB().getPlayer(i).Id != loseIgnoreId)
-                        this.getTeamB().getPlayer(i).forceLose(attackDirection);
-                for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-                    this.getTeamA().getPlayer(i).justWon(frame);
+                for(var i = 0; i < teamB_.getPlayers().length; ++i)
+                    if(teamB_.getPlayer(i).Id != loseIgnoreId)
+                        teamB_.getPlayer(i).forceLose(attackDirection);
+                for(var i = 0; i < teamA_.getPlayers().length; ++i)
+                    teamA_.getPlayer(i).justWon(frame);
                 break;
             }
         }
@@ -222,7 +226,7 @@ var CreateMatch = function(team1,team2,stage)
         if(!this.isRoundOver())
         {
             this.setRoundOver(true);
-            game_.setSpeed(CONSTANTS.NORMAL_SPEED);
+            game_.resetSpeed();
             this.setGotoNewRoundFrame(frame);
 
             announcer_.endRound();
@@ -264,19 +268,32 @@ var CreateMatch = function(team1,team2,stage)
         if(this.getGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
         {
             //check to see if the match is over
-            if(teamA_.getWins() == game_.getMaxWinsPerMatch())
+            if(state_ != MATCH_STATES.PRACTICE_MODE)
             {
-                teamA_.advanceStoryMode();
-                teamB_.disableStoryMode();
-                this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
-                return;
-            }
-            else if(teamB_.getWins() == game_.getMaxWinsPerMatch())
-            {
-                teamA_.disableStoryMode();
-                teamB_.advanceStoryMode();
-                this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
-                return;
+                if(teamA_.getWins() == game_.getMaxWinsPerMatch())
+                {
+                    teamA_.advanceStoryMode();
+                    teamB_.disableStoryMode();
+                    
+                    if(!teamA_.getIsAI())
+                        this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
+                    else
+                        this.forceQuit(QUIT_MATCH.GOTO_INSERTCOIN)
+
+                    return;
+                }
+                else if(teamB_.getWins() == game_.getMaxWinsPerMatch())
+                {
+                    teamA_.disableStoryMode();
+                    teamB_.advanceStoryMode();
+
+                    if(!teamB_.getIsAI())
+                        this.forceQuit(QUIT_MATCH.GOTO_STORYMODE);
+                    else
+                        this.forceQuit(QUIT_MATCH.GOTO_INSERTCOIN)
+
+                    return;
+                }
             }
 
             game_.showLoading(true);
@@ -284,44 +301,45 @@ var CreateMatch = function(team1,team2,stage)
             faceoff_.reset();
             this.setAllowInput(false);
             this.setRound(this.getRound() + 1);
-            game_.setSpeed(CONSTANTS.NORMAL_SPEED);
+            game_.resetSpeed();
             this.setGotoNewRoundFrame(CONSTANTS.NO_FRAME);
-            this.getTeamA().setCursor(0);
-            this.getTeamB().setCursor(0);
+            teamA_.setCursor(0);
+            teamB_.setCursor(0);
             this.setSuperMoveActive(false);
+            this.setDefeatedTeam(-1);
             nbAirborne_ = 0;
 
 
             game_.resetFrame();
 
-            this.getTeamA().getEnergybar().change(0,0);
-            this.getTeamB().getEnergybar().change(0,0);
+            teamA_.getEnergybar().change(0,0);
+            teamB_.getEnergybar().change(0,0);
 
-            if(!!this.getTeamA().getPlayer(0))
-                this.getTeamA().getPlayer(0).setX(STAGE.START_X);
-            if(!!this.getTeamB().getPlayer(0))
-                this.getTeamB().getPlayer(0).setX(STAGE.START_X);
+            if(!!teamA_.getPlayer(0))
+                teamA_.getPlayer(0).setX(STAGE.START_X);
+            if(!!teamB_.getPlayer(0))
+                teamB_.getPlayer(0).setX(STAGE.START_X);
 
             /*set the starting locations for each player*/
-            for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
+            for(var i = 0; i < teamA_.getPlayers().length; ++i)
             {
-                this.getTeamA().getPlayer(i).reset(true);
-                this.getTeamA().getPlayer(i).setDirection(-1);
-                this.getTeamA().getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                teamA_.getPlayer(i).reset(true);
+                teamA_.getPlayer(i).setDirection(-1);
+                teamA_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
-            for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
+            for(var i = 0; i < teamB_.getPlayers().length; ++i)
             {
-                this.getTeamB().getPlayer(i).reset(true);
-                this.getTeamB().getPlayer(i).setDirection(1);
-                this.getTeamB().getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                teamB_.getPlayer(i).reset(true);
+                teamB_.getPlayer(i).setDirection(1);
+                teamB_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
             }
 
             this.setRoundOver(false);
             stage_.init();
             //game_.releaseText();
 
-            this.getTeamA().getHealthbar().reset();
-            this.getTeamB().getHealthbar().reset();
+            teamA_.getHealthbar().reset();
+            teamB_.getHealthbar().reset();
 
         }
     }
@@ -330,16 +348,16 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.pause = function()
     {
         stage_.pause();
-        this.getTeamA().pause();
-        this.getTeamB().pause();
+        teamA_.pause();
+        teamB_.pause();
     }
 
     /**/
     Match.prototype.resume = function()
     {
         stage_.resume();
-        this.getTeamA().resume();
-        this.getTeamB().resume();
+        teamA_.resume();
+        teamB_.resume();
     }
 
     Match.prototype.playerIndex = 0;
@@ -375,7 +393,8 @@ var CreateMatch = function(team1,team2,stage)
 
         var onStartAttackEnemies   = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyStartAttack(frame,this); } } }
         var onContinueAttackEnemies= function(thisValue,otherTeam) { return function(frame,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyContinueAttack(frame,this,hitPoints); } } }
-        var onVulnerable           = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyVulerable(frame,this); } } }
+        var onVulnerable           = function(thisValue,otherTeam) { return function(frame,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyVulerable(frame,this,x,y); } } }
+        var onFloating             = function(thisValue,otherTeam) { return function(frame,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyFloating(frame,this,x,y); } } }
         var onEndAttackEnemies     = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyEndAttack(frame,this); } } }
         var onDizzy                = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyDizzy(frame,this); } } }
 
@@ -385,8 +404,8 @@ var CreateMatch = function(team1,team2,stage)
 
         switch(team)
         {
-            case 1: {dir = "l"; myTeam = this.getTeamA(); otherTeam = this.getTeamB(); break;}
-            case 2: {dir = "r"; myTeam = this.getTeamB(); otherTeam = this.getTeamA(); break;}
+            case 1: {dir = "l"; myTeam = teamA_; otherTeam = teamB_; break;}
+            case 2: {dir = "r"; myTeam = teamB_; otherTeam = teamA_; break;}
         }
 
         var index = Match.prototype.playerIndex++;
@@ -409,6 +428,7 @@ var CreateMatch = function(team1,team2,stage)
         player.onStartAttackEnemiesFn = onStartAttackEnemies(this,otherTeam);
         player.onContinueAttackEnemiesFn = onContinueAttackEnemies(this,otherTeam);
         player.onVulnerableFn = onVulnerable(this,otherTeam);
+        player.onFloatingFn = onFloating(this,otherTeam);
         player.onEndAttackEnemiesFn = onEndAttackEnemies(this,otherTeam);
         player.onDizzyFn = onDizzy(this,otherTeam);
 
@@ -438,44 +458,43 @@ var CreateMatch = function(team1,team2,stage)
         stage_.start();
         faceoff_.init();
         announcer_.init();
-
-        this.getTeamA().setPlayers(team1);
-        this.getTeamB().setPlayers(team2);
+        teamA_.setPlayers(team1);
+        teamB_.setPlayers(team2);
         this.initText();
         /*init team 1*/
-        for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
         {
-            this.setupPlayer(this.getTeamA().getPlayer(i),CONSTANTS.TEAM1);
-            this.getTeamA().getPlayer(0).setX(STAGE.START_X);
+            this.setupPlayer(teamA_.getPlayer(i),CONSTANTS.TEAM1);
+            teamA_.getPlayer(0).setX(STAGE.START_X);
         }
-        if(!!this.getTeamA().getPlayer(0))
+        if(!!teamA_.getPlayer(0))
         {
-            faceoff_.setTeamA(this.getTeamA().getPlayer(0).Name);
+            faceoff_.setTeamA(teamA_.getPlayer(0).Name);
         }
 
         /*init team 2*/
-        for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
         {
-            this.setupPlayer(this.getTeamB().getPlayer(i),CONSTANTS.TEAM2);
+            this.setupPlayer(teamB_.getPlayer(i),CONSTANTS.TEAM2);
         }
-        if(!!this.getTeamB().getPlayer(0))
+        if(!!teamB_.getPlayer(0))
         {
-            faceoff_.setTeamB(this.getTeamB().getPlayer(0).Name);
-            this.getTeamB().getPlayer(0).setX(STAGE.START_X);
+            faceoff_.setTeamB(teamB_.getPlayer(0).Name);
+            teamB_.getPlayer(0).setX(STAGE.START_X);
         }
 
         /*set the starting locations for each player*/
-        for(var i = 1, length = this.getTeamA().getPlayers().length; i < length; ++i)
-            this.getTeamA().getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
-        for(var i = 1, length = this.getTeamB().getPlayers().length; i < length; ++i)
-            this.getTeamB().getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+        for(var i = 1, length = teamA_.getPlayers().length; i < length; ++i)
+            teamA_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+        for(var i = 1, length = teamB_.getPlayers().length; i < length; ++i)
+            teamB_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
 
         stage_.init();
-        this.getTeamA().init();
-        this.getTeamB().init();
-        if(game_.isPlayingVHS())
-            this.showMainInsertCoin();
+        teamA_.init();
+        teamB_.init();
         this.checkAIMatch();
+        if(isAIMatch_)
+            this.showMainInsertCoin();
     }
     /*Handles key state changes*/
     Match.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
@@ -488,10 +507,10 @@ var CreateMatch = function(team1,team2,stage)
         //    return;
         //}
 
-        for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-            this.getTeamA().getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
-        for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-            this.getTeamB().getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
+            teamA_.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
+            teamB_.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
     }
     /*Dims the background when a player is starting a super move*/
     Match.prototype.setBackgroundTransparent = function(player)
@@ -511,12 +530,12 @@ var CreateMatch = function(team1,team2,stage)
         {
             this.setBackgroundTransparent(player);
             this.setSuperMoveActive(true);
-            for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-                if(this.getTeamA().getPlayer(i).Id != player.Id)
-                    this.getTeamA().getPlayer(i).onSuperMoveStarted();
-            for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-                if(this.getTeamB().getPlayer(i).Id != player.Id)
-                    this.getTeamB().getPlayer(i).onSuperMoveStarted();
+            for(var i = 0; i < teamA_.getPlayers().length; ++i)
+                if(teamA_.getPlayer(i).Id != player.Id)
+                    teamA_.getPlayer(i).onSuperMoveStarted();
+            for(var i = 0; i < teamB_.getPlayers().length; ++i)
+                if(teamB_.getPlayer(i).Id != player.Id)
+                    teamB_.getPlayer(i).onSuperMoveStarted();
         }
     }
     Match.prototype.onSuperMoveCompleted = function(player)
@@ -524,28 +543,28 @@ var CreateMatch = function(team1,team2,stage)
         if(this.isSuperMoveActive())
         {
             this.setBackgroundTransparent();
-            for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-                if(this.getTeamA().getPlayer(i).Id != player.Id)
-                    this.getTeamA().getPlayer(i).onSuperMoveCompleted();
-            for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-                if(this.getTeamB().getPlayer(i).Id != player.Id)
-                    this.getTeamB().getPlayer(i).onSuperMoveCompleted();
+            for(var i = 0; i < teamA_.getPlayers().length; ++i)
+                if(teamA_.getPlayer(i).Id != player.Id)
+                    teamA_.getPlayer(i).onSuperMoveCompleted();
+            for(var i = 0; i < teamB_.getPlayers().length; ++i)
+                if(teamB_.getPlayer(i).Id != player.Id)
+                    teamB_.getPlayer(i).onSuperMoveCompleted();
             this.setSuperMoveActive(false);
         }
     }
     Match.prototype.preFrameMove = function(frame)
     {
-        for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-            this.getTeamA().getPlayer(i).onPreFrameMove(frame);
-        for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-            this.getTeamB().getPlayer(i).onPreFrameMove(frame);
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
+            teamA_.getPlayer(i).onPreFrameMove(frame);
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
+            teamB_.getPlayer(i).onPreFrameMove(frame);
     }
     Match.prototype.renderComplete = function(frame)
     {
-        for(var i = 0; i < this.getTeamA().getPlayers().length; ++i)
-            this.getTeamA().getPlayer(i).onRenderComplete(frame);
-        for(var i = 0; i < this.getTeamB().getPlayers().length; ++i)
-            this.getTeamB().getPlayer(i).onRenderComplete(frame);
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
+            teamA_.getPlayer(i).onRenderComplete(frame);
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
+            teamB_.getPlayer(i).onRenderComplete(frame);
     }
 
     /**/
@@ -579,8 +598,8 @@ var CreateMatch = function(team1,team2,stage)
         if(!teamsVisible_ && (frame > CONSTANTS.SHOW_TEAMS_DELAY))
         {
             faceoff_.hide(frame);
-            this.getTeamA().show();
-            this.getTeamB().show();
+            teamA_.show();
+            teamB_.show();
             teamsVisible_ = true;
         }
         if((gotoNewRoundFrame_ != CONSTANTS.NO_FRAME) && (frame > (gotoNewRoundFrame_ + CONSTANTS.GOTO_NEW_ROUND_DELAY)))
@@ -598,8 +617,8 @@ var CreateMatch = function(team1,team2,stage)
         {
             startedTheme_ = true;
             stage_.playMusic();
-            this.getTeamA().show();
-            this.getTeamB().show();
+            teamA_.show();
+            teamB_.show();
         }
         faceoff_.handleOtherRounds(frame);
     }
@@ -610,8 +629,8 @@ var CreateMatch = function(team1,team2,stage)
         stage_.frameMove(frame);
         this.getHitSystem().frameMove(frame);
 
-        this.getTeamA().frameMove(frame,stage_.X, stage_.getGroundY());
-        this.getTeamB().frameMove(frame,stage_.X, stage_.getGroundY());
+        teamA_.frameMove(frame,stage_.X, stage_.getGroundY());
+        teamB_.frameMove(frame,stage_.X, stage_.getGroundY());
 
         if(round_ != 1)
         {
@@ -624,7 +643,7 @@ var CreateMatch = function(team1,team2,stage)
         }
 
         //
-        if(game_.isPlayingVHS())
+        if(isAIMatch_)
         {
             if((frame % 80) == 0)
             {
@@ -643,26 +662,31 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.preFrameMove = function(frame)
     {
         stage_.preFrameMove(frame);
-        this.getTeamA().preFrameMove(frame);
-        this.getTeamB().preFrameMove(frame);
+        teamA_.preFrameMove(frame);
+        teamB_.preFrameMove(frame);
     }
 
     /*pre-render calculations to be performed here*/
     Match.prototype.preRender = function(frame)
     {
         stage_.preRender(frame);
-        this.getTeamA().preRender(frame);
-        this.getTeamB().preRender(frame);
+        teamA_.preRender(frame);
+        teamB_.preRender(frame);
     }
 
     /*All rendering and CSS manipulation to be done here*/
     Match.prototype.render = function(frame)
     {
 
-        this.getTeamA().render(frame,stage_.getDeltaX(),stage_.getDeltaY());
-        this.getTeamB().render(frame,stage_.getDeltaX(),stage_.getDeltaY());
+        if(!this.isSuperMoveActive())
+            stage_.render();
 
-        stage_.render();
+        var stageDeltaX = stage_.getDeltaX();
+        var stageDeltaY = stage_.getDeltaY();
+
+        teamA_.render(frame,stageDeltaX,stageDeltaY);
+        teamB_.render(frame,stageDeltaX,stageDeltaY);
+
 
         if(!isPresented_ && (frame > CONSTANTS.PRESENT_DELAY))
             this.present();
@@ -670,10 +694,10 @@ var CreateMatch = function(team1,team2,stage)
             faceoff_.render(frame);
 
 
-        if(game_.isPlayingVHS() && !!mustUpdate_)
+        if(isAIMatch_ && !!mustUpdate_)
         {
             mustUpdate_ = false;
-            if(u1_.hasCredits())
+            if(user1_.hasCredits())
             {
                 insertCoinElement_.style.display = "none";
                 pressStartElement_.style.display = "";
@@ -704,8 +728,8 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.release = function()
     {
         stage_.release();
-        this.getTeamA().release();
-        this.getTeamB().release();
+        teamA_.release();
+        teamB_.release();
         faceoff_.release();
         utils_.removeFromDOM(insertCoinElement_);
         utils_.removeFromDOM(pressStartElement_);

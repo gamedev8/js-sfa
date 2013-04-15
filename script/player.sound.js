@@ -1,19 +1,5 @@
 
 
-Player.prototype.loadAssets = function()
-{
-    stuffLoader_.queue(this.Name.toLowerCase() + ".js",RESOURCE_TYPES.BASE64AUDIO);
-
-    //stuffLoader_.queue("script/img/" + this.Folder.toLowerCase() + ".png.js",RESOURCE_TYPES.SCRIPT);
-
-    stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/sprites.png",RESOURCE_TYPES.IMAGE);
-    stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-    stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/trail-sprites.png",RESOURCE_TYPES.IMAGE);
-    if(this.Projectiles.length > 0)
-        stuffLoader_.queue("images/misc/" + this.Folder.toLowerCase() + "/projectiles.png",RESOURCE_TYPES.IMAGE);
-
-}
-
 Player.prototype.queueDizzy = function() { this.queueSound("audio/misc/dizzy.zzz"); }
 Player.prototype.stopDizzyAudio = function() { soundManager_.pause("audio/misc/dizzy.zzz"); }
 

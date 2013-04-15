@@ -609,9 +609,14 @@ var CreateRyuAI = function(player)
         {
             this.AI.reset();
             if(rnd > 80)
+                this.executeFireball(getRand());
+            else if(rnd > 50)
                 this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
             else
-                this.executeFireball(getRand());
+            {
+                this.doVeryCloseCombo(getRand(this.AI.VeryCloseCombos.length-1));
+                this.AI.setBusy();
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿/*Helper function - adds a projectile for the player*/
-Player.prototype.addProjectile = function(name,offsetX, offsetY,speedRate)
+Player.prototype.addProjectile = function(name,offsetX, offsetY,vx,vy)
 {
-    var projectile = CreateProjectile(this,CreateAnimation(name),CreateAnimation(name + "-disintegrate"),offsetX,offsetY,speedRate);
+    var projectile = CreateProjectile(this,CreateAnimation(name),CreateAnimation(name + "-disintegrate"),offsetX,offsetY,vx,vy);
     this.Projectiles[this.Projectiles.length] = projectile;
     //projectile.Id = this.Id + "_" + this.Projectiles.length;
 
@@ -110,11 +110,14 @@ Player.prototype.addBigDirtAnimation = function()
     return this.OtherAnimations.BigDirt[this.OtherAnimations.BigDirt.length-1].Animation;
 }
 /*sets the current animation by looking up the name of the animation - this function can be called by AI*/
-Player.prototype.executeAnimation = function(name)
+Player.prototype.executeAnimation = function(name, forced, ignoreImmobile)
 {
     var animation = null;
-    if(this.Flags.Player.has(PLAYER_FLAGS.MOBILE))
+    if(!!forced || (this.isMobile() || this.allowInterupt()))
     {
+        if(!!this.ForceImmobile && !ignoreImmobile)
+            return false;
+
         var currentEnergy = this.getEnergyFn();
 
         for(var i = 0; i < this.Moves.length; ++i)
@@ -124,14 +127,65 @@ Player.prototype.executeAnimation = function(name)
 
             var move = this.Moves[i];
             if(this.Moves[i].BaseAnimation.Name == name)
-            {
                 animation = this.Moves[i];
-            }
             else
-            {
                 continue;
+
+
+            if(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract)
+                return false;
+
+            var pstate = (move.RequiredFlags
+                            | POSE_FLAGS.ALLOW_BLOCK
+                            | POSE_FLAGS.ALLOW_AIR_BLOCK
+                            ) ^ (POSE_FLAGS.ALLOW_BLOCK
+                                | POSE_FLAGS.ALLOW_AIR_BLOCK
+                                );
+            var pstateNoInterupts = (pstate
+                                | POSE_FLAGS.ALLOW_INTERUPT_1
+                                | POSE_FLAGS.ALLOW_INTERUPT_2
+                                | POSE_FLAGS.ALLOW_INTERUPT_3
+                                | POSE_FLAGS.ALLOW_INTERUPT_4
+                                | POSE_FLAGS.ALLOW_INTERUPT_5
+                                | POSE_FLAGS.ALLOW_INTERUPT_6
+                                ) ^ (POSE_FLAGS.ALLOW_INTERUPT_1
+                                    | POSE_FLAGS.ALLOW_INTERUPT_2
+                                    | POSE_FLAGS.ALLOW_INTERUPT_3
+                                    | POSE_FLAGS.ALLOW_INTERUPT_4
+                                    | POSE_FLAGS.ALLOW_INTERUPT_5
+                                    | POSE_FLAGS.ALLOW_INTERUPT_6
+                                    );
+            var pstateInterupts = (move.RequiredFlags & POSE_FLAGS.ALLOW_INTERUPT_1)
+                                | (move.RequiredFlags & POSE_FLAGS.ALLOW_INTERUPT_2)
+                                | (move.RequiredFlags & POSE_FLAGS.ALLOW_INTERUPT_3)
+                                | (move.RequiredFlags & POSE_FLAGS.ALLOW_INTERUPT_4)
+                                | (move.RequiredFlags & POSE_FLAGS.ALLOW_INTERUPT_5)
+                                | (move.RequiredFlags & POSE_FLAGS.ALLOW_INTERUPT_6)
+                                ;
+
+            var mustAllowBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_BLOCK);
+            var mustAllowAirBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_AIR_BLOCK);
+
+            if(!pstate || !!(this.Flags.Pose.has(pstate)))
+            {
+                if(!!mustAllowBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK)))
+                    return false;
+                if(!!mustAllowAirBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK)))
+                    return false;
+                if(!!pstateNoInterupts && !(this.Flags.Pose.has(pstateNoInterupts)))
+                    return false;
+                //interupts must match
+                if(!!this.allowInterupt() && !this.Flags.Pose.has(pstateInterupts))
+                    return false;
+                if(!!this.allowInterupt() && !pstateInterupts)
+                    return false;
+
+                if(!!this.isProjectileInUse(move))
+                    return false;
+
             }
 
+            /*
             if(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract)
                 continue;
             var pstate = (move.RequiredFlags | POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK) ^ (POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK);
@@ -148,6 +202,7 @@ Player.prototype.executeAnimation = function(name)
                 if(!!this.isProjectileInUse(move))
                     continue;
             }
+            */
         }
 
         if(!!animation)
@@ -292,7 +347,9 @@ Player.prototype.testAnimation = function(frame,currentEnergy,input,move)
                 if(!this.tryStartGrapple(move,frame))
                     return null;
             }
-
+            //you can only chain to a different block if you are currently blocking
+            if(this.isBlocking())
+                return null;
             return move;
         }
         else
@@ -371,7 +428,7 @@ Player.prototype.getFreeDirtIndex = function()
         }
     }
 
-    return continueCode;
+    return -1;
 }
 /*returns the first free dirt image*/
 Player.prototype.getFreeBigDirtIndex = function()
@@ -385,7 +442,7 @@ Player.prototype.getFreeBigDirtIndex = function()
         }
     }
 
-    return continueCode;
+    return -1;
 }
 
 Player.prototype.spawnDizzy = function(frame)
@@ -404,7 +461,7 @@ Player.prototype.spawnRedFire = function(frame)
     instance.StartFrame = frame;
     instance.Animation.Direction = this.Direction;
     instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
-    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
+    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - game_.getMatch().getStage().getGroundY();
     instance.Animation.InitialStageY = game_.getMatch().getStage().getGroundY();
 }
 
@@ -414,7 +471,7 @@ Player.prototype.spawnBlueFire = function(frame)
     instance.StartFrame = frame;
     instance.Animation.Direction = this.Direction;
     instance.Animation.InitialX = this.getX() - this.HeadOffsetX;
-    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - STAGE.FLOORY;
+    instance.Animation.InitialY = this.getConstOffsetTop() - this.HeadOffsetY - game_.getMatch().getStage().getGroundY();
     instance.Animation.InitialStageY = game_.getMatch().getStage().getGroundY();
 }
 
@@ -693,11 +750,6 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         this.Flags.Juggle.clear();
         this.CurrentAnimation.ID = _c3(this.Id,this.CurrentAnimation.Animation.BaseAnimation.Name,game_.getCurrentFrame());
 
-        //if(game_.isRecording())
-        //    __vcrMoves.push(this.CurrentAnimation.ID);
-        //else
-        //    __matchMoves.push(this.CurrentAnimation.ID);
-
         this.Flags.Juggle.add(this.CurrentAnimation.Animation.Flags.Juggle);
 
         if(!!this.CurrentAnimation.Animation.ProjectileId)
@@ -749,7 +801,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         else
             this.CanHoldAirborne = true;
 
-        if(!this.CurrentAnimation.Animation.KeepAirborneFunctions)
+        if(!this.CurrentAnimation.Animation.KeepCurrentAirborneFunctions || !!this.CurrentAnimation.Animation.UseNewAirborneFunctions)
         {
             if(this.CurrentAnimation.Vx === undefined) 
                 this.CurrentAnimation.Vx = this.CurrentAnimation.Animation.Vx;
@@ -758,6 +810,11 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
 
             this.clearVxFn();
             this.clearVyFn();
+        }
+        if(!!this.CurrentAnimation.Animation.UseNewAirborneFunctions)
+        {
+            this.setVxFn(this.CurrentAnimation.Animation.getAirXModifier());
+            this.setVyFn(this.CurrentAnimation.Animation.getAirYModifier());
         }
 
         this.CanInterrupt = false;
@@ -896,7 +953,9 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 
     this.IsNewFrame = false;
     
-    if(!!newFrame && !!this.CurrentFrame && newFrame.ID != this.CurrentFrame.ID)
+    if(!!newFrame && !this.CurrentFrame)
+        this.IsNewFrame = true;
+    else if(!!newFrame && !!this.CurrentFrame && newFrame.ID != this.CurrentFrame.ID)
         if(!!newFrame.RightSrc && !!this.CurrentFrame.RightSrc && spriteLookup_.getLeft(newFrame.RightSrc) != spriteLookup_.getLeft(this.CurrentFrame.RightSrc))
             this.IsNewFrame = true;
 
@@ -913,12 +972,12 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         //used to force the other player to change frames during a throw
         if(!!this.IsNewFrame)
         {
-            if(!!__debugMode)
-                debug_.setOffsets(this.CurrentFrame.ImageOffsetX,this.CurrentFrame.ImageOffsetY);
+            if(!!__debugMode && this.Id == "t1p0")
+                debug_.readFrameData(this.CurrentFrame);
 
             ++this.CurrentAnimation.FrameIndex;
             if(!!this.CurrentFrame.SlideForce)
-                this.startSlide(frame,this.CurrentFrame.SlideForce,this.Direction,this.CurrentFrame.SlideFactor,true,true);
+                this.startSlide(frame,this.CurrentFrame.SlideForce,this.Direction,this.CurrentFrame.SlideFactor,this.CurrentFrame.HideSlideDirt,true);
         }
 
         this.IgnoreHoldFrame = hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.IGNORE_HOLD_FRAME);
@@ -934,6 +993,10 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             this.ShadowContainer.style.display = "none";
         }
 
+        if(hasFlag(newFrame.FlagsToSet.Pose,POSE_FLAGS.FREEZE))
+            this.MaintainYPosition = true;
+        if(hasFlag(newFrame.FlagsToClear.Pose,POSE_FLAGS.FREEZE))
+            this.MaintainYPosition = false;
 
         if(hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.TELEPORT_BEHIND))
             this.setTeleportTarget(COMBAT_FLAGS.TELEPORT_BEHIND,newFrame.Frames);
@@ -1147,7 +1210,7 @@ Player.prototype.renderShadow = function()
 
     if(this.Direction > 0)
     {
-        this.ShadowX = this.X + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) || this.DefaultShadowOffset) + "px";
+        this.ShadowX = this.X + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffset.X : 0) || this.DefaultShadowOffset) + "px";
         if((this.ShadowX != this.LastShadowX) || !!this.MustForceRenderShadow)
         {
             this.LastShadowX = this.ShadowX;
@@ -1163,7 +1226,7 @@ Player.prototype.renderShadow = function()
     }
     else
     {
-        this.ShadowX = this.X + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffsetX : 0) || this.DefaultShadowOffset) + "px";
+        this.ShadowX = this.X + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffset.X : 0) || this.DefaultShadowOffset) + "px";
         if((this.ShadowX != this.LastShadowX) || !!this.MustForceRenderShadow)
         {
             this.LastShadowX = this.ShadowX;
@@ -1177,5 +1240,12 @@ Player.prototype.renderShadow = function()
             }
         }
     }
-    this.Shadow.style.bottom = game_.getMatch().getStage().getOffsetY(true) + "px";
+
+
+    this.ShadowY = game_.getMatch().getStage().getOffsetY(true) + ((!!this.CurrentFrame ? this.CurrentFrame.ShadowOffset.Y : 0)) + "px";
+    if((this.ShadowY != this.LastShadowY) || !!this.MustForceRenderShadow)
+    {
+        this.LastShadowY = this.ShadowY;
+        this.Shadow.style.bottom = this.ShadowY;
+    }
 }

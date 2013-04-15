@@ -8,15 +8,20 @@ var CreateAIProxy = function()
     {
     }
 
+    AIProxy.prototype.enableAI = function(player,createAiFn)
+    {
+        player_ = player_ || player;
+        managed_ = managed_ || (!!createAiFn ? createAiFn(player_) : null);
+    }
     AIProxy.prototype.release = function() { player_ = null; managed_ = null; }
     AIProxy.prototype.reset = function() { managed_.reset(); }
     AIProxy.prototype.getManaged = function() { return managed_; }
-    AIProxy.prototype.enableAI = function(player,createAiFn) { player_ = player; managed_ = !!createAiFn ? createAiFn(player_) : null; }
     AIProxy.prototype.isRunning = function() { return !!managed_; }
     AIProxy.prototype.onEnemyStartAttack = function(frame, who) { managed_.onEnemyStartAttack(frame,who); }
     AIProxy.prototype.onEnemyContinueAttack = function(frame, who) { managed_.onEnemyContinueAttack(frame,who); }
     AIProxy.prototype.onEnemyEndAttack = function(frame, who) { managed_.onEnemyEndAttack(frame,who); }
-    AIProxy.prototype.onEnemyVulnerable = function(frame, who) { managed_.onEnemyVulnerable(frame,who); }
+    AIProxy.prototype.onEnemyVulnerable = function(frame, who, x, y) { managed_.onEnemyVulnerable(frame,who,x,y); }
+    AIProxy.prototype.onEnemyFloating = function(frame, who, x, y) { if(!!managed_.onEnemyFloating) { managed_.onEnemyFloating(frame,who,x,y); } }
     AIProxy.prototype.onEnemyDizzy = function(frame, who) { managed_.onEnemyDizzy(frame,who); }
     AIProxy.prototype.onEnemyAttackPending = function(frame,x,y,player,isSuperMove) { managed_.onEnemyAttackPending(frame,x,y,player,isSuperMove); }
     AIProxy.prototype.onEnemyProjectilePending = function(frame,x,y,player,isSuperMove) { managed_.onEnemyProjectilePending(frame,x,y,player,isSuperMove); }
@@ -29,6 +34,7 @@ var CreateAIProxy = function()
     AIProxy.prototype.frameMove = function(frame) { managed_.frameMove(frame); }
     AIProxy.prototype.onNewRound = function() { managed_.onNewRound(); }
     AIProxy.prototype.onAnimationChanged = function(name) { managed_.onAnimationChanged(name); }
+    AIProxy.prototype.execute = function(sequence) { managed_.execute(sequence); }
 
     return new AIProxy();
 }

@@ -26,7 +26,8 @@ var CreateGame = function()
     var keyboardState_ = {};
     var buttonState_ = {};
     var lastTime_ = 0;
-    var speed_ = CONSTANTS.NORMAL_SPEED;
+    var speed_ = BrowserDetect.browser == "Chrome" ? CONSTANTS.FAST_SPEED : CONSTANTS.NORMAL_SPEED;
+    var defaultSpeed_ = speed_;
     var targetFPS_ = CONSTANTS.TARGET_FPS;
     var text_ = null;
     var state_ = 0;
@@ -46,6 +47,7 @@ var CreateGame = function()
     var delay_ = 0;
     var match_ = null;
     var maxWinsPerMatch_ = 2;
+    var resetSpeedAtFrame_ = 0;
 
     //Encapulates a new game
     var Game = function ()
@@ -53,7 +55,7 @@ var CreateGame = function()
         lastTime_ = this.getCurrentTime();
         this.initGame();
         match_ = null;
-        this.UsingGamepads = !!Gamepad.supported;
+        this.UsingGamepads = !!window.Gamepad && !!Gamepad.supported;
         this.VCR = vcr_;
     }
 
@@ -67,6 +69,25 @@ var CreateGame = function()
     Game.prototype.getMaxWinsPerMatch = function() { return maxWinsPerMatch_; }
     Game.prototype.getMatch = function() { return match_; }
     Game.prototype.getCharSelect = function() { return charSelect_; }
+
+    Game.prototype.startRandomMatch = function()
+    {
+        var chars = [CHARACTERS.RYU,CHARACTERS.KEN,CHARACTERS.MBISON,CHARACTERS.SAGAT];
+        var stages = ["ken", "ryu", "sodom", "dramatic_battle", "akuma", "sagat"];
+
+        var t1 = [2];
+        var t2 = [3];
+
+        var p1 = chars.splice(getRand(chars.length),1)[0];
+        var p2 = chars.splice(getRand(chars.length),1)[0];
+
+        user3_.setChar(p1,false,true);
+        user4_.setChar(p2,p1 == p2,true);
+
+        var stage = stages_[stages[getRand(stages.length)]];
+
+        this.startMatch(false,t1,t2,stage)
+    }
 
     Game.prototype.loadVHS = function(id)
     {
@@ -117,6 +138,27 @@ var CreateGame = function()
     Game.prototype.setSpeed = function(value)
     {
         speed_ = value;
+        resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
+    }
+
+    Game.prototype.resetSpeed = function()
+    {
+        speed_ = defaultSpeed_;
+        resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
+    }
+
+    Game.prototype.goSlow = function(nbFrames,value)
+    {
+        if(speed_ != value)
+        {
+            value = value || CONSTANTS.SLOW_SPEED;
+
+            speed_ = value;
+            if(!!nbFrames)
+            {
+                resetSpeedAtFrame_ = frame_ + nbFrames;
+            }
+        }
     }
 
     Game.prototype.getSpeed = function() { return speed_; }
@@ -188,7 +230,7 @@ var CreateGame = function()
 
     Game.prototype.initGame = function()
     {
-        Stage.prototype.center();
+        centerScreen();
     }
 
     Game.prototype.init = function()
@@ -253,9 +295,8 @@ var CreateGame = function()
         window.document.getElementById("bg1").style.display = "none";
     }
 
-    Game.prototype.startMatch = function(startPaused,teamAIndexes,teamBIndexes,stage,callback)
+    Game.prototype.startMatch = function(matchState,teamAIndexes,teamBIndexes,stage,callback)
     {
-        this.StartPaused = startPaused;
         this.resetGameData();
         gameLoopState_ = GAME_STATES.MATCH;
 
@@ -267,6 +308,7 @@ var CreateGame = function()
             return function()
             {
                 thisValue.createMatch(teamA,teamB,stage,callback);
+                thisValue.getMatch().setState(matchState);
             }
         }
 
@@ -294,8 +336,6 @@ var CreateGame = function()
         }
 
         match_ = CreateMatch(a,b,stage);
-        if(vcr_.isPlaying())
-            match_.setRound(vcr_.getData().Round);
         managed_ = match_;
         announcer_.setMatch(match_);
         this.showElements();
@@ -342,7 +382,7 @@ var CreateGame = function()
     {
         this.init();
         this.preloadTextImages();
-        Stage.prototype.center();
+        centerScreen();
         isInitialized_ = true;
         frame_ = 0;
         this.startLoading(loopFn, callback);
@@ -375,10 +415,8 @@ var CreateGame = function()
     {
         if(!!runLoopFn)
         {
-            managed_.start(!!this.StartPaused);
+            managed_.start();
             runLoopFn.call(this);
-            if(!!this.StartPaused)
-                this.pause();
         }
         if(!!callback)
             callback();
@@ -399,7 +437,7 @@ var CreateGame = function()
         this.stop();
         this.releaseText();
         announcer_.release();
-        speed_ = CONSTANTS.NORMAL_SPEED;
+        this.resetSpeed();
         if(!!charSelect_)
             charSelect_.release();
         if(!!match_)
@@ -407,13 +445,13 @@ var CreateGame = function()
         if(!!insertCoinScreen_)
             insertCoinScreen_.release();
     }
-    /*Increases the game loop speed*/
+    //Increases the game loop speed
     Game.prototype.speedUp = function()
     {
         if(speed_ > CONSTANTS.MIN_DELAY)
             speed_ -= CONSTANTS.SPEED_INCREMENT;
     }
-    /*Decreases the game loop speed*/
+    //Decreases the game loop speed
     Game.prototype.slowDown = function()
     {
         if(speed_ < CONSTANTS.MAX_DELAY)
@@ -503,7 +541,7 @@ var CreateGame = function()
     Game.prototype.handleKeyPress = function(e,isDown)
     {
         var keyCode = e.which || e.keyCode;
-        /*Alert(keyCode);*/
+        Alert(keyCode);
 
 
         if(this.wasKeyPressed(KEYS.O,keyCode,isDown))
@@ -639,6 +677,11 @@ var CreateGame = function()
         {
             this.removeState(GAME_STATES.STEP_FRAME);
             ++frame_;
+            if(resetSpeedAtFrame_ < frame_)
+            {
+                resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
+                speed_ = defaultSpeed_;
+            }
 
             //frame move
             if(!!vcr_.isPlaying())
@@ -689,7 +732,6 @@ var CreateGame = function()
         }
         else if(!match_.isMatchOver(frame_))
         {
-            //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             if(gameLoopState_ != GAME_STATES.MATCH)
                 return;
 
@@ -701,6 +743,7 @@ var CreateGame = function()
         }
         else
         {
+            window.clearTimeout(nextTimeout_);
             match_.handleMatchOver(frame_);
         }
     }

@@ -68,8 +68,10 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.RequiredFlags = requiredFlags;
         this.BehaviorFlags = behaviorFlags || 0;
         this.OverrideFlags = new MoveOverrideFlags();
-        this.KeepAirborneFunctions = false;
+        this.KeepCurrentAirborneFunctions = false;
+        this.UseNewAirborneFunctions = false;
         this.UseJumpSpeed = false;
+        this.UseCurrentJump = false;
 
         this.VyAirFnArgs = {};
         this.VxAirFnArgs = {};
@@ -79,15 +81,17 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.UserData = null;
         this.InteruptAnimation = null;
         this.InteruptAnimationFlags = null;
-        this.IgnoreDepressedKeys = false;
         /*by setting the following value, the jump will start at a different point. It is almost like skipping frames to a certain point in a jump.*/
         this.NbFramesAirborneAdvance = 0;
         /*by setting the following value the initial jump Y position will be set*/
         this.AirborneStartDeltaY = 0;
         this.MaintainYPosition = false;
-        this.NbChargeFrames = CONSTANTS.NBCHARGE_FRAMES
-    }
+        this.NbChargeFrames = CONSTANTS.NBCHARGE_FRAMES;
 
+        this.DefaultLocalHitStop = undefined;
+        this.DefaultEnemyHitStop = undefined;
+    }
+    Animation.prototype.setDefaultHitStop = function(local,foe) { this.DefaultLocalHitStop = local; this.DefaultEnemyHitStop = foe; }
     Animation.prototype.getXModifier = function() { return this.xModifier(this.VxFnArgs); }
     Animation.prototype.getYModifier = function() { return this.yModifier(this.VyFnArgs); }
     Animation.prototype.getAirYModifier = function() { return this.airYModifier(this.VyAirFnArgs); }
@@ -157,36 +161,52 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.Animations.push(animation);
     }
 
-    Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.setDefaultsForLastFrames = function(nbFrames)
+    {
+        var i = nbFrames || 1;
+        while(!!i)
+        {
+            if(!!this.DefaultLocalHitStop)
+                this.BaseAnimation.Frames[this.BaseAnimation.Frames.length - i].HitStop = this.DefaultLocalHitStop;
+            if(!!this.DefaultEnemyHitStop)
+                this.BaseAnimation.Frames[this.BaseAnimation.Frames.length - i].EnemyHitStop = this.DefaultEnemyHitStop;
+            --i;
+        }
+    }
+
+    Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addFrameWithSound.apply(this.BaseAnimation,arguments);
+        this.setDefaultsForLastFrames();
         return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
 
-    Animation.prototype.addFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addFrame = function(player,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addFrame.apply(this.BaseAnimation,arguments);
+        this.setDefaultsForLastFrames();
         return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
-    Animation.prototype.addOffsetFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,x,y)
+    Animation.prototype.addOffsetFrame = function(player,shadowOffset,shadowImage,image,nbFrames,x,y)
     {
         this.BaseAnimation.addOffsetFrame.apply(this.BaseAnimation,arguments);
+        this.setDefaultsForLastFrames();
         return this.BaseAnimation.Frames[this.BaseAnimation.Frames.length-1];
     }
-    Animation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addRepeatingFrameWithSound = function(player,volume,soundFilename,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addRepeatingFrameWithSound.apply(this.BaseAnimation,arguments);
-
+        this.setDefaultsForLastFrames(nbFrames);
         return CreateFrameAdapter(this.BaseAnimation.Frames,nbFrames);
     }
-    Animation.prototype.addRepeatingFrame = function(player,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
+    Animation.prototype.addRepeatingFrame = function(player,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
         this.BaseAnimation.addRepeatingFrame.apply(this.BaseAnimation,arguments);
-
+        this.setDefaultsForLastFrames(nbFrames);
         return CreateFrameAdapter(this.BaseAnimation.Frames,nbFrames);
     }
     Animation.prototype.getNextFrameOffset = function(id) { return this.BaseAnimation.getNextFrameOffset.apply(this.BaseAnimation,arguments); }
@@ -228,12 +248,12 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
 
     Animation.prototype.setMediumAttack = function()
     {
-        this.EnergyToAdd = (2);
+        this.EnergyToAdd = 2;
     }
 
     Animation.prototype.setHardAttack = function()
     {
-        this.EnergyToAdd = (3);
+        this.EnergyToAdd = 3;
     }
 
     Animation.prototype.renderChildren = function(frame,startFrame,direction,zIndex,x,y)
@@ -254,6 +274,19 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         if(!!this.Trail)
             this.Trail.release();
         this.BaseAnimation.release();
+    }
+
+    Animation.prototype.allFramesFn = function(fn)
+    {
+        for(var i = 0; i < this.BaseAnimation.Frames.length; ++i)
+            fn(this.BaseAnimation.Frames[i]);
+    }
+
+    Animation.prototype.allFramesSet = function(object)
+    {
+        for(var i = 0; i < this.BaseAnimation.Frames.length; ++i)
+            for(var x in object)
+                this.BaseAnimation.Frames[i][x] = object[x];
     }
 
     return new Animation();
@@ -739,21 +772,24 @@ var CreateSpriteLookup = function()
 var spriteLookup_ = CreateSpriteLookup();
 /************************************************************************/
 /************************************************************************/
-var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackFlags,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
+var CreateFrame = function(index,id,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,attackFlags,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor)
 {
     var Frame = function()
     {
         this.SlideForce = slideForce || 0;
+        this.HideSlideDirt = true;
         this.SlideFactor = slideFactor || 1;
         this.EnergyToAdd = energyToAdd || 0;
         this.Index = index;
         this.ID = +id; /* the "+" is a fast conversion to numeric*/
         this.ImageID = this.ID;
         this.HitID = hitID || 0;
-        //this.HitDelayFactor = hitStop || 1;
+        //attacking player waits
         this.HitStop = hitStop || 0;
+        //attacked player waits
+        this.EnemyHitStop = undefined;
         this.ShadowImageSrc = !!shadowImage ? "images/misc/misc/shadow-" + shadowImage + ".png" : null;
-        this.ShadowOffsetX = shadowOffsetX || 0;
+        this.ShadowOffset = !shadowOffset ? {X:0,Y:0} : !!+shadowOffset ? {X:shadowOffset,Y:0} : shadowOffset;
         this.IsFlipped = image.indexOf("#") > -1;
         this.RightSrc = !!image ? image.replace("#-","r-").replace("x-","r-") : "";
         this.LeftSrc =  !!image ? image.replace("#-","l-").replace("x-","l-") : "";
@@ -781,6 +817,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToSet.SwingSound = !!flagsToSet ? (flagsToSet.SwingSound || 0) : 0;
         this.FlagsToSet.HitSound = !!flagsToSet ? (flagsToSet.HitSound || 0) : 0;
         this.FlagsToSet.BlockSound = !!flagsToSet ? (flagsToSet.BlockSound || 0) : 0;
+        this.FlagsToSet.HitReact = !!flagsToSet ? (flagsToSet.HitReact || 0) : 0;
 
         this.FlagsToClear = new FrameFlags();
         this.FlagsToClear.Juggle = !!flagsToClear ? (flagsToClear.Juggle || 0) : 0;
@@ -793,6 +830,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.FlagsToClear.SwingSound = !!flagsToClear ? (flagsToClear.SwingSound || 0) : 0;
         this.FlagsToClear.HitSound = !!flagsToClear ? (flagsToClear.HitSound || 0) : 0;
         this.FlagsToClear.BlockSound = !!flagsToClear ? (flagsToClear.BlockSound || 0) : 0;
+        this.FlagsToClear.HitReact = !!flagsToClear ? (flagsToClear.HitReact || 0) : 0;
 
         this.FlagsToSend = flagsToSend || MISC_FLAGS.NONE;
     
@@ -818,6 +856,16 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
         this.SoundFilename = "";
         this.SoundVolume = 1;
         this.ForceHitFx = false;
+        //If this is set, then the player will force jump, even if the player is already airborne
+        //eg. this.Jump = {Fx:10, Fy:200};
+        this.Jump = null;
+    }
+    Frame.prototype.hitStop = function(me,you)
+    {
+        this.HitStop = me;
+        this.EnemyHitStop = you;
+        
+        return this;
     }
     Frame.prototype.set = function(params)
     {
@@ -829,6 +877,12 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
             }
         }
 
+        return this;
+    }
+    Frame.prototype.offset = function(x,y)
+    {
+        this.ImageOffsetX = x;
+        this.ImageOffsetY = y;
         return this;
     }
     Frame.prototype.flip = function()
@@ -861,7 +915,7 @@ var CreateFrame = function(index,id,shadowOffsetX,shadowImage,image,nbFrames,fla
 
     Frame.prototype.getEndFrameOffset = function() { return this.Frames + this.FrameOffset; }
     Frame.prototype.getImageSrc = function(direction){ return this.RightSrc; }
-    Frame.prototype.isSettingAirborneFlag = function()  { return hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_1) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_2) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE_FB) }
+    Frame.prototype.isSettingAirborneFlag = function()  { return !!this.Jump || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_1) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIR_COMBO_2) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToSet.Pose,POSE_FLAGS.AIRBORNE_FB) }
     Frame.prototype.isClearingAirborneFlag = function() { return hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIR_COMBO_1) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIR_COMBO_2) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE_FB) }
     Frame.prototype.isClearingAirborne = function() { return hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE) || hasFlag(this.FlagsToClear.Pose,POSE_FLAGS.AIRBORNE_FB) }
     return new Frame();
@@ -902,7 +956,15 @@ var CreateFrameAdapter = function(frameArray,nbFrames)
         }
     }
 
-    return {set:set,clip:clip,clipHit:clipHit,clipMove:clipMove};
+    var hitStop = function()
+    {
+        for(var i = frameArray.length - nbFrames; i < frameArray.length; ++i)
+        {
+            frameArray[i].hitStop.apply(frameArray[i], arguments);
+        }
+    }
+
+    return {set:set,clip:clip,clipHit:clipHit,clipMove:clipMove,hitStop:hitStop};
 }
 /************************************************************************/
 /************************************************************************/
@@ -912,16 +974,18 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     var Projectile = function()
     {
         this.Owner = player;
-        this.Params = this.Params || {};
+        this.Params = this.Params || {EnemyHitStop:0};
         this.Animation = animation;
         this.DisintegrationAnimation = disintegrationAnimation;
         this.OffsetX = xOffset;
         this.OffsetY = yOffset;
         this.InitialX = xOffset;
         this.InitialY = yOffset;
+        this.Rect = {Left:0,Right:0,Top:0,Bottom:0};
         this.X = xOffset;
         this.Y = yOffset;
         this.XSpeed = xSpeed || 1;
+        this.SpeedRate = 1;
         this.YSpeed = ySpeed || 0;
         this.XFunc = xFunc || function(y){return this.XSpeed * 3;}
         this.YFunc = yFunc || function(x){return this.YSpeed * 1;}
@@ -942,8 +1006,12 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.vyFn = null;
         this.NbHits = 0;
         this.MaxHits = 1;
-        this.HitStopFrameCount = CONSTANTS.DEFAULT_PROJECTILE_HIT_STOP_FRAME_COUNT;
-        this.HitStop = 10;
+        this.DefaultHitStop = 13;
+        this.DefaultLocalHitStop = 20;
+        this.DefaultAirHitStop = 13;
+        this.HitStopData = {"1":13};
+        this.LocalHitStopData = {"1":20};
+        //this.HitStop = 10;
         this.LastHitFrame = 0;
         this.Fx = 1;
         this.Fy = 1;
@@ -954,8 +1022,23 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.ClipTop = 70;
         this.ClipBottom = 70;
         this.IsSuperMove = false;
+        this.AttackStateData = {};
+        this.HitStateData = {};
         ++Projectile.prototype.count;
     }
+    Projectile.prototype.getAttackState = function(hitData)
+    {
+        return (!!hitData && !!hitData.Nb) 
+                ? (this.AttackStateData[hitData.Nb] || this.AttackState)
+                : this.AttackState;
+    }
+    Projectile.prototype.getHitState = function(hitData)
+    {
+        return (!!hitData && !!hitData.Nb) 
+                ? (this.HitStateData[hitData.Nb] || this.HitState)
+                : this.HitState;
+    }
+    Projectile.prototype.getHitId = function(frame) { return this.Id + "_" + frame; }
     Projectile.prototype.setEnergyToAdd = function(value) { energyToAdd_ = value; }
     Projectile.prototype.getVxFn = function() { return this.vxFn; }
     Projectile.prototype.setVxFn = function(value) { this.vxFn = value; }
@@ -967,6 +1050,9 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     Projectile.prototype.cancel = function(ignoreOnGoneEvent)
     {
         this.Element.style.display="none";
+        this.Element.style.left="999999px";
+        this.Element.style.right="999999px";
+        this.Element.style.bottom="100px";
         this.X = this.OffsetX;
         this.Y = this.OffsetY;
         this.T = 0;
@@ -987,6 +1073,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     {
         if(!!this.IsDisintegrating)
             this.cancel();
+        this.SpeedRate = 1;
         this.StartFrame = frame;
         this.T = 0;
         this.Element.style.display="none";
@@ -1071,15 +1158,33 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         return (this.X < STAGE.MAX_STAGEX && this.X > -100) && (this.Y > 0 && this.Y < 1000);
     }
 
+    /*Did the projectile hit the floor?*/
+    Projectile.prototype.didHitFloor = function(stageY)
+    {
+        return (!this.IsDisintegrating && (this.getBottom() < game_.getMatch().getStage().getGroundY()));
+    }
+
 
     Projectile.prototype.canHit = function(frame)
     {
-        return !this.IsDisintegrating && ((!this.LastHitFrame) || (frame > (this.LastHitFrame + this.HitStopFrameCount)));
+        return !this.IsDisintegrating
+            && ((!this.LastHitFrame) || (frame > (this.LastHitFrame + this.getLocalHitStop())));
     }
 
     Projectile.prototype.isInHitStop = function(frame)
     {
-        return ((!!this.LastHitFrame) && (frame < (this.LastHitFrame + this.HitStopFrameCount)));
+        return ((!!this.LastHitFrame)
+                && (frame < (this.LastHitFrame + this.getLocalHitStop())));
+    }
+
+    Projectile.prototype.getLocalHitStop = function()
+    {
+        return this.LocalHitStopData[this.NbHits] || this.DefaultLocalHitStop;
+    }
+
+    Projectile.prototype.getHitStop = function()
+    {
+        return this.HitStopData[this.NbHits] || this.DefaultHitStop;
     }
 
     /*Advances the projectile*/
@@ -1091,6 +1196,10 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
             this.cancel();
             return null;
         }
+        if(this.didHitFloor())
+        {
+            this.disintegrate(frame);
+        }
         //this.Element.style.display = "none";
         ++this.T;
         this.IsActive = true;
@@ -1099,10 +1208,11 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
 
         if(!this.isInHitStop(frame))
         {
+            this.SpeedRate = Math.min(this.SpeedRate + 0.2, 1);
             if(!this.IsDisintegrating)
             {
-                var xSpeed = this.vxFn(this.XSpeed,this.T);
-                var ySpeed = this.vyFn(this.YSpeed,this.T);
+                var xSpeed = this.vxFn(this.XSpeed,this.T) * this.SpeedRate;
+                var ySpeed = this.vyFn(this.YSpeed,this.T) * this.SpeedRate;
 
                 var dx = (xSpeed) + (this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX));
                 var dy = (ySpeed) + (stageY - this.StageY);
@@ -1111,7 +1221,18 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
                 this.X += dx;
                 this.Y += dy;
             }
+        }
+        else if(!this.IsDisintegrating)
+        {
+                var xSpeed = 0;
+                var ySpeed = 0;
 
+                var dx = (xSpeed) + (this.Direction > 0 ? (this.StageX - stageX) : (stageX - this.StageX));
+                var dy = (ySpeed) + (stageY - this.StageY);
+
+
+                this.X += dx;
+                this.Y += dy;
         }
         if(!!this.IsDisintegrating)
         {
@@ -1223,6 +1344,7 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     /*The projectile has hit a player*/
     Projectile.prototype.hitPlayer = function(frame)
     {
+        this.SpeedRate = 0;
         this.LastHitFrame = frame;
         if(++this.NbHits >= this.MaxHits)
             this.disintegrate(frame);
@@ -1244,14 +1366,6 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
     {
         if(player.allowJuggle() && !!this.CanJuggle)
         {
-            //if(player.isDead() && !!this.CanJuggle)
-            //{
-            //    return true;
-            //}
-            //else if(!player.isDead() && !!this.CanJuggle)
-            //{
-            //    return true;
-            //}
             return true;
         }
 

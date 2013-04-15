@@ -11,6 +11,7 @@ var CreateWebAudioManager = function()
     var sounds_ = [];
     var extension_ = ".ogg";
     var id_ = 0;
+    var isEnabled_ = BrowserDetect.browser != "Explorer";
 
 
     //public
@@ -52,7 +53,7 @@ var CreateWebAudioManager = function()
 
     WebAudioManager.prototype.loadBase64 = function(path,nbChannels,defaultVolume,base64Data)
     {
-        if(!!__debugMode) return;
+        if(!!__debugMode || !isEnabled_) return;
         if(!items_[path])
         {
             //nbChannels = nbChannels || 1;
@@ -79,6 +80,7 @@ var CreateWebAudioManager = function()
     //plays the sound
     WebAudioManager.prototype.play = function(path)
     {
+        if(!isEnabled_) return;
         if(!!items_[path])
         {
             var buffer = items_[path].Elements[0];
