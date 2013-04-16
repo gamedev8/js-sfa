@@ -299,8 +299,30 @@ var CreateRyuAI = function(player)
 
             //console.log(dist);
 
+            //counter akuma air fireball
+            if(player.isAirborne())
+            {
+                if(dist < 50000)
+                {
+                    var rnd = getRand();
+                    if(rnd > 80)
+                    {
+                        this.reset();
+                        this.doMove("u3");
+                        this.AI.setProjectileReactBusy();
+                        this.AI.setAirborneReactBusy();
+                    }
+                    else if(rnd > 60)
+                    {
+                        this.reset();
+                        this.doMove("u2");
+                        this.AI.setProjectileReactBusy();
+                        this.AI.setAirborneReactBusy();
+                    }
+                }                
+            }
             //jump in
-            if(dist < 170000 && dist > 81000)
+            else if(dist < 170000 && dist > 81000)
             {
                 this.reset();
                 this.doCounterProjectileCombo();
@@ -438,14 +460,29 @@ var CreateRyuAI = function(player)
         var item = this.AI.getClosestAirborneEnemy();
 
         var rnd = getRand();
-        if(item.X < 200)
+        if(item.X < 100)
         {
             if(!!attacker)
             {
                 this.AI.reset();
-                if(rnd > 50)
+                if(rnd > 90)
+                {
+                    this.doMove("lp3");
+                    retVal = true;
+                }
+                else if(rnd > 80)
                 {
                     this.doMove("k3");
+                    retVal = true;
+                }
+                else if(rnd > 30)
+                {
+                    this.doMove("u3");
+                    retVal = true;
+                }
+                else if(rnd > 10)
+                {
+                    this.doMove("u2");
                     retVal = true;
                 }
                 else
@@ -457,10 +494,10 @@ var CreateRyuAI = function(player)
             }
             else
             {
-                this.AI.reset();
-                this.doMove("k3");
-                retVal = true;
-                this.AI.setAirborneReactBusy();
+                //this.AI.reset();
+                //this.doMove("k3");
+                //retVal = true;
+                //this.AI.setAirborneReactBusy();
             }
         }
         return retVal;

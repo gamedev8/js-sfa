@@ -1037,12 +1037,8 @@ Player.prototype.createRyuSuperMoves = function(player)
         projectile.CanJuggle = true;
         projectile.MaxHits = x + 3;
         projectile.LocalHitStopData = {};
-<<<<<<< HEAD
         projectile.DefaultLocalHitStop = 3;
         projectile.DefaultHitStop = 1;
-=======
-        projectile.DefaultLocalHitStop = 5;
->>>>>>> js-sfa/master
         projectile.AttackState = ATTACK_FLAGS.HARD|ATTACK_FLAGS.FLOOR_AIRBORNE_HARD;
         projectile.HitState = HIT_FLAGS.LOW;
         projectile.FlagsToSend = ATTACK_FLAGS.HARD;
@@ -1057,11 +1053,7 @@ Player.prototype.createRyuSuperMoves = function(player)
         else if(x == 2)
         {
             projectile.FlagsToSend |= ATTACK_FLAGS.SUPER|ATTACK_FLAGS.PROJECTILE;
-<<<<<<< HEAD
             projectile.Params.Combo = COMBO_FLAGS.RED_FIRE_ON_MAX_HIT;
-=======
-            projectile.Params = {Combo:COMBO_FLAGS.RED_FIRE_ON_MAX_HIT};
->>>>>>> js-sfa/master
         }
         projectile.BaseDamage = 25;
 

@@ -1,6 +1,6 @@
 ﻿var CreateStoryMode = function()
 {
-    var levelsPassed_ = [false,false,false,false,false];
+    var levelsPassed_ = [false,false,false,false,false,false];
     var level_ = 0;
 
     var StoryModeHandler = function()
@@ -33,6 +33,7 @@
                 case 2: { return ["images/misc/misc/char-sagat-r.png"]; break;}
                 case 3: { return ["images/misc/misc/char-mbison-r.png"]; break;}
                 case 4: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
+                case 5: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
                 default : { return ["images/misc/misc/question-0.png"]; break;}
             }
         }
@@ -48,6 +49,7 @@
             case 2: { return [CHARACTERS.SAGAT]; break;}
             case 3: { return [CHARACTERS.MBISON]; break;}
             case 4: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
+            case 5: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
             default : { return [CHARACTERS.RYU]; break;}
         }
 
@@ -258,15 +260,12 @@ User.prototype.getChar = function(ch, isAlternate, isAI)
     }
 }
 
-<<<<<<< HEAD
 User.prototype.forceSetChar = function(ch, isAlternate, isAI)
 {
     this.Selected = ch;
     this.setChar(ch, isAlternate, isAI);
 }
 
-=======
->>>>>>> js-sfa/master
 User.prototype.setChar = function(ch, isAlternate, isAI)
 {
     var name = "";

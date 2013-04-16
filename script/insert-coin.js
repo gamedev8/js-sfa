@@ -33,11 +33,7 @@ var CreateInsertCoinScreen = function(u1,u2)
         stuffLoader_.queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
         stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
 
-<<<<<<< HEAD
         //stuffLoader_.queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
-=======
-        stuffLoader_.queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
->>>>>>> js-sfa/master
         stuffLoader_.queue("images/misc/misc/announcer-sprites.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.queue("images/misc/font1/insert.png",RESOURCE_TYPES.IMAGE);
         stuffLoader_.queue("images/misc/font1/credits.png",RESOURCE_TYPES.IMAGE);
@@ -75,42 +71,8 @@ var CreateInsertCoinScreen = function(u1,u2)
         Player.prototype.loadAssets("sagat","sagat2",true);
         Player.prototype.loadAssets("mbison","mbison",true);
         Player.prototype.loadAssets("mbison","mbison2",true);
-<<<<<<< HEAD
         Player.prototype.loadAssets("akuma","akuma",true);
         Player.prototype.loadAssets("akuma","akuma2",true);
-=======
-
-		spriteLookup_.load("images/misc/misc/p2-select-adon.png","images/misc/misc/head-sprites.png", "0px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-akuma.png","images/misc/misc/head-sprites.png", "-256px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-birdie.png","images/misc/misc/head-sprites.png", "-512px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-charlie.png","images/misc/misc/head-sprites.png", "-768px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-chunli.png","images/misc/misc/head-sprites.png", "-1024px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-dan.png","images/misc/misc/head-sprites.png", "-1280px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-guy.png","images/misc/misc/head-sprites.png", "-1536px", "0px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-ken.png","images/misc/misc/head-sprites.png", "0px", "-288px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-mbison.png","images/misc/misc/head-sprites.png", "-256px", "-288px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-rose.png","images/misc/misc/head-sprites.png", "-512px", "-288px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-ryu.png","images/misc/misc/head-sprites.png", "-768px", "-288px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-sagat.png","images/misc/misc/head-sprites.png", "-1024px", "-288px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/p2-select-sodom.png","images/misc/misc/head-sprites.png", "-1280px", "-288px", "256px", "288px");
-		spriteLookup_.load("images/misc/misc/vs-0.png","images/misc/misc/head-sprites.png", "-1536px", "-412px", "252px", "164px");
-
-
-	    spriteLookup_.load("images/misc/font3/name-adon.png","images/misc/font3/name-sprites.png", "0px", "0px", "129px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-akuma.png","images/misc/font3/name-sprites.png", "-129px", "0px", "160px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-birdie.png","images/misc/font3/name-sprites.png", "-289px", "-9px", "160px", "32px");
-	    spriteLookup_.load("images/misc/font3/name-charlie.png","images/misc/font3/name-sprites.png", "-449px", "0px", "160px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-chunli.png","images/misc/font3/name-sprites.png", "-609px", "0px", "160px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-dan.png","images/misc/font3/name-sprites.png", "-769px", "0px", "94px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-guy.png","images/misc/font3/name-sprites.png", "0px", "-50px", "96px", "32px");
-	    spriteLookup_.load("images/misc/font3/name-ken.png","images/misc/font3/name-sprites.png", "-96px", "-41px", "96px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-mbison.png","images/misc/font3/name-sprites.png", "-192px", "-41px", "160px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-rose.png","images/misc/font3/name-sprites.png", "-352px", "-41px", "128px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-ryu.png","images/misc/font3/name-sprites.png", "-480px", "-41px", "96px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-sagat.png","images/misc/font3/name-sprites.png", "-576px", "-41px", "160px", "41px");
-	    spriteLookup_.load("images/misc/font3/name-sodom.png","images/misc/font3/name-sprites.png", "-736px", "-41px", "161px", "41px");
-
->>>>>>> js-sfa/master
     }
 
 

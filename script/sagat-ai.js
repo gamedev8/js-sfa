@@ -357,11 +357,7 @@
 
             this.reset();
             var rnd = getRand();
-<<<<<<< HEAD
             if(rnd > 45)
-=======
-            if(rnd > 80)
->>>>>>> js-sfa/master
             {
                 if(!this.throwSuperFireball(true))
                     this.executeFireball();

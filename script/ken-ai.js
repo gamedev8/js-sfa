@@ -336,24 +336,29 @@
             //console.log(dist);
 
             //jump in
-            if(dist < 150000 && dist > 81000)
+            if(dist > 50000 && dist < 150000)
             {
                 this.reset();
                 this.doCounterCloseProjectileCombo();
                 this.AI.setProjectileReactBusy();
+                this.AI.setAttackReactBusy();
             }
-            else if(dist < 250000 && dist > 81000)
+            else if(dist > 81000 && dist < 250000)
             {
                 this.reset();
                 this.doCounterProjectileCombo();
                 this.AI.setProjectileReactBusy();
+                this.AI.setAttackReactBusy();
             }
-            else if(dist < 20000)
+            else if(dist < 25000)
             {
                 var rnd = getRand();
                 if(rnd > 50)
                 {
-                    this.doMove("u1");
+                    this.reset();
+                    this.doMove("u3");
+                    this.AI.setProjectileReactBusy();
+                    this.AI.setAttackReactBusy();
                 }
                 else
                 {
@@ -361,6 +366,7 @@
                     if(!this.throwSuperFireball(true))
                         this.doMove("u1");
                     this.AI.setProjectileReactBusy();
+                    this.AI.setAttackReactBusy();
                 }
             }
         }
@@ -464,18 +470,13 @@
         var rnd = getRand();
         if(item.X < 50)
         {
-            this.AI.reset();
-            if(rnd > 66)
+            if(!!attacker)
             {
-                this.doMove("lp3");
-                retVal = true;
-            }
-            else if(rnd > 25 || (!!attacker))
-            {
+                this.AI.reset();
                 this.doMove("u1");
                 retVal = true;
+                this.AI.setAirborneReactBusy();
             }
-            this.AI.setAirborneReactBusy();
         }
         else if(item.X < 100)
         {
@@ -506,13 +507,13 @@
             }
             else
             {
-                if(rnd > 80)
-                {
-                    this.AI.reset();
-                    this.doCloseJumpInCounterCombo(getRand(this.AI.CounterCloseJumpInCombos.length-1));
-                    retVal = true;
-                    this.AI.setAirborneReactBusy();
-                }
+                //if(rnd > 80)
+                //{
+                //    this.AI.reset();
+                //    this.doCloseJumpInCounterCombo(getRand(this.AI.CounterCloseJumpInCombos.length-1));
+                //    retVal = true;
+                //    this.AI.setAirborneReactBusy();
+                //}
             }
         }
         return retVal;
@@ -539,11 +540,11 @@
 
 
     KenAI.prototype.doMove = function(key) { this.execute(this.AI.SingleMoves[key]); }
-    KenAI.prototype.doCloseCombo = function(key) { this.execute(this.AI.CloseCombos[key]); }
-    KenAI.prototype.doVeryCloseCombo = function(key) { this.execute(this.AI.VeryCloseCombos[key]); }
-    KenAI.prototype.doJumpInCombo = function(key) { this.execute(this.AI.JumpInCombos[key]); }
-    KenAI.prototype.doRollInCombo = function(key) { this.execute(this.AI.RollInCombos[key]); }
-    KenAI.prototype.doCloseJumpInCounterCombo = function(key) { this.execute(this.AI.CounterCloseJumpInCombos[key]); }
+    KenAI.prototype.doCloseCombo = function(key) { this.execute(this.AI.CloseCombos[key == !undefined ? key : getRand(this.AI.CloseCombos.length-1)]); }
+    KenAI.prototype.doVeryCloseCombo = function(key) { this.execute(this.AI.VeryCloseCombos[key == !undefined ? key : getRand(this.AI.VeryCloseCombos.length-1)]); }
+    KenAI.prototype.doJumpInCombo = function(key) { this.execute(this.AI.JumpInCombos[key == !undefined ? key : getRand(this.AI.JumpInCombos.length-1)]); }
+    KenAI.prototype.doRollInCombo = function(key) { this.execute(this.AI.RollInCombos[key == !undefined ? key : getRand(this.AI.RollInCombos.length-1)]); }
+    KenAI.prototype.doCloseJumpInCounterCombo = function(key) { this.execute(this.AI.CounterCloseJumpInCombos[key == !undefined ? key : getRand(this.AI.CounterCloseJumpInCombos.length-1)]); }
     KenAI.prototype.doCounterProjectileCombo = function(key) { this.execute(this.AI.CounterProjectileCombos[getRand(this.AI.CounterProjectileCombos.length-1)]); }
     KenAI.prototype.doCounterCloseProjectileCombo = function(key) { this.execute(this.AI.CounterCloseProjectileCombos[getRand(this.AI.CounterCloseProjectileCombos.length-1)]); }
 
@@ -622,7 +623,7 @@
                 if (item.Player.isThrowable() && (rnd > 60))
                     this.doVeryCloseCombo(0);
                 else if(rnd > 20)
-                    this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
+                    this.doCloseCombo();
                 else if(rnd > 10)
                     this.wanderBackward(50);
                 this.AI.setBusy();
@@ -636,7 +637,7 @@
         {
             this.AI.reset();
             if(rnd > 70)
-                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
+                this.doCloseCombo();
             else if(rnd > 30)
                 this.wanderBackward(50);
             else
@@ -649,11 +650,13 @@
             if(rnd > 95)
                 this.wanderBackward(50);
             else if(rnd > 80)
-                this.doJumpInCombo(getRand(this.AI.JumpInCombos.length-1));
+                this.doJumpInCombo();
             else if(rnd > 60)
-                this.doRollInCombo(getRand(this.AI.RollInCombos.length-1));
-            else if(rnd > 30)
-                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
+                this.doRollInCombo();
+            else if(rnd > 40)
+                this.doCloseCombo();
+            else if(rnd > 10)
+                this.doVeryCloseCombo();
             else
                 this.executeFireball(getRand());
             this.AI.setBusy();
@@ -661,10 +664,10 @@
         else
         {
             this.AI.reset();
-            if(rnd > 80)
-                this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
+            if(rnd > 50)
+                this.doCloseCombo();
             else
-                this.executeFireball(getRand());
+                this.doVeryCloseCombo();
         }
     }
 
@@ -683,7 +686,7 @@
             }
 
             var rnd = getRand();
-            //this.proact(frame);
+            this.proact(frame);
 
             this.AI.JustAttacked = false;
             this.AI.JustBecameMobile = (this.AI.JustBecameMobile > 0) ? this.AI.JustBecameMobile - 1 : 0;

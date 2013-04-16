@@ -161,7 +161,6 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         this.Animations.push(animation);
     }
 
-<<<<<<< HEAD
     Animation.prototype.setDefaultsForLastFrames = function(nbFrames)
     {
         var i = nbFrames || 1;
@@ -175,8 +174,6 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
         }
     }
 
-=======
->>>>>>> js-sfa/master
     Animation.prototype.addFrameWithSound = function(player,volume,soundFilename,shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energytoAdd,slideForce,slideFactor)
     {
         this.IgnoresCollisions = !!flagsToSet && hasFlag(flagsToSet.Player,PLAYER_FLAGS.IGNORE_COLLISIONS);
@@ -1009,16 +1006,10 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
         this.vyFn = null;
         this.NbHits = 0;
         this.MaxHits = 1;
-<<<<<<< HEAD
         this.DefaultHitStop = 13;
         this.DefaultLocalHitStop = 20;
         this.DefaultAirHitStop = 13;
         this.HitStopData = {"1":13};
-=======
-        this.DefaultHitStop = 10;
-        this.DefaultLocalHitStop = 20;
-        this.HitStopData = {"1":10};
->>>>>>> js-sfa/master
         this.LocalHitStopData = {"1":20};
         //this.HitStop = 10;
         this.LastHitFrame = 0;
@@ -1176,13 +1167,8 @@ var CreateProjectile = function(player,animation,disintegrationAnimation,xOffset
 
     Projectile.prototype.canHit = function(frame)
     {
-<<<<<<< HEAD
         return !this.IsDisintegrating
             && ((!this.LastHitFrame) || (frame > (this.LastHitFrame + this.getLocalHitStop())));
-=======
-        return !this.IsDisintegrating;
-            //&& ((!this.LastHitFrame) || (frame > (this.LastHitFrame + this.getLocalHitStop())));
->>>>>>> js-sfa/master
     }
 
     Projectile.prototype.isInHitStop = function(frame)

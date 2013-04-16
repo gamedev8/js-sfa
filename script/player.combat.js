@@ -4,11 +4,7 @@ Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
 Player.prototype.isCurrentMoveAttack = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.BaseAnimation.IsAttack; }
 Player.prototype.isCurrentMoveProjectile = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectile; }
 Player.prototype.isProjectilePending = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectilePending; }
-<<<<<<< HEAD
 Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW) && !this.Flags.Juggle.has(JUGGLE_FLAGS.IGNORE); }
-=======
-Player.prototype.allowJuggle = function() { return this.Flags.Juggle.has(JUGGLE_FLAGS.ALLOW); }
->>>>>>> js-sfa/master
 Player.prototype.hasRegisteredHit = function() { return !!this.RegisteredHit.HitID; }
 Player.prototype.hasBlueFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE); }
 Player.prototype.hasRedFire = function() { return this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE); }
@@ -1148,11 +1144,7 @@ Player.prototype.forceWinAnimation = function(frame)
 {
     var name = this.WinAnimationNames[Math.ceil(Math.random() * this.WinAnimationNames.length) - 1];
     if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
-<<<<<<< HEAD
     this.executeAnimation(name, true, true);
-=======
-    this.executeAnimation(name, true);
->>>>>>> js-sfa/master
     this.clearInput();
 }
 /*Player is defeated*/
