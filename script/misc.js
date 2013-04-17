@@ -145,7 +145,7 @@ InitUsers();
 function StartQuickMatch()
 {
     user1_.setChar(CHARACTERS.AKUMA,false,false);
-    user2_.setChar(CHARACTERS.KEN,false,true);
+    user2_.setChar(CHARACTERS.KEN,true,true);
 
     game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["ken"]);
 }

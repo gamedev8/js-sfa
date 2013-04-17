@@ -237,7 +237,6 @@ Player.prototype.getEnergy = function() { return this.getEnergyFn(); }
 Player.prototype.setIndex = function(index) { this.Index = index; }
 Player.prototype.getIndex = function() { return this.Index; }
 Player.prototype.playerCount = 0;
-Player.prototype.takeDamage = function(amount) { this.takeDamageFn(amount); }
 Player.prototype.changeEnergy = function(amount) { if(!!amount) this.changeEnergyFn(amount); }
 Player.prototype.getIsExecutingSuperMove = function () { return this.IsExecutingSuperMove; }
 Player.prototype.setExecutingSuperMove = function (value) { this.IsExecutingSuperMove = value; }
@@ -246,6 +245,10 @@ Player.prototype.setBeingGrappled = function(value) { this.IsBeingThrown = value
 Player.prototype.getNameImageSrc = function() { return this.NameImageSrc; }
 Player.prototype.getPortriatImageSrc = function() { return this.PortriatImageSrc; }
 Player.prototype.getName = function() { return this.Name; }
+Player.prototype.takeDamage = function(amount)
+{
+    this.takeDamageFn(amount);
+}
 
 Player.prototype.enableAI = function(createAiFn)
 {
@@ -716,10 +719,11 @@ Player.prototype.checkVulnerable = function(frame)
 Player.prototype.checkFloater = function(frame)
 {
     if(!!this.isAirborne()
-        && !this.isCurrentMoveAttack()
+        /*&& !this.isCurrentMoveAttack()*/
         && !this.isCurrentMoveProjectile()
         && !this.IsInAttackFrame
         && !this.isBlocking()
+        && !this.isMobile()
         && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_ATTACKS)
         && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_COLLISIONS)
         && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
@@ -745,8 +749,8 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
         this.frameMove(frame,stageX,stageY);
         if(!!this.IsInAttackFrame)
             this.handleAttack(frame, this.CurrentFrame);
-        else if(!this.checkVulnerable(frame))
-            this.checkFloater(frame);
+        else if(!this.checkFloater(frame))
+            this.checkVulnerable(frame);
         if(!!this.GrappledPlayer)
             this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)

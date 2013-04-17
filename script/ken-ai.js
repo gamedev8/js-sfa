@@ -92,32 +92,32 @@
 
         this.AI.VeryCloseCombos = [
              [{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE,D:-999}, {A:0,B:"t1"}]
-            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
+            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3", H:true}, {A:5,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3", H:true}, {A:5,B:"sfb2"}]
+            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3", H:true}, {A:5,B:"sfb3"}]
             ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:10,B:"lk3"}]
             ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:11,B:"lk2"}, {A:10,B:"lk3"}]
-            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:5,B:"lk2"}, {A:11,B:"k2"}, {A:10,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:11,B:"lk2"}, {A:25,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3"},{A:9,B:"u3"}]
+            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:5,B:"lk2"}, {A:11,B:"k2", H:true}, {A:10,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:11,B:"lk2", H:true}, {A:25,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3", H:true},{A:9,B:"u3"}]
             ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3"},{A:9,B:"fb1"}]
             ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3"},{A:9,B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"p1"}, {A:4, B:"p3"}, {A:19, B:"p1"}, {A:15, B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"p3"}, {A:5, B:"p1"}, {A:15, B:"lk3"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"k3"}, {A:4, B:"p3"}, {A:4, B:"u3"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"k3"}, {A:4, B:"p3", H:true}, {A:4, B:"u3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"p1"}, {A:4, B:"p2"}, {A:13, B:"k2"}, {A:17, B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"lk2"}, {A:8, B:"k2"}, {A:13, B:"p1"}, {A:17, B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:4,B:"p1"},{A:14,B:"p3"}, {A:18,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"lk2"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"u1"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"k2", H:true}, {A:25, B:"u1"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"fb1"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"lp3"}, {A:4, B:"u3"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"lp3", H:true}, {A:4, B:"u3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"lp3"}, {A:4, B:"fb1"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p3"}, {A:5,B:"lp3"}, {A:19,B:"p3"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"k1"}]
-            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"k1"},{A:10,B:"fb1"}]
-            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"},{A:16,B:"fb1"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"k1", H:true},{A:10,B:"sfb1"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2", H:true},{A:16,B:"sfb1"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"lp3"}, {A:4,B:"p2"},{A:9,B:"u1"}]
@@ -125,41 +125,40 @@
             ];
         this.AI.CloseCombos = [
              [{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}]
-            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:0,B:"u1"}]
+            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2", H:true}, {A:0,B:"u1"}]
             ,[{A:0,B:"get_close", C:95,D:-999}, {A:0,B:"lk3"}]
             ,[{A:0,B:"get_close", C:185,D:-999}, {A:0,B:"k3"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"fb1"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"sfb1"}]
             ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"hk3"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"fb3"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"sfb3"}]
             ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:8,B:"lk3"}]
-            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:8,B:"lk3"}, {A:4,B:"sb3"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"k1"}, {A:5,B:"fb1"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"k1", H:true}, {A:5,B:"fb1"}]
             ,[{A:0,B:"get_close", C:150,D:-999}, {A:0,B:"k2"}, {A:9,B:"k3"}]
-            ,[{A:0,B:"get_close", C:130,D:-999}, {A:0,B:"k2"}, {A:5,B:"k3"}, {A:21,B:"fb3"}]
-            ,[{A:0,B:"get_close", C:185,D:-999}, {A:0,B:"k3"}, {A:7,B:"fb3"}]
+            ,[{A:0,B:"get_close", C:130,D:-999}, {A:0,B:"k2"}, {A:5,B:"k3", H:true}, {A:21,B:"fb3"}]
+            ,[{A:0,B:"get_close", C:185,D:-999}, {A:0,B:"k3", H:true}, {A:7,B:"fb3"}]
         ];
 
         this.AI.JumpInCombos = [
             [{A:5, B:"jump_in", C:100,D:-999}, {A:35, B:"k3"}, {A:20, B:"lk3"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:35, B:"k3"}, {A:20, B:"lk2"}, {A:14, B:"lk3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"hk3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"u3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"fb1"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:33, B:"k3"}, {A:20, B:"u1"}]
+            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2", H:true}, {A:14, B:"hk3"}]
+            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2", H:true}, {A:14, B:"u3"}]
+            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2", H:true}, {A:14, B:"sfb1"}]
+            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:33, B:"k3", H:true}, {A:20, B:"u1"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:20, B:"hk3"}]
-            ,[{A:5, B:"jump_in",C:100,D:100}, {A:15, B:"hk3", H:true}, {A:25, B:"k1"}, {A:13, B:"k2"}, {A:30, B:"u3"}]
+            ,[{A:5, B:"jump_in",C:100,D:100}, {A:15, B:"hk3", H:true}, {A:25, B:"k1"}, {A:13, B:"k2", H:true}, {A:30, B:"u3"}]
             /*cross up*/
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:32, B:"k2"}, {A:24,B:"lk3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"u3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"fb1"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"hk3"}]
+            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3", H:true}, {A:12,B:"u3"}]
+            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3", H:true}, {A:12,B:"sfb1"}]
+            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3", H:true}, {A:12,B:"hk3"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"lk3"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:11,B:"lk1"}, {A:18,B:"lk3"}]
         ];
 
         this.AI.CounterProjectileCombos = [
-            [{A:5, B:"fj"}, {A:28, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"p2"}, {A:15,B:"sfb3"}]
+            [{A:5, B:"fj"}, {A:28, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"p2", H:true}, {A:15,B:"fb3"}]
             ,[{A:5, B:"fj"}, {A:27, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"lk3"}]
             ,[{A:5, B:"fj"}, {A:27, B:"k3"}, {A:21,B:"lk3"}]
             ,[{A:2, B:"fj"}, {A:5, B:"hk3"}]
@@ -171,7 +170,7 @@
             ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2"}, {A:14,B:"lk3"}]
             ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"lk2"}, {A:14,B:"lk3"}]
             ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2"}, {A:14,B:"k3"}, {A:12,B:"lk3"}]
-            ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2"}, {A:14,B:"u3"}]
+            ,[{A:5, B:"fj"}, {A:25, B:"p3"}, {A:23,B:"lk2", H:true}, {A:14,B:"u3"}]
             ,[{A:5, B:"fj"}, {A:25, B:"k3"}, {A:23,B:"lk3"}]
             ,[{A:5, B:"fj"}, {A:20, B:"p3"}, {A:28,B:"lk3"}]
             ,[{A:2, B:"fj"}, {A:20, B:"hk3"}]
@@ -181,13 +180,13 @@
 
         this.AI.RollInCombos = [
             [{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2"}]
-            ,[{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2"}, {A:9,B:"fb3"}]
+            ,[{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2", H:true}, {A:9,B:"sfb1"}]
             ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3"}]
-            ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3"}, {A:9,B:"fb3"}]
+            ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3", H:true}, {A:9,B:"sfb1"}]
             ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk3"}]
             ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2"}, {A:9,B:"fb3"}]
-            ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2"}, {A:9,B:"fb3"}]
+            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2", H:true}, {A:9,B:"sfb1"}]
+            ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2", H:true}, {A:9,B:"sfb1"}]
             ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:15, B:"k3"}]
             ,[{A:0,B:"roll3_in", C:90}, {A:0,B:"lk2", H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2"}, {A:9,B:"hk1"}]
             ,[{A:0,B:"roll3_in"}, {A:5, B:"fb3"}]
@@ -334,9 +333,30 @@
             var dist = this.AI.Player.getDistanceFromSq(x,y);
 
             //console.log(dist);
-
+            //counter akuma air fireball
+            if(player.isAirborne())
+            {
+                if(dist < 50000)
+                {
+                    var rnd = getRand();
+                    if(rnd > 80)
+                    {
+                        this.reset();
+                        this.doMove("u3");
+                        this.AI.setProjectileReactBusy();
+                        this.AI.setAirborneReactBusy();
+                    }
+                    else if(rnd > 60)
+                    {
+                        this.reset();
+                        this.doMove("u2");
+                        this.AI.setProjectileReactBusy();
+                        this.AI.setAirborneReactBusy();
+                    }
+                }
+            }
             //jump in
-            if(dist > 50000 && dist < 150000)
+            else if(dist > 70000 && dist < 150000)
             {
                 this.reset();
                 this.doCounterCloseProjectileCombo();

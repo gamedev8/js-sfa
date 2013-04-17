@@ -512,8 +512,12 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         ,UseCurrentJump:this.CurrentAnimation.Animation.UseCurrentJump
     };
 
+    var baseDamage = moveFrame.BaseDamage;
+    if(!!this.User && this.User.isInStoryMode())
+        baseDamage *= Math.max(1 - ((8 * this.User.getStoryModeLevel()) / 100),0.25);
 
-    this.attackFn(moveFrame.HitStop,moveFrame.HitID,this.CurrentAnimation.ID,this.CurrentAnimation.Animation.MaxNbHits,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,moveFrame.BaseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound,moveFrame.HitStop,otherParams);
+
+    this.attackFn(moveFrame.HitStop,moveFrame.HitID,this.CurrentAnimation.ID,this.CurrentAnimation.Animation.MaxNbHits,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,baseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound,moveFrame.HitStop,otherParams);
 }
 
 /*If the player gets hit - this function must be called to set all of the details of the hit*/

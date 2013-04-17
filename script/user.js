@@ -28,8 +28,8 @@
         {
             switch(level)
             {
-                case 0: { return ["images/misc/misc/char-ryu-r.png"]; break;}
-                case 1: { return ["images/misc/misc/char-ken-r.png"]; break;}
+                case 0: { return ["images/misc/misc/char-ken-r.png"]; break;}
+                case 1: { return ["images/misc/misc/char-ryu-r.png"]; break;}
                 case 2: { return ["images/misc/misc/char-sagat-r.png"]; break;}
                 case 3: { return ["images/misc/misc/char-mbison-r.png"]; break;}
                 case 4: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
@@ -44,8 +44,8 @@
     {
         switch(level || level_)
         {
-            case 0: { return [CHARACTERS.RYU]; break;}
-            case 1: { return [CHARACTERS.KEN]; break;}
+            case 0: { return [CHARACTERS.KEN]; break;}
+            case 1: { return [CHARACTERS.RYU]; break;}
             case 2: { return [CHARACTERS.SAGAT]; break;}
             case 3: { return [CHARACTERS.MBISON]; break;}
             case 4: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
@@ -113,6 +113,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad
     this.IsInStoryMode = false;
     this.ShowSelectIcon = false;
     this.StoryMode = CreateStoryMode();
+    this.StoryModeLevel = 0;
 }
 
 User.prototype.setTeam = function(value)
@@ -120,10 +121,16 @@ User.prototype.setTeam = function(value)
     this.Team = value;
 }
 
+User.prototype.getStoryModeLevel = function()
+{
+    return this.StoryModeLevel;
+}
+
 User.prototype.enableStoryMode = function()
 {
     if(!this.IsAI)
         this.IsInStoryMode = true;
+    this.StoryModeLevel = this.StoryMode.getLevel();
 }
 
 User.prototype.advanceStoryMode = function()
@@ -135,11 +142,14 @@ User.prototype.advanceStoryMode = function()
         else
             this.IsInStoryMode = true;
     }
+
+    this.StoryModeLevel = this.StoryMode.getLevel();
 }
 
 User.prototype.disableStoryMode = function()
 {
     this.IsInStoryMode = false;
+    this.StoryModeLevel = this.StoryMode.getLevel();
 }
 
 User.prototype.isInStoryMode = function()
@@ -184,7 +194,7 @@ User.prototype.onWonRound = function()
 
 User.prototype.onLostRound = function()
 {
-    ++this.Draws;
+    ++this.Loses;
 }
 
 User.prototype.getFolder = function()
