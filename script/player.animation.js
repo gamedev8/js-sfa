@@ -1,4 +1,4 @@
-﻿/*Helper function - adds a projectile for the player*/
+﻿//Helper function - adds a projectile for the player
 Player.prototype.addProjectile = function(name,offsetX, offsetY,vx,vy)
 {
     var projectile = CreateProjectile(this,CreateAnimation(name),CreateAnimation(name + "-disintegrate"),offsetX,offsetY,vx,vy);
@@ -8,7 +8,8 @@ Player.prototype.addProjectile = function(name,offsetX, offsetY,vx,vy)
     return projectile;
 }
 
-/* Helper function - adds a move for the player */
+// Helper function - adds a move for the player
+// TODO: remove [duration] and [keySequence], they are no longer used
 Player.prototype.addThrow = function(requiredState,name,duration,keySequence,priority,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName)
 {
     var key = this.Throws.length;
@@ -19,7 +20,8 @@ Player.prototype.addThrow = function(requiredState,name,duration,keySequence,pri
     return this.Throws[key];
 }
 
-/* Helper function - adds a move for the player */
+// Helper function - adds a move for the player
+// TODO: remove [duration] and [keySequence], they are no longer used
 Player.prototype.addAnimation = function(requiredState,name,duration,keySequence,priority,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName)
 {
     var key = this.Moves.length;
@@ -27,7 +29,7 @@ Player.prototype.addAnimation = function(requiredState,name,duration,keySequence
     this.Moves[key] = CreateAnimation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
     return this.Moves[key];
 }
-/* Helper function - adds a move for the player */
+// Helper function - adds a move for the player
 Player.prototype.addGenericAnimation = function(state,team,name,moveFlags)
 {
     var key = _c4("_",state,"_",team);
@@ -35,7 +37,7 @@ Player.prototype.addGenericAnimation = function(state,team,name,moveFlags)
 
     return this.OtherAnimations[key];
 }
-/*helper function - adds the dizzy stars animation*/
+// helper function - adds the dizzy stars animation
 Player.prototype.addDizzyAnimation = function(centeredOffset,topOffset)
 {
     this.OtherAnimations.Dizzy[this.OtherAnimations.Dizzy.length] =
@@ -47,7 +49,7 @@ Player.prototype.addDizzyAnimation = function(centeredOffset,topOffset)
     };
     return this.OtherAnimations.Dizzy[this.OtherAnimations.Dizzy.length-1].Animation;
 }
-/*helper function - adds the blue fire animation*/
+// helper function - adds the blue fire animation
 Player.prototype.addBlueFireAnimation = function(centeredOffset,topOffset)
 {
     this.OtherAnimations.BlueFire =
@@ -59,7 +61,7 @@ Player.prototype.addBlueFireAnimation = function(centeredOffset,topOffset)
     };
     return this.OtherAnimations.BlueFire.Animation;
 }
-/*helper function - adds the red fire animation*/
+// helper function - adds the red fire animation
 Player.prototype.addRedFireAnimation = function(centeredOffset,topOffset)
 {
     this.OtherAnimations.RedFire =
@@ -71,7 +73,7 @@ Player.prototype.addRedFireAnimation = function(centeredOffset,topOffset)
     };
     return this.OtherAnimations.RedFire.Animation;
 }
-/* Helper function - adds a dirt animation for the player */
+// Helper function - adds a dirt animation for the player
 Player.prototype.addDirtAnimation = function()
 {
     var img = window.document.createElement("div");
@@ -90,7 +92,7 @@ Player.prototype.addDirtAnimation = function()
 
     return this.OtherAnimations.Dirt[this.OtherAnimations.Dirt.length-1].Animation;
 }
-/* Helper function - adds a big dirt for the player */
+// Helper function - adds a big dirt for the player
 Player.prototype.addBigDirtAnimation = function()
 {
     var img = window.document.createElement("div");
@@ -109,7 +111,7 @@ Player.prototype.addBigDirtAnimation = function()
 
     return this.OtherAnimations.BigDirt[this.OtherAnimations.BigDirt.length-1].Animation;
 }
-/*sets the current animation by looking up the name of the animation - this function can be called by AI*/
+//sets the current animation by looking up the name of the animation - this function can be called by AI
 Player.prototype.executeAnimation = function(name, forced, ignoreImmobile)
 {
     var animation = null;
@@ -217,7 +219,7 @@ Player.prototype.executeAnimation = function(name, forced, ignoreImmobile)
 
 ////////////////////////////////////
 
-/* Looks up a move */
+// Looks up a move
 Player.prototype.findThrow = function(input,frame)
 {
     var retVal = null;
@@ -232,7 +234,7 @@ Player.prototype.findThrow = function(input,frame)
     return retVal;
 }
 
-/* Looks up a move */
+// Looks up a move
 Player.prototype.findAnimation = function(input,frame)
 {
     //TODO: Check for block chaining high and low
@@ -388,7 +390,7 @@ Player.prototype.goToStance = function(frame)
         this.showFirstAnimationFrame();
     }
 }
-/*returns the first free front hit report image*/
+// returns the first free front hit report image
 Player.prototype.getNextFrontHitReportImage = function()
 {
     for(var i = 0; i < this.FrontHitReportImages.length; ++i)
@@ -402,7 +404,7 @@ Player.prototype.getNextFrontHitReportImage = function()
 
     return null;
 }
-/*returns the first free rear hit report image*/
+// returns the first free rear hit report image
 Player.prototype.getNextRearHitReportImage = function()
 {
     for(var i = 0; i < this.RearHitReportImages.length; ++i)
@@ -416,7 +418,7 @@ Player.prototype.getNextRearHitReportImage = function()
 
     return null;
 }
-/*returns the first free dirt image*/
+// returns the first free dirt image
 Player.prototype.getFreeDirtIndex = function()
 {
     for(var i = 0; i < this.OtherAnimations.Dirt.length; ++i)
@@ -430,7 +432,7 @@ Player.prototype.getFreeDirtIndex = function()
 
     return -1;
 }
-/*returns the first free dirt image*/
+// returns the first free dirt image
 Player.prototype.getFreeBigDirtIndex = function()
 {
     for(var i = 0; i < this.OtherAnimations.BigDirt.length; ++i)
@@ -479,7 +481,7 @@ Player.prototype.spawnSmallDirt = function(frame,offsetX)
 {
     if(!this.isOnGround())
         return;
-    /*spawn dirt*/
+    // spawn dirt
     var index = this.getFreeDirtIndex();
     if(index > -1)
     {
@@ -499,7 +501,7 @@ Player.prototype.spawnBigDirt = function(frame,offsetX)
     if(!this.isOnGround())
         return;
 
-    /*spawn dirt*/
+    // spawn dirt
     var index = this.getFreeBigDirtIndex();
     if(index > -1)
     {
@@ -512,7 +514,7 @@ Player.prototype.spawnBigDirt = function(frame,offsetX)
 }
 
 
-/*Handles frames that spawn other animations*/
+// Handles frames that spawn other animations
 Player.prototype.spawnHitReportAnimations = function(frame, flags, hitState, attackDirection)
 {
     var frontKey = "";
@@ -560,20 +562,20 @@ Player.prototype.spawnHitReportAnimations = function(frame, flags, hitState, att
     }
 }
 
-/*Gets the hit ID of the current frame*/
+// Gets the hit ID of the current frame
 Player.prototype.getHitFrameID = function(hitID)
 {
     return this.Id + "-" + this.CurrentAnimation.Animation.BaseAnimation.Name + "-" + (hitID || this.CurrentFrame.HitID) + "-" + this.MoveCount;
 }
 
-/*Gets the hit ID of the current frame*/
+// Gets the hit ID of the current frame
 Player.prototype.getFrameImageID = function(hitID)
 {
     return this.CurrentFrame.ImageID;
 }
 
 
-/*If there is a chaining move after a hit, then it will be set to the current move*/
+// If there is a chaining move after a hit, then it will be set to the current move
 Player.prototype.tryChainOnHit = function(frame)
 {
     if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.ChainOnHitAnimation)
@@ -583,7 +585,7 @@ Player.prototype.tryChainOnHit = function(frame)
     }
 }
 
-/*If there is a chaining move, then it will be set to the current move*/
+// If there is a chaining move, then it will be set to the current move
 Player.prototype.tryChainAnimation = function(frame,stageX,stageY)
 {
     if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.LOOP_IF_KEYDOWN))
@@ -659,7 +661,7 @@ Player.prototype.chainToAnimation = function(frame,move,frameOffset,stageX,stage
     this.setCurrentFrame(newFrame,frame,stageX,stageY);
 }
 
-/*clear interupt flags from the pose state*/
+// clear interupt flags from the pose state
 Player.prototype.clearInterupt = function()
 {
     this.Flags.Pose.Value = (this.Flags.Pose.Value
@@ -700,6 +702,12 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     this.clearUnclearedFlags();
     if(!!this.CurrentAnimation && this.CurrentAnimation.Animation)
     {
+        if(!!this.IsSpriteReversed)
+        {
+            this.unreverseSprite();
+            this.changeDirection(true);
+        }
+
         //this.LastAnimation = this.CurrentAnimation.Animation;
         //this.onEndAttackEnemiesFn(0);
         this.CurrentAnimation.Animation.hideChildren();
@@ -739,7 +747,12 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         this.Flags.Pose.remove(this.CurrentAnimation.Animation.Flags.Pose);
 
         if(!!this.CurrentAnimation.Animation.BaseAnimation.IsAttack)
-            this.onAttackStateChanged(null,ATTACK_STATE.DONE);
+        {
+            if(!this.SentHitAttackStateChange)
+                this.onAttackStateChanged(null,ATTACK_STATE.DONE);
+            this.SentHitAttackStateChange = false;
+        }
+    
 
     }
 
@@ -888,7 +901,7 @@ Player.prototype.showFirstAnimationFrame = function()
 
 Player.prototype.AirborneFlags = POSE_FLAGS.AIR_COMBO_1 | POSE_FLAGS.AIR_COMBO_2 | POSE_FLAGS.AIRBORNE | POSE_FLAGS.AIRBORNE_FB;
 
-/*flags that should be ignore when a frame's pose flags are cleared*/
+// flags that should be ignore when a frame's pose flags are cleared
 Player.prototype.PoseFlagsToIgnore = POSE_FLAGS.AIR_COMBO_1
                     | POSE_FLAGS.AIR_COMBO_2
                     | POSE_FLAGS.AIRBORNE
@@ -900,12 +913,12 @@ Player.prototype.PoseFlagsToIgnore = POSE_FLAGS.AIR_COMBO_1
                     | POSE_FLAGS.ALLOW_INTERUPT_5
                     | POSE_FLAGS.ALLOW_INTERUPT_6;
 
-/*flags that should be ignore when a frame's combat flags are cleared*/
+// flags that should be ignore when a frame's combat flags are cleared
 Player.prototype.CombatFlagsToIgnore = COMBAT_FLAGS.PROJECTILE_ACTIVE
                     | COMBAT_FLAGS.CAN_BE_BLOCKED
                     | COMBAT_FLAGS.CAN_BE_AIR_BLOCKED;
 
-/*flags that should be ignore when a frame's player flags are cleared*/
+// flags that should be ignore when a frame's player flags are cleared
 Player.prototype.PlayerFlagsToIgnore = PLAYER_FLAGS.MOBILE | PLAYER_FLAGS.BULLDOZE;
 
 Player.prototype.ResetClip = function()
@@ -920,7 +933,7 @@ Player.prototype.ResetClip = function()
     this.ClipHitBottom = 0;
 }
 
-/*Sets the current frame*/
+// Sets the current frame
 Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreTranslation)
 {
     if(!!this.CurrentFrame)
@@ -1006,6 +1019,8 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
             this.setTeleportTarget(COMBAT_FLAGS.TELEPORT_MIDDLE,newFrame.Frames);
         if(hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.TELEPORT_BACK))
             this.setTeleportTarget(COMBAT_FLAGS.TELEPORT_BACK,newFrame.Frames);
+        if(hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.TELEPORT))
+            this.setTeleportTarget(COMBAT_FLAGS.TELEPORT,newFrame.Frames);
 
         //if the new frame spawns a projectile, handle that here
         if(!this.Flags.Combat.has(COMBAT_FLAGS.PROJECTILE_ACTIVE) && hasFlag(newFrame.FlagsToSet.Combat,COMBAT_FLAGS.SPAWN_PROJECTILE))
@@ -1142,19 +1157,22 @@ Player.prototype.setSprite = function(frame)
             }
         }
     }
-    if(!!this.CurrentFrame.IsFlipped)
+    if(!this.IsSpriteReversed)
     {
-        if(this.Direction == -1 && !!this.IsFlipped)
-            this.flip(false);
-        else if(this.Direction == 1 && !this.IsFlipped)
-            this.flip(true);
-    }
-    else
-    {
-        if(this.Direction == -1 && !this.IsFlipped)
-            this.flip(true);
-        else if(this.Direction == 1 && !!this.IsFlipped)
-            this.flip(false);
+        if(!!this.CurrentFrame.IsFlipped)
+        {
+            if(this.Direction == -1 && !!this.IsFlipped)
+                this.flip(false);
+            else if(this.Direction == 1 && !this.IsFlipped)
+                this.flip(true);
+        }
+        else
+        {
+            if(this.Direction == -1 && !this.IsFlipped)
+                this.flip(true);
+            else if(this.Direction == 1 && !!this.IsFlipped)
+                this.flip(false);
+        }
     }
     if(this.Direction == -1)// && (this.CurrentFrame.ImageOffsetX != undefined))
         this.offsetImageX(this.CurrentFrame.ImageOffsetX);
@@ -1164,7 +1182,7 @@ Player.prototype.setSprite = function(frame)
         this.CurrentAnimation.Animation.renderChildren(frame,this.CurrentAnimation.StartFrame,this.CurrentAnimation.Direction,parseInt(this.Element.style.zIndex) + 1,this.X,this.Y);
 }
 
-/*Sets the x and y on the element*/
+// Sets the x and y on the element
 Player.prototype.render = function(frame,stageDiffX,stageDiffY)
 {
     this.checkZOrder();
@@ -1198,7 +1216,7 @@ Player.prototype.render = function(frame,stageDiffX,stageDiffY)
     this.IsNewFrame = false;
 }
 
-/*renders the trail, if there is one*/
+// renders the trail, if there is one
 Player.prototype.renderTrail = function(frame,stageDiffX,stageDiffY)
 {
     if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)

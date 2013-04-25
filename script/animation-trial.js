@@ -134,6 +134,7 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
                         ,Top:this.FollowElement.style.top
                         ,DeltaX:0
                         ,DeltaY:0
+                        ,Flip:this.Player.IsSpriteReversed
                     });
             }
         }
@@ -209,6 +210,8 @@ var CreateAnimationTrail = function(animations,zIndex,delay)
                         this.Trail[i].Element.style.right = (!!coords.Right) ? coords.DeltaX + parseInt(coords.Right) + "px" : "";
                         this.Trail[i].Element.style.bottom = (!!coords.Bottom) ? coords.DeltaY + stageOffsetY + parseInt(coords.Bottom) + "px" : "";
                         this.Trail[i].Element.style.top = (!!coords.Top) ? coords.DeltaY + parseInt(coords.Top) + "px" : "";
+                        if(!!coords.Flip)
+                            AutoApplyFlip(this.Trail[i].Element, this.Direction == 1 ? coords.Flip : !coords.Flip);
                     }
                 }
                 if(frame > this.Trail[i].StartFrame)

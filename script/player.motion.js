@@ -204,7 +204,7 @@ Player.prototype.setAirborneY = function(groundY)
 }
 Player.prototype.isDescending = function() { return this.LastFrameY > this.ConstY; }
 Player.prototype.isVisible = function() { return !this.Flags.Player.has(PLAYER_FLAGS.INVISIBLE); }
-Player.prototype.isTeleporting = function() { return !!this.isTeleportingStarting() || !!this.isTeleportingEnding(); }
+Player.prototype.isTeleporting = function() { return !!this.isTeleportingStarting() || !!this.isTeleportingEnding() || this.Flags.Combat.has(CONBAT_FLAGS.TELEPORT); }
 Player.prototype.isTeleportingStarting = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_START); }
 Player.prototype.isTeleportingEnding = function()   { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Combat,COMBAT_FLAGS.TELEPORT_END); }
 Player.prototype.jumpedOverAPlayer = function() { return this.isAirborne() && this.isDescending() && !!this.MustChangeDirection; }
@@ -231,8 +231,29 @@ Player.prototype.checkMustChangeDirection = function()
     }
 }
 
+Player.prototype.unreverseSprite = function()
+{
+    //are we already reversed?
+    if(!!this.IsSpriteReversed)
+    {
+        ApplyFlip(this.SpriteElement);
+        this.IsSpriteReversed = false;
+    }
+}
+
+Player.prototype.reverseSprite = function()
+{
+    //are we already reversed?
+    if(!this.IsSpriteReversed)
+    {
+        ApplyFlip(this.SpriteElement);
+        this.IsSpriteReversed = true;   
+    }
+}
+
 Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
 {
+    this.unreverseSprite();
     this.MustChangeDirection = 0;
     var pnlStageWidth = STAGE.CSSWIDTH;
     var imgWidth = this.getBoxWidth(); //parseInt(this.SpriteElement.style.width) || 0;
@@ -425,6 +446,8 @@ Player.prototype.setTeleportTarget = function(flag,nbFrames)
             case COMBAT_FLAGS.TELEPORT_INFRONT: { this.TeleportX = (STAGE.MAX_STAGEX - foe.X - foe.OffsetWidth - this.OffsetWidth) / nbFrames; this.Teleport0GapX = "f"; break; }
             case COMBAT_FLAGS.TELEPORT_MIDDLE:  { this.TeleportX = ((STAGE.MAX_STAGEX - foe.X - foe.OffsetWidth - this.OffsetWidth) / nbFrames)/2; this.Teleport0GapX = "m"; break; }
             case COMBAT_FLAGS.TELEPORT_BACK:    { this.TeleportX = (0 - this.X) / nbFrames; this.Teleport0GapX = "bw"; break; }
+
+            case COMBAT_FLAGS.TELEPORT:   { this.TeleportX = this.CurrentFrame.TeleportSpeed; this.Teleport0GapX = "t"; break; }
         }
         this.TeleportX /= 2;
     }

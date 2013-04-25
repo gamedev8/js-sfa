@@ -120,7 +120,14 @@
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2", H:true},{A:16,B:"sfb1"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk3"}]
-            ,[this.AI.GET_CLOSE, {A:0,B:"lp3"}, {A:4,B:"p2"},{A:9,B:"u1"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"lp3"}, {A:4,B:"p2", H:true},{A:9,B:"u1"}]
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k2"}, {A:18, B:"k3", H:true}, {A:18, B:"k2"}, {A:10, B:"k3"}, {A:19, B:"lk3"}, {A:15, B:"sfb1"}]            
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k1"}, {A:12, B:"k2", H:true}, {A:23, B:"lk1"}, {A:16, B:"lk2"}, {A:18, B:"lk3"}]
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k1"}, {A:12, B:"k2", H:true}, {A:23, B:"lk1"}, {A:16, B:"lk2"}, {A:18, B:"hk3"}]
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k1"}, {A:12, B:"k2", H:true}, {A:23, B:"lk1"}, {A:16, B:"lk2"}, {A:18, B:"fb3"}]
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k1"}, {A:12, B:"k2", H:true}, {A:10, B:"lk2"}, {A:10, B:"lk2"}, {A:10, B:"lk1"}, {A:15, B:"lk2"}, {A:17, B:"lk3"}, {A:15, B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k3"}, {A:12, B:"k2", H:true}, {A:10, B:"lk2"}, {A:12, B:"lk2"}, {A:13, B:"p3"}, {A:11, B:"k3"}]
+            ,[{A:0,B:"get_close", C:-50}, {A:0, B:"p3"}, {A:6, B:"p1", H:true}, {A:16, B:"lp1"}, {A:12, B:"p3"}, {A:17, B:"lk2"}, {A:15, B:"fb1"}]            
             ,[this.AI.GET_REAL_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
             ];
         this.AI.CloseCombos = [

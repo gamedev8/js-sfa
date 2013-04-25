@@ -1031,6 +1031,87 @@ Player.prototype.createAkuma = function(user)
     f_jump_k3.addFrame(player,0,"",folder + "/x-f-jump-k1-1.png",CONSTANTS.FRAME_MAX);
     f_jump_k3.chain(jump_land);
 
+
+
+    for(var i = 0; i < 4; ++i)
+    {
+        //teleportation
+        var name = "teleportation";
+        var amount = 15;
+        var nbFrames = 23;
+        var directionButton = BUTTONS.FORWARD;
+        var attackButton = BUTTONS.LIGHT_PUNCH;
+        var direction = 1;
+
+        switch(i)
+        {
+            case 0: { name += " short foward"; amount = 15; break;}
+            case 1: { direction = -1; name += " short back"; amount = -15; directionButton = BUTTONS.BACK; break; }
+            case 2: { name += " far forward"; amount = 20; attackButton = BUTTONS.LIGHT_KICK; nbFrames = 34; break; }
+            case 3: { direction = -1; name += " far back"; amount = -20; attackButton = BUTTONS.LIGHT_KICK; directionButton = BUTTONS.BACK; nbFrames = 34; break; }
+        }
+
+        var teleport_trail = CreateAnimationTrail([],0,4);
+        for(var trailIndex = 1; trailIndex < 4; ++trailIndex)
+        {
+            //trail
+            var teleport_trail_anim = CreateGenericAnimation("super fireball trail");
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-0-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-2-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-4-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-5-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-6-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-7-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-0-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-2-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-4-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-5-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-6-shadow-" + trailIndex + ".png",1);
+            teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-7-shadow-" + trailIndex + ".png",1);
+
+            teleport_trail_anim.addTrailFrame(player,folder + "/teleport-shadow-" + (trailIndex-1) + "-0.png",nbFrames);
+            teleport_trail_anim.addTrailFrame(player,folder + "/teleport-shadow-" + (trailIndex-1) + "-0.png",1);
+
+            teleport_trail.add(teleport_trail_anim,player.Element,player.Folder,player);
+        }
+
+        var flags = {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS};
+
+        var teleport = player.addAnimation(POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"teleportation short",0,[],1,false,false,0,null);
+        teleport.BaseAnimation.Name = name;
+        //TODO: maybe reduce it to 2 attack buttons pressed together, to make it easier to do on the keyboard!
+        teleport.ButtonCount = 8;
+        teleport.ButtonSequence.push([{Button:directionButton,State:BUTTON_STATE.PRESSED}]);
+        teleport.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES},{Button:directionButton,State:BUTTON_STATE.NONE}]);
+        teleport.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:directionButton,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+        teleport.ButtonSequence.push([{Button:BUTTONS.CROUCH,State:BUTTON_STATE.PRESSED},{Button:directionButton,State:BUTTON_STATE.PRESSED},{Button:attackButton,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES},{Button:attackButton << 1,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES},{Button:attackButton << 2,State:BUTTON_STATE.PRESSED,MaxNbFrames:CONSTANTS.NBINTERIM_FRAMES}]);
+
+        teleport.Flags = {Pose:POSE_FLAGS.STANDING|POSE_FLAGS.QUICK_CHANGE_DIRECTION};
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-1.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, -direction * 1, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-2.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, -direction * 3, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-3.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, -direction * 3, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-4.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, -direction * 2, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-5.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, -direction * 0.5, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-6.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, -direction * 0, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-1.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, direction * 0.125, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-2.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, direction * 0.5, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-3.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, direction * 1, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-4.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, direction * 1, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-5.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, direction * 2, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+        teleport.addFrame(player,0,"200",folder + "/fb-charge-6.png", 1, flags, {Player:PLAYER_FLAGS.MOBILE}, direction * 3, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+
+
+        //var teleport_end = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"teleport end",0,["teleport_end"],1,false,false,0,null);
+        //teleport_end.Flags = {Combat:COMBAT_FLAGS.TELEPORT_END, Pose:POSE_FLAGS.STANDING|POSE_FLAGS.QUICK_CHANGE_DIRECTION};
+        teleport.addFrame(player, 0, "", folder + "/f-jump-2.png", nbFrames, {Combat:COMBAT_FLAGS.TELEPORT,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0).set({TeleportSpeed:amount});
+        teleport.addFrame(player, 0, "", folder + "/f-jump-2.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS|PLAYER_FLAGS.MOBILE}, MISC_FLAGS.NONE, 0, 0, 0, 0, null, 0, 0, 0, 0, 0, 0, 0, 0);
+
+        teleport.Trail = teleport_trail;
+    }
+
+
+
     var xSpeed = 0;
     for(var x = 0; x < 3; ++x)
     {
@@ -1390,7 +1471,6 @@ Player.prototype.createAkumaSuperUppercut = function(player)
         s_uppercut.IsSuperMove = true;
         s_uppercut.EnergyToSubtract = CONSTANTS.ONE_LEVEL * (x + 1);
         s_uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.SHORYUKEN,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
-
 
 
         s_uppercut.Vy = 220;

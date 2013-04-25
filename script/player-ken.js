@@ -1119,7 +1119,8 @@ Player.prototype.createKenSuperMoves = function(player)
         s_uppercut.Flags = ({Combat:COMBAT_FLAGS.NO_SLIDE_BACK});
         s_uppercut.IsSuperMove = true;
         s_uppercut.EnergyToSubtract = CONSTANTS.ONE_LEVEL * (x + 1);
-        s_uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.NONE,OVERRIDE_FLAGS.ALL);
+        s_uppercut.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.SHORYUKEN,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
+
 
         s_uppercut.Vy = (uppercutVelocityY + (2 * uppercutVelocityYRate));
         //the following object will be passed in to the function that will be used to compute the X coordinate

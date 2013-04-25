@@ -483,10 +483,9 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
             }
             if(!!direction)
             {
-                var mustChange = (this.Selected == CHARACTERS.RANDOM1 || this.Selected == CHARACTERS.RANDOM2);
-                this.changeCharacterFn(direction);
+                var sel = this.changeCharacterFn(direction);
 
-                if(!!mustChange && (this.Selected != CHARACTERS.RANDOM1 || this.Selected != CHARACTERS.RANDOM2))
+                if(!(sel.Row == CONSTANTS.ROW3 && (sel.Col == CONSTANTS.COL1 || sel.Col == CONSTANTS.COL4)))
                 {
                     this.RandomSelect = 0;
                     this.RandomCharFace.Element.style.display = "none";

@@ -94,56 +94,72 @@ var CreateRyuAI = function(player)
         this.AI.VeryCloseCombos = [
              [{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE,D:-999}, {A:0,B:"t1"}]
             ,[{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE,D:-999}, {A:0,B:"t2"}]
-            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3"}, {A:5,B:"fb1"}]
+            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3", H:true}, {A:5,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3", H:true}, {A:5,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:70,D:-999}, {A:0,B:"p3", H:true}, {A:5,B:"sfb1"}]
             ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:10,B:"lk3"}]
             ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:11,B:"lk2"}, {A:10,B:"lk3"}]
-            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:5,B:"lk2"}, {A:11,B:"k2"}, {A:10,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:11,B:"lk2"}, {A:25,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3"},{A:9,B:"u3"}]
-            ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3"},{A:9,B:"fb1"}]
+            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:5,B:"lk2"}, {A:11,B:"k2", H:true}, {A:10,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:20,D:-999}, {A:0,B:"lk1"}, {A:11,B:"lk2", H:true}, {A:25,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3", H:true},{A:9,B:"u3"}]
+            ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3", H:true},{A:9,B:"sfb1"}]
             ,[{A:0,B:"get_close", C:60,D:-999}, {A:0,B:"p3"},{A:9,B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"p1"}, {A:4, B:"p3"}, {A:19, B:"p1"}, {A:15, B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"p3"}, {A:5, B:"p1"}, {A:15, B:"lk3"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"k3"}, {A:4, B:"p3"}, {A:4, B:"u3"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"k3"}, {A:4, B:"p3", H:true}, {A:4, B:"u3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"p1"}, {A:4, B:"p2"}, {A:13, B:"k2"}, {A:17, B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"lk2"}, {A:8, B:"k2"}, {A:13, B:"p1"}, {A:17, B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:4,B:"p1"},{A:14,B:"p3"}, {A:18,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"lk2"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"u1"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"k2"}, {A:25, B:"fb1"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"lp3"}, {A:4, B:"u3"}]
-            ,[this.AI.GET_CLOSE, {A:0, B:"lp3"}, {A:4, B:"fb1"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"k2", H:true}, {A:25, B:"u1"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"k2", H:true}, {A:25, B:"sfb1"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"lp3", H:true}, {A:4, B:"u3"}]
+            ,[this.AI.GET_CLOSE, {A:0, B:"lp3", H:true}, {A:4, B:"sfb1"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p3"}, {A:5,B:"lp3"}, {A:19,B:"p3"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"k1"}]
-            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"k1"},{A:10,B:"fb1"}]
-            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"},{A:16,B:"fb1"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"k1", H:true},{A:10,B:"sfb1"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2", H:true},{A:16,B:"sfb1"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk3"}]
-            ,[this.AI.GET_CLOSE, {A:0,B:"lp3"}, {A:4,B:"p2"},{A:9,B:"u1"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"lp3"}, {A:4,B:"p2", H:true},{A:9,B:"u1"}]
             ,[this.AI.GET_REAL_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
             ];
         this.AI.CloseCombos = [
              [{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}]
-            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:0,B:"u1"}]
+            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2", H:true}, {A:0,B:"u1"}]
             ,[{A:0,B:"get_close", C:95,D:-999}, {A:0,B:"lk3"}]
             ,[{A:0,B:"get_close", C:185,D:-999}, {A:0,B:"k3"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"hk3"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"fb1"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}, {A:4,B:"fb3"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"hk3"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"sfb1"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2", H:true}, {A:4,B:"sfb3"}]
             ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:8,B:"lk3"}]
-            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:8,B:"lk3"}, {A:4,B:"sb3"}]
-            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"k1"}, {A:5,B:"fb1"}]
+            ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2"}, {A:8,B:"lk3", H:true}, {A:4,B:"sb3"}]
+            ,[{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"k1", H:true}, {A:5,B:"sfb1"}]
             ,[{A:0,B:"get_close", C:150,D:-999}, {A:0,B:"k2"}, {A:9,B:"k3"}]
-            ,[{A:0,B:"get_close", C:130,D:-999}, {A:0,B:"k2"}, {A:5,B:"k3"}, {A:21,B:"fb3"}]
-            ,[{A:0,B:"get_close", C:185,D:-999}, {A:0,B:"k3"}, {A:7,B:"fb3"}]
+            ,[{A:0,B:"get_close", C:130,D:-999}, {A:0,B:"k2"}, {A:5,B:"k3", H:true}, {A:21,B:"sfb3"}]
+            ,[{A:0,B:"get_close", C:185,D:-999}, {A:0,B:"k3", H:true}, {A:7,B:"sfb3"}]
+        ];
+
+        this.AI.CounterCloseProjectileCombos = [
+            [{A:0, B:"u3"}]
+            ,[{A:0, B:"u3"}]
+        ];
+
+        this.AI.CounterVeryCloseProjectileCombos = [
+            [{A:0, B:"u1"}]
+            ,[{A:0, B:"u3"}]
+            ,[{A:0, B:"lk1"}, {A:8, B:"lk2"}, {A:15, B:"lk3", H:true}, {A:20, B:"sfb1"}]
+            ,[{A:0, B:"lk1"}, {A:8, B:"lk2", H:true}, {A:15, B:"hk3"}]
+            ,[{A:0, B:"p1"}, {A:6, B:"p3"}, {A:15, B:"lk2", H:true}, {A:25, B:"sfb1"}]
+            ,[{A:0, B:"p1"}, {A:6, B:"sfb1"}]
+            ,[{A:0, B:"lk1"}, {A:8, B:"sfb1"}]
+            ,[{A:0, B:"u3"}]
         ];
 
         this.AI.CounterProjectileCombos = [
-            [{A:5, B:"fj"}, {A:28, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"p2"}, {A:15,B:"sfb3"}]
+            [{A:5, B:"fj"}, {A:28, B:"k3"}, {A:23,B:"k2"}, {A:14,B:"p2", H:true}, {A:15,B:"sfb3"}]
             ,[{A:5, B:"fj"}, {A:27, B:"k3"}, {A:23,B:"k2"}, {A:24,B:"lk3"}]
             ,[{A:5, B:"fj"}, {A:27, B:"k3"}, {A:21,B:"lk3"}]
             ,[{A:2, B:"fj"}, {A:5, B:"hk3"}]
@@ -155,13 +171,13 @@ var CreateRyuAI = function(player)
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:35, B:"k3"}, {A:20, B:"lk2"}, {A:14, B:"lk3"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"hk3"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"u3"}]
-            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"fb1"}]
+            ,[{A:5, B:"jump_in", C:100,D:-999}, {A:30, B:"fp2"}, {A:36, B:"lk2"}, {A:14, B:"sfb1"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:33, B:"k3"}, {A:20, B:"u1"}]
             ,[{A:5, B:"jump_in", C:100,D:-999}, {A:20, B:"hk3"}]
             /*cross up*/
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:32, B:"k2"}, {A:24,B:"lk3"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"u3"}]
-            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"fb1"}]
+            ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"sfb1"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"hk3"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:12,B:"lk3"}]
             ,[{A:5,B:"jump_in", C:-10,D:-999}, {A:30,B:"k2"}, {A:28, B:"k3"}, {A:11,B:"lk1"}, {A:18,B:"lk3"}]
@@ -327,12 +343,25 @@ var CreateRyuAI = function(player)
                 this.reset();
                 this.doCounterProjectileCombo();
                 this.AI.setProjectileReactBusy();
+                this.AI.setAttackReactBusy();
             }
-            else if(dist < 20000)
+            else if(dist < 15000)
             {
-                var rnd = getRand();
-                if(rnd > 50)
-                    this.doMove("u1");
+                this.reset();
+                //var rnd = getRand();
+                //if(rnd > 80)
+                //    this.doMove("u1");
+                //else
+                this.doCounterVeryCloseProjectileCombo();
+                this.AI.setProjectileReactBusy();
+                this.AI.setAttackReactBusy();
+            }
+            else if(dist < 30000)
+            {
+                this.reset();
+                this.doCounterCloseProjectileCombo();
+                this.AI.setProjectileReactBusy();
+                this.AI.setAttackReactBusy();
             }
             else
             {
@@ -528,6 +557,8 @@ var CreateRyuAI = function(player)
     RyuAI.prototype.doJumpInCombo = function(key) { this.execute(this.AI.JumpInCombos[key]); }
     RyuAI.prototype.doCloseJumpInCounterCombo = function(key) { this.execute(this.AI.CounterCloseJumpInCombos[key]); }
     RyuAI.prototype.doCounterProjectileCombo = function(key) { this.execute(this.AI.CounterProjectileCombos[getRand(this.AI.CounterProjectileCombos.length-1)]); }
+    RyuAI.prototype.doCounterCloseProjectileCombo = function(key) { this.execute(this.AI.CounterCloseProjectileCombos[getRand(this.AI.CounterCloseProjectileCombos.length-1)]); }
+    RyuAI.prototype.doCounterVeryCloseProjectileCombo = function(key) { this.execute(this.AI.CounterVeryCloseProjectileCombos[getRand(this.AI.CounterVeryCloseProjectileCombos.length-1)]); }
 
     RyuAI.prototype.execute = function(sequence)
     {

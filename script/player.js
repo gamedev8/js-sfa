@@ -824,7 +824,11 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
         {
             this.setPendingFrame(currentFrame);
             //check to see if the move allows you to change direction mid-move
-            if(!!this.MustChangeDirection && hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
+            if(!!currentFrame && !!this.MustChangeDirection && hasFlag(currentFrame.FlagsToSet.Combat,COMBAT_FLAGS.TELEPORT))
+            {
+                this.reverseSprite();
+            }
+            else if(!!this.MustChangeDirection && hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.ALLOW_CHANGE_DIRECTION))
             {
                 this.changeDirection();
                 return;

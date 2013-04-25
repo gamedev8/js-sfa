@@ -50,7 +50,19 @@ stages_["sagat"] = new StageParams("sagat", "sagat", -192, -382, -2, -21, -41);
 
 function ApplyFlip(element,applied)
 {
-    if(!!applied)
+    if(applied === undefined)
+    {
+        //reverse
+        if((element.className.indexOf(" flipped") == -1))
+        {
+            element.className += " flipped";
+        }
+        else
+        {
+            element.className = element.className.replace(" flipped", "");
+        }
+    }
+    else if(!!applied)
     {
         element.className += " flipped";
     }
@@ -145,7 +157,7 @@ InitUsers();
 function StartQuickMatch()
 {
     user1_.setChar(CHARACTERS.AKUMA,false,false);
-    user2_.setChar(CHARACTERS.KEN,true,true);
+    user2_.setChar(CHARACTERS.KEN,false,false);
 
     game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["ken"]);
 }

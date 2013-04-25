@@ -198,63 +198,81 @@ var CreateCharSelect = function(users)
     {
         var row = this.getRow(who);
         var col = this.getColumn(who);
+
+        var tmpRow = this.getRow(who);
+        var tmpCol = this.getColumn(who);
+
         var isUser1 = who.PlayerNdx == 1;
         var isUser2 = who.PlayerNdx == 2;
+        var MAX_COL = 3;
+        var MAX_ROW = 3;
 
         if(direction == CONSTANTS.DOWN)
         {
             //ensure that the player can only go to its own random select
-            if(row != CONSTANTS.ROW3 && !(isUser1 && who.Selected == 7) && !(isUser2 && who.Selected == 4))
-                who.Selected = Math.min(who.Selected + 4, this.CharsMax);
+            if(!(row == CONSTANTS.ROW2 && ((isUser1 && col == CONSTANTS.COL4) || (isUser2 && col == CONSTANTS.COL1))))
+                row = Math.min(row + 1, CONSTANTS.ROW3);
         }
         else if(direction == CONSTANTS.UP)
         {
-            if(row != CONSTANTS.ROW1)
-                who.Selected = Math.max(who.Selected - 4, 0);
+            row = Math.max(row - 1, 0);
         }
         else
         {
             switch(row)
             {
                 case CONSTANTS.ROW1:
-                {
-                    if(direction == CONSTANTS.RIGHT)  who.Selected = Math.min(who.Selected + 1, this.CharsRow1.Max);
-                    else if(direction == CONSTANTS.LEFT) who.Selected = Math.max(who.Selected - 1, this.CharsRow1.Min);
-                    break;
-                }
                 case CONSTANTS.ROW2:
                 {
-                    if(direction == CONSTANTS.RIGHT) who.Selected = Math.min(who.Selected + 1, this.CharsRow2.Max);
-                    else if(direction == CONSTANTS.LEFT) who.Selected = Math.max(who.Selected - 1, this.CharsRow2.Min);
+                    if(direction == CONSTANTS.RIGHT) { col = Math.min(col + 1, CONSTANTS.COL4); }
+                    else if(direction == CONSTANTS.LEFT) { col = Math.max(col - 1, CONSTANTS.COL1); }
                     break;
                 }
                 case CONSTANTS.ROW3:
                 {
                     //ensure that the player can only go to its own random select
-                    if(direction == CONSTANTS.RIGHT && !(isUser1 && who.Selected == 10)) who.Selected = Math.min(who.Selected + 1, this.CharsRow3.Max);
-                    else if(direction == CONSTANTS.LEFT && !(isUser2 && who.Selected == 9)) who.Selected = Math.max(who.Selected - 1, this.CharsRow3.Min);
+                    if(direction == CONSTANTS.RIGHT)
+                    {
+                        if(isUser1 && col == CONSTANTS.COL3)
+                            break;
+
+                        col = Math.min(col + 1, CONSTANTS.COL4);
+                    } 
+                    else if(direction == CONSTANTS.LEFT)
+                    {
+                        if(isUser2 && col == CONSTANTS.COL2)
+                            break;
+
+                        col = Math.max(col - 1, CONSTANTS.COL1);
+                    }
                     break;
                 }
             }
         }
 
-        var tmpRow = this.getRow(who);
-        var tmpCol = this.getColumn(who);
-
-        if(tmpRow != row || tmpCol != col)
+        tmpSelected = col + (row * 4);
+        if((tmpSelected == 8) && (who.Selected >= 11))
         {
-            if(isUser1)
-                this.queueUser1MoveSound();
-            else
-                this.queueUser2MoveSound();
-            
+            //
         }
+        else
+        {
+            who.Selected = tmpSelected;
 
-        row = tmpRow;
-        col = tmpCol;
+            if(tmpRow != row || tmpCol != col)
+            {
+                if(isUser1)
+                    this.queueUser1MoveSound();
+                else
+                    this.queueUser2MoveSound();
+                
+            }
 
-        who.SelectIcon.Y = CONSTANTS.CHARSELECT_Y - (row * CONSTANTS.CHARSELECT_HEIGHT);
-        who.SelectIcon.X = CONSTANTS.CHARSELECT_X + (col * CONSTANTS.CHARSELECT_WIDTH);
+            who.SelectIcon.Y = CONSTANTS.CHARSELECT_Y - (row * CONSTANTS.CHARSELECT_HEIGHT);
+            who.SelectIcon.X = CONSTANTS.CHARSELECT_X + (col * CONSTANTS.CHARSELECT_WIDTH);
+        }
+        
+        return {Row:row,Col:col};
     }
 
 
@@ -451,7 +469,7 @@ var CreateCharSelect = function(users)
         if(!!user.isRequestingCharSelect())
             user.useCredit();
 
-        var changeCharacterFn = function(thisValue) { return function(direction) { thisValue.tryChangeCharacter(this,direction); } };
+        var changeCharacterFn = function(thisValue) { return function(direction) { return thisValue.tryChangeCharacter(this,direction); } };
         var getOtherCharacterFn = function(thisValue) { return function(direction) { return !!thisValue ? (thisValue.IsCharSelected ? thisValue.getName() : "") : ""; } };
         var isCharOnOtherTeamFn = function(thisValue,otherTeam)
         {

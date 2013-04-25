@@ -859,6 +859,7 @@ var CreateFrame = function(index,id,shadowOffset,shadowImage,image,nbFrames,flag
         //If this is set, then the player will force jump, even if the player is already airborne
         //eg. this.Jump = {Fx:10, Fy:200};
         this.Jump = null;
+        this.TeleportSpeed = 0;
     }
     Frame.prototype.hitStop = function(me,you)
     {

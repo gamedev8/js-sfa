@@ -11,5 +11,13 @@ Player.prototype.onEnemyDizzy = function(frame, who) { if(this.Ai.isRunning()) {
 Player.prototype.onStartAttack = function() { if(this.Ai.isRunning()) { this.Ai.onStartAttack(); } }
 Player.prototype.onTakeHit = function(frame, who) { if(this.Ai.isRunning()) { this.Ai.onTakeHit(frame, who); } }
 Player.prototype.onBlocked = function(frame, who) { if(this.Ai.isRunning()) { this.Ai.onBlocked(frame, who); } }
-Player.prototype.onAttackStateChanged = function(who,result) { if(this.Ai.isRunning()) { this.Ai.onAttackStateChanged(who,result); } }
 Player.prototype.onAnimationChanged = function(name) { if(this.Ai.isRunning()) { this.Ai.onAnimationChanged(name); } }
+Player.prototype.onAttackStateChanged = function(who,result)
+{
+	if(this.Ai.isRunning())
+	{
+		this.Ai.onAttackStateChanged(who,result);
+		if(result == ATTACK_STATE.HIT)
+			this.SentHitAttackStateChange = true;
+	}
+}
