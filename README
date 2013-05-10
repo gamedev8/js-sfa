@@ -3,4 +3,4 @@ Street Fighter Alpha
 
 * Chrome/Safari users - If when starting a match you get very slow performance - bring up the developer tools window (press F12). Go to settings and then check "Disable Cache", then uncheck it. It seems like an issue with WebKit browsers trying to cache large images, but I am looking in to it. *
 
-* Currently only Ken, Ryu, Sagat, MBison and Akuma are playable *
+* Currently only Ken, Ryu are playable *

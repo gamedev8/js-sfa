@@ -1,6 +1,55 @@
 ﻿
 var CreateGenericAI = function(player)
 {
+    var CreateAutoCombo = function()
+    {
+        var isEnabled = false;
+        var didHit = false;
+        var isIgnored = false;
+
+        var AutoCombo = function()
+        {
+            this.reset();
+        }
+
+        AutoCombo.prototype.reset = function()
+        {
+            isEnabled = false;
+            didHit = false;
+            isIgnored = false;
+        }
+
+        AutoCombo.prototype.enable = function()
+        {
+            this.reset();
+            isEnabled = true;
+        }
+
+        AutoCombo.prototype.hit = function()
+        {
+            this.reset();
+            didHit = true;
+        }
+
+        AutoCombo.prototype.ignore = function()
+        {
+            this.reset();
+            isIgnored = true;
+        }
+
+        AutoCombo.prototype.isEnabled = function()
+        {
+            return isEnabled;
+        }
+
+        AutoCombo.prototype.isWaiting = function()
+        {
+            return isEnabled && !didHit && !isIgnored;
+        }
+
+        return new AutoCombo();
+    };
+
     var FLAGS =  {
         DONE: 1 << 1
         ,MOVE_TO_ENEMY: 1 << 2
@@ -32,16 +81,20 @@ var CreateGenericAI = function(player)
         this.BusyFrame = 0;
         this.AirborneReactBusyFrame = 0;
         this.ProjectileReactBusyFrame = 0;
+        this.WanderBusyFrame = 0;
+        this.ProactBusyFrame = 0;
         this.AttackReactBusyFrame = 0;
         this.JustAttacked = false;
         this.JustBecameMobile = 0;
-
+        this.DidHit = false;
         this.SingleMoves = {};
         this.VeryCloseCombos = [];
         this.CloseCombos = [];
         this.JumpInCombo = [];
         this.RollInCombos = [];
         this.CounterCloseJumpInCombos = [];
+
+        this.AutoCombo = CreateAutoCombo();
     }
 
     GenericAI.prototype.release = function(frame,flags,input,name,dist,mustHit)
@@ -49,9 +102,9 @@ var CreateGenericAI = function(player)
         this.Player = null;
     }
 
-    GenericAI.prototype.createAction = function(frame,flags,input,name,dist,mustHit,move)
+    GenericAI.prototype.createAction = function(frame,flags,input,name,dist,mustHit,move,autoCombo,requiredState)
     {
-        return {Flags:flags||0,MoveName:name||0,Frame:frame||0,Input:input||[],Distance:dist,IsActive:false,MustHit:mustHit,Move:move};
+        return {Flags:flags||0, MoveName:name||0, Frame:frame||(autoCombo ? 1 : 0), Input:input||[], Distance:dist, IsActive:false, MustHit:mustHit, Move:move, AutoCombo:autoCombo, RequiredState:requiredState};
     }
 
 
@@ -61,6 +114,10 @@ var CreateGenericAI = function(player)
     GenericAI.prototype.isAttackReactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.AttackReactBusyFrame) < (nbFrames || 20); }
     GenericAI.prototype.setAirborneReactBusy = function() { this.AirborneReactBusyFrame = game_.getCurrentFrame(); }
     GenericAI.prototype.isAirborneReactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.AirborneReactBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.setWanderBusy = function() { this.WanderBusyFrame = game_.getCurrentFrame(); }
+    GenericAI.prototype.isWanderBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.WanderBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.setProactBusy = function() { this.ProactBusyFrame = game_.getCurrentFrame(); }
+    GenericAI.prototype.isProactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.ProactBusyFrame) < (nbFrames || 50); }
     GenericAI.prototype.setProjectileReactBusy = function() { this.IgnoreProjectileGone = true; this.ProjectileReactBusyFrame = game_.getCurrentFrame(); }
     GenericAI.prototype.isProjectileReactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.ProjectileReactBusyFrame) < (nbFrames || 50); }
     GenericAI.prototype.setBusy = function() { this.BusyFrame = game_.getCurrentFrame(); }
@@ -72,6 +129,7 @@ var CreateGenericAI = function(player)
             this.Actions = [];
         if(!!this.InputToSend && !!this.InputToSend.length)
             this.InputToSend = [];
+        this.AutoCombo.reset();
         this.Player.clearInput(true);
         this.AllowOverrideBlock = true;
         this.MustHit = false;
@@ -111,7 +169,7 @@ var CreateGenericAI = function(player)
             if(temp < retVal.X)
             {
                 if((isAirborne === undefined || isAirborne == otherPlayers[i].isAirborne()) 
-                    && (isVulernable === undefined || isVulernable == otherPlayers[i].isVulnerable())
+                    && (isVulernable === undefined || isVulernable == !otherPlayers[i].hasInvulnerableFlag())
                     && (isMobile === undefined || isMobile == otherPlayers[i].isMobile())
                     )
                 {
@@ -150,29 +208,33 @@ var CreateGenericAI = function(player)
         this.Actions.push(this.createAction(null,FLAGS.MOVE_TO_ENEMY|flags,[{IsDown:true,Button:BUTTONS.FORWARD}],"",dist));
     }
     //AI player will jump in
-    GenericAI.prototype.jumpInToEnemy = function(flags,dist)
+    GenericAI.prototype.jumpInToEnemy = function(flags,dist,frame)
     {
-        this.Actions.push(this.createAction(0,FLAGS.JUMP_IN|flags,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK}]));
+        frame = frame || 0
+        this.Actions.push(this.createAction(frame,FLAGS.JUMP_IN|flags,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK}]));
         this.Actions.push(this.createAction(2,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
     }
     //AI player will jump in
-    GenericAI.prototype.jumpTowardEnemy = function(flags,dist)
+    GenericAI.prototype.jumpTowardEnemy = function(flags,dist,frame)
     {
-        this.Actions.push(this.createAction(0,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK}]));
+        frame = frame || 0;
+        this.Actions.push(this.createAction(frame,FLAGS.CLEAR_INPUT,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK}]));
         this.Actions.push(this.createAction(2,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
         this.Actions.push(this.createAction(2,FLAGS.CLEAR_INPUT));
     }
     //AI player will jump in
-    GenericAI.prototype.jumpAwayFromEnemy = function(flags,dist)
+    GenericAI.prototype.jumpAwayFromEnemy = function(flags,dist,frame)
     {
-        this.Actions.push(this.createAction(0,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.BACK},{IsDown:false,Button:BUTTONS.FORWARD}]));
+        frame = frame || 0;
+        this.Actions.push(this.createAction(frame,FLAGS.CLEAR_INPUT,[{IsDown:true,Button:BUTTONS.BACK},{IsDown:false,Button:BUTTONS.FORWARD}]));
         this.Actions.push(this.createAction(2,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.BACK},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
         this.Actions.push(this.createAction(2,FLAGS.CLEAR_INPUT));
     }
     //AI player jump up
-    GenericAI.prototype.jumpUp = function(flags,dist)
+    GenericAI.prototype.jumpUp = function(flags,dist,frame)
     {
-        this.Actions.push(this.createAction(0,FLAGS.NONE,[{IsDown:false,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
+        frame = frame || 0;
+        this.Actions.push(this.createAction(frame,FLAGS.CLEAR_INPUT,[{IsDown:false,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
         this.Actions.push(this.createAction(2,FLAGS.CLEAR_INPUT));
     }
 
@@ -187,6 +249,22 @@ var CreateGenericAI = function(player)
 
         var canClear = true;
         var canSendInput = true;
+
+        if(!!this.Actions[0].AutoCombo)
+        {
+            if(!!this.AutoCombo.isWaiting() || (!this.Player.isMobile() && !this.Player.allowInterupt()) || (!!this.Actions[0].RequiredState && !this.Player.Flags.Pose.has(this.Actions[0].RequiredState)))
+            {
+                return null;
+            }
+            else if(!this.AutoCombo.isEnabled() || this.AutoCombo.isIgnored())
+            {
+                this.AutoCombo.enable();
+            }
+            else
+            {
+                this.AutoCombo.reset();
+            }
+        }
 
         if(hasFlag(this.Actions[0].Flags, FLAGS.CLEAR_INPUT))
         {
@@ -261,9 +339,9 @@ var CreateGenericAI = function(player)
     }
 
 
-    GenericAI.prototype.sendInput = function(flags, frame, input, mustHit,move)
+    GenericAI.prototype.sendInput = function(flags, frame, input, mustHit,move,autoCombo,requiredState)
     {
-        this.Actions.push(this.createAction(frame,flags,input,undefined,undefined,mustHit,move));
+        this.Actions.push(this.createAction(frame,flags,input,undefined,undefined,mustHit,move,autoCombo,requiredState));
     }
 
     GenericAI.prototype.pressBlock = function()
@@ -299,19 +377,26 @@ var CreateGenericAI = function(player)
         {
             case ATTACK_STATE.BLOCKED:
             {
-                if(!!this.MustHit)
+                if(!!this.MustHit || !!this.AutoCombo.isEnabled())
                     this.reset();
                 break;
             }
             case ATTACK_STATE.HIT:
             {
                 this.MustHit = false;
+                this.AutoCombo.hit(true);
                 break;
             }
             case ATTACK_STATE.DONE:
             {
-                if(!!this.MustHit)
+                if(!!this.MustHit || !!this.AutoCombo.isEnabled())
                     this.reset();
+                break;
+            }
+            case ATTACK_STATE.NOT_AN_ATTACK:
+            {
+                this.MustHit = false;
+                this.AutoCombo.ignore();
                 break;
             }
         }

@@ -752,8 +752,6 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
                 this.onAttackStateChanged(null,ATTACK_STATE.DONE);
             this.SentHitAttackStateChange = false;
         }
-    
-
     }
 
     this.CurrentAnimation = newAnimation;
@@ -769,7 +767,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
             this.CurrentAnimation.Animation.IsProjectilePending = true;
 
         this.onAnimationChanged(this.CurrentAnimation.Animation.BaseAnimation.Name);
-        this.doAnimationAlerts();
+        //this.doAnimationAlerts();
         this.MaintainYPosition = newAnimation.Animation.MaintainYPosition;
         if(!!this.CurrentAnimation.Animation.Flags.Player)
         {
@@ -884,7 +882,7 @@ Player.prototype.applyShake = function(frame, stageX, stageY)
 
 Player.prototype.doAnimationAlerts = function()
 {
-    if(hasFlag(this.CurrentAnimation.Animation.Flags.Alert,ALERT_FLAGS.DIZZY))
+    if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation && hasFlag(this.CurrentAnimation.Animation.Flags.Alert,ALERT_FLAGS.DIZZY))
     {
         this.onDizzyFn();
     }
@@ -979,6 +977,11 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     this.CurrentFrame = newFrame;
     if(!!newFrame)
     {
+        if(this.CurrentAnimation.Animation.IsSuperMove)
+        {
+            this.stopSlide(true);
+        }
+
         //During an attack - after the attack frames the player is vulernable and we should ignore the overrides
         this.IgnoreOverrides = this.CurrentFrame.Vulernable;
 

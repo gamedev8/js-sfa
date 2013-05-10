@@ -116,6 +116,8 @@ var CreateAnimation = function(requiredFlags,name,duration,frames,keySequence,fl
     {
         for(var i = 0; i < this.BaseAnimation.Frames.length; ++i)
         {
+            if(!!hasFlag(this.BaseAnimation.Frames[i].FlagsToSet.Combat,COMBAT_FLAGS.ATTACK))
+                break;
             this.BaseAnimation.Frames[i].FlagsToSet.AI |= AI_FLAGS.ATTACK_PENDING;
         }
 

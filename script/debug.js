@@ -81,8 +81,27 @@ function GetDebugInstance(game)
         }
         return null;
     }
-
  
+    Debug.prototype.p1AI = function(data)
+    {
+        if(!!game_.getMatch())
+        {
+            if(!this.p1().Ai.isRunning())
+                this.p1().enableAI();
+        }
+        return !!data ? this.p1().Ai.getManaged().execute(data) : this.p1().Ai.getManaged();
+    }
+ 
+    Debug.prototype.p2AI = function(data)
+    {
+        if(!!game_.getMatch())
+        {
+            if(!this.p2().Ai.isRunning())
+                this.p2().enableAI();
+        }
+        return !!data ? this.p2().Ai.getManaged().execute(data) : this.p2().Ai.getManaged();
+    }
+
     Debug.prototype.t1TestAI = function(index)
     {
         if(!!game_.getMatch())
@@ -154,7 +173,7 @@ function GetDebugInstance(game)
 
     Debug.prototype.keyCount = 1000;
 
-    Debug.prototype.injectPlayer = function(playerId,team)
+    Debug.prototype.injectPlayer = function(playerId,team,isAlternate)
     {
         if(!game_.getMatch() || !game_.getMatch().getTeamA() || !game_.getMatch().getTeamB())
         {
@@ -175,7 +194,7 @@ function GetDebugInstance(game)
         k3 = Debug.prototype.keyCount++;
         turn = Debug.prototype.keyCount++;
         var user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
-        user.setChar(playerId);
+        user.setChar(playerId,isAlternate,true);
         if(!!user.getName())
         {
             var name = user.getName();
@@ -189,11 +208,9 @@ function GetDebugInstance(game)
                 {
                     var player = user.getPlayer();
                     if(team == 1)
-                        game_.getMatch().getTeamA().addPlayer(player);
+                        game_.getMatch().getTeamA().addPlayer(player,true,true);
                     else
-                        game_.getMatch().getTeamB().addPlayer(player);
-                    game_.getMatch().setupPlayer(player,team);
-                    player.enableAI(CreateRyuAI);
+                        game_.getMatch().getTeamB().addPlayer(player,true,true);
                 }
             })(user);
             stuffLoader_.start(null,onDone,null);

@@ -374,12 +374,12 @@ var CreateMatch = function(team1,team2,stage)
         var moveToFront          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayer(i).moveToFront(true);} } }
         var attackPending        = function(thisValue,otherTeam) { return function(frame,x,y,isSuperMove) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyAttackPending(frame,x,y,this,isSuperMove); } } }
         var projectilePending    = function(thisValue,otherTeam) { return function(frame,x,y,isSuperMove) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyProjectilePending(frame,x,y,this,isSuperMove); } } }
-        var projectileMoved      = function(thisValue,otherTeam) { return function(frame,id,x,y,projectile,isSuperMove) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyProjectileMoved(frame,id,x,y,projectile); otherTeam.getPlayer(i).setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
+        var projectileMoved      = function(thisValue,otherTeam) { return function(frame,id,x,y,projectile,isSuperMove) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyProjectileMoved(frame,id,x,y,projectile,isSuperMove); otherTeam.getPlayer(i).setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),true,id,x,y); } } }
         var projectileGone       = function(thisValue,otherTeam) { return function(frame,id)     { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyProjectileGone(frame,id); otherTeam.getPlayer(i).setAllowBlockFromProjectile(thisValue.getGame().getCurrentFrame(),false,id); } } }
         var startAttack          = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).allowBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints,this); } } }
         var endAttack            = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.getPlayer(i).removeBlock(id,thisValue.getGame().getCurrentFrame(),false,undefined,undefined,undefined,this); } } }
         var startAirAttack       = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).allowAirBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints); } } }
-        var endAirAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.getPlayer(i).removeAirBlock(id,thisValue.getGame().getCurrentFrame(),false); } } }
+        var endAirAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.getPlayer(i).removeAirBlock(id,thisValue.getGame().getCurrentFrame(),false,undefined,undefined,undefined,this); } } }
         var attack               = function(thisValue,otherTeam) { return function(hitStop,hitID,attackID,maxNbHits,frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryAttack(hitStop,hitID,attackID,maxNbHits,frame,points,flags,state,this,otherTeam.getPlayer(i),damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams); } } }
         var projectileAttack     = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryProjectileAttack(frame,projectile,this,otherTeam.getPlayer(i)); } } }
         var changeHealth         = function(thisValue)           { return function(amount) { thisValue.changeHealth(this.Team,amount); } }
@@ -629,8 +629,8 @@ var CreateMatch = function(team1,team2,stage)
         stage_.frameMove(frame);
         this.getHitSystem().frameMove(frame);
 
-        teamA_.frameMove(frame,stage_.X, stage_.getGroundY());
-        teamB_.frameMove(frame,stage_.X, stage_.getGroundY());
+        teamA_.frameMove(frame,stage_.X, stage_.getGroundY(), this.getAllowInput());
+        teamB_.frameMove(frame,stage_.X, stage_.getGroundY(), this.getAllowInput());
 
         if(round_ != 1)
         {

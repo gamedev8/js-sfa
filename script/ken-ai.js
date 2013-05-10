@@ -423,7 +423,7 @@
                 this.AI.setProjectileReactBusy();
                 return;
             }
-            else
+            else if(y < 200)
             {
                 //jump straight up, over the projectile
                 this.AI.IgnoreProjectileGone = true;

@@ -38,14 +38,22 @@ var CreateTeam = function(num)
         this.setPlayerIndexes();
         nbPlayers_ = players_.length;
     }
-    Team.prototype.addPlayer = function(value)
+    Team.prototype.addPlayer = function(player, doSetup, isAi)
     {
-        if(!value.User.IsAI)
+        if(!!isAi)
+        {
+            player.enableAI();
+            isAI_ = true;
+        }
+        else if(!player.User.IsAI)
             isAI_ = false;
 
-        players_.push(value);
+        players_.push(player);
         this.setPlayerIndexes();
         nbPlayers_ = players_.length;
+
+        if(!!doSetup)
+            game_.getMatch().setupPlayer(player, teamNum_);
     }
     Team.prototype.setPlayerIndexes = function()
     {
@@ -259,15 +267,17 @@ var CreateTeam = function(num)
     }
 
     /**/
-    Team.prototype.frameMove = function(frame, x, y)
+    Team.prototype.frameMove = function(frame, x, y, allowInput)
     {
         if(frame % 100 == 0)
             this.setCursor(((this.getCursor() + 1) < nbPlayers_) ? (this.getCursor()+1) : 0);
 
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).handleAI(frame);
+            if(!!allowInput)
+                this.getPlayer(i).handleAI(frame);
         for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).handleInput(frame);
+            if(!!allowInput)
+                this.getPlayer(i).handleInput(frame);
         for(var i = 0, length = nbPlayers_; i < length; ++i)
             this.getPlayer(i).onFrameMove(frame,x,y);
 

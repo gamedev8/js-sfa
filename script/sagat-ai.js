@@ -340,7 +340,7 @@
     {
         this.react(frame, attacker, true, x, y)
     }
-    //fired when any enemy attack ends
+    //fired when any enemy attack ends in the air
     SagatAI.prototype.onEnemyFloating = function(frame, attacker, x, y)
     {
         this.reactFloat(frame, attacker, x, y)
@@ -489,7 +489,7 @@
 
     SagatAI.prototype.reactFloat = function(frame,attacker,x,y)
     {
-        if(this.AI.Player.isFacingPlayer(attacker))
+        if(this.AI.Player.isFacingPlayer(attacker, true))
         {
             retVal = true;
 
@@ -521,7 +521,7 @@
     SagatAI.prototype.reactAirborne = function(frame,attacker,isEnemyVulernerable,x,y)
     {
         var retVal = false;
-        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker))
+        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker, true))
         {
             if(!!isEnemyVulernerable)
             {
@@ -553,7 +553,7 @@
         if(!this.AI.Player.isMobile())
             return retVal;
 
-        if(!!isEnemyVulernerable && this.AI.Player.isFacingPlayer(attacker))
+        if(!!isEnemyVulernerable && this.AI.Player.isFacingPlayer(attacker, true))
         {
             retVal = true;
 

@@ -72,7 +72,7 @@ var CreateGame = function()
 
     Game.prototype.startRandomMatch = function()
     {
-        var chars = [CHARACTERS.RYU,CHARACTERS.KEN,CHARACTERS.MBISON,CHARACTERS.SAGAT];
+        var chars = [CHARACTERS.RYU,CHARACTERS.KEN,CHARACTERS.MBISON,CHARACTERS.SAGAT,CHARACTERS.AKUMA];
         var stages = ["ken", "ryu", "sodom", "dramatic_battle", "akuma", "sagat"];
 
         var t1 = [2];

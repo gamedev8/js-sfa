@@ -1,6 +1,6 @@
 Player.prototype.canBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK); }
 Player.prototype.canAirBlock = function() { return this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK); }
-Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame; }
+Player.prototype.isAttacking = function() { return !!this.IsInAttackFrame || !!this.isCurrentMoveAttack() || !!this.isCurrentMoveProjectile(); }
 Player.prototype.isCurrentMoveAttack = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.BaseAnimation.IsAttack; }
 Player.prototype.isCurrentMoveProjectile = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectile; }
 Player.prototype.isProjectilePending = function() { return !!this.CurrentAnimation && !!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.IsProjectilePending; }
@@ -58,11 +58,12 @@ Player.prototype.canJuggle = function(other,attackId,juggleGroup)
     return false;
 }
 
-Player.prototype.isVulnerable = function()
+Player.prototype.hasInvulnerableFlag = function()
 {
     var retVal = this.Flags.Player.has(PLAYER_FLAGS.INVULNERABLE)
                 || this.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE)
-                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_ATTACKS)
+                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_ATTACKS
+                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_COLLISIONS))
         ;
     return !retVal;
 }
@@ -182,7 +183,7 @@ Player.prototype.removeBlockableAirAttack = function(attackId)
 Player.prototype.removeBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
     this.setAllowBlock(attackId,frame,isAllowed,x,y,hitPoints);
-    this.onEnemyEndAttack(frame, this);
+    this.onEnemyEndAttack(frame, enemy);
 }
 Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
@@ -192,7 +193,7 @@ Player.prototype.allowBlock = function(attackId,frame,isAllowed,x,y,hitPoints,en
 Player.prototype.removeAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
     this.setAllowAirBlock(attackId,frame,isAllowed,x,y,hitPoints);
-    this.onEnemyEndAttack(frame, this);
+    this.onEnemyEndAttack(frame, enemy);
 }
 Player.prototype.allowAirBlock = function(attackId,frame,isAllowed,x,y,hitPoints,enemy)
 {
@@ -713,7 +714,7 @@ Player.prototype.increaseDizziness = function(frame,attackFlags,damage)
 }
 Player.prototype.decreaseDizziness = function(frame)
 {
-    if(this.isDizzy() && this.isVulnerable())
+    if(this.isDizzy() && !this.hasInvulnerableFlag())
     {
         var value = CONSTANTS.DECREASE_DIZZY;
         this.changeDizzy(value);
@@ -749,6 +750,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     var hitStop = 1;
     var isSpecial = hasFlag(attackFlags, ATTACK_FLAGS.SPECIAL) || !!isProjectile;
     var ignoreRedFireSound = true;
+    var isHardRedFire = false;
     var wasBlocked = false;
 
     var enemyHitStop = 0;
@@ -783,6 +785,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
                 this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction});
             }
         }
+        this.stopGettingDizzy();
         this.queueGrappleSound();
     }
     else if(hasFlag(attackFlags,ATTACK_FLAGS.HITS_LOW) && this.isBlockingLow()
@@ -891,6 +894,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     {
         this.CurrentAnimation.StartFrame = otherPlayer.CurrentAnimation.StartFrame;
         this.IgnoreCollisionsWith = otherPlayer.Id;
+        this.stopGettingDizzy();
         return;
     }
 
@@ -1270,6 +1274,7 @@ Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProj
     if(!!move)
     {
         //attackDirection = this.getRelativeDirection(attackDirection);
+        this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
         if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
             this.setCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.Direction, AttackDirection:direction, Vx:move.Vx * fx, Vy:move.Vy * fy});
@@ -1322,7 +1327,12 @@ Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage
         this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
         this.Flags.Player.add(PLAYER_FLAGS.RED_FIRE);
         if(!ignoreSound)
-            this.queueLightFireSound();
+        {
+            if(!!otherParams && !!otherParams.UseHardFire)
+                this.queueHardFireSound();
+            else
+                this.queueLightFireSound();
+        }
     }
 }
 /*Player takes a hit while in the air*/

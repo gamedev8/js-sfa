@@ -9,6 +9,24 @@ Player.prototype.getDistanceFromSq = function(x,y)
 
     return distSq;
 }
+Player.prototype.getDistanceFrom = function(x,y)
+{
+    var dx = x-this.getMidX();
+    var dy = y-this.getMidY();
+
+    var distSq = dx*dx + dy*dy;
+
+    return {Dsq:distSq,Dx:Math.abs(dx),Dy:Math.abs(dy)};
+}
+Player.prototype.getDistanceFromPlayer = function(otherPlayer)
+{
+    var dx = otherPlayer.getMidX()-this.getMidX();
+    var dy = otherPlayer.getMidY()-this.getMidY();
+
+    var distSq = dx*dx + dy*dy;
+
+    return {Dsq:distSq,Dx:Math.abs(dx),Dy:Math.abs(dy)};
+}
 Player.prototype.getMidX = function()
 {
     var left = this.getLeftX();
@@ -23,6 +41,11 @@ Player.prototype.getMidY = function()
 
     return top - ((top-bottom)/2);
 }
+
+//0 would mean stationary on the X
+Player.prototype.getXDir = function() { return (this.X - this.LastX) / Math.abs(this.X - this.LastX) || 0; }
+//0 would mean stationary on the Y
+Player.prototype.getYDir = function() { return (this.Y - this.LastY) / Math.abs(this.Y - this.LastY) || 0; }
 
 Player.prototype.getLeftX = function(useImageWidth) { if(this.Direction > 0){return STAGE.MAX_STAGEX - (this.getX() + (!!useImageWidth ? this.getBoxWidth() : this.getConstWidth()));}else{return this.getX();}}
 Player.prototype.getRightX = function(useImageWidth)  { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.getX();}else{return this.getX() + (!!useImageWidth ? this.getBoxWidth() : this.getConstWidth());}}
@@ -106,10 +129,29 @@ Player.prototype.isFacingProjectile = function(projectile)
 
     return false;
 }
-Player.prototype.isFacingPlayer = function(otherPlayer)
+Player.prototype.isFacingPlayer = function(otherPlayer, ignoreOtherDirection)
 {
-    if(this.Direction == -1  && otherPlayer.Direction ==  1 && this.LeftOffset < otherPlayer.RightOffset) return true;
-    if(this.Direction ==  1  && otherPlayer.Direction == -1 && this.RightOffset  > otherPlayer.LeftOffset) return true;
+    if(!!ignoreOtherDirection)
+    {
+        if(this.Direction ==  1  && otherPlayer.Direction == -1 && this.RightOffset  > otherPlayer.LeftOffset) return true;
+        if(this.Direction ==  1  && otherPlayer.Direction == 1 && this.RightOffset > otherPlayer.RightOffset) return true;
+
+        if(this.Direction == -1  && otherPlayer.Direction ==  1 && this.LeftOffset < otherPlayer.RightOffset) return true;
+        if(this.Direction == -1  && otherPlayer.Direction == -1 && this.LeftOffset  < otherPlayer.LeftOffset) return true;
+    }
+    else
+    {
+        if(this.Direction == -1  && otherPlayer.Direction ==  1 && this.LeftOffset < otherPlayer.RightOffset) return true;
+        if(this.Direction ==  1  && otherPlayer.Direction == -1 && this.RightOffset  > otherPlayer.LeftOffset) return true;
+    }
+
+    return false;
+}
+
+Player.prototype.isBehindPlayer = function(otherPlayer)
+{
+    if(this.Direction ==  1  && otherPlayer.Direction == 1 && this.RightOffset > otherPlayer.RightOffset) return true;
+    if(this.Direction == -1  && otherPlayer.Direction == -1 && this.LeftOffset  < otherPlayer.LeftOffset) return true;
 
     return false;
 }
@@ -504,7 +546,7 @@ Player.prototype.advanceTeleportation = function()
         }
         else
         {
-            if(!foe || !game_.getMatch().getPhysics().isWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ))
+            if(!foe || !game_.getMatch().getPhysics().isWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ) || (this.Teleport0GapX == "t"))
                 this.moveX(this.TeleportX);
         }
     }
@@ -725,9 +767,9 @@ Player.prototype.slide = function(frame)
     
 }
 
-Player.prototype.stopSlide = function()
+Player.prototype.stopSlide = function(forced)
 {
-    if(!!this.IsSliding)
+    if(!!this.IsSliding || !!forced)
     {
         this.T = 0;
         this.Fx = 0;

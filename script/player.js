@@ -370,6 +370,7 @@ Player.prototype.reset = function(ignoreDirection)
     this.X = 0;
     this.Y = STAGE.FLOORY;
     this.LastY = STAGE.FLOORY;
+    this.LastX = 0;
     this.LastFrameY = 0;
     this.ConstY = 0;
     this.Hits = {};
@@ -695,9 +696,10 @@ Player.prototype.handleAI = function(frame)
         this.Ai.frameMove(frame);
 }
 
-Player.prototype.checkVulnerable = function(frame)
+Player.prototype.isVulnerable = function()
 {
     if(this.isCurrentMoveAttack()
+        && !this.hasInvulnerableFlag()
         && !this.isCurrentMoveProjectile()
         && !this.IsInAttackFrame
         && !this.isBlocking()
@@ -708,6 +710,15 @@ Player.prototype.checkVulnerable = function(frame)
         && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE)
         )
     {
+        return true;
+    }
+    return false;    
+}
+
+Player.prototype.checkVulnerable = function(frame)
+{
+    if(this.isVulnerable())
+    {
         this.onVulnerableFn(frame,this.getFrontX(),this.getMidY());
         return true;
     }
@@ -716,7 +727,7 @@ Player.prototype.checkVulnerable = function(frame)
 
 }
 
-Player.prototype.checkFloater = function(frame)
+Player.prototype.isFloater = function(frame)
 {
     if(!!this.isAirborne()
         /*&& !this.isCurrentMoveAttack()*/
@@ -729,6 +740,16 @@ Player.prototype.checkFloater = function(frame)
         && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
         && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE))
     {
+        return true;
+    }
+
+    return false;
+}
+
+Player.prototype.checkFloater = function(frame)
+{
+    if(!!this.isFloater())
+    {
         this.onFloatingFn(frame,this.getFrontX(),this.getMidY());
         return true;
     }
@@ -740,6 +761,9 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
 {
     if(!this.IsPaused)
     {
+        if(!this.isCurrentMoveAttack())
+            this.onAttackStateChanged(null,ATTACK_STATE.NOT_AN_ATTACK);
+        this.doAnimationAlerts();
         if(!!this.TeleportFramesLeft)
             this.advanceTeleportation(frame);
         this.decreaseDizziness(frame);
@@ -793,6 +817,7 @@ Player.prototype.preRender = function(frame)
 Player.prototype.frameMove = function(frame,stageX,stageY)
 {
     this.LastY = this.Y;
+    this.LastX = this.X;
     this.checkDirection();
     if(this.IsSliding)
         this.slide(frame);

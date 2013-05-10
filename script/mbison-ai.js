@@ -480,7 +480,7 @@
         }
         
         //react to a vulnerable enemy
-        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker))
+        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker, true))
         {
             if(!!isEnemyVulernerable)
             {
@@ -535,7 +535,7 @@
         if(!this.AI.Player.isMobile())
             return retVal;
 
-        if(!!isEnemyVulernerable && this.AI.Player.isFacingPlayer(attacker))
+        if(!!isEnemyVulernerable && this.AI.Player.isFacingPlayer(attacker, true))
         {
             retVal = true;
 

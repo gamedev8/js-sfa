@@ -156,8 +156,8 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartQuickMatch()
 {
-    user1_.setChar(CHARACTERS.AKUMA,false,false);
-    user2_.setChar(CHARACTERS.KEN,false,false);
+    user1_.setChar(CHARACTERS.KEN,false,false);
+    user2_.setChar(CHARACTERS.AKUMA,false,true);
 
     game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["ken"]);
 }

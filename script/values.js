@@ -350,6 +350,7 @@ var ATTACK_STATE = {
     ,HIT:2
     ,BLOCKED:3
     ,DONE:4
+    ,NOT_AN_ATTACK:5
 };
 
 
