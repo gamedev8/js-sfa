@@ -35,7 +35,7 @@
                 case 4: { return ["images/misc/misc/char-akuma-r.png"]; break;}
                 case 5: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
                 case 6: { return ["images/misc/misc/char-mbison-r.png","images/misc/misc/char-sagat-r.png"]; break;}
-                case 7: { return ["images/misc/misc/char-akuma-r.png","images/misc/misc/char-akuma-r.png"]; break;}
+                case 7: { return ["images/misc/misc/char-akuma-r.png","images/misc/misc/char-akuma-r.png","images/misc/misc/char-akuma-r.png"]; break;}
                 default : { return ["images/misc/misc/question-0.png"]; break;}
             }
         }
@@ -53,7 +53,7 @@
             case 4: { return [CHARACTERS.AKUMA]; break;}
             case 5: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
             case 6: { return [CHARACTERS.MBISON,CHARACTERS.SAGAT]; break;}
-            case 7: { return [CHARACTERS.AKUMA,CHARACTERS.AKUMA]; break;}
+            case 7: { return [CHARACTERS.AKUMA,CHARACTERS.AKUMA,CHARACTERS.AKUMA]; break;}
             default : { return [CHARACTERS.RYU]; break;}
         }
 

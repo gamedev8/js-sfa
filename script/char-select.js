@@ -582,7 +582,7 @@ var CreateCharSelect = function(users)
         return teamB_;
     }
 
-    CharSelect.prototype.addAiUser = function(team, otherTeam)
+    CharSelect.prototype.addAiUser = function(team, otherTeam, ch)
     {
         var playerIndex = 0;
         for(var j = 2; j < users.length; ++j)
@@ -594,14 +594,16 @@ var CreateCharSelect = function(users)
             }
         }
         var teamMember = users[playerIndex];
-        var ch = CHARACTERS.RYU;
-
-        var isRyu = team.some(function(a) { return (users[a].Selected == CHARACTERS.RYU); });
-        if(!!isRyu)
-            ch = CHARACTERS.KEN;
-        else
+        if(!ch)
+        {
             ch = CHARACTERS.RYU;
 
+            var isRyu = team.some(function(a) { return (users[a].Selected == CHARACTERS.RYU); });
+            if(!!isRyu)
+                ch = CHARACTERS.KEN;
+            else
+                ch = CHARACTERS.RYU;
+        }
         var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
 
         teamMember.setChar(ch,isAlternate,true);
