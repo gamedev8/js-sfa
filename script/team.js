@@ -26,6 +26,7 @@ var CreateTeam = function(num)
     Team.prototype.getGame = function() { return game_; }
     Team.prototype.getPlayer = function(value) { return this.getPlayers()[value]; }
     Team.prototype.getPlayers = function() { return players_; }
+    Team.prototype.getNbPlayers = function() { return nbPlayers_; }
     Team.prototype.getIsAI = function() { return isAI_; }
     Team.prototype.setPlayers = function(value)
     {

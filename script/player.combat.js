@@ -62,10 +62,10 @@ Player.prototype.hasInvulnerableFlag = function()
 {
     var retVal = this.Flags.Player.has(PLAYER_FLAGS.INVULNERABLE)
                 || this.Flags.Player.has(PLAYER_FLAGS.SUPER_INVULNERABLE)
-                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_ATTACKS
-                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_COLLISIONS))
+                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_ATTACKS)
+                || this.Flags.Player.has(PLAYER_FLAGS.IGNORE_COLLISIONS)
         ;
-    return !retVal;
+    return !!retVal;
 }
 
 Player.prototype.isThrowable = function()
@@ -435,7 +435,7 @@ Player.prototype.clearProjectiles = function()
     }
 }
 
-/*Allows the players projectile to advance*/
+//Allows the players projectile to advance
 Player.prototype.handleProjectiles = function(frame,stageX,stageY)
 {
     this.HasActiveProjectiles = false;
@@ -451,7 +451,7 @@ Player.prototype.handleProjectiles = function(frame,stageX,stageY)
     }
 }
 
-/*Handles attacking players on the opposing team*/
+//Handles attacking players on the opposing team
 Player.prototype.handleAttack = function(frame, moveFrame)
 {
     var hitPoints = null;
@@ -513,7 +513,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         ,UseCurrentJump:this.CurrentAnimation.Animation.UseCurrentJump
     };
 
-    var baseDamage = moveFrame.BaseDamage;
+    var baseDamage = moveFrame.BaseDamage * this.getDamageMultiplier();
     if(!!this.User && this.User.isInStoryMode())
         baseDamage *= Math.max(1 - ((8 * this.User.getStoryModeLevel()) / 100),0.25);
 
@@ -521,7 +521,12 @@ Player.prototype.handleAttack = function(frame, moveFrame)
     this.attackFn(moveFrame.HitStop,moveFrame.HitID,this.CurrentAnimation.ID,this.CurrentAnimation.Animation.MaxNbHits,frame,moveFrame.HitPoints,moveFrame.FlagsToSend,moveFrame.AttackFlags,baseDamage,this.CurrentAnimation.Animation.OverrideFlags,moveFrame.EnergyToAdd,this.CurrentAnimation.Animation.BehaviorFlags,this.CurrentAnimation.Animation.InvokedAnimationName,moveFrame.FlagsToSet.HitSound,moveFrame.FlagsToSet.BlockSound,moveFrame.HitStop,otherParams);
 }
 
-/*If the player gets hit - this function must be called to set all of the details of the hit*/
+Player.prototype.getDamageMultiplier = function()
+{
+
+}
+
+//If the player gets hit - this function must be called to set all of the details of the hit
 Player.prototype.setRegisteredHit = function(attackFlags,hitState,flags,frame,damage,energyToAdd,isGrapple,isProjectile,hitX,hitY,attackDirection,who,hitID,attackID,moveOverrideFlags,otherPlayer,fx,fy,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,maxHits,otherParams)
 {
     this.LastHitFrame[who] = hitID;
@@ -689,8 +694,9 @@ Player.prototype.clearDizzy = function()
 Player.prototype.changeDizzy = function(value)
 {
     if(this.isDead())
-        return;
+        return 0;
     this.DizzyValue = Math.max(this.DizzyValue + value, 0);
+    return this.DizzyValue;
 }
 Player.prototype.getDizzyValue = function(value)
 {
@@ -717,9 +723,7 @@ Player.prototype.decreaseDizziness = function(frame)
     if(this.isDizzy() && !this.hasInvulnerableFlag())
     {
         var value = CONSTANTS.DECREASE_DIZZY;
-        this.changeDizzy(value);
-
-        if(!this.getDizzyValue())
+        if(!this.changeDizzy(value))
             this.clearDizzy();
     }
 }
@@ -912,7 +916,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     {
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        /*if any player is dead, then the whole team is dead.*/
+        //if any player is dead, then the whole team is dead.
         this.forceTeamLose(frame,attackDirection);
         var ignoreDeadAnimation = false;
         if(!!this.isBeingGrappled())
@@ -1219,6 +1223,7 @@ Player.prototype.getDizzy = function(attackFlags,hitState,flags,frame,damage,isP
         this.spawnDizzy(frame);
         this.queueDizzy();
         this.MaxDizzyValue += CONSTANTS.DIZZY_INC;
+        this.IgnoreDeadAnimation = true;
     }
 }
 
@@ -1240,6 +1245,7 @@ Player.prototype.takeTrip = function(attackFlags,hitState,flags,frame,damage,isP
         var direction = this.getAttackDirection(attackDirection);
         this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
         this.performJump(direction * move.Vx * fx,move.Vy * fy);
+        this.IgnoreDeadAnimation = true;
     }
 }
 /*Player falls*/
@@ -1280,6 +1286,7 @@ Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProj
             this.setCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.Direction, AttackDirection:direction, Vx:move.Vx * fx, Vy:move.Vy * fy});
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
         this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
+        this.IgnoreDeadAnimation = true;
     }
 }
 /*Player gets knocked down*/
@@ -1294,6 +1301,7 @@ Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,is
             this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
         this.Flags.Pose.add(POSE_FLAGS.AIRBORNE);
         this.performJump(direction * move.Vx * fx,move.Vy * fy,undefined,undefined,undefined,undefined,undefined,!isProjectile);
+        this.IgnoreDeadAnimation = true;
     }
 }
 /*Player turns blue and gets knocked down*/
@@ -1311,6 +1319,7 @@ Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damag
         this.Flags.Player.add(PLAYER_FLAGS.BLUE_FIRE);
         if(!ignoreSound)
             this.queueLightFireSound();
+        this.IgnoreDeadAnimation = true;
     }
 }
 /*Player turns red and gets knocked down*/
@@ -1333,6 +1342,7 @@ Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage
             else
                 this.queueLightFireSound();
         }
+        this.IgnoreDeadAnimation = true;
     }
 }
 /*Player takes a hit while in the air*/

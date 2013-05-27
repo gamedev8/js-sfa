@@ -59,6 +59,7 @@
         <br />
         <br /><span id="spnStepFrame" class="step-frame">Press [O] for next frame</span>
         <br /><span id="spnResume" class="resume">Press [P] to resume</span>
+        <br />
     </div>
     <div>
         <br /><span id="spnMsg"></span>
@@ -68,7 +69,8 @@
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div id="pnlMenu" class="menu">
-        <input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />
+        <br /><input type="checkbox" name="chkTeamMode" id="chkTeamMode" onchange="game_.setTeamMode(this.checked);" /><label for="chkTeamMode">Team Mode<br />(Use on the character select screen!)</label>
+        <br /><input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />
     </div>
     <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
@@ -84,6 +86,7 @@
     <script type="text/javascript">
         var __debugMode = false;
         var __noDamage = false;
+
         if(!__debugMode)
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "none";

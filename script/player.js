@@ -176,6 +176,13 @@ Player.prototype.loadAssets = function(name,folder,loadProjectiles)
 
 Player.prototype.sortAnimations = function()
 {
+    //block must have a higher priority than other moves with the same number of button presses!
+    for(var i = 0; i < this.Moves.length; ++i)
+    {
+        if(this.Moves[i].BaseAnimation.Name == "block"){ this.Moves[i].ButtonCount = 1.1; }
+        else if(this.Moves[i].BaseAnimation.Name == "crouch block"){ this.Moves[i].ButtonCount = 1.1; }
+    }
+
     this.Throws.sort(function(a,b) {
             return b.ButtonCount - a.ButtonCount;
         });

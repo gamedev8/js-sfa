@@ -758,6 +758,9 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        if(!this.isDead())
+            this.IgnoreDeadAnimation = false;
+
         this.Flags.Juggle.clear();
         this.CurrentAnimation.ID = _c3(this.Id,this.CurrentAnimation.Animation.BaseAnimation.Name,game_.getCurrentFrame());
 
@@ -966,8 +969,12 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     
     if(!!newFrame && !this.CurrentFrame)
         this.IsNewFrame = true;
-    else if(!!newFrame && !!this.CurrentFrame && newFrame.ID != this.CurrentFrame.ID)
-        if(!!newFrame.RightSrc && !!this.CurrentFrame.RightSrc && spriteLookup_.getLeft(newFrame.RightSrc) != spriteLookup_.getLeft(this.CurrentFrame.RightSrc))
+    else if(!!newFrame 
+        && !!this.CurrentFrame 
+        && newFrame.ID != this.CurrentFrame.ID
+        && !!newFrame.RightSrc 
+        && !!this.CurrentFrame.RightSrc 
+        && spriteLookup_.getLeft(newFrame.RightSrc) != spriteLookup_.getLeft(this.CurrentFrame.RightSrc))
             this.IsNewFrame = true;
 
     var isNewSound = !!newFrame

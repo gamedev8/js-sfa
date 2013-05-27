@@ -9,6 +9,8 @@ var HEALTHBAR =
 };
 var CreateHealthBar = function(pnlHealthbarID,team)
 {
+    var damageMultiplier_ = 1;
+
     var HealthBar = function()
     {
         this.Max = HEALTHBAR.MAX;
@@ -87,10 +89,17 @@ var CreateHealthBar = function(pnlHealthbarID,team)
         this.LifeElement.style.width = this.Amount + "px";
     }
 
-    /*changes healthbar*/
+    HealthBar.prototype.setDamageMultiplier = function(amount)
+    {
+        damageMultiplier_ = Math.max(amount,0);
+    }
+
+    //changes healthbar
     HealthBar.prototype.change = function(delta)
     {
         /*return this.Amount;*/
+
+        delta *= damageMultiplier_;
 
         var newAmount = Math.min(Math.max(this.Amount - delta,0), this.Max);
         var damage = this.Amount - newAmount;

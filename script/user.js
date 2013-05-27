@@ -1,6 +1,6 @@
 ﻿var CreateStoryMode = function()
 {
-    var levelsPassed_ = [false,false,false,false,false,false,false];
+    var levelsPassed_ = [false,false,false,false,false,false,false,false];
     var level_ = 0;
 
     var StoryModeHandler = function()
@@ -34,7 +34,8 @@
                 case 3: { return ["images/misc/misc/char-mbison-r.png"]; break;}
                 case 4: { return ["images/misc/misc/char-akuma-r.png"]; break;}
                 case 5: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
-                case 6: { return ["images/misc/misc/char-ryu-r.png","images/misc/misc/char-ken-r.png"]; break;}
+                case 6: { return ["images/misc/misc/char-mbison-r.png","images/misc/misc/char-sagat-r.png"]; break;}
+                case 7: { return ["images/misc/misc/char-akuma-r.png","images/misc/misc/char-akuma-r.png"]; break;}
                 default : { return ["images/misc/misc/question-0.png"]; break;}
             }
         }
@@ -51,7 +52,8 @@
             case 3: { return [CHARACTERS.MBISON]; break;}
             case 4: { return [CHARACTERS.AKUMA]; break;}
             case 5: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
-            case 6: { return [CHARACTERS.RYU,CHARACTERS.KEN]; break;}
+            case 6: { return [CHARACTERS.MBISON,CHARACTERS.SAGAT]; break;}
+            case 7: { return [CHARACTERS.AKUMA,CHARACTERS.AKUMA]; break;}
             default : { return [CHARACTERS.RYU]; break;}
         }
 
@@ -84,6 +86,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad
     this.Team = null;
     this.Player = null;
     this.Selected = null;
+    this.SelectScreenData = {};
     this.changeCharacterFn = null;
     this.Animations = {};
     this.NbFrames = 0;
@@ -493,6 +496,7 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
                     this.RandomCharFace.Element.style.display = "none";
                 }
                 this.showCharacter();
+                this.SelectScreenData = sel;
             }
             else
             {

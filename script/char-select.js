@@ -52,9 +52,11 @@ var CreateCharSelect = function(users)
 
         for(var i = 2; i < users.length; ++i)
         {
-            if((users[i].Team == 1) && !users[0].isRequestingCharSelect())
+            if(!!users[i].IsAI)
+                users[i].reset();
+            if((users[i].Team == 1) && !users[i].IsAI && !users[0].isRequestingCharSelect())
                 teamA_.push(i);
-            else if((users[i].Team == 2) && !users[1].isRequestingCharSelect())
+            else if((users[i].Team == 2) && !users[i].IsAI && !users[1].isRequestingCharSelect())
                 teamB_.push(i);
         }
 
@@ -168,6 +170,9 @@ var CreateCharSelect = function(users)
 
     CharSelect.prototype.getRow = function(user)
     {
+        if(user.SelectScreenData.Row !== undefined)
+            return user.SelectScreenData.Row
+
         if((user.Selected <= this.CharsRow1.Max) && (user.Selected >= this.CharsRow1.Min))
             return CONSTANTS.ROW1;
         else if((user.Selected <= this.CharsRow2.Max) && (user.Selected >= this.CharsRow2.Min))
@@ -178,6 +183,9 @@ var CreateCharSelect = function(users)
 
     CharSelect.prototype.getColumn = function(user)
     {
+        if(user.SelectScreenData.Col !== undefined)
+            return user.SelectScreenData.Col;
+
         if(-1 < this.CharsCol1.indexOf(user.Selected))
             return CONSTANTS.COL1;
         else if(-1 < this.CharsCol2.indexOf(user.Selected))
@@ -488,7 +496,7 @@ var CreateCharSelect = function(users)
 
         var chooseCharacterFn = function(thisValue)
         {
-            return function(direction)
+            return function()
             {
                 thisValue.queueUser1ChooseSound();
                 this.IsCharSelected ? this.getName() : "";
@@ -541,11 +549,21 @@ var CreateCharSelect = function(users)
 
         if(teamA_.some(function(a) { return users[a].isInStoryMode(); }))
         {
+            if(game_.isTeamMode() && teamA_.length == 1)
+            {
+                this.addAiUser(teamA_,teamB_);
+            }
+
             this.LastPicked = users[teamB_[0]].getName();
             this.showNextFoe(users[teamB_[0]].Selected);
         }
         else if(teamB_.some(function(a) { return users[a].isInStoryMode(); }))
         {
+            if(game_.isTeamMode() && teamA_.length == 1)
+            {
+                this.addAiUser(teamB_,teamA_);
+            }
+
             this.LastPicked = users[teamA_[0]].getName();
             this.showNextFoe(users[teamA_[0]].Selected);
         }
@@ -562,6 +580,32 @@ var CreateCharSelect = function(users)
         if(teamB_.length == 0)
             teamB_ = this.getAiTeam(teamA_);
         return teamB_;
+    }
+
+    CharSelect.prototype.addAiUser = function(team, otherTeam)
+    {
+        var playerIndex = 0;
+        for(var j = 2; j < users.length; ++j)
+        {
+            if(!users[j].IsCharSelected)
+            {
+                playerIndex = j;
+                break;
+            }
+        }
+        var teamMember = users[playerIndex];
+        var ch = CHARACTERS.RYU;
+
+        var isRyu = team.some(function(a) { return (users[a].Selected == CHARACTERS.RYU); });
+        if(!!isRyu)
+            ch = CHARACTERS.KEN;
+        else
+            ch = CHARACTERS.RYU;
+
+        var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
+
+        teamMember.setChar(ch,isAlternate,true);
+        team.push(playerIndex);
     }
 
     CharSelect.prototype.getAiTeam = function(otherTeam)

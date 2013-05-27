@@ -397,6 +397,7 @@ var CreateMatch = function(team1,team2,stage)
         var onFloating             = function(thisValue,otherTeam) { return function(frame,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyFloating(frame,this,x,y); } } }
         var onEndAttackEnemies     = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyEndAttack(frame,this); } } }
         var onDizzy                = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyDizzy(frame,this); } } }
+        var getDamageMultiplier    = function(thisValue,team)      { return 1; }
 
         var otherTeam = null;
         var myTeam = null;
@@ -424,6 +425,7 @@ var CreateMatch = function(team1,team2,stage)
         player.setupInfo(team,dir);
         player.getHealthFn = getHealth(this);
         player.getEnergyFn = getEnergy(this);
+        player.getDamageMultiplier = getDamageMultiplier(this, myTeam);
 
         player.onStartAttackEnemiesFn = onStartAttackEnemies(this,otherTeam);
         player.onContinueAttackEnemiesFn = onContinueAttackEnemies(this,otherTeam);
@@ -459,13 +461,16 @@ var CreateMatch = function(team1,team2,stage)
         faceoff_.init();
         announcer_.init();
         teamA_.setPlayers(team1);
+        var teamADamageMultiplier = 1 / teamA_.getNbPlayers();
         teamB_.setPlayers(team2);
+        var teamBDamageMultiplier = 1 / teamB_.getNbPlayers();
         this.initText();
         /*init team 1*/
         for(var i = 0; i < teamA_.getPlayers().length; ++i)
         {
             this.setupPlayer(teamA_.getPlayer(i),CONSTANTS.TEAM1);
             teamA_.getPlayer(0).setX(STAGE.START_X);
+            teamA_.getPlayer(i).getDamageMultiplier = function() { return teamADamageMultiplier; }
         }
         if(!!teamA_.getPlayer(0))
         {
@@ -476,11 +481,12 @@ var CreateMatch = function(team1,team2,stage)
         for(var i = 0; i < teamB_.getPlayers().length; ++i)
         {
             this.setupPlayer(teamB_.getPlayer(i),CONSTANTS.TEAM2);
+            teamB_.getPlayer(0).setX(STAGE.START_X);
+            teamB_.getPlayer(i).getDamageMultiplier = function() { return teamBDamageMultiplier; }
         }
         if(!!teamB_.getPlayer(0))
         {
             faceoff_.setTeamB(teamB_.getPlayer(0).Name);
-            teamB_.getPlayer(0).setX(STAGE.START_X);
         }
 
         /*set the starting locations for each player*/

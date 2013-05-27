@@ -48,6 +48,7 @@ var CreateGame = function()
     var match_ = null;
     var maxWinsPerMatch_ = 2;
     var resetSpeedAtFrame_ = 0;
+    var enableTeamMode_ = false;
 
     //Encapulates a new game
     var Game = function ()
@@ -59,6 +60,8 @@ var CreateGame = function()
         this.VCR = vcr_;
     }
 
+    Game.prototype.isTeamMode = function() { return enableTeamMode_; }
+    Game.prototype.setTeamMode = function(value) { enableTeamMode_ = value; }
     Game.prototype.gameLoopState = function() { return gameLoopState_; }
     Game.prototype.isRecording = function() { return vcr_.isRecording(); }
     Game.prototype.isPlayingVHS = function() { return vcr_.isPlaying(); }
@@ -69,7 +72,12 @@ var CreateGame = function()
     Game.prototype.getMaxWinsPerMatch = function() { return maxWinsPerMatch_; }
     Game.prototype.getMatch = function() { return match_; }
     Game.prototype.getCharSelect = function() { return charSelect_; }
-
+    Game.prototype.getGlobalDamageMultiplier = function()
+    {
+        if(!!enableTeamMode_)
+            return CONSTANTS.TEAMMODE_DAMAGE_MULTIPLIER;
+        return 1;
+    }
     Game.prototype.startRandomMatch = function()
     {
         var chars = [CHARACTERS.RYU,CHARACTERS.KEN,CHARACTERS.MBISON,CHARACTERS.SAGAT,CHARACTERS.AKUMA];
@@ -80,9 +88,20 @@ var CreateGame = function()
 
         var p1 = chars.splice(getRand(chars.length),1)[0];
         var p2 = chars.splice(getRand(chars.length),1)[0];
-
         user3_.setChar(p1,false,true);
         user4_.setChar(p2,p1 == p2,true);
+
+        if(!!enableTeamMode_)
+        {
+            var p3 = chars.splice(getRand(chars.length),1)[0];
+            var p4 = chars.splice(getRand(chars.length),1)[0];
+
+            user5_.setChar(p3,(p3 == p1) || (p3 == p2),true);
+            user6_.setChar(p4,(p4 == p1) || (p4 == p2) || (p4 == p3),true);
+
+            t1 = [2,3];
+            t2 = [4,5];
+        }
 
         var stage = stages_[stages[getRand(stages.length)]];
 

@@ -137,46 +137,49 @@ function InitUsers()
     delete window.user4_;
     delete window.user5_;
     delete window.user6_;
+    delete window.user7_;
+    delete window.user8_;
 
     var val = 10000000;
 
     window.user1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,KEYS.CNTRL,KEYS.ENTER);
     window.user2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.N,KEYS.M,KEYS.COMMA,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
-    window.user3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
+    //window.user3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
 
+    val += 100;
+    window.user3_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
     val += 100;
     window.user4_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
     val += 100;
     window.user5_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
     val += 100;
     window.user6_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
+    val += 100;
+    window.user7_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
+    val += 100;
+    window.user8_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
 }
 InitUsers();
 
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
-function StartQuickMatch()
+function StartBattle()
 {
-    user1_.setChar(CHARACTERS.KEN,false,false);
-    user2_.setChar(CHARACTERS.AKUMA,false,true);
+    user3_.setChar(CHARACTERS.AKUMA,false,true);
+    user4_.setChar(CHARACTERS.SAGAT,false,true);
+    user5_.setChar(CHARACTERS.RYU,true,true);
+    user6_.setChar(CHARACTERS.KEN,true,true);
 
-    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["ken"]);
+    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[2,3],[4,5], stages_["ken"]);
 }
 
 //multi player battle 
-function StartDramaticBattle()
+function Test()
 {
-    user1_.setChar(CHARACTERS.RYU);
-    user2_.setChar(CHARACTERS.MBISON);
+    user1_.setChar(CHARACTERS.AKUMA);
+    user2_.setChar(CHARACTERS.RYU);
+    user3_.setChar(CHARACTERS.KEN);
 
-    game_.startMatch(false,[0],[1], stages_["mbison"]);
-}
-
-function StartBattle()
-{
-    if(!__debugMode)
-        StartQuickMatch();
-    else
-        StartQuickMatch();
+    game_.startMatch(false,[0],[1,2], stages_["ryu"]);
 }
 
 //Goes to the character selection screen
