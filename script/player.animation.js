@@ -758,6 +758,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
     var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
+        this.IsFirstFrame = true;
         if(!this.isDead())
             this.IgnoreDeadAnimation = false;
 
@@ -967,7 +968,9 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
 
     this.IsNewFrame = false;
     
-    if(!!newFrame && !this.CurrentFrame)
+    if(!!this.IsFirstFrame)
+        this.IsNewFrame = true;
+    else if(!!newFrame && !this.CurrentFrame)
         this.IsNewFrame = true;
     else if(!!newFrame 
         && !!this.CurrentFrame 
@@ -984,6 +987,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     this.CurrentFrame = newFrame;
     if(!!newFrame)
     {
+        this.IsFirstFrame = false;
         if(this.CurrentAnimation.Animation.IsSuperMove)
         {
             this.stopSlide(true);
