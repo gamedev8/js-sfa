@@ -491,9 +491,9 @@ var CreateMatch = function(team1,team2,stage)
 
         /*set the starting locations for each player*/
         for(var i = 1, length = teamA_.getPlayers().length; i < length; ++i)
-            teamA_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+            teamA_.getPlayer(i).setX(STAGE.START_X - (STAGE.START_X_OFFSET * i));
         for(var i = 1, length = teamB_.getPlayers().length; i < length; ++i)
-            teamB_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+            teamB_.getPlayer(i).setX(STAGE.START_X - (STAGE.START_X_OFFSET * i));
 
         stage_.init();
         teamA_.init();

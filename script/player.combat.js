@@ -401,7 +401,7 @@ Player.prototype.canBeGrappled = function(x,y,distance,airborneFlags,isAirborne,
 /*Forced computation on the player who is being thrown by this player*/
 Player.prototype.handleGrapple = function(forcedFrameIndex,frame,stageX,stageY)
 {
-    if(!!this.GrappledPlayer.CurrentAnimation.Animation && !!this.GrappledPlayer.isBeingGrappled())
+    if(!!this.GrappledPlayer && !!this.GrappledPlayer.CurrentAnimation.Animation && !!this.GrappledPlayer.isBeingGrappled())
     {
         var forcedFrame = this.GrappledPlayer.CurrentAnimation.Animation.BaseAnimation.Frames[forcedFrameIndex];
         if(!!forcedFrame)

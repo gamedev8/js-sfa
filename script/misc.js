@@ -178,8 +178,9 @@ function Test()
     user1_.setChar(CHARACTERS.AKUMA);
     user2_.setChar(CHARACTERS.RYU);
     user3_.setChar(CHARACTERS.KEN);
+    user4_.setChar(CHARACTERS.SAGAT);
 
-    game_.startMatch(false,[0],[1,2], stages_["ryu"]);
+    game_.startMatch(false,[0,1],[2,3], stages_["ryu"]);
 }
 
 //Goes to the character selection screen
