@@ -325,13 +325,13 @@ var CreateMatch = function(team1,team2,stage)
             {
                 teamA_.getPlayer(i).reset(true);
                 teamA_.getPlayer(i).setDirection(-1);
-                teamA_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                teamA_.getPlayer(i).setX(STAGE.START_X - (STAGE.START_X_OFFSET * i));
             }
             for(var i = 0; i < teamB_.getPlayers().length; ++i)
             {
                 teamB_.getPlayer(i).reset(true);
                 teamB_.getPlayer(i).setDirection(1);
-                teamB_.getPlayer(i).setX(STAGE.START_X + (STAGE.START_X_OFFSET * i));
+                teamB_.getPlayer(i).setX(STAGE.START_X - (STAGE.START_X_OFFSET * i));
             }
 
             this.setRoundOver(false);
