@@ -325,7 +325,11 @@ var CreateGenericAnimation = function(name,frames,moveFlags,requiredState,state,
     GenericAnimation.prototype.hasUserData = function(index)
     {
         var frame = this.BaseAnimation.Frames[index];
-        return !!frame.UserData && (frame.UserData.length > 0);
+        if(!frame)
+        {
+            debugger;
+        }
+        return !!frame && !!frame.UserData && (frame.UserData.length > 0);
     }
     GenericAnimation.prototype.addUserDataToFrame = function(index,data)
     {

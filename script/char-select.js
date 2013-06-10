@@ -749,9 +749,9 @@ var CreateCharSelect = function(users)
     {
         if(!this.IsDone)
         {
-            if((!!users[0].IsRequestingCharSelect))
+            if(!users[0].IsInCharSelect && !!users[0].IsRequestingCharSelect)
                 this.addNewChallenger(users[0],1);
-            if((!!users[1].IsRequestingCharSelect))
+            if(!users[1].IsInCharSelect && !!users[1].IsRequestingCharSelect)
                 this.addNewChallenger(users[1],2);
             this.check(frame);
         }

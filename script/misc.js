@@ -24,8 +24,8 @@ var StageParams = function(key, name, bg0XOffset, maxLeftScroll, maxRightScroll,
     this.Key = key;
     this.Name = name;
     this.Bg0XOffset = bg0XOffset;
-    this.Bg0YOffset = bg0YOffset || 0;
-    this.Bg1YOffset = bg1YOffset || 0;
+    this.Bg0YOffset = bg0YOffset || -21;
+    this.Bg1YOffset = bg1YOffset || -41;
     this.MaxLeftScroll = maxLeftScroll;
     this.MaxRightScroll = maxRightScroll;
     this.Bg0Img = "images/misc/stage/" + name + ".back.png";
@@ -33,13 +33,15 @@ var StageParams = function(key, name, bg0XOffset, maxLeftScroll, maxRightScroll,
 }
 
 var stages_ = {};
-stages_["ken"] = new StageParams("ken", "ken", 129, -62.5, 322.5, -21, -41);
-stages_["ryu"] = new StageParams("ryu", "chunli", -192, -382, -2, -21, -41);
-stages_["dramatic_battle"] = new StageParams("dramatic_battle", "mbison", -192, -382, -2, -21, -41);
-stages_["mbison"] = new StageParams("mbison", "mbison", -192, -382, -2, -21, -41);
-stages_["akuma"] = new StageParams("akuma", "akuma", -192, -382, -2, -21, -41);
-stages_["sodom"] = new StageParams("sodom", "sodom", -192, -382, -2, -21, -41);
-stages_["sagat"] = new StageParams("sagat", "sagat", -192, -382, -2, -21, -41);
+stages_["ryu"] = new StageParams("ryu", "ryu", -192, -382, -2);
+stages_["ken"] = new StageParams("ken", "ken", 129, -62.5, 322.5);
+stages_["chunli"] = new StageParams("chunli", "chunli", -192, -382, -2);
+stages_["guy"] = new StageParams("guy", "guy", -192, -382, -2);
+stages_["dramatic_battle"] = new StageParams("dramatic_battle", "mbison", -192, -382, -2);
+stages_["mbison"] = new StageParams("mbison", "mbison", -192, -382, -2);
+stages_["akuma"] = new StageParams("akuma", "akuma", -192, -382, -2);
+stages_["sodom"] = new StageParams("sodom", "sodom", -192, -382, -2);
+stages_["sagat"] = new StageParams("sagat", "sagat", -192, -382, -2);
 
 
 /*******************************************************************************************************************************/
@@ -143,8 +145,8 @@ function InitUsers()
     var val = 10000000;
 
     window.user1_ = game_.addUser1(KEYS.ARROW_RIGHT,KEYS.ARROW_UP,KEYS.ARROW_LEFT,KEYS.ARROW_DOWN,KEYS.A,KEYS.S,KEYS.D,KEYS.Z,KEYS.X,KEYS.C,KEYS.Q,KEYS.CNTRL,KEYS.ENTER);
-    window.user2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.N,KEYS.M,KEYS.COMMA,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
-    //window.user3_ = game_.addUser(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
+    //window.user2_ = game_.addUser2(KEYS.NUMPAD_6,KEYS.NUMPAD_8,KEYS.NUMPAD_4,KEYS.NUMPAD_5,KEYS.H,KEYS.J,KEYS.K,KEYS.N,KEYS.M,KEYS.COMMA,KEYS.L,KEYS.NUMPAD_7,KEYS.NUMPAD_9);
+    window.user2_ = game_.addUser2(GAMEPAD.RIGHT,GAMEPAD.UP,GAMEPAD.LEFT,GAMEPAD.DOWN,GAMEPAD.LS0,GAMEPAD.B3,GAMEPAD.B2,GAMEPAD.RS0,GAMEPAD.B1,GAMEPAD.B0,GAMEPAD.RS1,GAMEPAD.SELECT,GAMEPAD.START,0);
 
     val += 100;
     window.user3_ = game_.addUser(val+11,val+12,val+13,val+14,val+15,val+16,val+17,val+18,val+19,val+20,val+21);
@@ -164,12 +166,10 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartBattle()
 {
-    user3_.setChar(CHARACTERS.AKUMA,false,true);
-    user4_.setChar(CHARACTERS.SAGAT,false,true);
-    user5_.setChar(CHARACTERS.RYU,true,true);
-    user6_.setChar(CHARACTERS.KEN,true,true);
+    user1_.setChar(CHARACTERS.AKUMA,false,false);
+    user2_.setChar(CHARACTERS.KEN,false,false);
 
-    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[2,3],[4,5], stages_["ken"]);
+    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["chunli"]);
 }
 
 //multi player battle 
