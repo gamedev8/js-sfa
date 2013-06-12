@@ -687,7 +687,7 @@ Player.prototype.createRyu = function(user)
     }
 
 
-    var jumpX = 38;
+    var jumpX = 32;
     var jumpY = 200;
 
     var jump = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"jump",0,[BUTTONS.JUMP],95,false);
