@@ -33,6 +33,7 @@ var StageParams = function(key, name, bg0XOffset, maxLeftScroll, maxRightScroll,
 }
 
 var stages_ = {};
+stages_["rose"] = new StageParams("rose", "rose", -192, -382, -2);
 stages_["ryu"] = new StageParams("ryu", "ryu", -192, -382, -2);
 stages_["ken"] = new StageParams("ken", "ken", 129, -62.5, 322.5);
 stages_["chunli"] = new StageParams("chunli", "chunli", -192, -382, -2);
@@ -169,7 +170,7 @@ function StartBattle()
     user1_.setChar(CHARACTERS.AKUMA,false,false);
     user2_.setChar(CHARACTERS.KEN,false,false);
 
-    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["chunli"]);
+    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["rose"]);
 }
 
 //multi player battle 
