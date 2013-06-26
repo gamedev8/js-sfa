@@ -397,7 +397,7 @@ var CreateMatch = function(team1,team2,stage)
         var onFloating             = function(thisValue,otherTeam) { return function(frame,x,y) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyFloating(frame,this,x,y); } } }
         var onEndAttackEnemies     = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyEndAttack(frame,this); } } }
         var onDizzy                = function(thisValue,otherTeam) { return function(frame) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyDizzy(frame,this); } } }
-        var getDamageMultiplier    = function(thisValue,team)      { return 1; }
+        var getDamageMultiplier    = function(thisValue,team)      { return function() { return 1; } }
 
         var otherTeam = null;
         var myTeam = null;

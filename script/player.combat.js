@@ -523,7 +523,7 @@ Player.prototype.handleAttack = function(frame, moveFrame)
 
 Player.prototype.getDamageMultiplier = function()
 {
-
+    return 1;
 }
 
 //If the player gets hit - this function must be called to set all of the details of the hit

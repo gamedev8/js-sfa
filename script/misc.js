@@ -167,21 +167,21 @@ InitUsers();
 //This is more for debugging - starts a quick match right away with Ryu vs Ken
 function StartBattle()
 {
-    user1_.setChar(CHARACTERS.AKUMA,false,false);
-    user2_.setChar(CHARACTERS.KEN,false,false);
+    user1_.setChar(CHARACTERS.AKUMA,false,true);
+    user2_.setChar(CHARACTERS.KEN,false,true);
 
-    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["rose"]);
+    game_.startMatch(MATCH_STATES.PRACTICE_MODE,[0],[1], stages_["guy"]);
 }
 
 //multi player battle 
-function Test()
+function Test(ch1, ch2)
 {
-    user1_.setChar(CHARACTERS.AKUMA);
-    user2_.setChar(CHARACTERS.RYU);
-    user3_.setChar(CHARACTERS.KEN);
-    user4_.setChar(CHARACTERS.SAGAT);
+    user1_.setChar(ch1);
+    user4_.setChar(ch2,false,true);
 
-    game_.startMatch(false,[0,1],[2,3], stages_["ryu"]);
+    __noDamage = true;
+
+    game_.startMatch(false,[0],[3], stages_["guy"]);
 }
 
 //Goes to the character selection screen
