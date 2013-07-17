@@ -1,4 +1,4 @@
-﻿Array.prototype.indexOf = Array.prototype.indexOf || function(value)
+Array.prototype.indexOf = Array.prototype.indexOf || function(value)
 {
     for(var i = 0, length = this.length; i < length; ++i)
         if(this[i] === value)
