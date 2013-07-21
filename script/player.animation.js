@@ -1,7 +1,7 @@
 ﻿//Helper function - adds a projectile for the player
 Player.prototype.addProjectile = function(name,offsetX, offsetY,vx,vy)
 {
-    var projectile = CreateProjectile(this,CreateAnimation(name),CreateAnimation(name + "-disintegrate"),offsetX,offsetY,vx,vy);
+    var projectile = new Projectile(this,new Animation(0,name),new Animation(0,name + "-disintegrate"),offsetX,offsetY,vx,vy);
     this.Projectiles[this.Projectiles.length] = projectile;
     //projectile.Id = this.Id + "_" + this.Projectiles.length;
 
@@ -14,7 +14,7 @@ Player.prototype.addThrow = function(requiredState,name,duration,keySequence,pri
 {
     var key = this.Throws.length;
     this.Throws[key] = {};
-    this.Throws[key] = CreateAnimation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
+    this.Throws[key] = new Animation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
     this.Throws[key].BaseAnimation.IsThrow = true;
 
     return this.Throws[key];
@@ -26,14 +26,14 @@ Player.prototype.addAnimation = function(requiredState,name,duration,keySequence
 {
     var key = this.Moves.length;
     this.Moves[key] = {};
-    this.Moves[key] = CreateAnimation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
+    this.Moves[key] = new Animation(requiredState,name,duration,null,keySequence,null,priority,0,isAttack,allowAirBlock,behaviorFlags,invokedAnimationName);
     return this.Moves[key];
 }
 // Helper function - adds a move for the player
 Player.prototype.addGenericAnimation = function(state,team,name,moveFlags)
 {
     var key = _c4("_",state,"_",team);
-    this.OtherAnimations[key] = CreateGenericAnimation(name,[],moveFlags || MOVE_FLAGS.NONE);
+    this.OtherAnimations[key] = new GenericAnimation(name,[],moveFlags || MOVE_FLAGS.NONE);
 
     return this.OtherAnimations[key];
 }
@@ -45,7 +45,7 @@ Player.prototype.addDizzyAnimation = function(centeredOffset,topOffset)
         Direction:this.Direction
         ,StartFrame:0
         ,Element:this.DizzyElement
-        ,Animation:CreateGenericAnimation("dizzy",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
+        ,Animation:new GenericAnimation("dizzy",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
     };
     return this.OtherAnimations.Dizzy[this.OtherAnimations.Dizzy.length-1].Animation;
 }
@@ -57,7 +57,7 @@ Player.prototype.addBlueFireAnimation = function(centeredOffset,topOffset)
         Direction:this.Direction
         ,StartFrame:0
         ,Element:this.FireElement
-        ,Animation:CreateGenericAnimation("blue-fire",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
+        ,Animation:new GenericAnimation("blue-fire",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
     };
     return this.OtherAnimations.BlueFire.Animation;
 }
@@ -69,7 +69,7 @@ Player.prototype.addRedFireAnimation = function(centeredOffset,topOffset)
         Direction:this.Direction
         ,StartFrame:0
         ,Element:this.FireElement
-        ,Animation:CreateGenericAnimation("red-fire",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
+        ,Animation:new GenericAnimation("red-fire",[],MOVE_FLAGS.MOVE_TO_PLAYER,0,0,centeredOffset,topOffset,true)
     };
     return this.OtherAnimations.RedFire.Animation;
 }
@@ -87,7 +87,7 @@ Player.prototype.addDirtAnimation = function()
         Direction:this.Direction
         ,StartFrame:0
         ,Element:img
-        ,Animation:CreateGenericAnimation("dirt",[],MOVE_FLAGS.NONE)
+        ,Animation:new GenericAnimation("dirt",[],MOVE_FLAGS.NONE)
     };
 
     return this.OtherAnimations.Dirt[this.OtherAnimations.Dirt.length-1].Animation;
@@ -106,7 +106,7 @@ Player.prototype.addBigDirtAnimation = function()
         Direction:this.Direction
         ,StartFrame:0
         ,Element:img
-        ,Animation:CreateGenericAnimation("big dirt",[],MOVE_FLAGS.NONE)
+        ,Animation:new GenericAnimation("big dirt",[],MOVE_FLAGS.NONE)
     };
 
     return this.OtherAnimations.BigDirt[this.OtherAnimations.BigDirt.length-1].Animation;

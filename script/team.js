@@ -1,4 +1,4 @@
-var CreateTeam = function(num)
+var Team = function(num)
 {
     var cursor_ = 0;
     var lastCursor_ = -1;
@@ -17,6 +17,8 @@ var CreateTeam = function(num)
     var loses_ = 0;
     var draws_ = 0;
     var isAI_ = true;
+
+    if(!!Team) return new Team();
 
     var Team = function(num)
     {

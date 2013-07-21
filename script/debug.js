@@ -169,7 +169,96 @@ function GetDebugInstance(game)
             debug_.p1().CurrentFrame.ShadowOffset.X = +sx;
         if(!!+sy || sy === 0)
             debug_.p1().CurrentFrame.ShadowOffset.Y = +sy;
-   }
+    }
+
+    var selProjectile = window.document.getElementById("selProjectile");
+    var spnProjectileName = window.document.getElementById("spnProjectileName");
+    var chkCanJuggle = window.document.getElementById("chkCanJuggle");
+    var txtProjectileMaxHits = window.document.getElementById("txtProjectileMaxHits");
+    var txtProjectileHitDelay = window.document.getElementById("txtProjectileHitDelay");
+    var txtProjectileComboFlags = window.document.getElementById("txtProjectileComboFlags");
+
+
+    Debug.prototype.LoadProjectiles = function()
+    {
+        if(!debug_.p1())
+            return;
+
+        while(!!selProjectile.children[0])
+            selProjectile.removeChild(selProjectile.children[0]);
+        selProjectile.onchange = this.LoadProjectileData;
+
+        var o = window.document.createElement("option");
+        o.value = 0;
+        o.innerHTML = "-- Select One --";
+
+        selProjectile.appendChild(o);
+
+
+        for(var i = 0; i < debug_.p1().Projectiles.length; ++i)
+        {
+            var o = window.document.createElement("option");
+            o.value = i;
+            o.innerHTML = debug_.p1().Projectiles[i].Animation.BaseAnimation.Name;
+
+            selProjectile.appendChild(o);
+        }
+    }    
+
+    Debug.prototype.LoadProjectileData = function()
+    {
+        var projectileIndex = selProjectile.options[selProjectile.selectedIndex].value;
+        if(!isNaN(projectileIndex))
+        {
+            spnProjectileName.innerHTML = debug_.p1().Projectiles[projectileIndex].Animation.BaseAnimation.Name;
+            chkCanJuggle.checked = debug_.p1().Projectiles[projectileIndex].CanJuggle;
+            txtProjectileMaxHits.value = debug_.p1().Projectiles[projectileIndex].MaxHits;
+            txtProjectileHitDelay.value = debug_.p1().Projectiles[projectileIndex].DefaultLocalHitStop;
+            txtProjectileComboFlags.value = debug_.p1().Projectiles[projectileIndex].Params.Combo;
+            txtProjectileYSpeed.value = debug_.p1().Projectiles[projectileIndex].YSpeed;
+            txtProjectileXSpeed.value = debug_.p1().Projectiles[projectileIndex].XSpeed;
+        }
+    }
+
+    Debug.prototype.SaveProjectileData = function()
+    {
+        var projectileIndex = selProjectile.options[selProjectile.selectedIndex].value;
+        if(!isNaN(projectileIndex))
+        {
+            //can juggle
+            debug_.p1().Projectiles[projectileIndex].CanJuggle = chkCanJuggle.checked;
+            //xSpeed
+            var xSpeed = +txtProjectileXSpeed.value;
+            if(!!+xSpeed)
+                debug_.p1().Projectiles[projectileIndex].XSpeed = xSpeed;
+            //ySpeed
+            var ySpeed = +txtProjectileYSpeed.value;
+            if(!!+ySpeed)
+                debug_.p1().Projectiles[projectileIndex].YSpeed = ySpeed;
+            //combo flags
+            var combo = +txtProjectileComboFlags.value;
+            if(!!+combo)
+                debug_.p1().Projectiles[projectileIndex].Params.Combo = combo;
+            //maxhits
+            var maxHits = +txtProjectileMaxHits.value;
+            if(!!+maxHits)
+                debug_.p1().Projectiles[projectileIndex].MaxHits = maxHits;
+            //hit delay
+            var hitDelay = +txtProjectileHitDelay.value;
+            if(!!+hitDelay)
+            {
+                for(var i in debug_.p1().Projectiles[projectileIndex].LocalHitStopData)
+                    debug_.p1().Projectiles[projectileIndex].LocalHitStopData[i] = hitDelay;
+                debug_.p1().Projectiles[projectileIndex].DefaultLocalHitStop = hitDelay;
+            }
+        }
+        return false;
+    }
+
+    Debug.prototype.setPracticeMode = function(flag)
+    {
+        __noDamage = flag;
+    }
 
     Debug.prototype.keyCount = 1000;
 

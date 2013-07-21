@@ -159,7 +159,7 @@ var CreateCharSelect = function(users)
     CharSelect.prototype.setupAnimations = function()
     {
         animations_ = {};
-        animations_["show_next_foe"] = CreateBasicAnimation("show_next_foe",[],false);
+        animations_["show_next_foe"] = new BasicAnimation("show_next_foe",[],false);
         animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-0.png",8);
         animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-1.png",8).set({"X":10});
         animations_["show_next_foe"].addFrame(this,"images/misc/misc/question-2.png",8).set({"X":25});

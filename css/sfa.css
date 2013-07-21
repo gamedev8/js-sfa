@@ -148,3 +148,9 @@ div.team2-energy-bar-container .level-2-energy{left:196px;background-image:url(.
 div div.Text{z-index:15;position:absolute;background:Tranparent;line-height:50px;}
 div div.Text img{vertical-align:top;z-index:5000;background:Tranparent;}
 .hidden{background-color:Transparent;}
+
+.projectile-editor {float:left;}
+.projectile-editor .selected-projectile {float:left;}
+.projectile-editor .selected-projectile .item {float:left;clear:both;}
+.projectile-editor .selected-projectile .item .label {float:left; width:50px; text-align:right;}
+.projectile-editor .selected-projectile .item .input {float:left; margin-left:10px;}

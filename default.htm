@@ -69,7 +69,9 @@
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div id="pnlMenu" class="menu">
-        <br /><input type="checkbox" name="chkTeamMode" id="chkTeamMode" onchange="game_.setTeamMode(this.checked);" /><label for="chkTeamMode">Team Mode<br />(Use on the character select screen!)</label>
+        <br /><input type="checkbox" name="chkPracticeMode" id="chkPracticeMode" onchange="debug_.setPracticeMode(this.checked);" /><label for="chkPracticeMode">Pratice Mode</label>
+        <br /><input type="checkbox" name="chkTeamMode" id="chkTeamMode" onchange="game_.setTeamMode(this.checked);" />
+        <label for="chkTeamMode">Team Mode<br />(Use on the character select screen!)</label>
         <br /><input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />
     </div>
     <div id="pnlAnimationDebug" class="animation-debug">
@@ -82,6 +84,44 @@
         <br />Sx:<input id="txtShadowOffsetX" />
         <br />Sy:<input id="txtShadowOffsetY" />
         <input type="button" onclick="debug_.setFrameData()" value="Set"/>
+    </div>
+    <div id="pnlProjectiles" class="projectile-editor" style="display:none;">
+        <button onclick="debug_.LoadProjectiles()">Load Projectiles</button>
+        <select id="selProjectile"></select>
+        <div id="pnlSelectedProjectile" class="selected-projectile">
+            <div class="item">
+                <div class="label">Name:</div>
+                <div class="input"><span id="spnProjectileName"></span></div>
+            </div>
+            <div class="item">
+                <div class="label">Juggle:</div>
+                <div class="input"><input type="checkbox" id="chkCanJuggle" /></div>
+            </div>
+            <div class="item">
+                <div class="label">Max hits:</div>
+                <div class="input"><input id="txtProjectileMaxHits" /></div>
+            </div>
+            <div class="item">
+                <div class="label">Hit delay:</div>
+                <div class="input"><input id="txtProjectileHitDelay"></span></div>
+            </div>
+            <div class="item">
+                <div class="label">Combo flags:</div>
+                <div class="input"><input id="txtProjectileComboFlags"></span></div>
+            </div>
+            <div class="item">
+                <div class="label">vy:</div>
+                <div class="input"><input id="txtProjectileXSpeed"></span></div>
+            </div>
+            <div class="item">
+                <div class="label">vy:</div>
+                <div class="input"><input id="txtProjectileYSpeed"></span></div>
+            </div>
+            <div class="item">
+                <div class="label">&nbsp;</div>
+                <div class="input"><button onclick="debug_.SaveProjectileData()">Save</button></div>
+            </div>
+        </div>
     </div>
     <script type="text/javascript">
         var __debugMode = false;

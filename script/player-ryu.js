@@ -1118,7 +1118,7 @@ Player.prototype.createRyuSuperMoves = function(player)
         s_fireball.addFrame(player,0,"",folder + "/x-k1-4.png",6);
 
         /*add an animation for the fireball charge up*/
-        var fb_residue = CreateBasicAnimation("fireball charge",[],false,0,folder + "/misc-sprites.png");
+        var fb_residue = new BasicAnimation("fireball charge",[],false,0,folder + "/misc-sprites.png");
         fb_residue.addEmptyFrame(player,0,1);
         fb_residue.addFrame(player,folder + "/x-super-fireball-spark-0.png",3,0,142);
         fb_residue.addFrame(player,folder + "/x-super-fireball-spark-1.png",1,-42,98);
@@ -1164,7 +1164,7 @@ Player.prototype.createRyuSuperMoves = function(player)
         for(var trailIndex = 1; trailIndex < 3; ++trailIndex)
         {
             /*trail*/
-            var s_fireball_trail = CreateGenericAnimation("super fireball trail");
+            var s_fireball_trail = new GenericAnimation("super fireball trail");
             s_fireball_trail.addTrailFrame(player,folder + "/x-fb-0-shadow-" + trailIndex + ".png",4);
             s_fireball_trail.addTrailFrame(player,folder + "/x-fb-1-shadow-" + trailIndex + ".png",36);
             s_fireball_trail.addTrailFrame(player,folder + "/x-fb-2-shadow-" + trailIndex + ".png",4);

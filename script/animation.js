@@ -1,7 +1,4 @@
-var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
-{
-    var isThrow_ = false;
-    var BaseAnimation = function()
+    var BaseAnimation = function(frames,name,isAttack,allowAirBlock)
     {
         this.Frames = frames || [];
         this.FrameSpeed = 4;
@@ -11,6 +8,7 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
         this.lastFrameOffset = 0;
         this.NbFrames = 0;
         this.SetFramesToVulnerable = false;
+        this.IsThrow = false;
     }
 
     BaseAnimation.prototype.release = function()
@@ -20,7 +18,7 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
 
     BaseAnimation.prototype.setIsThrow = function(value)
     {
-        isThrow_ = value;
+        this.IsThrow = value;
     }
 
     /*Adds a frame to the move*/
@@ -52,13 +50,13 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
         if(shadowImage == "" && !!player)
             shadowImage = player.DefaultShadowImageSrc;
         ++player.NbFrames;
-        this.Frames[this.Frames.length] = CreateFrame(this.Frames.length,player.getNextFrameID(),shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
+        this.Frames[this.Frames.length] = new Frame(this.Frames.length,player.getNextFrameID(),shadowOffset,shadowImage,image,nbFrames,flagsToSet,flagsToClear,x,y,priority,baseDamage,frameOffset,chainProjectile,imageOffsetX,imageOffsetY,hitState,hitPoints,flagsToSend,hitID,hitStop,energyToAdd,slideForce,slideFactor);
         this.NbFrames += this.Frames[this.Frames.length - 1].Frames;
 
         var currentFrame = this.Frames[this.Frames.length-1];
         currentFrame.Vulernable = this.SetFramesToVulnerable;
 
-        if(!!isThrow_)
+        if(!!this.IsThrow)
         {
             currentFrame.FlagsToSet.Player = (currentFrame.FlagsToSet.Player || MISC_FLAGS.NONE) | PLAYER_FLAGS.INVULNERABLE;
         }
@@ -178,15 +176,13 @@ var CreateBaseAnimation = function(frames,name,isAttack,allowAirBlock)
         }
         return 0;
     }
-    return new BaseAnimation();
-}
+
 /************************************************************************/
 /************************************************************************/
 /************************************************************************/
 
-var CreateBasicBaseAnimation = function(frames,name)
-{
-    var BasicBaseAnimation = function()
+
+    var BasicBaseAnimation = function(frames,name)
     {
         this.Frames = frames || [];
         this.NbFrames = 0;
@@ -217,8 +213,7 @@ var CreateBasicBaseAnimation = function(frames,name)
         var frameOffset = this.lastFrameOffset;
 
         ++owner.NbFrames;
-        this.Frames[this.Frames.length] = CreateFrame(this.Frames.length,owner.getNextFrameID(),0,"",image,nbFrames,0,0,x || 0,y || 0,0,0,frameOffset);
+        this.Frames[this.Frames.length] = new Frame(this.Frames.length,owner.getNextFrameID(),0,"",image,nbFrames,0,0,x || 0,y || 0,0,0,frameOffset);
         this.NbFrames += this.Frames[this.Frames.length - 1].Frames;
     }
-    return new BasicBaseAnimation();
-}
+

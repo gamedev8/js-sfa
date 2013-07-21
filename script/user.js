@@ -386,7 +386,7 @@ User.prototype.init = function(isUser1)
         if(this.Selected === null)
             this.Selected = CHARACTERS.RYU;
 
-        this.Animations["select_icon"] = CreateBasicAnimation("select_icon",[],true);
+        this.Animations["select_icon"] = new BasicAnimation("select_icon",[],true);
         this.Animations["select_icon"].addFrame(this,"|images/misc/misc/p1-select-0.png",1);
         this.Animations["select_icon"].addFrame(this,"|images/misc/misc/p1-select-1.png",1);
 
@@ -404,7 +404,7 @@ User.prototype.init = function(isUser1)
         if(this.Selected === null)
             this.Selected = CHARACTERS.KEN;
 
-        this.Animations["select_icon"] = CreateBasicAnimation("select_icon",[],true);
+        this.Animations["select_icon"] = new BasicAnimation("select_icon",[],true);
         this.Animations["select_icon"].addFrame(this,"|images/misc/misc/p2-select-0.png",1);
         this.Animations["select_icon"].addFrame(this,"|images/misc/misc/p2-select-1.png",1);
 
@@ -699,38 +699,38 @@ User.prototype.addStanceAnimations = function()
 {
     if(!this.IsInitialized)
     {
-        this.Animations["ryu"] = CreateBasicAnimation("ryu_stance",[],true);
+        this.Animations["ryu"] = new BasicAnimation("ryu_stance",[],true);
         this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-0.png",5);
         this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-1.png",5);
         this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-2.png",5);
         this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-3.png",5);
         this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-2.png",5);    
         this.Animations["ryu"].addFrame(this,"images/misc/misc/ryu-r-stance-1.png",5);
-        this.Animations["ryu_selected"] = CreateBasicAnimation("ryu_selected",[],true);
+        this.Animations["ryu_selected"] = new BasicAnimation("ryu_selected",[],true);
         this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-0.png",5);
         this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-1.png",5);
         this.Animations["ryu_selected"].addFrame(this,"images/misc/misc/ryu-r-win-2-2.png",CONSTANTS.MAX_FRAME);
 
-        this.Animations["ken"] = CreateBasicAnimation("ken_stance",[],true);
+        this.Animations["ken"] = new BasicAnimation("ken_stance",[],true);
         this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-0.png",5);
         this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-1.png",5);
         this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-2.png",5);
         this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-3.png",5);
         this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-2.png",5);    
         this.Animations["ken"].addFrame(this,"images/misc/misc/ken-r-stance-1.png",5);
-        this.Animations["ken_selected"] = CreateBasicAnimation("ken_selected",[],true);
+        this.Animations["ken_selected"] = new BasicAnimation("ken_selected",[],true);
         this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-0.png",5);
         this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-1.png",5);
         this.Animations["ken_selected"].addFrame(this,"images/misc/misc/ken-r-win-2-2.png",CONSTANTS.MAX_FRAME);
 
-        this.Animations["akuma"] = CreateBasicAnimation("akuma_stance",[],true);
+        this.Animations["akuma"] = new BasicAnimation("akuma_stance",[],true);
         this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-0.png",5);
         this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-1.png",5);
         this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-2.png",5);
         this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-3.png",5);
         this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-2.png",5);    
         this.Animations["akuma"].addFrame(this,"images/misc/misc/akuma-r-stance-1.png",5);
-        this.Animations["akuma_selected"] = CreateBasicAnimation("akuma_selected",[],true);
+        this.Animations["akuma_selected"] = new BasicAnimation("akuma_selected",[],true);
         this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-0.png",8).flip();
         this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-1.png",8).flip();
         this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-2.png",6);
@@ -742,14 +742,14 @@ User.prototype.addStanceAnimations = function()
         this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-8.png",4);
         this.Animations["akuma_selected"].addFrame(this,"images/misc/misc/akuma-selected-9.png",CONSTANTS.MAX_FRAME);
 
-        this.Animations["mbison"] = CreateBasicAnimation("ken_stance",[],true);
+        this.Animations["mbison"] = new BasicAnimation("ken_stance",[],true);
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-0.png",5);
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-1.png",5);
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-2.png",5);
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-3.png",5);
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-2.png",5);    
         this.Animations["mbison"].addFrame(this,"images/misc/misc/mbison-r-stance-1.png",5);
-        this.Animations["mbison_selected"] = CreateBasicAnimation("mbison_selected",[],true);
+        this.Animations["mbison_selected"] = new BasicAnimation("mbison_selected",[],true);
         this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-0.png",5);
         this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-1.png",5);
         this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-2.png",5);
@@ -758,14 +758,14 @@ User.prototype.addStanceAnimations = function()
         this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-5.png",5);
         this.Animations["mbison_selected"].addFrame(this,"images/misc/misc/mbison-r-win-0-6.png",CONSTANTS.MAX_FRAME);
 
-        this.Animations["sagat"] = CreateBasicAnimation("sagat_stance",[],true);
+        this.Animations["sagat"] = new BasicAnimation("sagat_stance",[],true);
         this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-0.png",5);
         this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-3.png",5);
         this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-2.png",5);
         this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-1.png",5);
         this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-2.png",5);    
         this.Animations["sagat"].addFrame(this,"images/misc/misc/sagat-r-stance-3.png",5);    
-        this.Animations["sagat_selected"] = CreateBasicAnimation("sagat_selected",[],true);
+        this.Animations["sagat_selected"] = new BasicAnimation("sagat_selected",[],true);
         this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-0.png",5);
         this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-1.png",5);
         this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-2.png",5);
@@ -785,7 +785,7 @@ User.prototype.addStanceAnimations = function()
         this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-16.png",5);
         this.Animations["sagat_selected"].addFrame(this,"images/misc/misc/sagat-selected-17.png",CONSTANTS.MAX_FRAME);
 
-        this.Animations["guy"] = CreateBasicAnimation("guy_stance",[],true);
+        this.Animations["guy"] = new BasicAnimation("guy_stance",[],true);
         this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-0.png",26);
         this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-3.png",15);
         this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-2.png",15);
@@ -793,19 +793,19 @@ User.prototype.addStanceAnimations = function()
         this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-2.png",15);
         this.Animations["guy"].addFrame(this,"images/misc/misc/guy-r-stance-3.png",15);
 
-        this.Animations["birdie"] = CreateBasicAnimation("birdie_stance",[],true);
+        this.Animations["birdie"] = new BasicAnimation("birdie_stance",[],true);
         this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-0.png",15);
         this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-1.png",15);
         this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-2.png",15);
         this.Animations["birdie"].addFrame(this,"images/misc/misc/birdie-r-stance-3.png",15);
 
-        this.Animations["chunli"] = CreateBasicAnimation("chunli_stance",[],true);
+        this.Animations["chunli"] = new BasicAnimation("chunli_stance",[],true);
         this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-0.png",10);
         this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-1.png",10);
         this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-2.png",10);
         this.Animations["chunli"].addFrame(this,"images/misc/misc/chunli-r-stance-3.png",10);
 
-        this.Animations["charlie"] = CreateBasicAnimation("charlie_stance",[],true);
+        this.Animations["charlie"] = new BasicAnimation("charlie_stance",[],true);
         this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-0.png",5);
         this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-1.png",5);
         this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-2.png",5);
@@ -813,7 +813,7 @@ User.prototype.addStanceAnimations = function()
         this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-2.png",5);
         this.Animations["charlie"].addFrame(this,"images/misc/misc/charlie-r-stance-1.png",5);
 
-        this.Animations["sodom"] = CreateBasicAnimation("sodom_stance",[],true);
+        this.Animations["sodom"] = new BasicAnimation("sodom_stance",[],true);
         this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-0.png",5);
         this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-1.png",5);
         this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-2.png",5);
@@ -822,7 +822,7 @@ User.prototype.addStanceAnimations = function()
         this.Animations["sodom"].addFrame(this,"images/misc/misc/sodom-r-stance-5.png",5);
 
 
-        this.Animations["adon"] = CreateBasicAnimation("adon_stance",[],true);
+        this.Animations["adon"] = new BasicAnimation("adon_stance",[],true);
         this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-0.png",5);
         this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-1.png",5);
         this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-2.png",5);
@@ -830,7 +830,7 @@ User.prototype.addStanceAnimations = function()
         this.Animations["adon"].addFrame(this,"images/misc/misc/adon-r-stance-4.png",5);
 
 
-        this.Animations["rose"] = CreateBasicAnimation("rose_stance",[],true);
+        this.Animations["rose"] = new BasicAnimation("rose_stance",[],true);
         this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-0.png",5);
         this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-1.png",5);
         this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-2.png",5);
@@ -839,7 +839,7 @@ User.prototype.addStanceAnimations = function()
         this.Animations["rose"].addFrame(this,"images/misc/misc/rose-r-c-stance-5.png",5);
 
 
-        this.Animations["random"] = CreateBasicAnimation("random",[],true);
+        this.Animations["random"] = new BasicAnimation("random",[],true);
         this.Animations["random"].addFrame(this,"images/misc/misc/rose-r-c-stance-0.png",5);
         this.Animations["random"].addFrame(this,"images/misc/misc/adon-r-stance-0.png",5);
         this.Animations["random"].addFrame(this,"images/misc/misc/sodom-r-stance-0.png",5);

@@ -604,7 +604,7 @@ Player.prototype.createKen = function(user)
     uppercut_land_flame.addFrameWithSound(player,1,"audio/misc/jump-land.zzz",0,"",folder + "/x-uppercut-p1-6.png",4,{ Player: PLAYER_FLAGS.MOBILE },MISC_FLAGS.NONE);
 
     //add flame animation for the uppercut
-    var flame = CreateBasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
+    var flame = new BasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
     flame.addFrame(player,folder + "/fire-uppercut-12.png",2,2,206);
     flame.addFrame(player,folder + "/fire-uppercut-13.png",1,2,210);
     flame.addFrame(player,folder + "/fire-uppercut-14.png",1,2,210);
@@ -658,7 +658,7 @@ Player.prototype.createKen = function(user)
 
 
             //add flame animation for the uppercut
-            var flame = CreateBasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
+            var flame = new BasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
             flame.addEmptyFrame(player,2,2);
             flame.addFrame(player,folder + "/fire-uppercut-01.png",1,94,94);
             flame.addFrame(player,folder + "/fire-uppercut-02.png",2,108,123);
@@ -1092,7 +1092,7 @@ Player.prototype.createKenSuperMoves = function(player)
     uppercut_land.addFrameWithSound(player,1,"audio/misc/jump-land.zzz",0,"",folder + "/x-uppercut-p1-6.png",4,{Player:PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE);
 
     //add flame animation for the uppercut
-    var flame = CreateBasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
+    var flame = new BasicAnimation("uppercut flame",[],false,0,folder + "/misc-sprites.png");
     flame.addFrame(player,folder + "/fire-uppercut-12.png",2,2,206);
     flame.addFrame(player,folder + "/fire-uppercut-13.png",1,2,210);
     flame.addFrame(player,folder + "/fire-uppercut-14.png",1,2,210);
@@ -1163,7 +1163,7 @@ Player.prototype.createKenSuperMoves = function(player)
         s_uppercut.chain(uppercut_land);
 
         //add flame animation for the uppercut
-        var flame = CreateBasicAnimation("super uppercut flame",[],false,0,folder + "/misc-sprites.png");
+        var flame = new BasicAnimation("super uppercut flame",[],false,0,folder + "/misc-sprites.png");
         flame.addEmptyFrame(player, 76 + 1 + (maxIter * 23) + 4,2);
         flame.addFrame(player,folder + "/fire-uppercut-01.png",4,94,94);
         flame.addFrame(player,folder + "/fire-uppercut-02.png",2,108,123);
@@ -1196,7 +1196,7 @@ Player.prototype.createKenSuperMoves = function(player)
 
 
         //add the uppercut charge up
-        var charge_up = CreateBasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
+        var charge_up = new BasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
         charge_up.addFrame(player,folder + "/x-energize-0-0.png",3,-67,-44);
         charge_up.addFrame(player,folder + "/x-energize-0-1.png",3,-11,3);
         charge_up.addFrame(player,folder + "/x-energize-0-2.png",3,-58,-51);
@@ -1241,7 +1241,7 @@ Player.prototype.createKenSuperMoves = function(player)
         for(var trailIndex = 0; trailIndex < 3; ++trailIndex)
         {
             //trail
-            var s_uppercut_trail = CreateGenericAnimation("super s_uppercut trail");
+            var s_uppercut_trail = new GenericAnimation("super s_uppercut trail");
             s_uppercut_trail.addTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-0.png",100);
             for(var i = 0; i < maxIter; ++i)
             {

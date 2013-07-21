@@ -22,7 +22,7 @@ var CreateAnnouncer = function()
         */
 
         var y = 0;
-        round_.Animation = CreateBasicAnimation("round",[]);
+        round_.Animation = new BasicAnimation("round",[]);
         round_.Animation.addFrame(this,"|images/misc/misc/round-0.png",2,0,y);
         round_.Animation.addFrame(this,"|images/misc/misc/round-1.png",3,0,y);
         round_.Animation.addFrame(this,"|images/misc/misc/round-2.png",1,0,y);
@@ -38,7 +38,7 @@ var CreateAnnouncer = function()
         round_.Animation.addFrame(this,"|images/misc/misc/round-12.png",3,0,y - 217);
 
         var y = 0;
-        roundNumber_.Animation = CreateBasicAnimation("round number");
+        roundNumber_.Animation = new BasicAnimation("round number");
         roundNumber_.Animation.addFrame(this,"|images/misc/misc/1-0.png",1,0,y - 8);
         roundNumber_.Animation.addFrame(this,"|images/misc/misc/1-1.png",2,0,y - 13);
         roundNumber_.Animation.addFrame(this,"|images/misc/misc/1-2.png",1,0,y - 13);
@@ -55,7 +55,7 @@ var CreateAnnouncer = function()
         roundNumber_.Animation.addFrame(this,"|images/misc/misc/1-12.png",1,0,y - 256);
 
         var y = 0;
-        fight_.Animation = CreateBasicAnimation("fight");
+        fight_.Animation = new BasicAnimation("fight");
         fight_.Animation.addFrame(this,"|images/misc/misc/fight-0.png",5,0,y - 24);
         fight_.Animation.addFrame(this,"|images/misc/misc/fight-1.png",5,0,y - 24);
         fight_.Animation.addFrame(this,"|images/misc/misc/fight-2.png",1,0,y - 27);
@@ -72,7 +72,7 @@ var CreateAnnouncer = function()
         fight_.Animation.addFrame(this,"|images/misc/misc/fight-13.png",5,0,y - 242);
 
         var y = 28;
-        ko_.Animation = CreateBasicAnimation("ko");
+        ko_.Animation = new BasicAnimation("ko");
         ko_.Animation.addFrame(this,"|images/misc/misc/ko-0.png",1,0,y);
         ko_.Animation.addFrame(this,"|images/misc/misc/ko-1.png",1,0,y);
         ko_.Animation.addFrame(this,"|images/misc/misc/ko-2.png",1,0,y);
@@ -90,7 +90,7 @@ var CreateAnnouncer = function()
 
         var y = 0;
         var x = 0;
-        perfect_.Animation = CreateBasicAnimation("perfect");
+        perfect_.Animation = new BasicAnimation("perfect");
         perfect_.Animation.addFrame(this,"|images/misc/misc/perfect-0.png",4,0,y);
         perfect_.Animation.addFrame(this,"|images/misc/misc/perfect-1.png",4,x - 8,y + 15);
         perfect_.Animation.addFrame(this,"|images/misc/misc/perfect-2.png",4,x - 8,y + 15);
@@ -104,7 +104,7 @@ var CreateAnnouncer = function()
 
         var y = 0;
         var x = 0;
-        scf_.Animation = CreateBasicAnimation("super-combo-finish");
+        scf_.Animation = new BasicAnimation("super-combo-finish");
         for(var i = 0; i < 2; ++i)
         {
         scf_.Animation.addFrame(this,"images/misc/misc/sfa000.png",2,0,0);

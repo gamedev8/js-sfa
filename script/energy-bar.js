@@ -61,7 +61,7 @@ var CreateEnergyBar = function(pnlID,team)
     EnergyBar.prototype.addAnimation = function(key)
     {
         /*use default values for the Animation*/
-        this.setAnimation(key, CreateAnimation());
+        this.setAnimation(key, new Animation());
         return this.getAnimation(key);
     }
 

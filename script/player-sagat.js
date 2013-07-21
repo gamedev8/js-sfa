@@ -1155,7 +1155,7 @@ var createSagatSuperMoves = function(player)
 
         /*add an animation for the fireball charge up*/
         /*add the uppercut charge up*/
-        var charge_up = CreateBasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
+        var charge_up = new BasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
         charge_up.addFrame(player,folder + "/x-energize-0-0.png",1,-127,64);
         charge_up.addFrame(player,folder + "/x-energize-0-1.png",1,-71,103);
         charge_up.addFrame(player,folder + "/x-energize-0-2.png",1,-118,49);
@@ -1201,7 +1201,7 @@ var createSagatSuperMoves = function(player)
         for(var trailIndex = 1; trailIndex < 3; ++trailIndex)
         {
             /*trail*/
-            var s_fireball_trail = CreateGenericAnimation("super fireball trail");
+            var s_fireball_trail = new GenericAnimation("super fireball trail");
             s_fireball_trail.addTrailFrame(player,folder + "/sfireball-trail-" + trailIndex + "-0.png",4);
             s_fireball_trail.addTrailFrame(player,folder + "/sfireball-trail-" + trailIndex + "-0.png",6);
             s_fireball_trail.addTrailFrame(player,folder + "/sfireball-trail-" + trailIndex + "-1.png",6);

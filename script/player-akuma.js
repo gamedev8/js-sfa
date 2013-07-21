@@ -1055,7 +1055,7 @@ Player.prototype.createAkuma = function(user)
         for(var trailIndex = 1; trailIndex < 4; ++trailIndex)
         {
             //trail
-            var teleport_trail_anim = CreateGenericAnimation("super fireball trail");
+            var teleport_trail_anim = new GenericAnimation("super fireball trail");
             teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-0-shadow-" + trailIndex + ".png",1);
             teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-2-shadow-" + trailIndex + ".png",1);
             teleport_trail_anim.addTrailFrame(player,folder + "/x-fbcharge-4-shadow-" + trailIndex + ".png",1);
@@ -1518,7 +1518,7 @@ Player.prototype.createAkumaSuperUppercut = function(player)
 
 
         //add the uppercut charge up
-        var charge_up = CreateBasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
+        var charge_up = new BasicAnimation("uppercut charge up",[],false,0,folder + "/misc-sprites.png");
         charge_up.addFrame(player,folder + "/x-energize-0-0.png",1,-67,-44);
         charge_up.addFrame(player,folder + "/x-energize-0-1.png",1,-11,3);
         charge_up.addFrame(player,folder + "/x-energize-0-2.png",1,-58,-51);
@@ -1563,7 +1563,7 @@ Player.prototype.createAkumaSuperUppercut = function(player)
         for(var trailIndex = 0; trailIndex < 3; ++trailIndex)
         {
             //trail
-            var s_uppercut_trail = CreateGenericAnimation("super s_uppercut trail");
+            var s_uppercut_trail = new GenericAnimation("super s_uppercut trail");
             s_uppercut_trail.addTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-1.png",36);
             s_uppercut_trail.addTrailFrame(player,folder + "/x-super-uppercut-" + trailIndex + "-1.png",1);
             for(var i = 0; i < maxIter; ++i)
@@ -1597,7 +1597,7 @@ Player.prototype.createAkumaSuperFireball = function(player)
 {
     var folder = "images/misc/" + player.Folder;
 
-    var charge_up = CreateBasicAnimation("fireball charge up",[],false,0,folder + "/misc-sprites.png");
+    var charge_up = new BasicAnimation("fireball charge up",[],false,0,folder + "/misc-sprites.png");
     charge_up.addFrame(player,folder + "/x-energize-0-0.png",1,-67,-44);
     charge_up.addFrame(player,folder + "/x-energize-0-1.png",1,-11,3);
     charge_up.addFrame(player,folder + "/x-energize-0-2.png",1,-58,-51);
@@ -1641,7 +1641,7 @@ Player.prototype.createAkumaSuperFireball = function(player)
     for(var trailIndex = 1; trailIndex < 4; ++trailIndex)
     {
         //trail
-        var fireball_trail = CreateGenericAnimation("super fireball trail");
+        var fireball_trail = new GenericAnimation("super fireball trail");
         fireball_trail.addTrailFrame(player,folder + "/x-fbcharge-0-shadow-" + trailIndex + ".png",1);
         for(var i = 0; i < 2; ++i)
         {
@@ -1770,7 +1770,7 @@ Player.prototype.createAkumaSuperAirFireball = function(player)
     for(var trailIndex = 1; trailIndex < 4; ++trailIndex)
     {
         //trail
-        var a_fireball_trail = CreateGenericAnimation("super air fireball trail");
+        var a_fireball_trail = new GenericAnimation("super air fireball trail");
         a_fireball_trail.addTrailFrame(player,folder + "/x-afb-1-shadow-" + trailIndex + ".png",1);
         a_fireball_trail.addTrailFrame(player,folder + "/x-afb-1-shadow-" + trailIndex + ".png",11);
         a_fireball_trail.addTrailFrame(player,folder + "/x-afb-2-shadow-" + trailIndex + ".png",13);
@@ -1799,7 +1799,7 @@ Player.prototype.createAkumaSuperAirFireball = function(player)
     air_fireball_land.addFrame(player,0,"",folder + "/crouch-0.png",5);
 
     //add an animation for the fireball charge up
-    var fb_charge = CreateBasicAnimation("fireball charge",[],false,0,folder + "/misc-sprites.png");
+    var fb_charge = new BasicAnimation("fireball charge",[],false,0,folder + "/misc-sprites.png");
     fb_charge.addEmptyFrame(player,0,1);
     for(var i = 0; i < 3; ++i)
     {

@@ -1071,7 +1071,7 @@ Player.prototype.createMBison = function(user)
         for(var trailIndex = 0; trailIndex < 3; ++trailIndex)
         {
             /*trail*/
-            var psycho_crusher_trail = CreateGenericAnimation("psycho_crusher trail");
+            var psycho_crusher_trail = new GenericAnimation("psycho_crusher trail");
 
             psycho_crusher_trail.addTrailFrame(player,folder+"/pc-" + trailIndex + "-0.png",4);
             psycho_crusher_trail.addTrailFrame(player,folder+"/pc-" + trailIndex + "-1.png",3);

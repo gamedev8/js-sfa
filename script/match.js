@@ -41,8 +41,8 @@ var CreateMatch = function(team1,team2,stage)
     var Match = function()
     {
         stage_ = CreateStage();
-        teamA_ = CreateTeam(1);
-        teamB_ = CreateTeam(2);
+        teamA_ = new Team(1);
+        teamB_ = new Team(2);
         this.loadAssets();
         stage_.setup(stage);
 
