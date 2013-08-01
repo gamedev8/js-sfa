@@ -1158,6 +1158,7 @@ Player.prototype.forceWinAnimation = function(frame)
     if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
     this.executeAnimation(name, true, true);
     this.clearInput();
+    this.abortThrow();
 }
 /*Player is defeated*/
 Player.prototype.forceLose = function(attackDirection,ignoreAnimation)

@@ -88,6 +88,7 @@ Player.prototype.releaseDebugElements = function()
     {
         utils_.removeFromDOM(this.DebugHit[i]);
     }
+    utils_.removeFromDOM(this.Rect);
     utils_.removeFromDOM(this.DebKeysElement);
     utils_.releaseArray(this.DebugHit);
 }
