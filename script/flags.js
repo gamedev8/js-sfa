@@ -3,17 +3,18 @@
     return !!(flags & flag);
 }
 
-var Flags = function(owner)
+var Flags = function(owner, defaultValue)
 {
-    this.Value = 0;
     this.IsPlayer = false;
     this.Owner = owner || null;
+    this.DefaultValue = defaultValue || 0;
+    this.Value = 0;
 }
 
-Flags.prototype.remove = function(value) { return this.Value = (this.Value | value) ^ value; }
+Flags.prototype.remove = function(value, defaultIfZero) { return this.Value = (this.Value | value) ^ value; }
 Flags.prototype.release = function() { this.Owner = null; }
 Flags.prototype.clear = function() { this.set(0); }
-Flags.prototype.set = function(value) { this.Value = value || MISC_FLAGS.NONE; return this.Value; }
+Flags.prototype.set = function(value) { this.Value = value; return this.Value; }
 Flags.prototype.get = function()      { return this.Value; }
 Flags.prototype.has = function(value) { return hasFlag(this.Value,value); }
 Flags.prototype.add = function(value)
@@ -74,6 +75,7 @@ var FrameFlags = function()
     this.Player = 0;
     this.Pose = 0;
     this.Combat = 0;
+    this.RCombat = 0;
     this.Spawn = 0;
     this.Combo = 0;
     this.Juggle = 0;

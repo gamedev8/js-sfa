@@ -49,6 +49,11 @@ var CreateAkumaAI = function(player)
     var hardRedFireballInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.HARD_KICK} ];
 
     //private member
+    var lightJumpRollInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.JUMP} ,{IsDown:true,Button:BUTTONS.LIGHT_PUNCH} ];
+    var mediumJumpRollInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.JUMP} ,{IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ];
+    var hardJumpRollInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.FORWARD} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.JUMP} ,{IsDown:true,Button:BUTTONS.HARD_PUNCH} ];
+
+    //private member
     var lightSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.LIGHT_KICK} ];
     var mediumSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.MEDIUM_KICK} ];
     var hardSKickInput_ = [ {IsDown:true,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.BACK} ,{IsDown:false,Button:BUTTONS.CROUCH} ,{IsDown:true,Button:BUTTONS.HARD_KICK} ];
@@ -248,6 +253,13 @@ var CreateAkumaAI = function(player)
             ,[{B:"get_close", C:10, AC:true}, {B:"k1"}, {B:"lp2"}, {B:"lk1"}, {B:"lk2"}, {B:"sfb1"}]
             ,[{B:"get_close", C:10, AC:true}, {B:"k1"}, {B:"lp2"}, {B:"lk1"}, {B:"lk3"}, {B:"hk1"}, {B:"u3"}]
             ,[{B:"get_close", C:10, AC:true}, {B:"lp2"}, {B:"lp1"}, {B:"lk1"}, {B:"lk2"}, {B:"fb1"}]
+            ,[{B:"get_close", C:10, MH:true}, {A:0, B:"p1", H:true}, {A:7, B:"p2", H:true}, {A:10, B:"lk1", H:true}, {A:14, B:"lk3", H:true}, {A:14, B:"jr3"}, {A:25, B:"su1"}]
+            ,[{B:"get_close", C:10, MH:true}, {A:0, B:"k1", H:true}, {A:7, B:"lk1", H:true}, {A:12, B:"lk2", H:true}, {A:13, B:"lk3", H:true}, {A:15, B:"jr1"}, {A:24, B:"su1"}]
+            ,[{B:"get_close", C:100, AC:true}, {B:"lk2"}, {B:"jr3"}, {AC:false, A:22, B:"lk2"}, {A:18, B:"f"}, {A:2, B:"fk2"}, {AC:true, A:25, B:"lp1"}, {B:"p1"}, {B:"lp1"}, {B:"lk3"}, {B:"hk1"}, {B:"su1"}]
+            ,[{B:"get_close", C:100, AC:true}, {B:"lk2"}, {B:"jr3"}, {AC:false, A:22, B:"lk2"}, {A:18, B:"f"}, {A:2, B:"fk2"}, {AC:true, A:25, B:"lp1"}, {B:"p1"}, {B:"lp1"}, {B:"lk2"}, {B:"lk3"}, {B:"rfb1"}]
+            ,[{B:"get_close", C:100, AC:true}, {B:"lk2"}, {B:"jr3"}, {AC:false, A:22, B:"lk2"}, {A:18, B:"f"}, {A:2, B:"fk2"}, {AC:true, A:25, B:"lp1"}, {B:"p1"}, {B:"lp1"}, {B:"lk2"}, {B:"lk3"}, {B:"jr1"}, {AC:false, A:25, B:"su1"}]
+            ,[{B:"get_close", C:100, AC:true}, {B:"lk2"}, {B:"jr3"}, {AC:false, A:21, B:"lk2"}, {A:18, B:"f"}, {A:2, B:"fp2"}, {AC:true, A:29, B:"lp1"}, {B:"lp2"}, {B:"lk3"}, {B:"rfb1"}]
+            ,[{B:"get_close", C:100, AC:true}, {B:"lk2"}, {B:"jr3"}, {AC:false, A:21, B:"lk2"}, {A:18, B:"f"}, {A:2, B:"fp2"}, {A:30, B:"k2"}, {AC:true, A:30, B:"fb3"}]
         ];
 
         this.AI.BehindCombos = [
@@ -319,6 +331,20 @@ var CreateAkumaAI = function(player)
             ,[{B:"jdk", C:200, D:-999, MH:true}, {A:21, B:"p3"}, {A:7, B:"p1"}, {A:18, B:"p3"}, {A:15, B:"lk3", H:true}, {A:18, B:"hk3"}]
             ,[{B:"jdk", C:200, D:-999, MH:true}, {A:21, B:"p1"}, {A:5, B:"p2"}, {A:11, B:"p3"}, {A:17, B:"lk3"}, {A:18, B:"hk1"}, {A:55, B:"su1"}]
         ];
+
+        // :-)
+        this.AI.JumpRollCombos = [
+        ];
+
+        this.AI.CounterPendingProjectileFar = [
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk2"}, {B:"lk3"}, {B:"hk1"}, {B:"su1"}]
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk2"}, {B:"lk3"}, {B:"tfb"}]
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"tfb"}]
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"k1"}, {B:"k2"}, {B:"fb3"}]
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"hk1"}, {B:"u3"}]
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"sfb1"}]
+            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lk2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {AC:false, A:2, B:"jr3"}, {A:30, B:"su1"}]
+        ];
     }
 
     AkumaAI.prototype.doCounterMedAirborneAttackCombo = function(which) { this.execute(this.AI.CounterMedAirborneAttackCombo[which || getRand(this.AI.CounterMedAirborneAttackCombo.length)]); }
@@ -338,6 +364,7 @@ var CreateAkumaAI = function(player)
     AkumaAI.prototype.doAirFireball = function(which) { this.execute(this.AI.Airfireballs[which || getRand(this.AI.Airfireballs.length)]); }
     AkumaAI.prototype.doCounterProjectileMoved = function(which) { this.execute(this.AI.CounterProjectileMoved[which || getRand(this.AI.CounterProjectileMoved.length)]); }
     AkumaAI.prototype.doCounterPendingProjectile = function(which) { this.execute(this.AI.CounterPendingProjectile[which || getRand(this.AI.CounterPendingProjectile.length)]); }
+    AkumaAI.prototype.doCounterPendingProjectileFar = function(which) { this.execute(this.AI.CounterPendingProjectileFar[which || getRand(this.AI.CounterPendingProjectileFar.length)]); }
     AkumaAI.prototype.doCounterClosePendingProjectile = function(which) { this.execute(this.AI.CounterClosePendingProjectile[which || getRand(this.AI.CounterClosePendingProjectile.length)]); }
     AkumaAI.prototype.doJumpThrustKickCombo = function(which) { this.execute(this.AI.JumpThrustKickCombos[which || getRand(this.AI.JumpThrustKickCombos.length)]); }
 
@@ -844,10 +871,11 @@ var CreateAkumaAI = function(player)
             else if(sequence[i].B == "p1" || sequence[i].B == "p3" || sequence[i].B == "k1" || sequence[i].B == "k3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
             else if(sequence[i].B == "u1" || sequence[i].B == "u2" || sequence[i].B == "u3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
             else if(sequence[i].B == "hk1" || sequence[i].B == "hk2" || sequence[i].B == "hk3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
-            else if(sequence[i].B == "fb1" || sequence[i].B == "fb2" || sequence[i].B == "fb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "jr1" || sequence[i].B == "jr2" || sequence[i].B == "jr3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.PENDING_JUMP; }
+            else if(sequence[i].B == "fb1" || sequence[i].B == "fb2" || sequence[i].B == "fb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
             else if(sequence[i].B == "rfb1" || sequence[i].B == "rfb2" || sequence[i].B == "rfb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
             else if(sequence[i].B == "sfb1" || sequence[i].B == "sfb2" || sequence[i].B == "sfb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
-            else if(sequence[i].B == "su1" || sequence[i].B == "su2" || sequence[i].B == "su3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "su1" || sequence[i].B == "su2" || sequence[i].B == "su3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
             else if(sequence[i].B == "p2" || sequence[i].B == "k2") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
 
             input = null;
@@ -861,6 +889,7 @@ var CreateAkumaAI = function(player)
                 case "p1" : { input = punches_[0]; break; } case "p2" : { input = punches_[1]; break; } case "fp2" : { input = punches_[3]; break; } case "p3" : { input = punches_[2]; break; }
                 case "k1" : { input = kicks_[0]; break; } case "k2" : { input = kicks_[1]; break; } case "fk2" : { input = kicks_[3]; break; } case "k3" : { input = kicks_[2]; break; }
                 case "lk1" : { input = lowKicks_[0]; break; } case "lk2" : { input = lowKicks_[1]; break; } case "lk3" : { input = lowKicks_[2]; break; }
+                case "jr1" : { input = lightJumpRollInput_; break; } case "jr2" : { input = mediumJumpRollInput_; break; } case "jr3" : { input = hardJumpRollInput_; break; }
                 case "fb1" : { input = lightFireballInput_; break; } case "fb2" : { input = mediumFireballInput_; break; } case "fb3" : { input = hardFireballInput_; break; }
                 case "rfb1" : { input = lightRedFireballInput_; break; } case "rfb2" : { input = mediumRedFireballInput_; break; } case "rfb3" : { input = hardRedFireballInput_; break; }
                 case "sfb1" : { input = lightSuperFireballInput_; break; } case "sfb2" : { input = mediumSuperFireballInput_; break; } case "sfb3" : { input = hardSuperFireballInput_; break; }

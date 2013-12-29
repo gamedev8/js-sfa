@@ -44,10 +44,10 @@ var CreateSoundManager = function()
     {
         if(!!__debugMode || !isEnabled_) return;
 
-        //send all non looping audio to WebAudio
-        if(!!sfxManager_ && !loop)
+        //send all audio to WebAudio by default
+        if(!!sfxManager_)
         {
-            return sfxManager_.loadBase64(path,nbChannels,defaultVolume,base64Data);
+            return sfxManager_.loadBase64(path, nbChannels, defaultVolume, base64Data, loop);
         }
 
         if(!items_[path])
@@ -175,6 +175,11 @@ var CreateSoundManager = function()
                 el.currentTime = 0;
             el.volume = items_[path].DefaultVolume;
         }
+        else if(!!sfxManager_)
+        {
+            sfxManager_.stop(path);
+            sfxManager_.play(path);
+        }
     }
 
     /**/
@@ -203,6 +208,11 @@ var CreateSoundManager = function()
                 return;
             }
         }
+        else if(!!sfxManager_)
+        {
+            sfxManager_.play(path);
+        }
+
     }
 
     /*sets the volume and plays the sound*/
@@ -264,6 +274,26 @@ var CreateSoundManager = function()
             var el = GetCurrentElement_(path);
             el.pause();
         }
+        else if(!!sfxManager_)
+        {
+            sfxManager_.pause(path);
+        }
+
+    }
+
+    /**/
+    SoundManager.prototype.stop = function(path)
+    {
+        if(!isEnabled_) return;
+        if(!!items_[path])
+        {
+            var el = GetCurrentElement_(path);
+            el.pause();
+        }
+        if(!!sfxManager_)
+        {
+            sfxManager_.stop(path);
+        }
     }
 
     /**/
@@ -286,6 +316,11 @@ var CreateSoundManager = function()
             if(!!el.paused)
                 el.play();
         }
+        else if(!!sfxManager_)
+        {
+            sfxManager_.play(path);
+        }
+
     }
     /**/
     SoundManager.prototype.playOrResume = function(path,loops)
@@ -302,6 +337,11 @@ var CreateSoundManager = function()
             else
                 this.play(path,loops);
         }
+        else if(!!sfxManager_)
+        {
+            sfxManager_.play(path);
+        }
+
     }
 
     /**/

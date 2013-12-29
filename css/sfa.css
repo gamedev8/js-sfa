@@ -1,4 +1,5 @@
 ﻿body {margin:0;padding:0;background:#000;color:#fff;font-family:arial;font-size:12px;overflow:hidden;}
+div.stage{height:576px;width:1068px;top:20px;overflow:hidden;position:absolute;display:inline-block;}
 body div.select {margin-left:224px;height:201px;width:100%;background:url(../images/misc/misc/globe.png) no-repeat 0px 0px;}
 body div.char-select {margin-left:256px;margin-top:87px;height:400px;width:100%;}
 body div.next-foe-line1 {position:absolute;top:250px;left:280px;}
@@ -37,11 +38,10 @@ div.stance-container-p1 {left:32px;}
 div.stance-container-p2 {right:32px;}
 .stance-name {position:absolute;z-index:3;bottom:0px;background-image:url(../images/misc/misc/char-select-sprites.png);}
 .stance-shadow {position:absolute;z-index:1;background-image:url(../images/misc/misc/char-sprites.png);}
-div.stage{height:576px;width:768px;top:50px;overflow:hidden;position:absolute;display:inline-block;}
 div.dimBackground{height:100%;width:100%;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:16;background:#111;opacity:0.5;filter: Alpha(Opacity=50);}
 div.loadingBackground{height:100%;width:100%;overflow:hidden;position:absolute;display:inline-block;left:0px;top:0px;z-index:9999999;background:#111;text-align:center;}
 span.loading {background-color:#222;color:#aaaaff;}
-div.loading {font-size:24px; margin-top:50px;}
+div.loading {margin-top:10px;}
 span.done-loading {font-weight:normal;color:#00aa00;}
 div.stage .bg0{position:absolute;}
 div.stage .bg1{position:absolute;}
@@ -70,7 +70,9 @@ div.team2Keys {color:#ff6666;right:0px;}
 .state {margin:3px 0;}
 .running span{background-color:#00aa00;}
 .paused span{background-color:#aaa;color:#000;}
+.state.paused span.audio-loading{background-color:#ff6666;color:#0000ff;}
 .frame-rate{background:#666;text-transform:uppercase;}
+
 
 div.projectile{position:absolute;bottom:35px;z-index:16;background-position:0 0;background-repeat:no-repeat;}
 

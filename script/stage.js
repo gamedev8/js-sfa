@@ -63,7 +63,9 @@ var CreateStage = function(bg0XOffset)
     }
     Stage.prototype.start = function()
     {
-        this.BgImg0.xOffset = this.Params.Bg0XOffset;
+        var val = STAGE.MAX_STAGEX-1152;
+
+        this.BgImg0.xOffset = val/2;//this.Params.Bg0XOffset;
         this.BgImg0.yOffset = this.Params.Bg0YOffset;
         this.BgImg1.yOffset = this.Params.Bg1YOffset;
 
@@ -74,8 +76,8 @@ var CreateStage = function(bg0XOffset)
         this.BgImg1.element.src = this.Params.Bg1Img;
         this.BgImg0.element.className = "bg0 " + this.Params.Name + "-bg0";
         this.BgImg1.element.className = "bg1 " + this.Params.Name + "-bg1";
-        this.MaxLeftScroll  = this.Params.MaxLeftScroll; 
-        this.MaxRightScroll = this.Params.MaxRightScroll;
+        this.MaxLeftScroll  = val;//this.Params.MaxLeftScroll; 
+        this.MaxRightScroll = 0;//this.Params.MaxRightScroll;
 
         this.CanMoveY = true;
     }
@@ -95,6 +97,11 @@ var CreateStage = function(bg0XOffset)
         soundManager_.pause(this.Music);
     }
 
+    Stage.prototype.stopMusic = function()
+    {
+        soundManager_.stop(this.Music);
+    }
+
     /**/
     Stage.prototype.pause = function()
     {
@@ -110,7 +117,7 @@ var CreateStage = function(bg0XOffset)
     /**/
     Stage.prototype.release = function()
     {
-        this.pauseMusic();
+        this.stopMusic();
         this.BgImg0.element.src = "";
         this.BgImg1.element.src = "";
         this.BgImg0.element.className = "";
@@ -533,6 +540,8 @@ var CreateStage = function(bg0XOffset)
     {
         var screenWidth = GetWidth(window.document.body);
         var screenHeight = GetHeight(window.document.body);
+
+        pnlStage_.style.width = STAGE.MAX_STAGEX + "px";
 
         var w = parseInt(GetWidth(this.Bg.element));
         if(!w) w = 0;

@@ -90,56 +90,58 @@ HitSystem.prototype.checkPendingHits = function(id,overrideFlags)
 {
 }
 
+//can the hit on the victimA player be hit
 HitSystem.prototype.canHit = function(key,index)
 {
-    var first = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
-    var second = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
+    var victimA = index == 0 ? this.Actions[key][0] : this.Actions[key][1];
+    var victimB = index == 0 ? this.Actions[key][1] : this.Actions[key][0];
 
     var retVal = true;
-    if(!!first.OtherPlayer && !!first.Player.CurrentAnimation.Animation && !first.IsProjectile)
+    if(!!victimA.OtherPlayer && !!victimA.Player.CurrentAnimation.Animation && !victimA.IsProjectile)
     {
         //grapples can not be overriden
-        if(first.Player.isGrappling())
+        if(victimA.Player.isGrappling())
             return false;
-        if(first.IsGrapple || (!!second && second.IsGrapple))
+        if(victimA.IsGrapple || (!!victimB && victimB.IsGrapple))
             return true;
-        var flags = first.Player.CurrentAnimation.Animation.OverrideFlags;
-        var otherFlags = first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags;
+        var flags = victimA.Player.CurrentAnimation.Animation.OverrideFlags;
+        var otherFlags = victimA.OtherPlayer.CurrentAnimation.Animation.OverrideFlags;
 
 
-        var imDoingUppercut = first.Player.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN);
-        var youreDoingUppercut = first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN);
+        var imDoingUppercut = victimA.Player.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN);
+        var youreDoingUppercut = victimA.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.SHORYUKEN);
 
         var canIOverrideYou = (!flags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) 
-                && flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags) /*overrides yours*/
-                && !otherFlags.hasOverrideFlag(first.Player.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)) /*overrides mine (if both moves override each other, then both should hit)*/
+                && flags.hasOverrideFlag(victimA.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags) /*overrides yours*/
+                && !otherFlags.hasOverrideFlag(victimA.Player.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)) /*overrides mine (if both moves override each other, then both should hit)*/
+                || imDoingUppercut /*overrides everything*/
             ;
 
         var canYouOverrideMe = (!otherFlags.hasOverrideFlag(OVERRIDE_FLAGS.NONE) 
-                && otherFlags.hasOverrideFlag(first.Player.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)
-                && !flags.hasOverrideFlag(first.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags));
+                && otherFlags.hasOverrideFlag(victimA.Player.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags)
+                && !flags.hasOverrideFlag(victimA.OtherPlayer.CurrentAnimation.Animation.OverrideFlags.AllowOverrideFlags))
+                || youreDoingUppercut /*overrides everything*/
 
-        var iDidFirstJumpInAttack = (first.Player.CurrentAnimation.Animation.BaseAnimation.IsAttack && first.OtherPlayer.CurrentAnimation.Animation.BaseAnimation.IsAttack
-                && first.Player.isAirborne()
-                && !first.OtherPlayer.isAirborne()
-                && (first.Player.CurrentAnimation.StartFrame < first.OtherPlayer.CurrentAnimation.StartFrame))
+        var iDidFirstJumpInAttack = (victimA.Player.CurrentAnimation.Animation.BaseAnimation.IsAttack && victimA.OtherPlayer.CurrentAnimation.Animation.BaseAnimation.IsAttack
+                && victimA.Player.isAirborne()
+                && !victimA.OtherPlayer.isAirborne()
+                && (victimA.Player.CurrentAnimation.StartFrame < victimA.OtherPlayer.CurrentAnimation.StartFrame))
             ;
 
-        var youDidFirstJumpInAttack = (first.Player.CurrentAnimation.Animation.BaseAnimation.IsAttack && first.OtherPlayer.CurrentAnimation.Animation.BaseAnimation.IsAttack
-                && first.OtherPlayer.isAirborne()
-                && !first.Player.isAirborne()
-                && (first.OtherPlayer.CurrentAnimation.StartFrame < first.Player.CurrentAnimation.StartFrame))
+        var youDidFirstJumpInAttack = (victimA.Player.CurrentAnimation.Animation.BaseAnimation.IsAttack && victimA.OtherPlayer.CurrentAnimation.Animation.BaseAnimation.IsAttack
+                && victimA.OtherPlayer.isAirborne()
+                && !victimA.Player.isAirborne()
+                && (victimA.OtherPlayer.CurrentAnimation.StartFrame < victimA.Player.CurrentAnimation.StartFrame))
             ;
 
-        var canYourHProjectileHit = (otherFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.HPROJECTILE)) && !second;
+        var canYourHProjectileHit = (otherFlags.hasAllowOverrideFlag(OVERRIDE_FLAGS.HPROJECTILE)) && !victimB;
 
-        //if we aren't facing our attacker, then we can't override
-        if((first.OtherPlayer.Direction == -1 && first.Player.Direction  != 1)
-            || (first.OtherPlayer.Direction == 1 && first.Player.Direction  != -1))
+        //if we aren't facing our victimA, then we can't override
+        if(!victimA.Player.isFacingPlayer(victimA.OtherPlayer, true))
             return true;
 
         //after all attack frames in a move are finished - IgnoreOverrides will be set to true
-        if(!!first.Player.IgnoreOverrides)
+        if(!!victimA.Player.IgnoreOverrides)
             return true;
 
         //ken and ryu's uppercut can not be overriden

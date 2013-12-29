@@ -190,16 +190,18 @@
         ];
 
         this.AI.ReactNotAirborneCombos = [
-            [{A:0,B:"tk1"}]
-            ,[{A:0,B:"k1"}]
-            ,[{A:0,B:"k2"}]
-            ,[{A:0,B:"k2"}, {A:10, B:"lk3"}]
-            ,[{A:0,B:"lk3"}]
-            ,[{A:0,B:"lk3"}]
+             [{A:0, B:"tk1"}]
+            ,[{A:0, B:"k1", AC:true}, {B:"lk3"}]
+            ,[{A:0, B:"p1", AC:true}, {B:"lk2"}, {B:"lk3"}]
+            ,[{A:0, B:"k2", AC:true}, {B:"lk3"}]
+            ,[{A:0, B:"lk3", AC:true}, {B:"u3"}]
+            ,[{A:0, B:"lp1", AC:true}, {B:"tk1"}]
+            ,[{A:0, B:"lp1", AC:true}, {B:"lp3"}, {B:"lk3"}, {B:"sfb1"}]
+            ,[{A:0, B:"lk1", AC:true}, {B:"k1"}, {B:"lk2"}, {B:"lfb3"}]
         ];
 
         this.AI.FloatCounters = [
-            [{A:0,B:"u3"}]
+             [{A:0,B:"u3"}]
             ,[{A:0,B:"u3"}]
             ,[{A:0,B:"u3"}]
             ,[{A:0,B:"u3"}]
@@ -209,7 +211,7 @@
         ];
 
         this.AI.FarFloatCounters = [
-            [{A:0,B:"sfb3"}]
+             [{A:0,B:"sfb3"}]
             ,[{A:0,B:"sfb3"}]
         ];
     }
@@ -596,8 +598,32 @@
     SagatAI.prototype.execute = function(sequence)
     {
         var input = null;
+        var mustHit = false;
+        var autoContinue = false;
         for(var i = 0; i < sequence.length; ++i)
         {
+            var requiredState = 0;
+            //mustHit is applied after the array element at which it was found
+            if(!!mustHit)
+                sequence[i].H = true;
+            if(!!autoContinue && sequence[i].AC === undefined)
+                sequence[i].AC = true;
+
+            if(!!sequence[i].MH)
+                mustHit = true;
+            if(!!sequence[i].AC)
+                autoContinue = true;
+
+            if(sequence[i].B == "lp1" || sequence[i].B == "lp2" || sequence[i].B == "lp3" || sequence[i].B == "lk1" || sequence[i].B == "lk2" || sequence[i].B == "lk3") { requiredState = POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "p1" || sequence[i].B == "p3" || sequence[i].B == "k1" || sequence[i].B == "k3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "u1" || sequence[i].B == "u2" || sequence[i].B == "u3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "tk1" || sequence[i].B == "tk2" || sequence[i].B == "tk3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "hk1" || sequence[i].B == "hk2" || sequence[i].B == "hk3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "fb1" || sequence[i].B == "fb2" || sequence[i].B == "fb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
+            else if(sequence[i].B == "lfb1" || sequence[i].B == "lfb2" || sequence[i].B == "lfb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
+            else if(sequence[i].B == "sfb1" || sequence[i].B == "sfb2" || sequence[i].B == "sfb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "p2" || sequence[i].B == "k2") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+
             input = null;
             switch(sequence[i].B)
             {
@@ -613,9 +639,9 @@
                 case "tk1" : { input = lightTiggerKneeInput_; break; } case "tk2" : { input = mediumTiggerKneeInput_; break; } case "tk3" : { input = hardTiggerKneeInput_; break; }
                 case "u1" : { input = lightUppercutInput_; break; } case "u2" : { input = mediumUppercutInput_; break; } case "u3" : { input = hardUppercutInput_; break; }
                 case "t1" : { this.executeThrow(0,true); break; }
-                default : continue;
+                default: { this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0); break; }
             };
-            this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H);
+            this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H, undefined, sequence[i].AC, requiredState);
         }
         this.AI.sendInput(FLAGS.CLEAR_INPUT,2);
     }

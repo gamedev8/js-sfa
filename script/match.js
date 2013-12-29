@@ -598,7 +598,7 @@ var CreateMatch = function(team1,team2,stage)
         faceoff_.handleRound1(frame);
         if(!startedTheme_ && (frame > CONSTANTS.START_THEME_DELAY))
         {
-            stage_.playMusic();
+            stage_.restartMusic();
             startedTheme_ = true;
         }
         if(!teamsVisible_ && (frame > CONSTANTS.SHOW_TEAMS_DELAY))
@@ -740,6 +740,7 @@ var CreateMatch = function(team1,team2,stage)
         utils_.removeFromDOM(insertCoinElement_);
         utils_.removeFromDOM(pressStartElement_);
         isShowingMainInsertCoin_ = false;
+        dimBackground_.style.display = "none";
     }
 
 
@@ -752,17 +753,22 @@ var CreateMatch = function(team1,team2,stage)
     {
         if(!isShowingMainInsertCoin_)
         {
+            var screenWidth = GetWidth(window.document.body);
+
             isShowingMainInsertCoin_ = true;
             insertCoinElement_ = window.document.createElement("div");
             insertCoinElement_.className = "insert-coin";
             insertCoinElement_.id = "pnlInsertCoin";
-            parent_.appendChild(insertCoinElement_);
 
             pressStartElement_ = window.document.createElement("div");
             pressStartElement_.className = "press-start";
             pressStartElement_.id = "pnlPressStart";
+
+            parent_.appendChild(insertCoinElement_);
             parent_.appendChild(pressStartElement_);
 
+            centerElement(insertCoinElement_);
+            centerElement(pressStartElement_);
         }
     }
     return new Match();

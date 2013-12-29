@@ -511,6 +511,8 @@ Player.prototype.handleAttack = function(frame, moveFrame)
         ,EnemyHitStop:moveFrame.EnemyHitStop || 0
         ,HitReact:this.CurrentAnimation.Animation.Flags.HitReact || moveFrame.FlagsToSet.HitReact
         ,UseCurrentJump:this.CurrentAnimation.Animation.UseCurrentJump
+        ,DizzyFactor:moveFrame.DizzyFactor || 1
+        ,RCombatFlags:moveFrame.FlagsToSet.RCombat || 0
     };
 
     var baseDamage = moveFrame.BaseDamage * this.getDamageMultiplier();
@@ -706,15 +708,17 @@ Player.prototype.isDizzy = function()
 {
     return this.getFlags().Player.has(PLAYER_FLAGS.DIZZY);
 }
-Player.prototype.increaseDizziness = function(frame,attackFlags,damage)
+Player.prototype.increaseDizziness = function(frame,attackFlags,damage,factor)
 {
+    factor = factor || 1;
+
     if(this.isDead())
         return;
     var value = 0;
 
-    if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {value += CONSTANTS.LIGHT_INCREASE_DIZZY;}
-    if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {value += CONSTANTS.MEDIUM_INCREASE_DIZZY;}
-    if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {value += CONSTANTS.HARD_INCREASE_DIZZY;}
+    if(hasFlag(attackFlags,ATTACK_FLAGS.LIGHT)) {value = CONSTANTS.LIGHT_INCREASE_DIZZY * factor;}
+    if(hasFlag(attackFlags,ATTACK_FLAGS.MEDIUM)) {value = CONSTANTS.MEDIUM_INCREASE_DIZZY * factor;}
+    if(hasFlag(attackFlags,ATTACK_FLAGS.HARD)) {value = CONSTANTS.HARD_INCREASE_DIZZY * factor;}
 
     this.changeDizzy(value);
 }
@@ -923,7 +927,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         {
             this.setBeingGrappled(false);
             attackDirection = -this.getRelativeDirection(attackDirection);
-            this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+            this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
             ignoreDeadAnimation = true;
         }
         else
@@ -948,7 +952,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
     if(!this.isBlocking())
     {
-        this.increaseDizziness(frame,attackFlags,damage);
+        this.increaseDizziness(frame,attackFlags,damage,otherParams.DizzyFactor);
     }
     if((this.getDizzyValue() >= this.MaxDizzyValue) && !this.isDizzy())
     {
@@ -1033,7 +1037,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         attackDirection = this.getRelativeDirection(attackDirection);
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.takeTrip(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+        this.takeTrip(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
     }
     else if(hasFlag(attackFlags,ATTACK_FLAGS.FLOOR_AIRBORNE_HARD) && !!this.isAirborne())
     {
@@ -1041,7 +1045,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+        this.eject(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,otherParams);
     }
     else if(hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN) || (hasFlag(attackFlags,ATTACK_FLAGS.FLOOR_AIRBORNE) && !!this.isAirborne()))
     {
@@ -1049,7 +1053,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.knockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+        this.knockDown(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,false,otherParams);
     }
     else if(this.isAirborne())
     {
@@ -1057,7 +1061,7 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         /*TODO: remove rear hit flags unless it is a special move*/
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
-        this.takeAirborneHit(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy);
+        this.takeAirborneHit(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy,otherParams);
     }
     else
     {
@@ -1220,22 +1224,15 @@ Player.prototype.getDizzy = function(attackFlags,hitState,flags,frame,damage,isP
         var direction = this.getAttackDirection(attackDirection);
         this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
         this.Flags.Player.add(PLAYER_FLAGS.AIRBORNE);
-        this.performJump(direction * move.Vx,move.Vy);
+        this.performJump(direction * move.Vx * fx, move.Vy * fy);
         this.spawnDizzy(frame);
         this.queueDizzy();
         this.MaxDizzyValue += CONSTANTS.DIZZY_INC;
+        this.DizzyValue = CONSTANTS.MAX_DIZZY_VALUE;
         this.IgnoreDeadAnimation = true;
     }
 }
 
-/*Player gets back up*/
-Player.prototype._DEBUG_Getup = function()
-{
-    this.Flags.Player.remove(PLAYER_FLAGS.DEAD);
-    this.takeDamage(-20);
-    var move = this.Moves[this.MoveNdx.Getup];
-    this.setCurrentAnimation({Animation:move,StartFrame:this.getMatch().getCurrentFrame(),Direction:this.Direction,AttackDirection:this.Direction});
-}
 /*Player gets tripped*/
 Player.prototype.takeTrip = function(attackFlags,hitState,flags,frame,damage,isProjectile,hitX,hitY,attackDirection,fx,fy)
 {
@@ -1281,7 +1278,8 @@ Player.prototype.eject = function(attackFlags,hitState,flags,frame,damage,isProj
     if(!!move)
     {
         //attackDirection = this.getRelativeDirection(attackDirection);
-        this.stopGettingDizzy();
+        if(!!otherParams && !hasFlag(otherParams.RCombatFlags, RCOMBAT_FLAGS.IGNORE_CLEAR_DIZZY))
+            this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
         if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
             this.setCurrentAnimation({Animation:move, StartFrame:frame, Direction:this.Direction, AttackDirection:direction, Vx:move.Vx * fx, Vy:move.Vy * fy});
@@ -1296,7 +1294,8 @@ Player.prototype.knockDown = function(attackFlags,hitState,flags,frame,damage,is
     var move = this.Moves[this.MoveNdx.KnockDown];
     if(!!move)
     {
-        this.stopGettingDizzy();
+        if(!!otherParams && !hasFlag(otherParams.RCombatFlags, RCOMBAT_FLAGS.IGNORE_CLEAR_DIZZY))
+            this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
         if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
             this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
@@ -1311,7 +1310,8 @@ Player.prototype.blueKnockDown = function(attackFlags,hitState,flags,frame,damag
     var move = this.Moves[this.MoveNdx.BlueFire];
     if(!!move)
     {
-        this.stopGettingDizzy();
+        if(!!otherParams && !hasFlag(otherParams.RCombatFlags, RCOMBAT_FLAGS.IGNORE_CLEAR_DIZZY))
+            this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
         if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
             this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
@@ -1329,7 +1329,8 @@ Player.prototype.redKnockDown = function(attackFlags,hitState,flags,frame,damage
     var move = this.Moves[this.MoveNdx.RedFire];
     if(!!move)
     {
-        this.stopGettingDizzy();
+        if(!!otherParams && !hasFlag(otherParams.RCombatFlags, RCOMBAT_FLAGS.IGNORE_CLEAR_DIZZY))
+            this.stopGettingDizzy();
         var direction = this.getAttackDirection(attackDirection);
         if(!(!!otherParams && !!otherParams.UseCurrentJump && this.CurrentAnimation.Animation.BaseAnimation.Name == move.BaseAnimation.Name))
             this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction,AttackDirection:direction});
@@ -1395,11 +1396,11 @@ Player.prototype.setGiveHit = function(attackFlags,hitStop,energyToAdd,behaviorF
             return thisValue.giveHit(frame,attackFlags,hitStop,energyToAdd,behaviorFlags,p2);
         }
     })(this,attackFlags,hitStop,energyToAdd,behaviorFlags,p2);
-    this.setHoldFrame(hitStop);
 }
 /*This player just hit the other player*/
 Player.prototype.giveHit = function(frame,attackFlags,hitStop,energyToAdd,behaviorFlags,otherPlayer)
 {
+    this.setHoldFrame(hitStop);
     var slideRemainder = 0;
     this.stopGettingDizzy();
     if(hasFlag(attackFlags,ATTACK_FLAGS.THROW_START))

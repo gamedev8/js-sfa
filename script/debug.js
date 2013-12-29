@@ -8,6 +8,125 @@ function GetDebugInstance(game)
 
     }
 
+
+    Debug.prototype.maxOutEnergy = function()
+    {
+        game_.getMatch().getTeamA().getEnergybar().change(1000);
+        game_.getMatch().getTeamB().getEnergybar().change(1000);
+    }
+
+    //test player battle 
+    Debug.prototype.practice = function (t1, t2, stage)
+    {
+        window.document.getElementById("chkPracticeMode").checked = "checked";
+        this.setPracticeMode(true);
+
+        t1 = t1 || [];
+        t2 = t2 || [];
+
+        var teamA = [0];
+        var teamB = [1];
+
+        for(var a = 0; a < t1.length; ++a)
+        {
+            t1[a].B = t1[a].B || false;
+            t1[a].C = t1[a].C || false;
+        }
+
+        for(var a = 0; a < t2.length; ++a)
+        {
+            t2[a].B = t2[a].B || false;
+            t2[a].C = t2[a].C || false;
+        }
+
+
+        for(var a = 0; a < t1.length; ++a)
+        {
+            for(var b = 0; b < t2.length; ++b)
+            {
+                if(t1[a].A === t2[b].A)
+                {
+                    if(!!t1[a].B)
+                        t2[b].B = false;
+                    if(!!t2[b].B)
+                        t1[a].B = false;
+                    if(!t1[a].B && !t2[b].B)
+                        t2[b].B = true;
+                }
+            }
+        }
+
+        /*TEAM 1*/
+        if(!!t1[0])
+            user1_.setChar(t1[0].A, t1[0].B, t1[0].C);
+        else
+            user1_.setChar(CHARACTERS.KEN);
+
+        if(!!t1[1])
+        {
+            if(!!t1[1].D)
+            {
+                teamB.pop();
+                user2_.setChar(t1[1].A, t1[1].B, t1[1].C);
+                teamA.push(1);
+            }
+            else
+            {
+                user3_.setChar(t1[1].A, t1[1].B, t1[1].C);
+                teamA.push(2);
+            }
+        }
+        if(!!t1[2])
+        {
+            user4_.setChar(t1[2].A, t1[2].B, t1[2].C);
+            teamA.push(3);
+        }
+        if(!!t1[3])
+        {
+            user5_.setChar(t1[3].A, t1[3].B, t1[3].C);
+            teamA.push(4);
+        }
+
+        /*TEAM 2*/
+        if(!!t1[1] && !!t1[1].D)
+        {
+            if(!!t2[0])
+                user3_.setChar(t2[0].A, t2[0].B, t2[0].C);
+            else
+                user3_.setChar(CHARACTERS.RYU);
+            
+            teamB.push(2);
+        }
+        else
+        {
+            if(!!t2[0])
+                user2_.setChar(t2[0].A, t2[0].B, t2[0].C);
+            else
+                user2_.setChar(CHARACTERS.RYU);
+        }
+
+        if(!!t2[1])
+        {
+            user6_.setChar(t2[1].A, t2[1].B, t2[1].C);
+            teamB.push(5);
+        }
+        if(!!t2[2])
+        {
+            user7_.setChar(t2[2].A, t2[2].B, t2[2].C);
+            teamB.push(6);
+        }
+        if(!!t2[3])
+        {
+            user8_.setChar(t2[3].A, t2[3].B, t2[3].C);
+            teamB.push(7);
+        }
+
+        __noDamage = true;
+
+        game_.startMatch(MATCH_STATES.PRACTICE_MODE, teamA, teamB, stages_[stage || "guy"]);
+    }
+
+
     Debug.prototype.p1 = function()
     {
         if(!!game_.getMatch())
@@ -36,40 +155,19 @@ function GetDebugInstance(game)
         return null;
     }
 
-    Debug.prototype.p1SendInput = function(input)
+    Debug.prototype.p1Execute = function(input)
     {
         if(!!game_.getMatch())
-            return game_.getMatch().getTeamA().getPlayer(0).sendInput(input);
+            if(this.p1().Ai.isRunning())
+                return this.p1().Ai.getManaged().execute(input);
         return null;
     }
 
-    Debug.prototype.p1ClearInput = function()
+    Debug.prototype.p2Execute = function()
     {
         if(!!game_.getMatch())
-            return game_.getMatch().getTeamA().getPlayer(0).clearInput();
-        return null;
-    }
-
-    Debug.prototype.p2SendInput = function(input)
-    {
-        if(!!game_.getMatch())
-            return game_.getMatch().getTeamB().getPlayer(0).sendInput(input);
-        return null;
-    }
-
-    Debug.prototype.p2ClearInput = function()
-    {
-        if(!!game_.getMatch())
-            return game_.getMatch().getTeamB().getPlayer(0).clearInput();
-        return null;
-    }
-
-    Debug.prototype.p1TestAI = function()
-    {
-        if(!!game_.getMatch())
-        {
-            this.p1().enableAI();
-        }
+            if(this.p2().Ai.isRunning())
+                return this.p2().Ai.getManaged().execute(input);
         return null;
     }
 
@@ -78,44 +176,6 @@ function GetDebugInstance(game)
         if(!!game_.getMatch())
         {
             this.p2().enableAI();
-        }
-        return null;
-    }
- 
-    Debug.prototype.p1AI = function(data)
-    {
-        if(!!game_.getMatch())
-        {
-            if(!this.p1().Ai.isRunning())
-                this.p1().enableAI();
-        }
-        return !!data ? this.p1().Ai.getManaged().execute(data) : this.p1().Ai.getManaged();
-    }
- 
-    Debug.prototype.p2AI = function(data)
-    {
-        if(!!game_.getMatch())
-        {
-            if(!this.p2().Ai.isRunning())
-                this.p2().enableAI();
-        }
-        return !!data ? this.p2().Ai.getManaged().execute(data) : this.p2().Ai.getManaged();
-    }
-
-    Debug.prototype.t1TestAI = function(index)
-    {
-        if(!!game_.getMatch())
-        {
-            this.t1(index || 0).enableAI();
-        }
-        return null;
-    }
- 
-    Debug.prototype.t2TestAI = function(index)
-    {
-        if(!!game_.getMatch())
-        {
-            this.t2(index || 0).enableAI();
         }
         return null;
     }

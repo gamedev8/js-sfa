@@ -282,8 +282,8 @@ var CreateAnnouncer = function()
             fight_.IsAnimating = fight_.Animation.tryRender(frame, fight_);
         if(perfect_.IsAnimating && perfect_.StartFrame <= frame)
             perfect_.IsAnimating = perfect_.Animation.tryRender(frame, perfect_);
-        if(scf_.IsAnimating)
-            scf_.IsAnimating = scf_.Animation.tryRender(frame, scf_);
+        //if(scf_.IsAnimating)
+        //    scf_.IsAnimating = scf_.Animation.tryRender(frame, scf_);
     }
 
     return new Announcer();

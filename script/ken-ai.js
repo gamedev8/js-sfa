@@ -43,7 +43,7 @@
 
     var kicks_ = [ [ {IsDown:true,Button:BUTTONS.LIGHT_KICK} ] ,[ {IsDown:true,Button:BUTTONS.MEDIUM_KICK} ] ,[ {IsDown:true,Button:BUTTONS.HARD_KICK} ] ];
     var punches_ = [ [ {IsDown:true,Button:BUTTONS.LIGHT_PUNCH} ] ,[ {IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ] ,[ {IsDown:true,Button:BUTTONS.HARD_PUNCH} ], [ {IsDown:true,Button:BUTTONS.FORWARD}, {IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ] ];
-    var lowKicks_ = [ [ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.LIGHT_KICK} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.MEDIUM_KICK} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.HARD_KICK} ] ];
+    var lowKicks_ = [ [ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.LIGHT_KICK} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.MEDIUM_KICK} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.HARD_KICK} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.FORWARD}, {IsDown:true,Button:BUTTONS.MEDIUM_KICK} ] ];
     var lowPunches_ = [ [ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.LIGHT_PUNCH} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.MEDIUM_PUNCH} ] ,[ {IsDown:true,Button:BUTTONS.CROUCH}, {IsDown:true,Button:BUTTONS.HARD_PUNCH} ] ];
     var jumpInInput = [ {IsDown:true,Button:BUTTONS.FORWARD}, {IsDown:true,Button:BUTTONS.JUMP} ];
     var jumpOutInput = [ {IsDown:true,Button:BUTTONS.BACK}, {IsDown:true,Button:BUTTONS.JUMP} ];
@@ -129,7 +129,10 @@
             ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k3"}, {A:12, B:"k2", H:true}, {A:10, B:"lk2"}, {A:12, B:"lk2"}, {A:13, B:"p3"}, {A:11, B:"k3"}]
             ,[{A:0,B:"get_close", C:-50}, {A:0, B:"p3"}, {A:6, B:"p1", H:true}, {A:16, B:"lp1"}, {A:12, B:"p3"}, {A:17, B:"lk2"}, {A:15, B:"fb1"}]            
             ,[this.AI.GET_REAL_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
-            ];
+
+            ,[{B:"get_close", C:0}, {A:0, B:"flk2", AC:true}, {B:"lp1"}, {B:"flk2"}, {B:"lk1"}, {B:"flk2"}, {B:"lp1"}, {B:"lk2"}, {B:"lk3"}, {B:"sfb1"}]
+        ];
+
         this.AI.CloseCombos = [
              [{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}]
             ,[{A:0,B:"get_close", C:100,D:-999}, {A:0,B:"lk2", H:true}, {A:0,B:"u1"}]
@@ -182,28 +185,28 @@
             ,[{A:5, B:"fj"}, {A:20, B:"p3"}, {A:28,B:"lk3"}]
             ,[{A:2, B:"fj"}, {A:20, B:"hk3"}]
             ,[{A:2, B:"fj"}, {A:20, B:"hk2"}]
-            ,[{A:0, B:"roll2_in"}]
+            ,[{A:0, B:"fr2"}]
         ];
 
         this.AI.RollInCombos = [
-            [{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2"}]
-            ,[{A:0,B:"roll3_in", C:230,E:230}, {A:0,B:"k2", H:true}, {A:9,B:"sfb1"}]
-            ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3"}]
-            ,[{A:0,B:"roll3_in", C:240,E:240}, {A:0,B:"k3", H:true}, {A:9,B:"sfb1"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk3"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2"}]
-            ,[{A:0,B:"roll3_in", C:170,E:170}, {A:0,B:"lk2", H:true}, {A:9,B:"sfb1"}]
-            ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2", H:true}, {A:9,B:"sfb1"}]
-            ,[{A:0,B:"roll3_in", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"roll3_in"}, {A:15, B:"k3"}]
-            ,[{A:0,B:"roll3_in", C:90}, {A:0,B:"lk2", H:true}, {A:4,B:"roll3_in"}, {A:23,B:"lk2"}, {A:9,B:"hk1"}]
-            ,[{A:0,B:"roll3_in"}, {A:5, B:"fb3"}]
-            ,[{A:0,B:"roll3_in"}, {A:10, B:"fb3"}]
-            ,[{A:0,B:"roll3_in"}, {A:15, B:"fb3"}]
+            [{A:0,B:"fr3", C:230,E:230}, {A:0,B:"k2"}]
+            ,[{A:0,B:"fr3", C:230,E:230}, {A:0,B:"k2", H:true}, {A:9,B:"sfb1"}]
+            ,[{A:0,B:"fr3", C:240,E:240}, {A:0,B:"k3"}]
+            ,[{A:0,B:"fr3", C:240,E:240}, {A:0,B:"k3", H:true}, {A:9,B:"sfb1"}]
+            ,[{A:0,B:"fr3", C:170,E:170}, {A:0,B:"lk3"}]
+            ,[{A:0,B:"fr3", C:170,E:170}, {A:0,B:"lk2"}]
+            ,[{A:0,B:"fr3", C:170,E:170}, {A:0,B:"lk2", H:true}, {A:9,B:"sfb1"}]
+            ,[{A:0,B:"fr3", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"fr3"}, {A:23,B:"lk2", H:true}, {A:9,B:"sfb1"}]
+            ,[{A:0,B:"fr3", C:190}, {A:0,B:"lk2",H:true}, {A:4,B:"fr3"}, {A:15, B:"k3"}]
+            ,[{A:0,B:"fr3", C:90}, {A:0,B:"lk2", H:true}, {A:4,B:"fr3"}, {A:23,B:"lk2"}, {A:9,B:"hk1"}]
+            ,[{A:0,B:"fr3"}, {A:5, B:"fb3"}]
+            ,[{A:0,B:"fr3"}, {A:10, B:"fb3"}]
+            ,[{A:0,B:"fr3"}, {A:15, B:"fb3"}]
         ];
 
         this.AI.CounterCloseJumpInCombos = [
-            [{A:0,B:"roll1_in"}]
-            ,[{A:0,B:"roll2_in"}]
+            [{A:0,B:"fr1"}]
+            ,[{A:0,B:"fr2"}]
         ];
     }
 
@@ -578,27 +581,52 @@
     KenAI.prototype.execute = function(sequence)
     {
         var input = null;
+        var mustHit = false;
+        var autoContinue = false;
         for(var i = 0; i < sequence.length; ++i)
         {
+            var requiredState = 0;
+            //mustHit is applied after the array element at which it was found
+            if(!!mustHit)
+                sequence[i].H = true;
+            if(!!autoContinue && sequence[i].AC === undefined)
+                sequence[i].AC = true;
+
+            if(!!sequence[i].MH)
+                mustHit = true;
+            if(!!sequence[i].AC)
+                autoContinue = true;
+
+            if(sequence[i].B == "lp1" || sequence[i].B == "lp2" || sequence[i].B == "lp3" || sequence[i].B == "lk1" || sequence[i].B == "flk2" || sequence[i].B == "lk2" || sequence[i].B == "lk3") { requiredState = POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "p1" || sequence[i].B == "p3" || sequence[i].B == "k1" || sequence[i].B == "k3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "u1" || sequence[i].B == "u2" || sequence[i].B == "u3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "hk1" || sequence[i].B == "hk2" || sequence[i].B == "hk3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "fb1" || sequence[i].B == "fb2" || sequence[i].B == "fb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
+            else if(sequence[i].B == "sfb1" || sequence[i].B == "sfb2" || sequence[i].B == "sfb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            else if(sequence[i].B == "su1" || sequence[i].B == "su2" || sequence[i].B == "su3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
+            else if(sequence[i].B == "p2" || sequence[i].B == "k2") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
             input = null;
+
             switch(sequence[i].B)
             {
-                case "roll3_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.hardRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
-                case "roll2_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.mediumRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
-                case "roll1_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.lightRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
+                case "fr3" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.hardRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
+                case "fr2" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.mediumRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
+                case "fr1" : { if(this.AI.getClosestEnemy().X < (sequence[i].E)) { this.AI.reset(); return; }; this.lightRollInToEnemy(sequence[i].A,sequence[i].C); continue; }
+                case "f" : { input = fwd_; break; }
+                case "b" : { input = bk_; break; }
                 case "j" : { this.AI.jumpUp(); break; } case "fj" : { this.AI.jumpTowardEnemy(); break; } case "bj" : { this.AI.jumpAwayFromEnemy(); break; }
                 case "get_close" : { this.AI.moveToEnemy(0,sequence[i].C); break; } case "jump_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].D || this.AI.TOO_CLOSE)) { return; }; this.AI.jumpInToEnemy(0,sequence[i].C); break; }
                 case "lp1" : { input = lowPunches_[0]; break; } case "lp2" : { input = lowPunches_[1]; break; } case "lp3" : { input = lowPunches_[2]; break; }
                 case "p1" : { input = punches_[0]; break; } case "p2" : { input = punches_[1]; break; } case "fp2" : { input = punches_[3]; break; } case "p3" : { input = punches_[2]; break; }
                 case "k1" : { input = kicks_[0]; break; } case "k2" : { input = kicks_[1]; break; } case "k3" : { input = kicks_[2]; break; }
-                case "lk1" : { input = lowKicks_[0]; break; } case "lk2" : { input = lowKicks_[1]; break; } case "lk3" : { input = lowKicks_[2]; break; }
+                case "lk1" : { input = lowKicks_[0]; break; } case "flk2" : { input = lowKicks_[3]; break; } case "lk2" : { input = lowKicks_[1]; break; } case "lk3" : { input = lowKicks_[2]; break; }
                 case "fb1" : { input = lightFireballInput_; break; } case "fb2" : { input = mediumFireballInput_; break; } case "fb3" : { input = hardFireballInput_; break; }
                 case "sfb1" : { input = lightSuperFireballInput_; break; } case "sfb2" : { input = mediumSuperFireballInput_; break; } case "sfb3" : { input = hardSuperFireballInput_; break; }
                 case "hk1" : { input = lightSKickInput_; break; } case "hk2" : { input = mediumSKickInput_; break; } case "hk3" : { input = hardSKickInput_; break; }
                 case "u1" : { input = lightUppercutInput_; break; } case "u2" : { input = mediumUppercutInput_; break; } case "u3" : { input = hardUppercutInput_; break; }
                 case "t1" : { this.executeThrow(0,true); break; }
             };
-            this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H);
+            this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H, undefined, sequence[i].AC, requiredState);
         }
         this.AI.sendInput(FLAGS.CLEAR_INPUT,2);
     }
@@ -606,7 +634,7 @@
     KenAI.prototype.onEnemyDizzy = function(frame,attacker)
     {
         this.AI.reset();
-        this.throwSuperFireball();
+        this.doVeryCloseCombo();
         this.AI.setBusy();
     }
 

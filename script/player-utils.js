@@ -809,6 +809,7 @@ var spriteLookup_ = CreateSpriteLookup();
         this.FlagsToSet.Player = !!flagsToSet ? (flagsToSet.Player || 0) : 0;
         this.FlagsToSet.Pose = !!flagsToSet ? (flagsToSet.Pose || 0) : 0;
         this.FlagsToSet.Combat = !!flagsToSet ? (flagsToSet.Combat || 0) : 0;
+        this.FlagsToSet.RCombat = !!flagsToSet ? (flagsToSet.RCombat || 0) : 0;
         this.FlagsToSet.Combo = !!flagsToSet ? (flagsToSet.Combo || 0) : 0;
         this.FlagsToSet.Spawn = !!flagsToSet ? (flagsToSet.Spawn || 0) : 0;
         this.FlagsToSet.AI = !!flagsToSet ? (flagsToSet.AI || 0) : 0;
@@ -823,6 +824,7 @@ var spriteLookup_ = CreateSpriteLookup();
         this.FlagsToClear.Player = !!flagsToClear ? (flagsToClear.Player || 0) : 0;
         this.FlagsToClear.Pose = !!flagsToClear ? (flagsToClear.Pose || 0) : 0;
         this.FlagsToClear.Combat = !!flagsToClear ? (flagsToClear.Combat || 0) : 0;
+        this.FlagsToClear.RCombat = !!flagsToClear ? (flagsToClear.RCombat || 0) : 0;
         this.FlagsToClear.Combo = !!flagsToClear ? (flagsToClear.Combo || 0) : 0;
         this.FlagsToClear.Spawn = !!flagsToClear ? (flagsToClear.Spawn || 0) : 0;
         this.FlagsToClear.AI = !!flagsToClear ? (flagsToClear.AI || 0) : 0;
@@ -859,6 +861,7 @@ var spriteLookup_ = CreateSpriteLookup();
         //eg. this.Jump = {Fx:10, Fy:200};
         this.Jump = null;
         this.TeleportSpeed = 0;
+        this.DizzyFactor = 1;
     }
     Frame.prototype.hitStop = function(me,you)
     {

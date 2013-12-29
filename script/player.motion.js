@@ -297,7 +297,7 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
 {
     this.unreverseSprite();
     this.MustChangeDirection = 0;
-    var pnlStageWidth = STAGE.CSSWIDTH;
+    var pnlStageWidth = STAGE.MAX_STAGEX;
     var imgWidth = this.getBoxWidth(); //parseInt(this.SpriteElement.style.width) || 0;
 
 

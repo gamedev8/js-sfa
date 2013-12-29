@@ -93,12 +93,14 @@ var CreateInsertCoinScreen = function(u1,u2)
         insertCoinElement_.className = "insert-coin";
         insertCoinElement_.id = "pnlInsertCoin";
         parent_.appendChild(insertCoinElement_);
+        centerElement(insertCoinElement_);
 
         creditsElement_ = window.document.createElement("div");
         creditsElement_.className = "credits";
         creditsElement_.id = "pnlCredits";
         creditsElement_.style.display = "none";
         parent_.appendChild(creditsElement_);
+        centerElement(creditsElement_);
 
         creditsTextElement_ = window.document.createElement("div");
         creditsTextElement_.className = "credits-text";

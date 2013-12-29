@@ -165,6 +165,7 @@ var POSE_FLAGS =
     ,FORCE_CHANGE_TARGET:1 << 24
     ,FREEZE:1 << 25
     ,AIR_MISC_0:1 << 26
+    ,PENDING_JUMP:1 << 27
 }
 
 
@@ -189,6 +190,11 @@ var COMBAT_FLAGS =
     ,IGNORE_CLEAR_FIRE:1 << 16
     ,MULTI_PROJECTILE:1 << 17
     ,TELEPORT:1 << 18
+}
+
+var RCOMBAT_FLAGS =
+{
+    IGNORE_CLEAR_DIZZY:1 << 0
 }
 
 var HIT_REACT = 
@@ -307,16 +313,16 @@ var QUIT_MATCH =
 var STAGE = 
 {
     MIN_X:0
-    ,MAX_X:640
-    ,MAX_BG1_SCROLL:-760
+    ,MAX_X:840
+    /*,MAX_BG1_SCROLL:-760*/
     ,MIN_STAGEX:0
+    ,STANDARD_WIDTH:768
     ,MAX_STAGEX:768
     ,START_X:150
     ,START_X_OFFSET:50
     ,FLOORY:59
     ,VERT_SCROLL_Y:180
     ,SCROLLY_FACTOR:0.5
-    ,CSSWIDTH:768
 }
 
 var USER_DATA_TYPES = 
@@ -662,10 +668,11 @@ var KEY_STATES =
 var GAME_STATES = 
 {
     NONE:0
-    ,PAUSED:1
-    ,STEP_FRAME:2
-    ,INSERT_COIN:3
-    ,CHAR_SELECT:4
-    ,MATCH:5
+    ,PAUSED:1 << 1
+    ,STEP_FRAME:1 << 2
+    ,INSERT_COIN:1 << 3
+    ,CHAR_SELECT:1 << 4
+    ,MATCH:1 << 5
+    ,AUDIO_LOADING:1 << 6
 };
 

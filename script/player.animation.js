@@ -763,7 +763,7 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
             this.IgnoreDeadAnimation = false;
 
         this.Flags.Juggle.clear();
-        this.CurrentAnimation.ID = _c3(this.Id,this.CurrentAnimation.Animation.BaseAnimation.Name,game_.getCurrentFrame());
+        this.CurrentAnimation.ID = _c3(this.Id, this.CurrentAnimation.Animation.BaseAnimation.Name, game_.getCurrentFrame());
 
         this.Flags.Juggle.add(this.CurrentAnimation.Animation.Flags.Juggle);
 
@@ -796,6 +796,8 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         this.clearInterupt();
         this.checkPendingHit();
         this.setPendingGrapple(false);
+        if(!newAnimation.Animation.IsThrow)
+            this.abortThrow();
         if(this.getIsExecutingSuperMove())
         {
             this.getMatch().onSuperMoveCompleted(this);
@@ -956,6 +958,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Player.remove((this.CurrentFrame.FlagsToSet.Player | Player.prototype.PlayerFlagsToIgnore) ^ Player.prototype.PlayerFlagsToIgnore);
         this.Flags.Pose.remove((this.CurrentFrame.FlagsToSet.Pose | Player.prototype.PoseFlagsToIgnore ) ^ Player.prototype.PoseFlagsToIgnore);
         this.Flags.Combat.remove((this.CurrentFrame.FlagsToSet.Combat | Player.prototype.CombatFlagsToIgnore) ^ Player.CombatFlagsToIgnore);
+        //this.Flags.RCombat.remove(this.CurrentFrame.FlagsToSet.RCombat);
         this.Flags.Combo.remove(this.CurrentFrame.FlagsToSet.Combo);
         this.Flags.Juggle.remove(this.CurrentFrame.FlagsToSet.Juggle);
 
@@ -1067,6 +1070,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
         this.Flags.Spawn.add(newFrame.FlagsToSet.Spawn);
         this.Flags.Combo.add(newFrame.FlagsToSet.Combo);
+        //this.Flags.RCombat.add(newFrame.FlagsToSet.RCombat);
         this.Flags.Juggle.add(newFrame.FlagsToSet.Juggle);
 
 
@@ -1078,6 +1082,7 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         this.Flags.Player.remove(newFrame.FlagsToClear.Player);
         this.Flags.Spawn.remove(newFrame.FlagsToClear.Spawn);
         this.Flags.Combo.remove(newFrame.FlagsToClear.Combo);
+        //this.Flags.RCombat.remove(newFrame.FlagsToClear.RCombat);
         this.Flags.Juggle.remove(newFrame.FlagsToClear.Juggle);
 
         this.ClipHitFront = newFrame.ClipHitFront || 0;

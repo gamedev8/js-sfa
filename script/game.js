@@ -1,4 +1,11 @@
 ﻿
+var spnFPS_ = window.document.getElementById("spnFPS");
+var spnTargetFPS_ = window.document.getElementById("spnTargetFPS");
+var spnLag_ = window.document.getElementById("spnLag");
+var spnTargetFrames_ = window.document.getElementById("spnTargetFrames");
+var spnFrameTime_ = window.document.getElementById("spnFrameTime");
+var pnlStage_ = window.document.getElementById("pnlStage");
+
 var GetWidth = function(element)
 {
     return element.clientWidth;
@@ -9,12 +16,15 @@ var GetHeight = function(element)
     return element.clientHeight;
 }
 
+var centerElement = function(element)
+{
+    var screenWidth = GetWidth(pnlStage_);
 
-var spnFPS_ = window.document.getElementById("spnFPS");
-var spnTargetFPS_ = window.document.getElementById("spnTargetFPS");
-var spnLag_ = window.document.getElementById("spnLag");
-var spnTargetFrames_ = window.document.getElementById("spnTargetFrames");
-var spnFrameTime_ = window.document.getElementById("spnFrameTime");
+    var w = parseInt(GetWidth(element));
+    if(!w) w = 0;
+    var diff = (screenWidth - w) / 2;
+    element.style.left = diff + "px";
+}
 
 
 var CreateGame = function()
@@ -49,6 +59,10 @@ var CreateGame = function()
     var maxWinsPerMatch_ = 2;
     var resetSpeedAtFrame_ = 0;
     var enableTeamMode_ = false;
+    var difficulty_ = 90; //out of 100
+    var standardScreenWidth_ = 768;
+    var defaultTeamModeScreenWidth_ = 1068;
+    var teamModeScreenWidth_ = defaultTeamModeScreenWidth_;
 
     //Encapulates a new game
     var Game = function ()
@@ -60,8 +74,16 @@ var CreateGame = function()
         this.VCR = vcr_;
     }
 
+    Game.prototype.getDifficulty = function() { return difficulty_; }
     Game.prototype.isTeamMode = function() { return enableTeamMode_; }
     Game.prototype.setTeamMode = function(value) { enableTeamMode_ = value; }
+    Game.prototype.setTeamModeScreenWidth = function(value)
+    {
+        if(!!+value && value > 0)
+        {
+            teamModeScreenWidth_ = +value || defaultTeamModeScreenWidth_;
+        }
+    }
     Game.prototype.gameLoopState = function() { return gameLoopState_; }
     Game.prototype.isRecording = function() { return vcr_.isRecording(); }
     Game.prototype.isPlayingVHS = function() { return vcr_.isPlaying(); }
@@ -81,7 +103,7 @@ var CreateGame = function()
     Game.prototype.startRandomMatch = function()
     {
         var chars = [CHARACTERS.RYU,CHARACTERS.KEN,CHARACTERS.MBISON,CHARACTERS.SAGAT,CHARACTERS.AKUMA];
-        var stages = ["ken", "ryu", "sodom", "dramatic_battle", "akuma", "sagat", "chunli", "guy", "rose"];
+        var stages = ["ken", "ryu", "sodom", "dramatic_battle", "akuma", "sagat", "chunli", "guy"];
 
         var t1 = [2];
         var t2 = [3];
@@ -106,6 +128,24 @@ var CreateGame = function()
         var stage = stages_[stages[getRand(stages.length)]];
 
         this.startMatch(false,t1,t2,stage)
+    }
+
+    Game.prototype.onAudioLoading = function()
+    {
+        this.addState(GAME_STATES.AUDIO_LOADING);
+        if(!this.isPaused())
+        {
+            this.pause();
+        }
+    }
+
+    Game.prototype.onAudioDoneLoading = function()
+    {
+        this.removeState(GAME_STATES.AUDIO_LOADING);
+        if(this.isPaused())
+        {
+            this.resume();            
+        }
     }
 
     Game.prototype.loadVHS = function(id)
@@ -316,6 +356,16 @@ var CreateGame = function()
 
     Game.prototype.startMatch = function(matchState,teamAIndexes,teamBIndexes,stage,callback)
     {
+
+        if(teamAIndexes.length + teamBIndexes.length > 3)
+        {
+            STAGE.MAX_STAGEX = teamModeScreenWidth_;
+        }
+        else
+        {
+            STAGE.MAX_STAGEX = standardScreenWidth_;
+        }
+
         this.resetGameData();
         gameLoopState_ = GAME_STATES.MATCH;
 
@@ -380,6 +430,8 @@ var CreateGame = function()
 
     Game.prototype.startCharSelect = function()
     {
+        pnlStage_.style.width = STAGE.STANDARD_WIDTH + "px";
+
         this.resetGameData();
         gameLoopState_ = GAME_STATES.CHAR_SELECT;
         charSelect_ = CreateCharSelect(users_);
@@ -390,6 +442,8 @@ var CreateGame = function()
 
     Game.prototype.startInsertCoinScreen = function()
     {
+        pnlStage_.style.width = STAGE.STANDARD_WIDTH + "px";
+
         this.resetGameData();
         gameLoopState_ = GAME_STATES.INSERT_COIN;
         insertCoinScreen_ = CreateInsertCoinScreen(user1_,user2_);
@@ -483,7 +537,16 @@ var CreateGame = function()
     {
         this.addState(GAME_STATES.PAUSED);
         this.addState(GAME_STATES.STEP_FRAME);
-        window.document.getElementById("spnState").innerHTML = "State: <span>Frame by frame</span>"
+        if(!!this.hasState(GAME_STATES.AUDIO_LOADING))
+        {
+            window.document.getElementById("spnState").innerHTML = "State: <span class=\"audio-loading\">Loading...</span>"
+            pnlStage_.style.opacity = 0;
+        }
+        else
+        {
+            window.document.getElementById("spnState").innerHTML = "State: <span>Frame by frame</span>"
+        }
+
         window.document.getElementById("spnState").className = "state paused"
         window.document.getElementById("spnStepFrame").className = "state running"
         window.document.getElementById("spnResume").className = "state running"
@@ -501,6 +564,7 @@ var CreateGame = function()
     Game.prototype.resume = function()
     {
         this.removeState(GAME_STATES.PAUSED);
+        pnlStage_.style.opacity = 1;
         window.document.getElementById("spnState").innerHTML = "State: <span>Running</span>";
         window.document.getElementById("spnState").className = "state running";
         window.document.getElementById("spnStepFrame").className = ""
@@ -560,22 +624,27 @@ var CreateGame = function()
     Game.prototype.handleKeyPress = function(e,isDown)
     {
         var keyCode = e.which || e.keyCode;
-        Alert(keyCode);
+        //Alert(keyCode);
 
 
-        if(this.wasKeyPressed(KEYS.O,keyCode,isDown))
+        if(!this.hasState(GAME_STATES.AUDIO_LOADING))
         {
-            this.pause();
+            if(this.wasKeyPressed(KEYS.O,keyCode,isDown))
+            {
+                this.pause();
+            }
+            if(this.wasKeyPressed(KEYS.P,keyCode,isDown))
+            {
+                this.resume();
+            }
         }
-        if(this.wasKeyPressed(KEYS.P,keyCode,isDown))
-        {
-            this.resume();
-        }
+
         if(this.wasKeyPressed(KEYS.ESCAPE,keyCode,isDown))
         {
             frame_ = CONSTANTS.MAX_FRAME + 1;
             this.end();
         }
+
         if(this.wasKeyPressed(KEYS.EIGHT,keyCode,isDown))
             this.speedUp();
         if(this.wasKeyPressed(KEYS.NINE,keyCode,isDown))
@@ -594,6 +663,9 @@ var CreateGame = function()
         {
             buttonState_["_" + keyCode] = BUTTON_STATE.JUST_RELEASED;
         }
+
+        if(!!this.hasState(GAME_STATES.AUDIO_LOADING))
+            return;
 
         if(!!managed_ && !!managed_.onKeyStateChanged)
         {
@@ -670,16 +742,16 @@ var CreateGame = function()
     /*Shows the frame rate on screen*/
     Game.prototype.showFPS = function()
     {
-        if(frame_ % targetFPS_ == 0)
-        {
-            var now = this.getCurrentTime();
-            var elapsed = now - lastTime_;
-            spnFPS_.innerHTML = now - lastTime_;
-            lastTime_ = now;
+        //if(frame_ % targetFPS_ == 0)
+        //{
+        //    var now = this.getCurrentTime();
+        //    var elapsed = now - lastTime_;
+        //    spnFPS_.innerHTML = now - lastTime_;
+        //    lastTime_ = now;
 
             //var fps = Math.floor(CONSTANTS.FPS_VALUE / elapsed);
             //spnFPS_.innerHTML = fps;
-        }
+        //}
     }
 
     Game.prototype.stop = function()
@@ -758,6 +830,7 @@ var CreateGame = function()
             delta_ = end_ - start;
             delay_ = delta_ > speed_ ? 0 : speed_ - delta_;
 
+            //nextTimeout_ = window.requestAnimFrame(runGameLoop_,speed_);
             nextTimeout_ = window.setTimeout(runGameLoop_,delay_);
         }
         else
