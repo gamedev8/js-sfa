@@ -599,10 +599,15 @@ var CreateCharSelect = function(users)
             ch = CHARACTERS.RYU;
 
             var isRyu = team.some(function(a) { return (users[a].Selected == CHARACTERS.RYU); });
-            if(!!isRyu)
+            var isAkuma = team.some(function(a) { return (users[a].ForceAkumaTeamMate == true); });
+
+            if(!!isAkuma)
+                ch = CHARACTERS.AKUMA;
+            else if(!!isRyu)
                 ch = CHARACTERS.KEN;
             else
                 ch = CHARACTERS.RYU;
+
         }
         var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
 

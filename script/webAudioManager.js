@@ -7,9 +7,9 @@ var CreateWebAudioManager = function()
 
     var getWebAudioContext = function() 
     {
-        //if(!!window.AudioContext)
-        //    return new AudioContext();
-        //else
+        if(!!window.AudioContext)
+            return new AudioContext();
+        else
             return new webkitAudioContext();
     }
 

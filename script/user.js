@@ -32,9 +32,9 @@
                 case 1: { return ["images/misc/misc/char-ryu-r.png"]; break;}
                 case 2: { return ["images/misc/misc/char-sagat-r.png"]; break;}
                 case 3: { return ["images/misc/misc/char-mbison-r.png"]; break;}
-                case 4: { return ["images/misc/misc/char-ken-r.png"]; break;}
-                case 5: { return ["images/misc/misc/char-ryu-r.png"]; break;}
-                case 6: { return ["images/misc/misc/char-sagat-r.png"]; break;}
+                case 4: { return ["images/misc/misc/char-sagat-r.png"]; break;}
+                case 5: { return ["images/misc/misc/char-ken-r.png"]; break;}
+                case 6: { return ["images/misc/misc/char-ryu-r.png"]; break;}
                 case 7: { return ["images/misc/misc/char-mbison-r.png"]; break;}
                 default : { return ["images/misc/misc/question-0.png"]; break;}
             }
@@ -50,9 +50,9 @@
             case 1: { return [CHARACTERS.RYU]; break;}
             case 2: { return [CHARACTERS.SAGAT]; break;}
             case 3: { return [CHARACTERS.MBISON]; break;}
+            case 4: { return [CHARACTERS.SAGAT,CHARACTERS.SAGAT,CHARACTERS.MBISON]; break;}
             case 5: { return [CHARACTERS.KEN,CHARACTERS.RYU,CHARACTERS.SAGAT]; break;}
             case 6: { return [CHARACTERS.RYU,CHARACTERS.SAGAT,CHARACTERS.MBISON]; break;}
-            case 4: { return [CHARACTERS.SAGAT,CHARACTERS.SAGAT,CHARACTERS.MBISON]; break;}
             case 7: { return [CHARACTERS.MBISON,CHARACTERS.AKUMA,CHARACTERS.AKUMA]; break;}
             default : { return [CHARACTERS.RYU]; break;}
         }
@@ -119,6 +119,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad
     this.ShowSelectIcon = false;
     this.StoryMode = CreateStoryMode();
     this.StoryModeLevel = 0;
+    this.ForceAkumaTeamMate = false;
 }
 
 User.prototype.setTeam = function(value)
@@ -227,6 +228,7 @@ User.prototype.reset = function()
     this.Player = null;
     this.Team = null;
     this.IsInStoryMode = false;
+    this.ForceAkumaTeamMate = false;
 }
 
 User.prototype.hasCredits = function()
@@ -464,8 +466,12 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
             else if(keyCode == this.Up) direction = CONSTANTS.UP;
             else if(keyCode == this.Left) direction = CONSTANTS.LEFT;
             else if(keyCode == this.Right) direction = CONSTANTS.RIGHT;
-            else if(keyCode == this.P1 || keyCode == this.P2 || keyCode == this.P3 || keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3)
+            else if(keyCode == this.Turn || keyCode == this.P1 || keyCode == this.P2 || keyCode == this.P3 || keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3)
             {
+                if(keyCode == this.Turn)
+                    this.ForceAkumaTeamMate = true;
+                else
+                    this.ForceAkumaTeamMate = false;
                 /*
                 if(this.Selected == CHARACTERS.RYU
                     || this.Selected == CHARACTERS.KEN
