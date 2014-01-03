@@ -7,6 +7,10 @@ This is more of a "Chrome experiment". I have not really tested it in Firefox, S
 
 Player 1 keys:
 --------------
+Pause (Next frame): O
+Resume: P
+Coin: CNTRL
+Start: Enter
 light punch: A
 medium punch: S
 hard punch: D
