@@ -19,20 +19,3 @@ medium kick: X
 hard kick: C
 turn around: F
 walk, crouch, jump: Arrow keys
-
-
-Trick:
-------
-To quickly start a practice battle, bring up the browser console then execute the "debug_.practice()" function. For example:
-
-//1 on 1 match
-debug_.practice([{A:CHARACTERS.KEN}], [{A:CHARACTERS.RYU}])
-
-//1 on 1 match (with AI turned on for player 2)
-debug_.practice([{A:CHARACTERS.KEN}], [{A:CHARACTERS.AKUMA, C:true}])
-
-//2 on 3 match
-debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.RYU, C:true}], [{A:CHARACTERS.SAGAT, B:true, C:true}, {A:CHARACTERS.RYU, B:true, C:true}, {A:CHARACTERS.MBISON, B:true, C:true}])
-
-//3 on 4 match
-debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.SAGAT, B:false, C:true}, {A:CHARACTERS.SAGAT, B:true, C:true}], [{A:CHARACTERS.RYU, B:false, C:true}, {A:CHARACTERS.RYU, B:true, C:true}, {A:CHARACTERS.MBISON, B:true, C:true}, {A:CHARACTERS.AKUMA, B:true, C:true}])
