@@ -3,10 +3,16 @@ Street Fighter Alpha
 
 This is more of a "Chrome experiment". I have not really tested it in Firefox, Safari or IE.
 
-* Currently only Ken, Ryu, Sagat, MBison and Akuma are playable *
+Playable Characters
+--------------------
+Ken
+Ryu
+Sagat
+MBison
+Akuma
 
 Player 1 keys:
---------------
+--------------------
 Pause (Next frame): O
 Resume: P
 Coin: Control
@@ -22,8 +28,11 @@ walk, crouch, jump: Arrow keys
 
 
 Tips
---------------
-In the browser console, use the debug_.practice() function to quickly start a practice match.
+--------------------
+In the browser console, use the debug_.practice() function to quickly start practice matches.
+
+//start a 1 on 1 match vs Akuma (AI difficulty is maxed out)
+debug_.practice([{A:CHARACTERS.KEN}], [{A:CHARACTERS.AKUMA, C:true, D:100}], "guy")
 
 //start a 2 on 2 match
 debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.RYU, C:true}], [{A:CHARACTERS.MBISON, C:true}, {A:CHARACTERS.SAGAT, C:true}], "guy")
