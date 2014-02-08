@@ -1,4 +1,4 @@
-Street Fighter Alpha
+<h2>Street Fighter Alpha</h2>
 --------------------
 
 This is more of a "Chrome experiment". I have not really tested it in Firefox, Safari or IE.
@@ -19,3 +19,9 @@ medium kick: X
 hard kick: C
 turn around: F
 walk, crouch, jump: Arrow keys
+
+
+<h2>Tips</h2>
+-----------------
+Use <b>debug_.practice()</b> object to quickly start a practice match.
+debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.RYU, C:true}], [{A:CHARACTERS.MBISON, C:true}, {A:CHARACTERS.SAGAT, C:true}], "guy")
