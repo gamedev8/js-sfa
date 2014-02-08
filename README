@@ -23,5 +23,7 @@ walk, crouch, jump: Arrow keys
 
 Tips
 --------------
-Use <b>debug_.practice()</b> object to quickly start a practice match.
+In the browser console, use the debug_.practice() function to quickly start a practice match.
+
+//start a 2 on 2 match
 debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.RYU, C:true}], [{A:CHARACTERS.MBISON, C:true}, {A:CHARACTERS.SAGAT, C:true}], "guy")
