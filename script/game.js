@@ -58,7 +58,7 @@ var CreateGame = function()
     var match_ = null;
     var maxWinsPerMatch_ = 2;
     var resetSpeedAtFrame_ = 0;
-    var enableTeamMode_ = false;
+    var enableTeamMode_ = true;
     var difficulty_ = 90; //out of 100
     var standardScreenWidth_ = 768;
     var defaultTeamModeScreenWidth_ = 1068;
@@ -123,7 +123,22 @@ var CreateGame = function()
 
             t1 = [2,3];
             t2 = [4,5];
+
+            if(getRand(100) > 80)
+            {
+                var p5 = chars[getRand(chars.length)];
+                user7_.setChar(p5,(p5 == p1) || (p5 == p2) || (p5 == p3) || (p5 == p4),true);
+                t1 = [2,3,6];
+            }
+
+            if(getRand(100) > 80)
+            {
+                var p6 = chars[getRand(chars.length)];
+                user8_.setChar(p6,(p6 == p1) || (p6 == p2) || (p6 == p3) || (p6 == p4) || (p6 == p5),true);
+                t2 = [4,5,7];
+            }
         }
+
 
         var stage = stages_[stages[getRand(stages.length)]];
 
