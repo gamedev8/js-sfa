@@ -26,7 +26,6 @@ hard kick: C
 turn around: F
 walk, crouch, jump: Arrow keys
 
-
 Tips
 --------------------
 In the browser console, use the debug_.practice() function to quickly start practice matches.
