@@ -34,4 +34,4 @@ In the browser console, use the debug_.practice() function to quickly start prac
 debug_.practice([{A:CHARACTERS.KEN}], [{A:CHARACTERS.AKUMA, C:true, D:100}], "guy")
 
 //start a 2 on 2 match
-debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.RYU, C:true}], [{A:CHARACTERS.MBISON, C:true}, {A:CHARACTERS.SAGAT, C:true}], "guy")
+debug_.practice([{A:CHARACTERS.KEN}, {A:CHARACTERS.RYU, B:true, C:true}], [{A:CHARACTERS.MBISON, C:true}, {A:CHARACTERS.SAGAT, C:true}], "guy")
