@@ -283,6 +283,12 @@ User.prototype.forceSetChar = function(ch, isAlternate, isAI)
     this.setChar(ch, isAlternate, isAI);
 }
 
+User.prototype.resetChar = function(ch, isAlternate, isAI)
+{
+    this.reset();
+    this.setChar(ch, isAlternate, isAI);
+}
+
 User.prototype.setChar = function(ch, isAlternate, isAI)
 {
     var name = "";

@@ -18,6 +18,7 @@ function GetDebugInstance(game)
     //test player battle 
     Debug.prototype.practice = function (t1, t2, stage)
     {
+        game_.end();
         window.document.getElementById("chkPracticeMode").checked = "checked";
         this.setPracticeMode(true);
 
@@ -58,32 +59,32 @@ function GetDebugInstance(game)
 
         /*TEAM 1*/
         if(!!t1[0])
-            user1_.setChar(t1[0].A, t1[0].B, t1[0].C);
+            user1_.resetChar(t1[0].A, t1[0].B, t1[0].C);
         else
-            user1_.setChar(CHARACTERS.KEN);
+            user1_.resetChar(CHARACTERS.KEN);
 
         if(!!t1[1])
         {
             if(!!t1[1].D)
             {
                 teamB.pop();
-                user2_.setChar(t1[1].A, t1[1].B, t1[1].C);
+                user2_.resetChar(t1[1].A, t1[1].B, t1[1].C);
                 teamA.push(1);
             }
             else
             {
-                user3_.setChar(t1[1].A, t1[1].B, t1[1].C);
+                user3_.resetChar(t1[1].A, t1[1].B, t1[1].C);
                 teamA.push(2);
             }
         }
         if(!!t1[2])
         {
-            user4_.setChar(t1[2].A, t1[2].B, t1[2].C);
+            user4_.resetChar(t1[2].A, t1[2].B, t1[2].C);
             teamA.push(3);
         }
         if(!!t1[3])
         {
-            user5_.setChar(t1[3].A, t1[3].B, t1[3].C);
+            user5_.resetChar(t1[3].A, t1[3].B, t1[3].C);
             teamA.push(4);
         }
 
@@ -91,33 +92,33 @@ function GetDebugInstance(game)
         if(!!t1[1] && !!t1[1].D)
         {
             if(!!t2[0])
-                user3_.setChar(t2[0].A, t2[0].B, t2[0].C);
+                user3_.resetChar(t2[0].A, t2[0].B, t2[0].C);
             else
-                user3_.setChar(CHARACTERS.RYU);
+                user3_.resetChar(CHARACTERS.RYU);
             
             teamB.push(2);
         }
         else
         {
             if(!!t2[0])
-                user2_.setChar(t2[0].A, t2[0].B, t2[0].C);
+                user2_.resetChar(t2[0].A, t2[0].B, t2[0].C);
             else
-                user2_.setChar(CHARACTERS.RYU);
+                user2_.resetChar(CHARACTERS.RYU);
         }
 
         if(!!t2[1])
         {
-            user6_.setChar(t2[1].A, t2[1].B, t2[1].C);
+            user6_.resetChar(t2[1].A, t2[1].B, t2[1].C);
             teamB.push(5);
         }
         if(!!t2[2])
         {
-            user7_.setChar(t2[2].A, t2[2].B, t2[2].C);
+            user7_.resetChar(t2[2].A, t2[2].B, t2[2].C);
             teamB.push(6);
         }
         if(!!t2[3])
         {
-            user8_.setChar(t2[3].A, t2[3].B, t2[3].C);
+            user8_.resetChar(t2[3].A, t2[3].B, t2[3].C);
             teamB.push(7);
         }
 
@@ -343,7 +344,7 @@ function GetDebugInstance(game)
         k3 = Debug.prototype.keyCount++;
         turn = Debug.prototype.keyCount++;
         var user = new User(right,up,left,down,p1,p2,p3,k1,k2,k3,turn);
-        user.setChar(playerId,isAlternate,true);
+        user.resetChar(playerId,isAlternate,true);
         if(!!user.getName())
         {
             var name = user.getName();
