@@ -1,5 +1,5 @@
 ﻿
-var spnFPS_ = window.document.getElementById("spnFPS");
+var spnSpeed_ = window.document.getElementById("spnSpeed");
 var spnTargetFPS_ = window.document.getElementById("spnTargetFPS");
 var spnLag_ = window.document.getElementById("spnLag");
 var spnTargetFrames_ = window.document.getElementById("spnTargetFrames");
@@ -213,12 +213,30 @@ var CreateGame = function()
     {
         speed_ = value;
         resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
+        this.showSpeed();
+    }
+
+    Game.prototype.setDefaultSpeed = function(value)
+    {
+        defaultSpeed_ = value;
+        resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
+        this.showSpeed();
+    }
+
+    Game.prototype.resetDefaultSpeed = function()
+    {
+        defaultSpeed_ = BrowserDetect.browser == "Chrome" 
+            ? CONSTANTS.FAST_SPEED 
+            : CONSTANTS.NORMAL_SPEED;
+
+        this.resetSpeed();
     }
 
     Game.prototype.resetSpeed = function()
     {
         speed_ = defaultSpeed_;
         resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
+        this.showSpeed();
     }
 
     Game.prototype.goSlow = function(nbFrames,value)
@@ -233,6 +251,7 @@ var CreateGame = function()
                 resetSpeedAtFrame_ = frame_ + nbFrames;
             }
         }
+        this.showSpeed();
     }
 
     Game.prototype.getSpeed = function() { return speed_; }
@@ -537,13 +556,25 @@ var CreateGame = function()
     Game.prototype.speedUp = function()
     {
         if(speed_ > CONSTANTS.MIN_DELAY)
-            speed_ -= CONSTANTS.SPEED_INCREMENT;
+            speed_ = Math.max(speed_ - CONSTANTS.SPEED_INCREMENT, 0);
+        
+        if(defaultSpeed_ > CONSTANTS.MIN_DELAY)
+            defaultSpeed_ = Math.max(defaultSpeed_ - CONSTANTS.SPEED_INCREMENT, 0);
+
+        this.showSpeed();
+
     }
     //Decreases the game loop speed
     Game.prototype.slowDown = function()
     {
         if(speed_ < CONSTANTS.MAX_DELAY)
-            speed_ += CONSTANTS.SPEED_INCREMENT;
+            speed_ = Math.min(speed_ + CONSTANTS.SPEED_INCREMENT, 100);
+
+        if(defaultSpeed_ < CONSTANTS.MAX_DELAY)
+            defaultSpeed_ = Math.min(defaultSpeed_ + CONSTANTS.SPEED_INCREMENT, 100);
+
+        this.showSpeed();
+
     }
 
     Game.prototype.isPaused = function() { return this.hasState(GAME_STATES.PAUSED); }
@@ -664,6 +695,8 @@ var CreateGame = function()
             this.speedUp();
         if(this.wasKeyPressed(KEYS.NINE,keyCode,isDown))
             this.slowDown();
+        if(this.wasKeyPressed(KEYS.ZERO,keyCode,isDown))
+            this.resetDefaultSpeed();
 
         keyboardState_["_" + keyCode] = isDown;
 
@@ -755,6 +788,12 @@ var CreateGame = function()
 
 
     /*Shows the frame rate on screen*/
+    Game.prototype.showSpeed = function()
+    {
+        spnSpeed_.innerHTML = (100 - speed_) >> 0;
+    }
+
+    /*Shows the frame rate on screen*/
     Game.prototype.showFPS = function()
     {
         //if(frame_ % targetFPS_ == 0)
@@ -787,6 +826,7 @@ var CreateGame = function()
             {
                 resetSpeedAtFrame_ = CONSTANTS.UBER_FRAME_MAX;
                 speed_ = defaultSpeed_;
+                this.showSpeed();
             }
 
             //frame move

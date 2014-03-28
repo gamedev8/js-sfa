@@ -50,9 +50,14 @@
         <div class="superComboFinish" id="pnlSuperComboFinish" style="display:none;">&nbsp;</div>
     </div>
     <div id="pnlStatus">
-        <!--<br /><span class="frame-rate">frame time: <span id="spnFPS">0</span>MS</span>-->
-        <br /><span id="spnStepFrame" class="step-frame">Press [O] for next frame</span>
-        <br /><span id="spnResume" class="resume">Press [P] to resume</span>
+        <br /><span class="frame-rate">Game speed: <span id="spnSpeed">?</span>/100</span>
+        <br />
+        <br /><u class="game-speed">Press:</u>
+        <br /><span class="step-frame">[8] increase game speed</span>
+        <br /><span class="step-frame">[9] decrease game speed</span>
+        <br /><span class="step-frame">[0] reset game speed</span>
+        <br /><span id="spnStepFrame" class="step-frame">[O] for next frame</span>
+        <br /><span id="spnResume" class="resume">[P] to resume</span>
         <br />
     </div>
     <div>
@@ -66,8 +71,9 @@
     <div id="pnlMenu" class="menu">
         <br /><input type="checkbox" id="chkPracticeMode" onchange="debug_.setPracticeMode(this.checked);" /><label for="chkPracticeMode">No Damage</label>
         <br /><input checked type="checkbox" id="chkTeamMode" onchange="game_.setTeamMode(this.checked);" /><label for="chkTeamMode">Team Mode</label>
-        <br /><input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />
+        <!--<br /><input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />-->
     </div>
+    <!--
     <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
         <input type="button" onclick="debug_.p1StepFrame();" value=">>"/>
@@ -117,10 +123,12 @@
             </div>
         </div>
     </div>
+    -->
     <script type="text/javascript">
         var __debugMode = false;
         var __noDamage = false;
 
+        /*
         if(!__debugMode)
         {
             window.document.getElementById("pnlAnimationDebug").style.display = "none";
@@ -133,6 +141,7 @@
             window.document.getElementById("pnlStatus").style.display = "";
             window.document.getElementById("cmdGo").style.display = "";
         }
+        */
     </script>
     <script type="text/javascript" src="script/browserDetect.js"></script>
     <script type="text/javascript" src="script/gamepad.js"></script>

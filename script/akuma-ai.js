@@ -332,6 +332,9 @@ var CreateAkumaAI = function(player)
             ,[{B:"jdk", C:200, D:-999, MH:true}, {A:21, B:"p1"}, {A:5, B:"p2"}, {A:11, B:"p3"}, {A:17, B:"lk3"}, {A:18, B:"hk1"}, {A:55, B:"su1"}]
         ];
 
+        //incomplete jhdk combos
+        //[{A:0, B:"jhdk", C:50}, {MH:true, A:36, B:"f"}, {A:2, B:"fk2"}, {A:26, B:"f"}, {AC:true, A:2, B:"fk2"}, {B:"p2"}, {B:"lp2"}, {B:"u3"}]
+
         // :-)
         this.AI.JumpRollCombos = [
         ];
@@ -435,6 +438,15 @@ var CreateAkumaAI = function(player)
         this.AI.Actions.push(this.AI.createAction(2,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
         this.AI.Actions.push(this.AI.createAction(4,FLAGS.CLEAR_INPUT));
         this.AI.Actions.push(this.AI.createAction(15,FLAGS.NONE,lowKicks_[1]));
+        this.AI.Actions.push(this.AI.createAction(2,FLAGS.CLEAR_INPUT));
+    }
+
+    AkumaAI.prototype.doJumpThrustHardKick = function(flags,dist)
+    {
+        this.AI.Actions.push(this.AI.createAction(0,FLAGS.JUMP_IN|flags,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.BACK}],"",dist));
+        this.AI.Actions.push(this.AI.createAction(2,FLAGS.NONE,[{IsDown:true,Button:BUTTONS.FORWARD},{IsDown:true,Button:BUTTONS.JUMP}],"",dist));
+        this.AI.Actions.push(this.AI.createAction(4,FLAGS.CLEAR_INPUT));
+        this.AI.Actions.push(this.AI.createAction(15,FLAGS.NONE,lowKicks_[2]));
         this.AI.Actions.push(this.AI.createAction(2,FLAGS.CLEAR_INPUT));
     }
     AkumaAI.prototype.getForwardKey = function() {return this.AI.Player.MustChangeDirection ? BUTTONS.BACK : BUTTONS.FORWARD;}
@@ -902,6 +914,7 @@ var CreateAkumaAI = function(player)
                 case "tcf" : { input = teleportCloseFowardInput_; break; }
                 case "tcb" : { input = teleportCloseBackInput_; break; }
                 case "jdk" : { if(this.AI.getClosestEnemy().X < (sequence[i].D || this.AI.TOO_CLOSE)) { return; }; this.doJumpThrustKick(0,sequence[i].C); continue; }
+                case "jhdk" : { if(this.AI.getClosestEnemy().X < (sequence[i].D || this.AI.TOO_CLOSE)) { return; }; this.doJumpThrustHardKick(0,sequence[i].C); continue; }
                 default: { this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0); break; }
             };
             this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H, undefined, sequence[i].AC, requiredState);
