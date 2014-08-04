@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 var spnSpeed_ = window.document.getElementById("spnSpeed");
 var spnTargetFPS_ = window.document.getElementById("spnTargetFPS");
 var spnLag_ = window.document.getElementById("spnLag");
@@ -58,7 +58,7 @@ var CreateGame = function()
     var match_ = null;
     var maxWinsPerMatch_ = 2;
     var resetSpeedAtFrame_ = 0;
-    var enableTeamMode_ = false;
+    var enableTeamMode_ = true;
     var difficulty_ = 90; //out of 100
     var standardScreenWidth_ = 768;
     var defaultTeamModeScreenWidth_ = 1068;
