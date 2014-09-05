@@ -42,6 +42,7 @@ var PlayerFlags = function(owner)
     this.HitSound = new Flags();
     this.BlockSound = new Flags();
     this.MotionSound = new Flags();
+    this.HitReact = new Flags();
 }
 
 PlayerFlags.prototype.clear = function()
@@ -55,6 +56,7 @@ PlayerFlags.prototype.clear = function()
     this.HitSound.clear();
     this.BlockSound.clear();
     this.MotionSound.clear();
+    this.HitReact.clear();
 }
 PlayerFlags.prototype.release = function()
 {
@@ -68,6 +70,7 @@ PlayerFlags.prototype.release = function()
     this.HitSound.release();
     this.BlockSound.release();
     this.MotionSound.release();
+    this.HitReact.release();
 }
 
 var FrameFlags = function()

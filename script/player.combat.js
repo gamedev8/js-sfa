@@ -913,15 +913,15 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
     else
         relAttackDirection = this.getAttackDirection(attackDirection);
 
-    if(!__noDamage)
-        this.takeDamage(damage);
+    this.takeDamage(damage, false, attackDirection);
     this.changeEnergy(energyToAdd);
+
     if(this.isDead() && !this.IsLosing)
     {
         if(!!flags)
             this.spawnHitReportAnimations(frame, flags, hitState, relAttackDirection);
         //if any player is dead, then the whole team is dead.
-        this.forceTeamLose(frame,attackDirection);
+        //this.forceTeamLose(attackDirection);
         var ignoreDeadAnimation = false;
         if(!!this.isBeingGrappled())
         {
@@ -1132,7 +1132,9 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
 
     this.setHoldFrame(enemyHitStop || nbFreeze);// || (this.BaseTakeHitDelay * hitStop));
     if(!this.isBlocking())
+    {
         this.queueHitSound(hitSound);
+    }
 
     if((-1 == this.getMatch().getDefeatedTeam()) && !wasBlocked && isProjectile)
     {
@@ -1147,29 +1149,39 @@ Player.prototype.takeHit = function(attackFlags,hitState,flags,startFrame,frame,
         game_.goSlow(nbFrames,speed);
     }
 
+    if(!wasBlocked && (hasFlag(attackFlags,ATTACK_FLAGS.TRIP)
+        || hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN)
+        || hasFlag(attackFlags,ATTACK_FLAGS.THROW_EJECT)
+        || this.Flags.Player.has(PLAYER_FLAGS.BLUE_FIRE)
+        || this.Flags.Player.has(PLAYER_FLAGS.RED_FIRE) || hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE_NO_SOUND)
+        || hasFlag(attackFlags,ATTACK_FLAGS.BLUE_FIRE)
+        || hasFlag(attackFlags,ATTACK_FLAGS.RED_FIRE)
+        || hasFlag(otherParams.HitReact,HIT_REACT.EJECT)
+        || hasFlag(attackFlags,ATTACK_FLAGS.TRIP)
+        || hasFlag(attackFlags,ATTACK_FLAGS.FLOOR_AIRBORNE_HARD) && !!this.isAirborne()
+        || hasFlag(attackFlags,ATTACK_FLAGS.KNOCKDOWN) || (hasFlag(attackFlags,ATTACK_FLAGS.FLOOR_AIRBORNE) && !!this.isAirborne())
+        ))
+    {
+        this.peakY = STAGE.FLOORY;
+        //add state - just got hit
+        this.Flags.HitReact.add(HIT_REACT_FLAGS.FLOORED);
+    }
+
 
     return true;
 }
-/*Setting "this.WinningFrame" will cause this player to execute its win animation after its current animation is done.*/
-Player.prototype.justWon = function(frame)
+
+Player.prototype.onOtherTeamDead = function(frame)
 {
     this.ForceImmobile = true;
-    this.WinningFrame = frame;
-}
-Player.prototype.forceWinAnimation = function(frame)
-{
-    var name = this.WinAnimationNames[Math.ceil(Math.random() * this.WinAnimationNames.length) - 1];
-    if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
-    this.executeAnimation(name, true, true);
-    this.clearInput();
-    this.abortThrow();
+    this.OtherTeamDead = true;
 }
 /*Player is defeated*/
 Player.prototype.forceLose = function(attackDirection,ignoreAnimation)
 {
     this.IsLosing = true;
     this.ForceImmobile = true;
-    this.takeDamage(this.getHealth());
+    this.takeDamage(this.getHealth(), true, attackDirection);
     var frame = this.getMatch().getCurrentFrame();
     var direction = attackDirection || -this.Direction;
     this.abortThrow();
@@ -1182,13 +1194,12 @@ Player.prototype.forceLose = function(attackDirection,ignoreAnimation)
     this.clearDizzy();
 }
 /*Player gets is defeated*/
-Player.prototype.forceTeamLose = function(frame,attackDirection)
+Player.prototype.forceTeamLose = function(attackDirection)
 {
     if(!this.IsLosing)
     {
-        this.IsLosing = true;
         this.ForceImmobile = true;
-        this.takeDamage(this.getHealth());
+        this.takeDamage(this.getHealth(), false, attackDirection);
         var frame = this.getMatch().getCurrentFrame();
         var direction = attackDirection || -this.Direction;
 
@@ -1492,4 +1503,29 @@ Player.prototype.onSuperMoveCompleted = function(frame)
 {
     this.setPaused(false);
     this.ForceImmobile = false;
+}
+
+Player.prototype.checkFallingDamage = function(frame)
+{
+    if(this.isDead() || !this.Flags.HitReact.has(HIT_REACT_FLAGS.FLOORED))
+        return;
+
+    var damage = (this.peakY > CONSTANTS.FALL_DAMAGE_HEIGHT)
+        ? (this.peakY - CONSTANTS.FALL_DAMAGE_HEIGHT) * 0.5
+        : 0;
+
+    if(!!damage)
+    {
+        if(!__noFallDamage)
+        {
+            this.takeDamage(damage);
+            if(this.isDead())
+            {
+                this.queueSound("audio/" + this.Name.toLowerCase() + "/dead.zzz");
+                return;
+            }
+        }
+
+        this.queueSound("audio/" + this.Name.toLowerCase() + "/clocked.zzz");   
+    }
 }

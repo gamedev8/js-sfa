@@ -1705,7 +1705,7 @@ Player.prototype.createAkumaSuperFireball = function(player)
     for(var x = 0; x < 3; ++x)
     {
         xSpeed = 12;
-        var projectile = player.addProjectile("red projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("super projectile",160,140,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
         projectile.HitSound = HITSOUND.HP3;
         projectile.MaxHits = x == 2 ? 8 : 4;

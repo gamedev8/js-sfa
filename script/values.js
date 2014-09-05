@@ -134,6 +134,11 @@ var PLAYER_FLAGS =
     ,IGNORE_HOLD_FRAME:1 << 30
 }
 
+var HIT_REACT_FLAGS = 
+{
+    NONE: 0
+    ,FLOORED:1 << 0
+}
 
 var POSE_FLAGS = 
 {
@@ -511,7 +516,7 @@ var CONSTANTS =
     ,DEFEATED_FRAME:100
     ,DEFAULT_WIN_ANIMATION_NAME:"win 1"
     /*how many frames after the winning hit will a player start its win animation*/
-    ,WIN_ANIMATION_DELAY:100
+    ,ROUND_OVER_DELAY:30
     /*how many frames after the losing player hits the ground will the round end*/
     ,GOTO_NEW_ROUND_DELAY:250
     /*how many frames to wait before the round starts to accept input*/
@@ -538,6 +543,8 @@ var CONSTANTS =
     ,START_THEME_DELAY:!!__debugMode ? 0 : 210
     ,ANNOUNCE_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 230
     ,START_FIRST_ROUND_DELAY:!!__debugMode ? 0 : 340
+    //height at which you will take damage from a fall
+    ,FALL_DAMAGE_HEIGHT:400
 
 };
 var CHARACTERS = 

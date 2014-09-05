@@ -367,25 +367,37 @@ Player.prototype.testAnimation = function(frame,currentEnergy,input,move)
 //
 Player.prototype.goToStance = function(frame)
 {
-    if(this.Flags.Player.has(PLAYER_FLAGS.DEAD))
+    if(this.isDead())
     {
+        if(this.CanEndRound)
+        {
+            return;
+        }
+
+        this.IsWinning = false;
         this.ForceImmobile = true;
         this.Flags.Player.remove(PLAYER_FLAGS.MOBILE);
         var move = this.Moves[this.MoveNdx.Down];
-        //var move = this.Moves["_0_dead"];
         this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction},true);
-        this.getMatch().deadAnimationComplete(this,frame);
+        this.CanEndRound = true;
+        this.getMatch().onCanEndRound(this.Team);
     }
     else
     {
-        if((this.WinningFrame != CONSTANTS.NO_FRAME) && frame > (this.WinningFrame + CONSTANTS.WIN_ANIMATION_DELAY))
+        if(this.OtherTeamDead && !this.CanEndRound)
         {
+            this.CanEndRound = true;
+            this.getMatch().onCanEndRound();
+        }
+
+        if((this.WinAnimationFrame != CONSTANTS.NO_FRAME) && (frame > this.WinAnimationFrame))
+        {
+            this.WinAnimationFrame = CONSTANTS.NO_FRAME;
             this.forceWinAnimation(frame);
             return;
         }
         this.Flags.Player.add(PLAYER_FLAGS.MOBILE);
         var move = this.Moves[this.MoveNdx.Stance];
-        //var move = this.Moves["_0_stance"];
         this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction},true);
         this.showFirstAnimationFrame();
     }
@@ -761,6 +773,9 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         this.IsFirstFrame = true;
         if(!this.isDead())
             this.IgnoreDeadAnimation = false;
+
+        //HitReact flags are set in [player.combat] after this function is called so it it safe to clear these flags
+        this.Flags.HitReact.clear();
 
         this.Flags.Juggle.clear();
         this.CurrentAnimation.ID = _c3(this.Id, this.CurrentAnimation.Animation.BaseAnimation.Name, game_.getCurrentFrame());
@@ -1285,4 +1300,13 @@ Player.prototype.renderShadow = function()
         this.LastShadowY = this.ShadowY;
         this.Shadow.style.bottom = this.ShadowY;
     }
+}
+
+Player.prototype.forceWinAnimation = function(frame)
+{
+    var name = this.WinAnimationNames[Math.ceil(Math.random() * this.WinAnimationNames.length) - 1];
+    if(name == undefined) name = CONSTANTS.DEFAULT_WIN_ANIMATION_NAME;
+    this.executeAnimation(name, true, true);
+    this.clearInput();
+    this.abortThrow();
 }

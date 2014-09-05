@@ -34,6 +34,7 @@ var CreateMatch = function(team1,team2,stage)
     var forceQuit_ = false;
     var forceQuitReason_ = 0;
     var isAIMatch_ = false;
+    var roundOverFrame_ = CONSTANTS.NO_FRAME;
 
     var nbAirborne_ = 0;
     game_.resetFrame();
@@ -78,7 +79,6 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.getTeamB = function() { return teamB_; }
     Match.prototype.getDefeatedTeam = function() { return defeatedTeam_; }
     Match.prototype.setDefeatedTeam = function(value) { defeatedTeam_ = value; }
-    Match.prototype.isRoundOver = function() { return isRoundOver_; }
     Match.prototype.setRoundOver = function(value) { isRoundOver_ = value; }
     Match.prototype.getGotoNewRoundFrame = function() { return gotoNewRoundFrame_; }
     Match.prototype.setGotoNewRoundFrame = function(value) { gotoNewRoundFrame_ = value; }
@@ -94,6 +94,12 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.setAllowInput = function(value) { allowInput_ = value; }
 
     Match.prototype.getStage = function() { return stage_; }
+
+    Match.prototype.isRoundOver = function()
+    {
+        return isRoundOver_;
+    }
+
     Match.prototype.resetKeys = function()
     {
         for(var i = 0; i < teamA_.getPlayers().length; ++i)
@@ -206,7 +212,7 @@ var CreateMatch = function(team1,team2,stage)
                     if(teamA_.getPlayer(i).Id != loseIgnoreId)
                         teamA_.getPlayer(i).forceLose(attackDirection);
                 for(var i = 0; i < teamB_.getPlayers().length; ++i)
-                    teamB_.getPlayer(i).justWon(frame);
+                    teamB_.getPlayer(i).onOtherTeamDead(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
@@ -215,41 +221,80 @@ var CreateMatch = function(team1,team2,stage)
                     if(teamB_.getPlayer(i).Id != loseIgnoreId)
                         teamB_.getPlayer(i).forceLose(attackDirection);
                 for(var i = 0; i < teamA_.getPlayers().length; ++i)
-                    teamA_.getPlayer(i).justWon(frame);
+                    teamA_.getPlayer(i).onOtherTeamDead(frame);
                 break;
             }
         }
     }
-    /*Should be called after the player who was defeated hits the ground*/
-    Match.prototype.deadAnimationComplete = function(player,frame)
+
+    Match.prototype.onCanEndRound = function(teamThatLost)
     {
-        if(!this.isRoundOver())
+        if(roundOverFrame_ == CONSTANTS.NO_FRAME && this.canEndRound())
         {
-            this.setRoundOver(true);
-            game_.resetSpeed();
-            this.setGotoNewRoundFrame(frame);
+            roundOverFrame_ = game_.getCurrentFrame() + CONSTANTS.ROUND_OVER_DELAY;
+        }
 
-            announcer_.endRound();
-
-            var t1Dead = teamA_.getHealthbar().getAmount() == 0;
-            var t2Dead = teamB_.getHealthbar().getAmount() == 0;
-
-            if(t1Dead && t2Dead)
+        //reset the game speed if all of the dead players have completed their "dead animation"
+        switch(teamThatLost)
+        {
+            case CONSTANTS.TEAM1: 
             {
-                teamA_.onDrawRound();
-                teamB_.onDrawRound();
+                for(var i = 0; i < teamA_.getPlayers().length; ++i)
+                    if(!teamA_.getPlayer(i).CanEndRound)
+                        return;
+                game_.resetSpeed();
+                break;
             }
-            else if(t1Dead)
+            case CONSTANTS.TEAM2: 
             {
-                teamA_.onLostRound();
-                teamB_.onWonRound();
+                for(var i = 0; i < teamB_.getPlayers().length; ++i)
+                    if(!teamB_.getPlayer(i).CanEndRound)
+                        return;
+                game_.resetSpeed();
+                break;
             }
-            else if(t2Dead)
-            {
-                teamA_.onWonRound();
-                teamB_.onLostRound();
-            }
+        }
+    }
 
+    //this function should be used to ensure the round winner isnt computed prematurely!
+    Match.prototype.canEndRound = function()
+    {
+        for(var i = 0; i < teamA_.getPlayers().length; ++i)
+            if(!teamA_.getPlayer(i).CanEndRound)
+                return false;
+        for(var i = 0; i < teamB_.getPlayers().length; ++i)
+            if(!teamB_.getPlayer(i).CanEndRound)
+                return false;
+
+        return true;
+    }
+
+    /*Should be called after the player who was defeated hits the ground*/
+    Match.prototype.onEndRound = function(frame)
+    {
+        this.setRoundOver(true);
+        game_.resetSpeed();
+        this.setGotoNewRoundFrame(frame);
+
+        announcer_.endRound();
+
+        var t1Dead = teamA_.getHealthbar().getAmount() == 0;
+        var t2Dead = teamB_.getHealthbar().getAmount() == 0;
+
+        if(t1Dead && t2Dead)
+        {
+            teamA_.onDrawRound();
+            teamB_.onDrawRound();
+        }
+        else if(t1Dead)
+        {
+            teamA_.onLostRound();
+            teamB_.onWonRound(frame);
+        }
+        else if(t2Dead)
+        {
+            teamA_.onWonRound(frame);
+            teamB_.onLostRound();
         }
     }
     /*Registers an action*/
@@ -637,6 +682,12 @@ var CreateMatch = function(team1,team2,stage)
 
         teamA_.frameMove(frame,stage_.X, stage_.getGroundY(), this.getAllowInput());
         teamB_.frameMove(frame,stage_.X, stage_.getGroundY(), this.getAllowInput());
+
+        if((roundOverFrame_ != CONSTANTS.NO_FRAME) && (frame > roundOverFrame_))
+        {
+            roundOverFrame_ = CONSTANTS.NO_FRAME;
+            this.onEndRound(frame);
+        }
 
         if(round_ != 1)
         {

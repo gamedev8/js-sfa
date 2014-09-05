@@ -815,6 +815,10 @@ Player.prototype.advanceJump = function(ignoreYCheck)
     this.moveX(dx);
     this.moveY(dy);
 
+    this.peakY = (this.peakY < this.Y)
+        ? this.Y
+        : this.peakY;
+
 
     if((this.JumpT > this.JumpSpeed) && this.getY() <= game_.getMatch().getStage().getGroundY() && !(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE)))
     {
@@ -826,6 +830,9 @@ Player.prototype.advanceJump = function(ignoreYCheck)
         this.getStage().requestScrollY(false,this.Y);
         this.getMatch().decAirborne();
         this.LandedOnFrame = this.getFrame();
+        //if the play fell from very high, then take damage
+        this.checkFallingDamage();
+        this.peakY = STAGE.FLOORY;
         return false;
     }
 

@@ -160,6 +160,9 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.reset();
     this.addGenericAnimations();
     this.setImgRect();
+
+    this.peakY = STAGE.FLOORY;
+    this.CanEndRound = false;
 }
 
 Player.prototype.loadAssets = function(name,folder,loadProjectiles)
@@ -252,9 +255,16 @@ Player.prototype.setBeingGrappled = function(value) { this.IsBeingThrown = value
 Player.prototype.getNameImageSrc = function() { return this.NameImageSrc; }
 Player.prototype.getPortriatImageSrc = function() { return this.PortriatImageSrc; }
 Player.prototype.getName = function() { return this.Name; }
-Player.prototype.takeDamage = function(amount)
+Player.prototype.takeDamage = function(amount, ignoreNoDamage, attackDirection)
 {
-    this.takeDamageFn(amount);
+    if(!!amount && !this.isDead() && (!__noDamage || !!ignoreNoDamage))
+    {
+        this.takeDamageFn(amount);
+        if(this.isDead())
+        {
+            this.forceTeamLose(attackDirection);
+        }
+    }
 }
 
 Player.prototype.enableAI = function(createAiFn)
@@ -263,6 +273,13 @@ Player.prototype.enableAI = function(createAiFn)
     this.Ai.enableAI(this, createAiFn || (window["Create" + this.Name[0].toUpperCase() + this.Name.substring(1) + "AI"]));
     if(!!this.getMatch())
         this.getMatch().checkAIMatch();
+}
+
+Player.prototype.getTeam = function()
+{
+    return (this.Team == 1)
+        ? game_.getMatch().getTeamA()
+        : game_.getMatch().getTeamB()
 }
 
 Player.prototype.getTarget = function()
@@ -417,12 +434,14 @@ Player.prototype.reset = function(ignoreDirection)
     this.MoveCount = 0;
     this.RegisteredHit = new RegisteredHit();
     this.LastHitFrame = {};
-    this.WinningFrame = CONSTANTS.NO_FRAME;
+    this.WinAnimationFrame = CONSTANTS.NO_FRAME;
     this.Target = 0;
     if(this.Ai.isRunning())
         this.Ai.reset();
     this.clearProjectiles();
     this.clearDizzy();
+    this.CanEndRound = false;
+    this.OtherTeamDead = false;
 }
 
 Player.prototype.createElement = function(x,y,parentElement)
@@ -1060,4 +1079,9 @@ Player.prototype.resume = function()
 {
     if(this.isDizzy())
         soundManager_.resume("audio/misc/dizzy.zzz");
+}
+
+Player.prototype.justWon = function(frame)
+{
+    this.WinAnimationFrame = frame + CONSTANTS.ROUND_OVER_DELAY + (getRand(40) - 10);
 }

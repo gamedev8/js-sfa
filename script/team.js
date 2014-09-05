@@ -115,9 +115,13 @@ var Team = function(num)
         ++draws_;
     }
 
-    Team.prototype.onWonRound = function()
+    Team.prototype.onWonRound = function(frame)
     {
-        players_.forEach(function(player) { player.User.onWonRound(); });
+        players_.forEach(function(player)
+            {
+                player.User.onWonRound();
+                player.justWon(frame);
+            });
         ++wins_;
     }
 

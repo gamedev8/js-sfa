@@ -1156,7 +1156,7 @@ var CreateFrameAdapter = function(frameArray,nbFrames)
     /*Is the projectile still visible?*/
     Projectile.prototype.isVisible = function(stageX,stageY)
     {
-        return (this.X < STAGE.MAX_STAGEX && this.X > -100) && (this.Y > 0 && this.Y < 1000);
+        return (this.X < STAGE.MAX_STAGEX && this.X > -100) && (this.Y > 0 && this.Y < 5000);
     }
 
     /*Did the projectile hit the floor?*/
