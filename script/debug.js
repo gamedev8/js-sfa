@@ -257,11 +257,14 @@ function GetDebugInstance(game)
     var txtProjectileComboFlags = window.document.getElementById("txtProjectileComboFlags");
 
 
-    Debug.prototype.debugProjectiles = function(hide)
+    Debug.prototype.hideProjectileEditor = function()
     {
-        pnlProjectiles.style.display = !hide
-            ? ""
-            : "none";
+        pnlProjectiles.style.display = "none";
+    }
+
+    Debug.prototype.showProjectileEditor = function()
+    {
+        pnlProjectiles.style.display = "";
     }
 
     Debug.prototype.loadProjectiles = function()

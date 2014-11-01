@@ -927,7 +927,7 @@
     for (var x = 0; x < 3; ++x)
     {
         xSpeed = (x + 10);
-        var projectile = player.addProjectile("projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("projectile p" + (x+1),160,140,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;

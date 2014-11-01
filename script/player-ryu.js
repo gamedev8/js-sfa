@@ -891,7 +891,7 @@ var createRyu = function(user)
     for(var x = 0; x < 3; ++x)
     {
         xSpeed = x + 10;
-        var projectile = player.addProjectile("projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("projectile p"+ (x+1),160,140,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;
@@ -1032,7 +1032,7 @@ var createRyuSuperMoves = function(player)
     var speed = 13;
     for(var x = 0; x < 3; ++x)
     {
-        var projectile = player.addProjectile("super projectile",160,140,speed);
+        var projectile = player.addProjectile("super projectile p" + (x+1),160,140,speed);
         projectile.HitSound = HITSOUND.HP;
 
         projectile.IsSuperMove = true;

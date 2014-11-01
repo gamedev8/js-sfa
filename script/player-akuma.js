@@ -1151,7 +1151,7 @@
     for(var x = 0; x < 3; ++x)
     {
         xSpeed = x + 10;
-        var projectile = player.addProjectile("projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("projectile p" + (x+1),160,140,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;
@@ -1228,7 +1228,7 @@
         else if(x == 1) { xSpeed = 10; ySpeed = -7; }
         else if(x == 2) { xSpeed = 13; ySpeed = -10; }
         
-        var projectile = player.addProjectile("air projectile",90,80,xSpeed,ySpeed);
+        var projectile = player.addProjectile("air projectile p" + (x+1),90,80,xSpeed,ySpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;
@@ -1301,7 +1301,7 @@
     for(var x = 0; x < 3; ++x)
     {
         xSpeed = x + 10;
-        var projectile = player.addProjectile("red projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("red projectile p" + (x+1),160,140,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
         projectile.HitSound = HITSOUND.HP3;
         projectile.MaxHits = x + 1;
@@ -1706,7 +1706,7 @@ var createAkumaSuperFireball = function(player)
     for(var x = 0; x < 3; ++x)
     {
         xSpeed = 12;
-        var projectile = player.addProjectile("super projectile",160,140,xSpeed);
+        var projectile = player.addProjectile("super projectile p" + (x+1),160,140,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
         projectile.HitSound = HITSOUND.HP3;
         projectile.MaxHits = x == 2 ? 8 : 4;

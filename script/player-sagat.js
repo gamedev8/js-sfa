@@ -699,7 +699,7 @@ var createSagat = function(user)
         else if(x == 1) xSpeed = 11;
         else if(x == 2) xSpeed = 15;
 
-        var projectile = player.addProjectile("high",240,230,xSpeed);
+        var projectile = player.addProjectile("high projectile p" + (x+1),240,230,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;
@@ -788,7 +788,7 @@ var createSagat = function(user)
         else if(x == 1) xSpeed = 11;
         else if(x == 2) xSpeed = 15;
 
-        var projectile = player.addProjectile("low projectile",260,130,xSpeed);
+        var projectile = player.addProjectile("low projectile p" + (x+1),260,130,xSpeed);
         projectile.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.ALL,OVERRIDE_FLAGS.PROJECTILE);
 
         projectile.HitSound = HITSOUND.HP3;
@@ -1063,7 +1063,7 @@ var createSagatSuperMoves = function(player)
     var speed = 13;
     for(var x = 0; x < 3; ++x)
     {
-        var projectile = player.addProjectile("super projectile",240,230,speed);
+        var projectile = player.addProjectile("super projectile p" + (x+1),240,230,speed);
         projectile.HitSound = HITSOUND.HP;
 
         projectile.IsSuperMove = true;
