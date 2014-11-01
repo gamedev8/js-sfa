@@ -49,4 +49,4 @@ debug_.maxOutEnergy();
 debug_.showProjectileEditor();
 
 //hides the projectile editor
-debug_.showProjectileEditor();
+debug_.hideProjectileEditor();
