@@ -18,7 +18,6 @@ var CreateInsertCoinScreen = function(u1,u2)
     /*public*/
     var InsertCoinScreen = function()
     {
-        this.loadAssets();
     }
 
 
@@ -26,59 +25,9 @@ var CreateInsertCoinScreen = function(u1,u2)
     InsertCoinScreen.prototype.pause = function() { }
     InsertCoinScreen.prototype.resetKeys = function() { }
     InsertCoinScreen.prototype.init = function() { }
-    InsertCoinScreen.prototype.loadAssets = function()
-    {
-        /*insert coin*/
-        stuffLoader_.queue("insert-coin.js",RESOURCE_TYPES.BASE64AUDIO);
-        stuffLoader_.queue("char-select.js",RESOURCE_TYPES.BASE64AUDIO);
-        stuffLoader_.queue("match.js",RESOURCE_TYPES.BASE64AUDIO);
-
-        //stuffLoader_.queue("images/misc/misc/insert-coin.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/announcer-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/font1/insert.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/font1/credits.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/font1/cap.png",RESOURCE_TYPES.IMAGE);
-
-        //match
-        stuffLoader_.queue("images/misc/misc/shadow-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/dirt-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/blast-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/bars-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/energy-bar-lvl0.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/energy-bar-lvl1.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/energy-bar-lvl2.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/health-bar-life.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/health-bar-damage.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/misc-sprites.png",RESOURCE_TYPES.IMAGE);
-
-        //character select
-        //stuffLoader_.queue("images/misc/misc/player-select.png",RESOURCE_TYPES.IMAGE);
-        //stuffLoader_.queue("images/misc/font3/name-sprites.png",RESOURCE_TYPES.IMAGE);
-        //stuffLoader_.queue("images/misc/misc/char-misc-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/head-sprites.png",RESOURCE_TYPES.IMAGE);
-        //stuffLoader_.queue("images/misc/misc/player-select-back-bg.png",RESOURCE_TYPES.IMAGE);
-        //stuffLoader_.queue("images/misc/misc/player-select-bg.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/char-select-sprites.png",RESOURCE_TYPES.IMAGE);
-        stuffLoader_.queue("images/misc/misc/char-sprites.png",RESOURCE_TYPES.IMAGE);
-
-        //preload characters
-        Player.prototype.loadAssets("ryu","ryu",true);
-        Player.prototype.loadAssets("ryu","ryu2",true);
-        Player.prototype.loadAssets("ken","ken",true);
-        Player.prototype.loadAssets("ken","ken2",true);
-        Player.prototype.loadAssets("sagat","sagat",true);
-        Player.prototype.loadAssets("sagat","sagat2",true);
-        Player.prototype.loadAssets("mbison","mbison",true);
-        Player.prototype.loadAssets("mbison","mbison2",true);
-        Player.prototype.loadAssets("akuma","akuma",true);
-        Player.prototype.loadAssets("akuma","akuma2",true);
-    }
 
 
     InsertCoinScreen.prototype.isDone = function() { return isDone_; }
-
-
 
     InsertCoinScreen.prototype.start = function()
     {

@@ -69,6 +69,8 @@ var HITSOUND =
     ,MK:1 << 5
     ,HK:1 << 6
     ,HP3:1 << 7
+    ,FIRE0:1 << 8
+    ,FIRE1:1 << 9
 }
 
 var BLOCKSOUND = 
@@ -96,7 +98,7 @@ var ALERT_FLAGS = {
 var MATCH_STATES = 
 {
     NONE:0
-    ,PRACTICE_MODE:1
+    ,PRACTICE:1
 };
 
 var PLAYER_FLAGS = 
@@ -171,6 +173,7 @@ var POSE_FLAGS =
     ,FREEZE:1 << 25
     ,AIR_MISC_0:1 << 26
     ,PENDING_JUMP:1 << 27
+    ,FORCE_FACE_TARGET:1 << 28
 }
 
 
@@ -684,3 +687,8 @@ var GAME_STATES =
     ,AUDIO_LOADING:1 << 6
 };
 
+
+var DEAD_REASON = 
+{
+    BIG_DROP:1
+};

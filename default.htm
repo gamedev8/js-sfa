@@ -70,9 +70,10 @@
     <div id="pnlTeam2Keys" class="team2Keys"></div>
     <div id="pnlMenu" class="menu">
         <br /><input type="checkbox" id="chkPracticeMode" onchange="debug_.setPracticeMode(this.checked);" /><label for="chkPracticeMode">No damage</label>
-        <br /><input type="checkbox" id="chkFallDamageMode" onchange="__noFallDamage = !this.checked;" /><label for="chkFallDamageMode">High fall causes damage</label>
-        <br /><input checked type="checkbox" id="chkTeamMode" onchange="game_.setTeamMode(this.checked);" /><label for="chkTeamMode">Team Mode</label>
-        <!--<br /><input style="display:none" id="cmdGo" type="button" onclick="StartBattle()" value="practice mode" />-->
+        <br /><input checked type="checkbox" id="chkFallDamageMode" onchange="debug_.setFallingDamage(this.checked);" /><label for="chkFallDamageMode">High fall damage</label>
+        <br /><input checked type="checkbox" id="chkTeamMode" onchange="debug_.setTeamMode(this.checked);" /><label for="chkTeamMode">Dramatic battles</label>
+        <br /><input class="button" type="button" onclick="debug_.practice();this.blur();" value="practice" />
+        <br /><input class="button" type="button" onclick="ResetGame();this.blur();" value="reset" />
     </div>
     <!--
     <div id="pnlAnimationDebug" class="animation-debug">
@@ -130,7 +131,7 @@
     <script type="text/javascript">
         var __debugMode = false;
         var __noDamage = false;
-        var __noFallDamage = true;
+        var __noFallDamage = false;
 
         /*
         if(!__debugMode)
@@ -172,7 +173,7 @@
     <script type="text/javascript" src="script/faceoff.js"></script>
     <script type="text/javascript" src="script/match.js"></script>
     <script type="text/javascript" src="script/circle.js"></script>
-    <script type="text/javascript" src="script/physics.js"></script>
+    <script type="text/javascript" src="script/cdHelper.js"></script>
     <script type="text/javascript" src="script/animation.js"></script>
     <script type="text/javascript" src="script/player-utils.js"></script>
     <script type="text/javascript" src="script/player.js"></script>
@@ -188,7 +189,6 @@
     <script type="text/javascript" src="script/ai-proxy.js"></script>
     <script type="text/javascript" src="script/debug.js"></script>
     <script type="text/javascript" src="script/load-spritedata.js"></script>
-    <script type="text/javascript" src="script/misc.js"></script>
     <script type="text/javascript" src="script/player-ryu.js"></script>
     <script type="text/javascript" src="script/ryu-ai.js"></script>
     <script type="text/javascript" src="script/player-ryu-spritedata.js"></script>
@@ -209,6 +209,7 @@
     <script type="text/javascript" src="script/akuma-ai.js"></script>
     <script type="text/javascript" src="script/player-akuma-spritedata.js"></script>
     <script type="text/javascript" src="script/player-akuma2-spritedata.js"></script>
+    <script type="text/javascript" src="script/init.js"></script>
     <script type="text/javascript" src="script/audio/guy-theme.ogg.js"></script>
     <script type="text/javascript" src="script/audio/ryu-theme.ogg.js"></script>
     <script type="text/javascript" src="script/audio/ken-theme.ogg.js"></script>

@@ -33,7 +33,8 @@ var CreateAIProxy = function()
     AIProxy.prototype.onStartAttack = function(frame,id) { managed_.onStartAttack(id); }
     AIProxy.prototype.frameMove = function(frame) { managed_.frameMove(frame); }
     AIProxy.prototype.onNewRound = function() { managed_.onNewRound(); }
-    AIProxy.prototype.onAnimationChanged = function(name) { managed_.onAnimationChanged(name); }
+    AIProxy.prototype.onStartAnimation = function(name) { managed_.onStartAnimation(name); }
+    AIProxy.prototype.onEndAnimation = function(name) { managed_.onEndAnimation(name); }
     AIProxy.prototype.execute = function(sequence) { managed_.execute(sequence); }
 
     return new AIProxy();

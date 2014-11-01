@@ -233,6 +233,11 @@ var CreateAkumaAI = function(player)
             ,[{B:"get_close", AC:true}, {B:"lk1"}, {B:"lk2"}, {B:"lp2"}, {B:"lk2"}, {B:"lk3"}, {B:"sfb3"}]
             ,[{B:"get_close", AC:true}, {B:"lp3"}, {B:"p2"}, {B:"u3"}]
             ,[{B:"get_close", AC:true}, {B:"p3"}, {B:"p1"}, {B:"p2"}, {B:"k1"}, {B:"lk2"}, {B:"sfb1"}]
+            ,[{B:"get_close", AC:true}, {B:"lp1"}, {B:"p1"}, {B:"p2"}, {B:"p3"}, {B:"p1"}, {B:"lk2"}, {B:"su3"}]
+            ,[{B:"get_close", AC:true}, {B:"p1"}, {B:"k1"}, {B:"p1"}, {B:"p2"}, {B:"lp2"}, {B:"lk3"}, {B:"hk1"}, {B:"su1"}]
+            ,[{B:"get_close", AC:true}, {B:"k1"}, {B:"p2"}, {B:"lp2"}, {B:"p2"}, {B:"p3"}, {B:"hk1"}]
+            ,[{B:"get_close", AC:true}, {B:"lp1"}, {B:"lp2"}, {B:"lp3"}, {B:"u1"}]
+            ,[{B:"get_close", AC:true}, {B:"lk1"}, {B:"lk2"}, {B:"lk3"}, {B:"u1"}]
         ];
 
         this.AI.CloseCombos = [
@@ -308,6 +313,13 @@ var CreateAkumaAI = function(player)
             ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"lk1", H:true}, {A:7, B:"k2", H:true}, {A:12, B:"p1", H:true}, {A:14, B:"p3", H:true}, {A:18, B:"lk2", H:true},  {A:18, B:"sfb1"}]
             ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"k1", H:true}, {A:7, B:"lk1", H:true}, {A:14, B:"k1", H:true}, {A:16, B:"k2", H:true}, {A:17, B:"lk3", H:true}, {A:18, B:"su1"}]
             ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"lk1", H:true}, {A:7, B:"k2", H:true}, {A:12, B:"p1", H:true}, {A:14, B:"p3", H:true}, {A:18, B:"lk2", H:true},  {A:18, B:"su1"}]
+
+            ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk2"}, {B:"lk3"}, {B:"tfb"}]
+            ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"tfb"}]
+            ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"k1"}, {B:"k2"}, {B:"fb3"}]
+            ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"hk1"}, {B:"u3"}]
+            ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"sfb1"}]
+            ,[{B:"fj", C:200, D:-40, MH:true}, {A:28, B:"fb1"}, {A:24, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lk2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {AC:false, A:2, B:"jr3"}, {A:30, B:"su1"}]
         ];
 
         this.AI.CounterProjectileMoved = [
@@ -330,6 +342,7 @@ var CreateAkumaAI = function(player)
             ,[{B:"jdk", C:200, D:-999, MH:true}, {A:21, B:"p1", H:true}, {A:9, B:"k1"}, {A:13, B:"lk2"}, {A:11, B:"lk3", H:true}, {A:18, B:"sfb3"}]
             ,[{B:"jdk", C:200, D:-999, MH:true}, {A:21, B:"p3"}, {A:7, B:"p1"}, {A:18, B:"p3"}, {A:15, B:"lk3", H:true}, {A:18, B:"hk3"}]
             ,[{B:"jdk", C:200, D:-999, MH:true}, {A:21, B:"p1"}, {A:5, B:"p2"}, {A:11, B:"p3"}, {A:17, B:"lk3"}, {A:18, B:"hk1"}, {A:55, B:"su1"}]
+            ,[{B:"get_close", C:70, AC:true}, {B:"jhdk"}, {B:"lk1"}, {B:"k1"}, {B:"lk1"}, {B:"k1"}, {B:"lk1"}, {B:"k1"}, {B:"lk2"}, {B:"sfb1"}]
         ];
 
         //incomplete jhdk combos
@@ -340,13 +353,7 @@ var CreateAkumaAI = function(player)
         ];
 
         this.AI.CounterPendingProjectileFar = [
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk2"}, {B:"lk3"}, {B:"hk1"}, {B:"su1"}]
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk2"}, {B:"lk3"}, {B:"tfb"}]
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"tfb"}]
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"k1"}, {B:"k2"}, {B:"fb3"}]
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"hk1"}, {B:"u3"}]
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {B:"sfb1"}]
-            ,[{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lk2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk3"}, {AC:false, A:2, B:"jr3"}, {A:30, B:"su1"}]
+            [{B:"get_close", C:400, MH:true}, {A:0, B:"jr3"}, {A:24, B:"fb1"}, {A:34, B:"f"}, {A:2, B:"fk2"}, {AC:true, B:"lp2"}, {B:"jr3"}, {B:"fb1"}, {B:"lk2"}, {B:"lk3"}, {B:"hk1"}, {B:"su1"}]
         ];
     }
 
@@ -713,15 +720,15 @@ var CreateAkumaAI = function(player)
     }
 
     //fired at the end of any attack
-    AkumaAI.prototype.onAnimationEnded = function(name)
+    AkumaAI.prototype.onEndAnimation = function(name)
     {
-        this.AI.onAnimationEnded();
+        this.AI.onEndAnimation();
     }
 
     //fired at the start of any attack
-    AkumaAI.prototype.onAnimationChanged = function(name)
+    AkumaAI.prototype.onStartAnimation = function(name)
     {
-        this.AI.onAnimationChanged(name);
+        this.AI.onStartAnimation(name);
     }
 
     AkumaAI.prototype.reactFloat = function(frame,attacker,x,y)
@@ -865,9 +872,11 @@ var CreateAkumaAI = function(player)
         var input = null;
         var mustHit = false;
         var autoContinue = false;
+        var forceBusy = false;
         for(var i = 0; i < sequence.length; ++i)
         {
             var requiredState = 0;
+            forceBusy = false;
             //mustHit is applied after the array element at which it was found
             if(!!mustHit)
                 sequence[i].H = true;
@@ -878,7 +887,11 @@ var CreateAkumaAI = function(player)
                 mustHit = true;
             if(!!sequence[i].AC)
                 autoContinue = true;
+            if(!!sequence[i].SB)
+                forceBusy = true;
 
+            requiredState = this.AI.getRequiredState(sequence[i].B);
+            /*
             if(sequence[i].B == "lp1" || sequence[i].B == "lp2" || sequence[i].B == "lp3" || sequence[i].B == "lk1" || sequence[i].B == "lk2" || sequence[i].B == "lk3") { requiredState = POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1; }
             else if(sequence[i].B == "p1" || sequence[i].B == "p3" || sequence[i].B == "k1" || sequence[i].B == "k3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
             else if(sequence[i].B == "u1" || sequence[i].B == "u2" || sequence[i].B == "u3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
@@ -889,6 +902,7 @@ var CreateAkumaAI = function(player)
             else if(sequence[i].B == "sfb1" || sequence[i].B == "sfb2" || sequence[i].B == "sfb3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
             else if(sequence[i].B == "su1" || sequence[i].B == "su2" || sequence[i].B == "su3") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
             else if(sequence[i].B == "p2" || sequence[i].B == "k2") { requiredState = POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+            */
 
             input = null;
             switch(sequence[i].B)
@@ -917,7 +931,16 @@ var CreateAkumaAI = function(player)
                 case "jhdk" : { if(this.AI.getClosestEnemy().X < (sequence[i].D || this.AI.TOO_CLOSE)) { return; }; this.doJumpThrustHardKick(0,sequence[i].C); continue; }
                 default: { this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0); break; }
             };
-            this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H, undefined, sequence[i].AC, requiredState);
+            //this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H, undefined, sequence[i].AC, requiredState);
+            this.AI.sendInputWithParams({
+                flags:FLAGS.CLEAR_INPUT
+                ,frame:sequence[i].A || 0
+                ,input:input
+                ,mustHit:sequence[i].H
+                ,autoCombo:sequence[i].AC
+                ,requiredState:requiredState
+                ,forceBusy:forceBusy
+            });
         }
         this.AI.sendInput(FLAGS.CLEAR_INPUT,2);
     }
@@ -970,6 +993,8 @@ var CreateAkumaAI = function(player)
 
         var item = this.AI.getClosestEnemy();
 
+        var isUnhittable = item.Player.isUnhittable();
+
         var rnd = getRand();
         var ignoreSetBusy = false;
 
@@ -993,7 +1018,7 @@ var CreateAkumaAI = function(player)
         }
         else if(item.X < (CONSTANTS.GRAPPLE_DISTANCE - 25))
         {
-            if(item.Player.isThrowable())
+            if(item.Player.isInThrowableState())
             {
                 this.AI.reset();
                 if(rnd > 50)
@@ -1025,11 +1050,6 @@ var CreateAkumaAI = function(player)
                 this.AI.reset();
                 this.doCloseCombo();
             }
-        }
-
-        if(!!this.AI.isBusy() || (this.AI.Actions.length > 0))
-        {
-            return;
         }
     }
 

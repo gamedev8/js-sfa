@@ -11,7 +11,6 @@ var Team = function(num)
     var nbHitsText_ = null;
     var currentCombo_ = 0;
     var currentComboRefCount_ = 0;
-    var nbPlayers_ = 0;
     var players_ = [];
     var wins_ = 0;
     var loses_ = 0;
@@ -26,9 +25,9 @@ var Team = function(num)
     }
 
     Team.prototype.getGame = function() { return game_; }
-    Team.prototype.getPlayer = function(value) { return this.getPlayers()[value]; }
+    Team.prototype.getPlayer = function(value) { return players_[value]; }
     Team.prototype.getPlayers = function() { return players_; }
-    Team.prototype.getNbPlayers = function() { return nbPlayers_; }
+    Team.prototype.getNbPlayers = function() { return players_.length; }
     Team.prototype.getIsAI = function() { return isAI_; }
     Team.prototype.setPlayers = function(value)
     {
@@ -39,7 +38,6 @@ var Team = function(num)
 
         players_ = value;
         this.setPlayerIndexes();
-        nbPlayers_ = players_.length;
     }
     Team.prototype.addPlayer = function(player, doSetup, isAi)
     {
@@ -53,7 +51,6 @@ var Team = function(num)
 
         players_.push(player);
         this.setPlayerIndexes();
-        nbPlayers_ = players_.length;
 
         if(!!doSetup)
             game_.getMatch().setupPlayer(player, teamNum_);
@@ -61,7 +58,7 @@ var Team = function(num)
     Team.prototype.setPlayerIndexes = function()
     {
         for(var i = 0, length = players_.length; i < length; ++i)
-            this.getPlayer(i).setIndex(i);
+            players_[i].setIndex(i);
     }
     Team.prototype.getCursor = function() { return cursor_; }
     Team.prototype.setCursor = function(value) { cursor_ = value; }
@@ -92,43 +89,56 @@ var Team = function(num)
 
     Team.prototype.enableStoryMode = function()
     {
-        players_.forEach(function(player) { player.User.enableStoryMode(); });
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].User.enableStoryMode();
     }
 
     Team.prototype.advanceStoryMode = function()
     {
-        players_.forEach(function(player) { player.User.advanceStoryMode(); });
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].User.advanceStoryMode();
     }
 
     Team.prototype.disableStoryMode = function()
     {
-        players_.forEach(function(player)
-            {
-                player.User.disableStoryMode();
-                player.User.reset();
-            });
+        for(var i = 0; i < players_.length; ++i)
+        {
+            players_[i].User.disableStoryMode();
+            players_[i].User.reset();
+        }
     }
 
     Team.prototype.onDrawRound = function()
     {
-        players_.forEach(function(player) { player.User.onDrawRound(); });
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].User.onDrawRound();
+
         ++draws_;
     }
 
     Team.prototype.onWonRound = function(frame)
     {
-        players_.forEach(function(player)
-            {
-                player.User.onWonRound();
-                player.justWon(frame);
-            });
+        for(var i = 0; i < players_.length; ++i)
+        {
+            players_[i].User.onWonRound();
+            players_[i].justWon(frame);
+        }
+
         ++wins_;
     }
 
     Team.prototype.onLostRound = function()
     {
-        players_.forEach(function(player) { player.User.onLostRound(); });
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].User.onLostRound();
+
         ++loses_;
+    }
+
+    Team.prototype.forceLose = function(attackDirection)
+    {
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].forceLose(attackDirection);
     }
 
     Team.prototype.init = function()
@@ -160,9 +170,7 @@ var Team = function(num)
     {
         this.setCurrentComboRefCount(Math.max(this.getCurrentComboRefCount() - 1, 0));
         if(!this.getCurrentComboRefCount())
-        {
             this.setCurrentCombo(0);
-        }
     }
 
     Team.prototype.incCombo = function()
@@ -218,7 +226,6 @@ var Team = function(num)
         nbHitsText_.change(text,10,game_.getCurrentFrame() + CONSTANTS.TEXT_DELAY + CONSTANTS.TEXT_LIFE,game_.getCurrentFrame() + CONSTANTS.TEXT_DELAY,true,30);
     }
 
-
     /*remove any DOM element that was added by this instance*/
     Team.prototype.release = function()
     {
@@ -243,50 +250,53 @@ var Team = function(num)
 
     Team.prototype.show = function()
     {
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).show();
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].show();
+
         portriatImg_.parentNode.style.display = "";
     }
 
     Team.prototype.hide = function()
     {
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).hide();
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].hide();
+
         portriatImg_.parentNode.style.display = "none";
     }
 
     Team.prototype.pause = function()
     {
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).pause();
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].pause();
     }
 
     Team.prototype.resume = function()
     {
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).resume();
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].resume();
     }
 
     Team.prototype.preFrameMove = function(frame)
     {
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).onPreFrameMove(frame);
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].onPreFrameMove(frame);
     }
 
     /**/
     Team.prototype.frameMove = function(frame, x, y, allowInput)
     {
         if(frame % 100 == 0)
-            this.setCursor(((this.getCursor() + 1) < nbPlayers_) ? (this.getCursor()+1) : 0);
+            this.setCursor(((cursor_ + 1) < players_.length) ? (cursor_+1) : 0);
 
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
+        for(var i = 0; i < players_.length; ++i)
+        {
             if(!!allowInput)
-                this.getPlayer(i).handleAI(frame);
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            if(!!allowInput)
-                this.getPlayer(i).handleInput(frame);
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).onFrameMove(frame,x,y);
+            {
+                players_[i].handleAI(frame);
+                players_[i].handleInput(frame);
+            }
+            players_[i].onFrameMove(frame,x,y);
+        }
 
         healthbar_.frameMove(frame);
         energybar_.frameMove(frame);
@@ -294,24 +304,25 @@ var Team = function(num)
 
     Team.prototype.preRender = function(frame)
     {
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).preRender(frame);
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].preRender(frame);
     }
 
     /* Shows details about the players on the team */
     Team.prototype.render = function(frame,deltaX)
     {
-        if(this.getCursor() != this.getLastCursor())
+        if(cursor_ != lastCursor_)
         {
-            this.setLastCursor(this.getCursor());
-            if(!!this.getPlayer(this.getCursor()))
+            this.setLastCursor(cursor_);
+            var player = this.getPlayer(cursor_);
+            if(!!player)
             {
-                spriteLookup_.set(nameImg_, this.getPlayer(this.getCursor()).getNameImageSrc());
-                spriteLookup_.set(portriatImg_, this.getPlayer(this.getCursor()).getPortriatImageSrc());
+                spriteLookup_.set(nameImg_, player.getNameImageSrc());
+                spriteLookup_.set(portriatImg_, player.getPortriatImageSrc());
             }
         }
-        for(var i = 0, length = nbPlayers_; i < length; ++i)
-            this.getPlayer(i).render(frame,deltaX);
+        for(var i = 0; i < players_.length; ++i)
+            players_[i].render(frame,deltaX);
 
         energybar_.render(frame);
         healthbar_.render(frame);

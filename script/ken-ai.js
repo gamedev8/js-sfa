@@ -128,7 +128,7 @@
             ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k1"}, {A:12, B:"k2", H:true}, {A:10, B:"lk2"}, {A:10, B:"lk2"}, {A:10, B:"lk1"}, {A:15, B:"lk2"}, {A:17, B:"lk3"}, {A:15, B:"sfb1"}]
             ,[{A:0,B:"get_close", C:-50}, {A:0, B:"k3"}, {A:12, B:"k2", H:true}, {A:10, B:"lk2"}, {A:12, B:"lk2"}, {A:13, B:"p3"}, {A:11, B:"k3"}]
             ,[{A:0,B:"get_close", C:-50}, {A:0, B:"p3"}, {A:6, B:"p1", H:true}, {A:16, B:"lp1"}, {A:12, B:"p3"}, {A:17, B:"lk2"}, {A:15, B:"fb1"}]            
-            ,[this.AI.GET_REAL_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
 
             ,[{B:"get_close", C:0}, {A:0, B:"flk2", AC:true}, {B:"lp1"}, {B:"flk2"}, {B:"lk1"}, {B:"flk2"}, {B:"lp1"}, {B:"lk2"}, {B:"lk3"}, {B:"sfb1"}]
         ];
@@ -470,15 +470,15 @@
     }
 
     //fired at the end of any attack
-    KenAI.prototype.onAnimationEnded = function(name)
+    KenAI.prototype.onEndAnimation = function(name)
     {
-        this.AI.onAnimationEnded();
+        this.AI.onEndAnimation();
     }
 
     //fired at the start of any attack
-    KenAI.prototype.onAnimationChanged = function(name)
+    KenAI.prototype.onStartAnimation = function(name)
     {
-        this.AI.onAnimationChanged(name);
+        this.AI.onStartAnimation(name);
     }
 
     KenAI.prototype.reactAirborne = function(frame,attacker)
@@ -660,6 +660,9 @@
 
         var item = this.AI.getClosestEnemy();
 
+        if(item.Player.isUnhittable())
+            return;
+
         var rnd = getRand();
         var ignoreSetBusy = false;
 
@@ -669,13 +672,13 @@
         if(item.X < CONSTANTS.GRAPPLE_DISTANCE)
         {
             this.AI.reset();
-            if(item.Player.isThrowable() && (this.AI.JustBecameMobile > 0))
+            if(item.Player.isInThrowableState() && (this.AI.JustBecameMobile > 0))
             {
                 this.doVeryCloseCombo(0);
             }
             else
             {
-                if (item.Player.isThrowable() && (rnd > 60))
+                if (item.Player.isInThrowableState() && (rnd > 60))
                     this.doVeryCloseCombo(0);
                 else if(rnd > 20)
                     this.doCloseCombo();

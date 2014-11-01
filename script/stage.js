@@ -11,6 +11,25 @@ var centerScreen = function()
 var CreateStage = function(bg0XOffset)
 {
 
+    var moveXHelper = function(thisRef, amount, p2x0, p1x1, p2NewX, canCheck, isMovingBackwards, canIncreaseDeltaX)
+    {
+        var tmp = amount;
+        var diffX = p2x0 - p1x1
+        
+        if(p1x1 < (p2x0 - tmp) && canCheck)
+        {
+            if(!!isMovingBackwards)
+            {
+                tmp = Math.min(diffX,amount * 2);
+            }
+        }
+
+        if(!!canIncreaseDeltaX)
+            tmp *= 4;
+
+        thisRef._MoveX(-tmp,false,p2NewX);
+    }
+
     var Stage = function()
     {
         this.BgImg0 =  {xOffset:0,element:window.document.getElementById("bg0")};
@@ -44,7 +63,7 @@ var CreateStage = function(bg0XOffset)
     }
     Stage.prototype.getGame = function() { return game_; }
     Stage.prototype.getMatch = function() { return game_.getMatch(); }
-    Stage.prototype.getPhysics = function() { return this.getMatch().getPhysics(); }
+    Stage.prototype.getCDHelper = function() { return this.getMatch().getCDHelper(); }
     Stage.prototype.onAudioLoaded = function()
     {
         this.playMusic();
@@ -263,8 +282,8 @@ var CreateStage = function(bg0XOffset)
     {
         var retVal = amount;
         var match = this.getMatch();
-        var left = this.getPhysics().getLeftMostPlayer();
-        var right = this.getPhysics().getRightMostPlayer();
+        var left = this.getCDHelper().getLeftMostPlayer();
+        var right = this.getCDHelper().getRightMostPlayer();
 
         var isPlayerLeftCornered = left.isLeftCornered();
         var isPlayerRightCornered = right.isRightCornered();
@@ -410,17 +429,16 @@ var CreateStage = function(bg0XOffset)
     /*Checks for physics with the stage*/
     Stage.prototype.scrollX = function(amount,p1,p2,match,dontOverrideSign)
     {
-
         /*p1 must be the leftmost or right most player*/
         var retVal = amount;
 
-        if(this.getPhysics().isLeftMostPlayer(p1.Id))
+        if(this.getCDHelper().isLeftMostPlayer(p1.Id))
         {
-            p2 = this.getPhysics().getRightMostPlayer();
+            p2 = this.getCDHelper().getRightMostPlayer();
         }
-        else if(this.getPhysics().isRightMostPlayer(p1.Id))
+        else if(this.getCDHelper().isRightMostPlayer(p1.Id))
         {
-            p2 = this.getPhysics().getLeftMostPlayer();
+            p2 = this.getCDHelper().getLeftMostPlayer();
         }
         else
             return retVal * 2;
@@ -466,6 +484,7 @@ var CreateStage = function(bg0XOffset)
         var p2NewMidX = p2MidX + amount;
 
 
+        /*
         var fn = function(p2NewX, canCheck, isMovingBackwards, canIncreaseDeltaX)
         {
             var tmp = amount;
@@ -485,6 +504,7 @@ var CreateStage = function(bg0XOffset)
             this._MoveX(-tmp,false,p2NewX);
             return retVal;
         }
+        */
 
         var isP1InLeftThreshold = p1NewMidX >= CONSTANTS.MOVEMENT_THRESHOLD_LEFT;
         var isP2InLeftThreshold = p2NewMidX >= CONSTANTS.MOVEMENT_THRESHOLD_LEFT;
@@ -509,7 +529,7 @@ var CreateStage = function(bg0XOffset)
         var hasLargerRightGap = !hasLargerLeftGap;
         var isP1InAnyThreshold = isP1InThreshold ||  (isStageLeftCornered && isP1InLeftThreshold) || (isStageRightCornered && isP1InRightThreshold);
         var isMovingBackwards = !((p1.Direction == -1 && amount > 0) || (p1.Direction == 1 && amount < 0));
-        var canIncreaseDeltaX = p1.jumpedOverAPlayer() && this.getPhysics().isWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
+        var canIncreaseDeltaX = p1.jumpedOverAPlayer() && this.getCDHelper().isWithinDistanceX(p1,p2,CONSTANTS.SO_CLOSE);
         /*if both players are in the threshold, then the stage should not move*/
         if(areBothPlayersInThreshold)
         {
@@ -518,17 +538,17 @@ var CreateStage = function(bg0XOffset)
         /*if the stage is NOT cornered, and one of the players is outside of the threshold, then the stage can move*/
         else if(!isStageCornered && !areBothPlayersInThreshold)
         {
-            retVal = fn.call(this,p2NewX,!isP1InAnyThreshold,isMovingBackwards,canIncreaseDeltaX);
+            moveXHelper(this, amount, p2x0, p1x1, p2NewX, !isP1InAnyThreshold, isMovingBackwards, canIncreaseDeltaX);
         }
         /*if the stage is left cornered, and the cornered player has moved far enough, and one of the players is beyond one of the right threshold, then the stage can move*/
         else if (isStageLeftCornered && hasLargerLeftGap && !areBothPlayersInRightThreshold)
         {
-            retVal = fn.call(this,p2NewX,!isP1InAnyThreshold,isMovingBackwards,canIncreaseDeltaX);
+            moveXHelper(this, amount, p2x0, p1x1, p2NewX, !isP1InAnyThreshold, isMovingBackwards, canIncreaseDeltaX);
         }
         /*if the stage is right cornered, and the cornered player has moved far enough, and one of the players is beyond one of the left threshold, then the stage can move*/
         else if (isStageRightCornered && hasLargerRightGap && !areBothPlayersInLeftThreshold)
         {
-            retVal = fn.call(this,p2NewX,!isP1InAnyThreshold,isMovingBackwards,canIncreaseDeltaX);
+            moveXHelper(this, amount, p2x0, p1x1, p2NewX, !isP1InAnyThreshold, isMovingBackwards, canIncreaseDeltaX);
         }
 
 

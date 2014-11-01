@@ -200,5 +200,15 @@ var CreateWebAudioManager = function()
     }
 
 
+    //
+    WebAudioManager.prototype.stopAll = function()
+    {
+        for(var i in items_)
+        {
+            this.stop(i);
+        }
+    }
+
+
     return new WebAudioManager();
 }

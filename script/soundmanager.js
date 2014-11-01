@@ -354,7 +354,36 @@ var CreateSoundManager = function()
     SoundManager.prototype.queueSound = function(value,volume,delay)
     {
         if(!isEnabled_) return;
-        sounds_[sounds_.length] = {Value:value, Volume:volume||1, Frame:game_.getCurrentFrame() + (delay||0)};
+        sounds_[_c3(value, "_", delay)] = {Value:value, Volume:volume||1, Frame:game_.getCurrentFrame() + (delay||0)};
+    }
+
+
+    /**/
+    SoundManager.prototype.stopAny = function(value)
+    {
+        if(!isEnabled_) return;
+        for(var i in sounds_)
+            if(sounds_[i].Value == value)
+                delete sounds_[i];
+    }
+
+
+    /**/
+    SoundManager.prototype.reset = function()
+    {
+        if(!isEnabled_)
+            return;
+
+        for(var i in sounds_)
+        {
+            this.stop(sounds_[i].Value);
+            delete sounds_[i];
+        }
+
+        if(!!sfxManager_)
+        {
+            sfxManager_.stopAll();
+        }
     }
 
 
@@ -370,7 +399,10 @@ var CreateSoundManager = function()
         for(var i in sounds_)
         {
             if(frame >= sounds_[i].Frame)
-                this.playSFX(sounds_.splice(i,1)[0]);
+            {
+                this.playSFX(sounds_[i]);
+                delete sounds_[i];
+            }
         }
     }
 

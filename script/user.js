@@ -120,6 +120,7 @@ var User = function(right,up,left,down,p1,p2,p3,k1,k2,k3,turn,coin,start,gamepad
     this.StoryMode = CreateStoryMode();
     this.StoryModeLevel = 0;
     this.ForceAkumaTeamMate = false;
+    this.TeamMates = [CHARACTERS.RYU];
 }
 
 User.prototype.setTeam = function(value)
@@ -218,17 +219,24 @@ User.prototype.getNbCredits = function()
     return this.NbCredits;
 }
 
-User.prototype.reset = function()
+User.prototype.reset = function(clearChar)
 {
     this.IsAlternate = false;
     this.IsAI = false;
-    this.IsRequestingCharSelect = false;
+    //IsRequestingCharSelect should be set to false in useCredit
+    //this.IsRequestingCharSelect = false;
     this.IsInCharSelect = false;
     this.IsCharSelected = false;
     this.Player = null;
     this.Team = null;
     this.IsInStoryMode = false;
     this.ForceAkumaTeamMate = false;
+    this.TeamMates = [CHARACTERS.RYU];
+
+    if(!!clearChar)
+    {
+        this.Selected = null;
+    }
 }
 
 User.prototype.hasCredits = function()
@@ -435,11 +443,21 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
         }
         else if(keyCode == this.Start)
         {
+            if(!!this.Player && !this.Player.Ai.isRunning())
+                return;
+            
+            if(!!this.Player && this.Player.Ai.isRunning())
+            {
+                user1_.reset(true);
+                user2_.reset(true);
+            }
+
             if(!!this.hasCredits())
             {
                 this.IsRequestingCharSelect = true;
                 if(game_.gameLoopState() == GAME_STATES.MATCH)
                 {
+
                     if(!this.Player)
                     {
                         game_.getMatch().forceQuit(QUIT_MATCH.GOTO_STORYMODE);
@@ -474,15 +492,15 @@ User.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
             else if(keyCode == this.Right) direction = CONSTANTS.RIGHT;
             else if(keyCode == this.Turn || keyCode == this.P1 || keyCode == this.P2 || keyCode == this.P3 || keyCode == this.K1 || keyCode == this.K2 || keyCode == this.K3)
             {
-                if(keyCode == this.Turn)
-                    this.ForceAkumaTeamMate = true;
-                else
-                    this.ForceAkumaTeamMate = false;
-                /*
-                if(this.Selected == CHARACTERS.RYU
-                    || this.Selected == CHARACTERS.KEN
-                    || this.Selected == CHARACTERS.MBISON)
-                */
+                switch(keyCode) {
+                case this.Turn: this.TeamMates = [CHARACTERS.KEN, CHARACTERS.RYU]; break;
+                case this.P3: this.TeamMates = [CHARACTERS.MBISON]; break;
+                case this.K3: this.TeamMates = [CHARACTERS.SAGAT]; break;
+                case this.K1:
+                case this.K2: this.TeamMates = [CHARACTERS.KEN]; break;
+                default :
+                    this.TeamMates = [CHARACTERS.RYU]; break;
+                }
                 if(this.CurrentStance == "ken"
                     || this.CurrentStance == "ryu"
                     || this.CurrentStance == "sagat"
@@ -621,11 +639,11 @@ User.prototype.getPlayer = function()
     var retVal = null;
     switch(this.Selected)
     {
-        case CHARACTERS.RYU: { retVal = Player.prototype.createRyu(this); break; }
-        case CHARACTERS.KEN: { retVal = Player.prototype.createKen(this); break; }
-        case CHARACTERS.SAGAT: { retVal = Player.prototype.createSagat(this); break; }
-        case CHARACTERS.AKUMA: { retVal = Player.prototype.createAkuma(this); break; }
-        case CHARACTERS.MBISON: { retVal = Player.prototype.createMBison(this); break; }
+        case CHARACTERS.RYU: { retVal = createRyu(this); break; }
+        case CHARACTERS.KEN: { retVal = createKen(this); break; }
+        case CHARACTERS.SAGAT: { retVal = createSagat(this); break; }
+        case CHARACTERS.AKUMA: { retVal = createAkuma(this); break; }
+        case CHARACTERS.MBISON: { retVal = createMBison(this); break; }
         /*
         case CHARACTERS.CHUNLI: { retVal = Player.prototype.createChunLi(this); break; }
         case CHARACTERS.CHARLIE: { retVal = Player.prototype.createCharlie(this); break; }

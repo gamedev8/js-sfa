@@ -1,5 +1,4 @@
-﻿
-Player.prototype.createKen = function(user)
+﻿var createKen = function(user)
 {
     var player = new Player("ken",101,247,user);
     var folder = "images/misc/" + player.Folder;
@@ -136,13 +135,13 @@ Player.prototype.createKen = function(user)
 
     var getup = player.addAnimation(MISC_FLAGS.NONE,"getup",0,["hr_getup"],0,false);
     getup.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    getup.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/x-hit-air-2a.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE,Spawn: SPAWN_FLAGS.SPAWN_SMALLDIRT },{ Player: PLAYER_FLAGS.MOBILE });
-    getup.addFrame(player,0,"200",folder + "/x-down.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup.addFrame(player,0,"",folder + "/x-getup-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup.addFrame(player,0,"",folder + "/x-getup-1.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup.addFrame(player,0,"",folder + "/x-getup-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup.addFrame(player,0,"",folder + "/x-getup-3.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE |PLAYER_FLAGS.MOBILE});
+    getup.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/x-hit-air-2a.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS,Spawn: SPAWN_FLAGS.SPAWN_SMALLDIRT },{ Player: PLAYER_FLAGS.MOBILE });
+    getup.addFrame(player,0,"200",folder + "/x-down.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup.addFrame(player,0,"",folder + "/x-getup-0.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup.addFrame(player,0,"",folder + "/x-getup-1.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup.addFrame(player,0,"",folder + "/x-getup-2.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup.addFrame(player,0,"",folder + "/x-getup-3.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
 
     var dizzy = player.addAnimation(MISC_FLAGS.NONE,"so dizzy",0,["hr_sodizzy"],0,false);
     dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Alert: ALERT_FLAGS.DIZZY });
@@ -155,31 +154,32 @@ Player.prototype.createKen = function(user)
 
     var getup_dizzy = player.addAnimation(MISC_FLAGS.NONE,"getup dizzy",0,["hr_getupdizzy"],0,false);
     getup_dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/x-hit-air-2a.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE,Spawn: SPAWN_FLAGS.SPAWN_SMALLDIRT },{ Player: PLAYER_FLAGS.MOBILE });
-    getup_dizzy.addFrame(player,0,"200",folder + "/x-down.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-1.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-3.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
+    getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/x-hit-air-2a.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS,Spawn: SPAWN_FLAGS.SPAWN_SMALLDIRT },{ Player: PLAYER_FLAGS.MOBILE });
+    getup_dizzy.addFrame(player,0,"200",folder + "/x-down.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-0.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-1.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-2.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/x-getup-3.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
     getup_dizzy.chain(dizzy);
 
     var hitReact_dizzyBounce = player.addAnimation(MISC_FLAGS.NONE,"dizzy bounce",0,["hr_dizzybounce"],0,false);
     hitReact_dizzyBounce.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX | PLAYER_FLAGS.USE_CURRENT_VX });
     hitReact_dizzyBounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_dizzyBounce.Vy = (80);
-    hitReact_dizzyBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/x-hit-air-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS,Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT },{ Player: PLAYER_FLAGS.MOBILE },0,1);
-    hitReact_dizzyBounce.addFrame(player,0,"200",folder + "/x-hit-air-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS });
+    hitReact_dizzyBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/x-hit-air-2.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS,Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT },{ Player: PLAYER_FLAGS.MOBILE },0,1);
+    hitReact_dizzyBounce.addFrame(player,0,"200",folder + "/x-hit-air-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.IGNORE_ATTACKS });
     hitReact_dizzyBounce.chain(getup_dizzy);
 
     var hitReact_dizzy = player.addAnimation(POSE_FLAGS.STANDING,"dizzy",0,["hr_dizzy"],0,false);
     hitReact_dizzy.Flags = ({ Player: PLAYER_FLAGS.MOVE_TO_FRONT });
     hitReact_dizzy.Vx = (35);
     hitReact_dizzy.Vy = (200);
-    hitReact_dizzy.addFrame(player,0,"200",folder + "/x-hit-air-0.png",32,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE},1);
+    hitReact_dizzy.addFrame(player,0,"200",folder + "/x-hit-air-0.png",32,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE},1);
     hitReact_dizzy.addFrame(player,0,"200",folder + "/x-hit-air-1.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS });
     hitReact_dizzy.chain(hitReact_dizzyBounce);
 
+    /*
     var rise = player.addAnimation(MISC_FLAGS.NONE,"getup",0,["getup"]);
     rise.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
     rise.addFrame(player,0,"",folder + "/x-getup-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
@@ -187,13 +187,14 @@ Player.prototype.createKen = function(user)
     rise.addFrame(player,0,"",folder + "/x-getup-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
     rise.addFrame(player,0,"",folder + "/x-getup-3.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
     rise.addFrame(player,0,"",folder + "/x-crouch-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
+    */
 
     var hitReact_bounce = player.addAnimation(MISC_FLAGS.NONE,"bounce",0,["hr_bounce"],0,false);
     hitReact_bounce.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX | PLAYER_FLAGS.USE_CURRENT_VX });
     hitReact_bounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_bounce.Vy = (80);
-    hitReact_bounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/x-hit-air-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE,Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT },{ Player: PLAYER_FLAGS.MOBILE },0,1);
-    hitReact_bounce.addFrame(player,0,"200",folder + "/x-hit-air-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS },{ Player: PLAYER_FLAGS.MOBILE });
+    hitReact_bounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/x-hit-air-2.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS,Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT },{ Player: PLAYER_FLAGS.MOBILE },0,1);
+    hitReact_bounce.addFrame(player,0,"200",folder + "/x-hit-air-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.IGNORE_ATTACKS },{ Player: PLAYER_FLAGS.MOBILE });
     hitReact_bounce.chain(getup);
 
     var hitReact_trip = player.addAnimation(POSE_FLAGS.STANDING | POSE_FLAGS.CROUCHING,"tripped",0,["hr_trip"],0,false);
@@ -255,7 +256,7 @@ Player.prototype.createKen = function(user)
     hitReact_deadBounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_deadBounce.Vy = (80);
     hitReact_deadBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/x-hit-air-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_COLLISIONS,Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT },{ Player: PLAYER_FLAGS.MOBILE },0,1);
-    hitReact_deadBounce.addFrame(player,0,"200",folder + "/x-hit-air-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS | PLAYER_FLAGS.IGNORE_COLLISIONS });
+    hitReact_deadBounce.addFrame(player,0,"200",folder + "/x-hit-air-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.IGNORE_ATTACKS | PLAYER_FLAGS.IGNORE_COLLISIONS });
     hitReact_deadBounce.chain(down);
 
 
@@ -317,8 +318,6 @@ Player.prototype.createKen = function(user)
     }
     hitReact_roll_throw.addFrame(player,0,"",folder + "/#-hit-a-1a.png",4,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,0,0,0,0,0,0,110);
     hitReact_roll_throw.addFrame(player,0,"",folder + "/#-hit-b-1a.png",6,{Player:PLAYER_FLAGS.SUPER_INVULNERABLE},MISC_FLAGS.NONE,-160,50,0,0,0,0,0);
-
-
 
     var blockRelease = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_BLOCK,"block release",0,["block_relase"],-2,false);
     blockRelease.Flags = ({Player:PLAYER_FLAGS.BLOCKING|PLAYER_FLAGS.MOVE_TO_BACK});
@@ -665,10 +664,10 @@ Player.prototype.createKen = function(user)
             //the following object will be passed in to the function that will be used to compute the X coordinate
             uppercut.VxFnArgs = { xMax: 70,xMin: 3,xInc: 1.1,valueMax: 10 };
 
-            uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-1.png",2,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.HIGH,x: 130,y: 107}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,delay,10);
-            uppercut.addFrameWithSound(player,1,"audio/ken/shoryuken.zzz",0,"",folder + "/x-uppercut-p1-2.png",3,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.LOW,x: 170,y: 177}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.SECOND_HIT,delay,10);
-            uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-3.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN | ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{ state: HIT_FLAGS.HIGH,x: 130,y: 127 },{ state: HIT_FLAGS.HIGH,x: 110,y: 227 },{ state: HIT_FLAGS.HIGH,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
-            uppercut.addFrameWithSound(player,1,"audio/misc/fire-0.zzz",0,"",folder + "/x-uppercut-p1-3.png",18,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:HITSOUND.HP3 },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN | ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{ state: HIT_FLAGS.HIGH,x: 130,y: 127 },{ state: HIT_FLAGS.HIGH,x: 110,y: 227 },{ state: HIT_FLAGS.HIGH,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
+            uppercut.addFrame(player,0,"",folder + "/x-uppercut-p1-1.png",2,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:[HITSOUND.HP3,HITSOUND.FIRE0] },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.HIGH,x: 130,y: 107}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.FIRST_HIT,delay,10);
+            uppercut.addFrameWithSound(player,1,"audio/ken/shoryuken.zzz",0,"",folder + "/x-uppercut-p1-2.png",3,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:[HITSOUND.HP3,HITSOUND.FIRE0] },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.FLOOR_AIRBORNE,[{ state: HIT_FLAGS.LOW,x: 170,y: 177}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL2,CONSTANTS.SECOND_HIT,delay,10);
+            uppercut.addFrame(player,0,"audio/misc/fire-1.zzz",folder + "/x-uppercut-p1-3.png",1,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,Pose: POSE_FLAGS.AIRBORNE,HitSound:[HITSOUND.HP3,HITSOUND.FIRE1] },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN | ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{ state: HIT_FLAGS.HIGH,x: 130,y: 127 },{ state: HIT_FLAGS.HIGH,x: 110,y: 227 },{ state: HIT_FLAGS.HIGH,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
+            uppercut.addFrameWithSound(player,1,"",0,"",folder + "/x-uppercut-p1-3.png",18,{ Player: PLAYER_FLAGS.IGNORE_PROJECTILES,Combat: COMBAT_FLAGS.ATTACK,HitSound:[HITSOUND.HP3,HITSOUND.FIRE1] },MISC_FLAGS.NONE,0,0,0,30,null,0,0,ATTACK_FLAGS.SPECIAL | ATTACK_FLAGS.HARD | ATTACK_FLAGS.KNOCKDOWN | ATTACK_FLAGS.RED_FIRE_NO_SOUND,[{ state: HIT_FLAGS.HIGH,x: 130,y: 127 },{ state: HIT_FLAGS.HIGH,x: 110,y: 227 },{ state: HIT_FLAGS.HIGH,x: 100,y: 322}],ATTACK_FLAGS.MEDIUM | ATTACK_FLAGS.REAR | ATTACK_FLAGS.SPECIAL3,CONSTANTS.THRID_HIT,longDelay,10);
 
 
             //add flame animation for the uppercut
@@ -922,7 +921,7 @@ Player.prototype.createKen = function(user)
     b_jump.addRepeatingFrame(player,0,"",folder + "/x-jump-1.png",CONSTANTS.FRAME_MAX,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0).clip({Bottom:125});
     b_jump.chain(jump_land);
 
-    this.createKenSuperMoves(player);
+    createKenSuperMoves(player);
 
     var xSpeed = 0;
     for (var x = 0; x < 3; ++x)
@@ -1092,7 +1091,7 @@ Player.prototype.createKen = function(user)
 } 
 
 
-Player.prototype.createKenSuperMoves = function(player)
+var createKenSuperMoves = function(player)
 {
     var folder = "images/misc/" + player.Folder;
     var uppercutVelocityY = 120;

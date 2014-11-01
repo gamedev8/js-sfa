@@ -127,12 +127,12 @@ Player.prototype.executeAnimation = function(name, forced, ignoreImmobile)
             if(!!animation)
                 break;
 
-            var move = this.Moves[i];
             if(this.Moves[i].BaseAnimation.Name == name)
                 animation = this.Moves[i];
             else
                 continue;
 
+            var move = this.Moves[i];
 
             if(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract)
                 return false;
@@ -186,30 +186,15 @@ Player.prototype.executeAnimation = function(name, forced, ignoreImmobile)
                     return false;
 
             }
-
-            /*
-            if(!!move.EnergyToSubtract && currentEnergy < move.EnergyToSubtract)
-                continue;
-            var pstate = (move.RequiredFlags | POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK) ^ (POSE_FLAGS.ALLOW_BLOCK | POSE_FLAGS.ALLOW_AIR_BLOCK);
-            var mustAllowBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_BLOCK);
-            var mustAllowAirBlock = hasFlag(move.RequiredFlags,POSE_FLAGS.ALLOW_AIR_BLOCK);
-            if(!pstate || this.Flags.Pose.has(pstate))
-            {
-            
-                if(!!mustAllowBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_BLOCK)))
-                    continue;
-                if(!!mustAllowAirBlock && !(this.Flags.Pose.has(POSE_FLAGS.ALLOW_AIR_BLOCK)))
-                    continue;
-
-                if(!!this.isProjectileInUse(move))
-                    continue;
-            }
-            */
         }
 
         if(!!animation)
         {
-            this.setCurrentAnimation({Animation:animation,StartFrame:this.getMatch().getCurrentFrame(),Direction:this.Direction});
+            if(!this.setInteruptAnimation(animation))
+            {
+                this.setCurrentAnimation({Animation:animation,StartFrame:this.getMatch().getCurrentFrame(),Direction:this.Direction});
+            }
+
             return true;
         }
     }
@@ -374,6 +359,7 @@ Player.prototype.goToStance = function(frame)
             return;
         }
 
+        this.IsLosing = false;
         this.IsWinning = false;
         this.ForceImmobile = true;
         this.Flags.Player.remove(PLAYER_FLAGS.MOBILE);
@@ -396,9 +382,15 @@ Player.prototype.goToStance = function(frame)
             this.forceWinAnimation(frame);
             return;
         }
-        this.Flags.Player.add(PLAYER_FLAGS.MOBILE);
+
+
+
         var move = this.Moves[this.MoveNdx.Stance];
+
         this.setCurrentAnimation({Animation:move,StartFrame:frame,Direction:this.Direction},true);
+
+        this.Flags.Player.add(PLAYER_FLAGS.MOBILE);
+
         this.showFirstAnimationFrame();
     }
 }
@@ -705,6 +697,21 @@ Player.prototype.checkFlags = function(animation)
     }
 }
 
+Player.prototype.setGotUpOnFrame = function(animation)
+{
+    //about to get up and become mobile
+    if(!!this.CurrentAnimation
+        && !!this.CurrentAnimation.Animation
+        && this.CurrentAnimation.Animation.BaseAnimation.Name == "getup"
+        && !this.isMobile()
+        )
+    {
+        //GotUpOnFrame is used to prevent the AI from grappling you immediately after you gets up
+        this.GotUpOnFrame = this.getFrame();
+        this.RegisteredHit.HitID = null;
+    }
+}
+
 //Sets the current move
 Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
 {
@@ -766,13 +773,17 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         }
     }
 
+
+    this.setGotUpOnFrame(!!newAnimation ? newAnimation.Animation : null);
+
+    if(!!this.CurrentAnimation && !!this.CurrentAnimation.Animation)
+        this.onEndAnimation(this.CurrentAnimation.Animation.BaseAnimation.Name);
+
     this.CurrentAnimation = newAnimation;
     var ignoreClearFire = false;
     if(!!newAnimation && !!newAnimation.Animation)
     {
         this.IsFirstFrame = true;
-        if(!this.isDead())
-            this.IgnoreDeadAnimation = false;
 
         //HitReact flags are set in [player.combat] after this function is called so it it safe to clear these flags
         this.Flags.HitReact.clear();
@@ -785,14 +796,14 @@ Player.prototype.setCurrentAnimation = function(newAnimation,isChaining)
         if(!!this.CurrentAnimation.Animation.IsProjectile)
             this.CurrentAnimation.Animation.IsProjectilePending = true;
 
-        this.onAnimationChanged(this.CurrentAnimation.Animation.BaseAnimation.Name);
+        this.onStartAnimation(this.CurrentAnimation.Animation.BaseAnimation.Name);
         //this.doAnimationAlerts();
         this.MaintainYPosition = newAnimation.Animation.MaintainYPosition;
         if(!!this.CurrentAnimation.Animation.Flags.Player)
         {
             //used for moves like MBison's head stomp - where you need to jump to the enemy's position
             if(hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.MOVE_TO_ENEMY))
-                this.CurrentAnimation.Animation.Vx = this.getPhysics().getInitialCloseGapVelocityX(this,this.getTarget(),this.CurrentAnimation.Animation.Vy);
+                this.CurrentAnimation.Animation.Vx = this.getCDHelper().getInitialCloseGapVelocityX(this,this.getTarget(),this.CurrentAnimation.Animation.Vy);
             //turn around if required
             if(hasFlag(this.CurrentAnimation.Animation.Flags.Player,PLAYER_FLAGS.FACE_ENEMY))
             {
@@ -1007,9 +1018,11 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
     {
         this.IsFirstFrame = false;
         if(this.CurrentAnimation.Animation.IsSuperMove)
-        {
             this.stopSlide(true);
-        }
+
+        if(hasFlag(newFrame.FlagsToSet.Pose,POSE_FLAGS.FORCE_FACE_TARGET))
+            this.faceTarget(true);
+
 
         //During an attack - after the attack frames the player is vulernable and we should ignore the overrides
         this.IgnoreOverrides = this.CurrentFrame.Vulernable;
@@ -1080,8 +1093,17 @@ Player.prototype.setCurrentFrame = function(newFrame,frame,stageX,stageY,ignoreT
         ignoredFlags = Player.prototype.AirborneFlags; /*flags to be set in the OnFrame function*/
         this.Flags.Pose.add((newFrame.FlagsToSet.Pose | ignoredFlags) ^ ignoredFlags);
         this.Flags.Combat.add(newFrame.FlagsToSet.Combat);
-        if(!this.Flags.Player.has(PLAYER_FLAGS.MOBILE) && hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.MOBILE))
-            this.MobileOnFrame = this.getFrame();
+
+        /*
+        //just became mobile
+        if(!this.isMobile() && hasFlag(newFrame.FlagsToSet.Player,PLAYER_FLAGS.MOBILE))
+        {
+            //GotUpOnFrame is used to prevent the AI from grappling you immediately after you gets up
+            this.GotUpOnFrame = this.getFrame();
+            this.RegisteredHit.HitID = null;
+        }
+        */
+
         this.Flags.Player.add(newFrame.FlagsToSet.Player);
         this.Flags.Spawn.add(newFrame.FlagsToSet.Spawn);
         this.Flags.Combo.add(newFrame.FlagsToSet.Combo);

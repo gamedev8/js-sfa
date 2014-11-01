@@ -47,12 +47,6 @@ Player.prototype.clearInput = function(record)
         this.ButtonState[i].Frame = 0;
     }
     this.ButtonStates = [];
-
-    if(!!record)
-    {
-        if(game_.isRecording())
-            game_.recordInput(this.Team,this.Index,this.Folder,null,null,this.getFrame(),"clearInput");
-    }
 }
 
 //Ensures that the buttonStateChange array doesn't get too big
@@ -162,16 +156,12 @@ Player.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
             //the button was just pressed
             this.ButtonState[key].Value = BUTTON_STATE.PRESSED
             this.ButtonState[key].Frame = frame;
-            if(game_.isRecording())
-                game_.recordInput(this.Team,this.Index,this.Folder,isDown,key,this.getInputFrame(frame));
         }
         else if(!isDown && (this.ButtonState[key].Value == BUTTON_STATE.PRESSED))
         {
             //the button was released
             this.ButtonState[key].Value = BUTTON_STATE.NONE;
             this.ButtonState[key].Frame = frame;
-            if(game_.isRecording())
-                game_.recordInput(this.Team,this.Index,this.Folder,isDown,key,this.getInputFrame(frame));
         }
         else
             return;
@@ -303,11 +293,7 @@ Player.prototype.checkForAnimation = function(frame)
                     //is there no current move, or is the user executing a new move
                     else if(!this.CurrentAnimation || (this.CurrentAnimation.Animation.BaseAnimation.Name != move.BaseAnimation.Name))
                     {
-                        if(this.allowInterupt())
-                        {
-                            this.InteruptAnimation = {Delay:CONSTANTS.INTERUPT_DELAY,Animation:move,StartFrame:frame,Direction:this.Direction};
-                        }
-                        else
+                        if(!this.setInteruptAnimation(move))
                         {
                             if(move.BaseAnimation.Name == "turn" || move.BaseAnimation.Name == "crouch turn")
                                 this.targetRearEnemy();

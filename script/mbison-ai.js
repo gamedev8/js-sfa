@@ -15,6 +15,7 @@
         ,JUMP_IN: 1 << 8
         ,CANCEL_IF_ANIMATION_CHANGED: 1 << 9
         ,ROLL_TO_ENEMY: 1 << 10
+        ,EXECUTE_MOVE : 1 << 11
     };
 
 
@@ -72,34 +73,38 @@
             ,"tm" : [{A:0, B:"tm"}]
             ,"ti" : [{A:0, B:"ti"}]
             ,"tb" : [{A:0, B:"tb"}]
-            ,"lp3" : [{A:0, B:"lp3"}]
-            ,"lk3" : [{A:0, B:"lk3"}]
             ,"p1" : [{A:0, B:"p1"}]
             ,"p2" : [{A:0, B:"p2"}]
             ,"p3" : [{A:0, B:"p3"}]
             ,"k1" : [{A:0, B:"k1"}]
             ,"k2" : [{A:0, B:"k2"}]
             ,"k3" : [{A:0, B:"k3"}]
+            ,"lp1" : [{A:0, B:"lp1"}]
+            ,"lp2" : [{A:0, B:"lp2"}]
+            ,"lp3" : [{A:0, B:"lp3"}]
+            ,"lk1" : [{A:0, B:"lk1"}]
+            ,"lk2" : [{A:0, B:"lk2"}]
+            ,"lk3" : [{A:0, B:"lk3"}]
         };
 
         this.AI.VeryCloseCombos = [
              [{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE+30,D:-999}, {A:0,B:"t1"}]
-             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k2", H:true}, {A:10, B:"k3"}, {A:30, B:"k2"}, {A:25, B:"lk3"}, {A:40, B:"pc3"}]
-             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1", H:true}, {A:4, B:"p1"}, {A:13, B:"k3"}, {A:30, B:"k2"}, {A:20, B:"lk3"}, {A:45, B:"pc3"}]
-             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1", H:true}, {A:4, B:"p1"}, {A:13, B:"k3"}, {A:30, B:"fb3"}]
-             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1", H:true}, {A:4, B:"p1"}, {A:13, B:"k3"}, {A:30, B:"k2"}, {A:20, B:"sk3"}]
-             ,[{A:0, B:"get_close",C:-60}, {A:0, B:"k2", H:true}, {A:10, B:"k3"}, {A:35, B:"lk3"}]
-             ,[{A:0, B:"get_close",C:-40}, {A:0, B:"k3", H:true}, {A:30, B:"k2"}]
-             ,[{A:0, B:"get_close",C:-40}, {A:0, B:"k3", H:true}, {A:30, B:"k2"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1"}, {A:10, B:"k3"}, {A:30, B:"k2"}, {A:25, B:"lk3"}, {A:40, B:"pc3"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1"}, {A:4, B:"p1"}, {A:13, B:"k3"}, {A:30, B:"k2"}, {A:20, B:"lk3"}, {A:45, B:"pc3"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1"}, {A:4, B:"p1"}, {A:13, B:"k3"}, {A:30, B:"fb3"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"k1"}, {A:4, B:"p1"}, {A:13, B:"k3"}, {A:30, B:"k2"}, {A:20, B:"sk3"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"lk1"}, {A:10, B:"k3"}, {A:35, B:"lk3"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"p1"}, {A:30, B:"k2"}]
+             ,[{A:0, B:"get_close",C:-100}, {A:0, B:"lp1"}, {A:30, B:"k2"}]
         ];
 
         this.AI.CloseCombos = [
              [{A:0,B:"get_close", C:CONSTANTS.GRAPPLE_DISTANCE+30,D:-999}, {A:0,B:"t1"}]
              ,[{A:0,B:"get_close",C:130},{A:0,B:"k2"}]
-             ,[{A:0,B:"get_close",C:130},{A:0,B:"k2"},{A:12,B:"tf"}]
-             ,[{A:0, B:"get_close",C:60}, {A:0, B:"k3", H:true}, {A:12, B:"sk3"}]
-             ,[{A:0, B:"get_close",C:120}, {A:0, B:"k2", H:true}, {A:12, B:"sk3"}]
-             ,[{A:0, B:"get_close",C:120}, {A:0, B:"k2", H:true}, {A:20, B:"pc3"}]
+             ,[{A:0,B:"get_close",C:130},{A:0,B:"k2"},{A:12,B:"tb"}]
+             ,[{A:0, B:"get_close",C:60}, {A:0, B:"k3"}, {A:12, B:"sk3"}]
+             ,[{A:0, B:"get_close",C:120}, {A:0, B:"k2"}, {A:12, B:"sk3"}]
+             ,[{A:0, B:"get_close",C:120}, {A:0, B:"k2"}, {A:20, B:"pc3"}]
              ,[{A:0,B:"lk3"},{A:10,B:"tf"}]
              ,[{A:0,B:"lk3"},{A:20,B:"k2"}]
              ,[{A:0,B:"lk3"},{A:20,B:"k2"}]
@@ -109,24 +114,23 @@
         ];
 
         this.AI.CounterProjectileCombos = [
-            [{A:0,B:"tb"},{A:26,B:"ti"}]
+            [{A:0,B:"tb"},{A:26,B:"tf"}]
+            ,[{A:0,B:"tf"}]
+            ,[{A:0,B:"tb"}]
             ,[{A:1,B:"jump_in"},{A:26,B:"k3"},{A:24,B:"k3"},{A:24,B:"k2"}]
             ,[{A:1,B:"jump_in"},{A:26,B:"k3"},{A:24,B:"k3"},{A:24,B:"pc3"}]
             ,[{A:1,B:"jump_in"},{A:26,B:"k3"},{A:24,B:"p2"},{A:24,B:"lk3"}]
             ,[{A:1,B:"jump_in"},{A:26,B:"k3"},{A:24,B:"k2"},{A:24,B:"pc3"}]
-            ,[]
         ];
 
         this.AI.CounterProjectileMovedCombos = [
-            [{A:5,B:"tb"},{A:26,B:"ti"}]
-            ,[{A:5,B:"ti"}]
-            ,[]
+            [{A:0,B:"tb"}]
+            ,[{A:0,B:"tb"}]
         ];
 
         this.AI.CounterAttackCombos = [
-            [{A:0,B:"tm"}]
+            [{A:0,B:"tb"}]
             ,[{A:0,B:"tf"}]
-            ,[]
         ];
 
         this.AI.ReactAirborneCombos = [
@@ -134,22 +138,22 @@
             ,[{A:0,B:"pc3"}]
             ,[{A:0,B:"pc1"}]
             ,[{A:0,B:"k3"}]
-            ,[{A:0,B:"hs1"}]
             ,[{A:0,B:"sk3"}]
             ,[{A:0,B:"k3"}]
         ];
 
         this.AI.ReactNotAirborneCombos = [
-            [{A:0,B:"k2"}]
-            ,[{A:0,B:"k2"}, {A:30, B:"lk3"}]
-            ,[{A:0,B:"lk3"}]
+            [{A:0,B:"lp1"}]
+            ,[{AC:true, B:"lk1"}, {B:"lk3"}]
+            ,[{AC:true, B:"lp1"}, {B:"lk3"}]
             ,[{A:0,B:"pc3"}]
-            ,[{A:0,B:"hs1"}]
             ,[{A:0,B:"lk3"}]
         ];
 
 
-        this.AI.RollInCombos = [
+        this.AI.EvadeAttack = [
+            [{A:0,B:"tb"}]
+            ,[{A:0,B:"tb"},{A:26,B:"tf"}]
         ];
 
 
@@ -197,12 +201,13 @@
         this.AI.Actions.push(this.AI.createAction(CONSTANTS.ATTACKBUTTON_FRAMES,FLAGS.CLEAR_INPUT));
     }
 
+    /*
     MBisonAI.prototype.executeFireball = function(which)
     {
         if(!this.AI.Player.isMobile() && !this.AI.Player.allowInterupt())
             return false;
 
-        this.AI.reset();
+        //this.AI.reset();
         which = which || getRand(3);
 
         switch(which)
@@ -220,7 +225,7 @@
         if(!this.AI.Player.isMobile() && !this.AI.Player.allowInterupt())
             return false;
 
-        this.AI.reset();
+        //this.AI.reset();
         which = which || getRand(3);
 
         switch(which)
@@ -238,14 +243,14 @@
         if(!this.AI.Player.isMobile() && !this.AI.Player.allowInterupt())
             return false;
 
-        this.AI.reset();
+        //this.AI.reset();
         which = which || getRand(3);
 
         switch(which)
         {
-            case 1: { if(!this.AI.Player.executeAnimation("psycho crusher p1")) {this.executeFireball(1)}; break; }
-            case 2: { if(!this.AI.Player.executeAnimation("psycho crusher p2")) {this.executeFireball(2)}; break; }
-            case 3: { if(!this.AI.Player.executeAnimation("psycho crusher p3")) {this.executeFireball(3)}; break; }
+            case 1: { this.AI.Player.executeAnimation("psycho crusher p1"); break; }
+            case 2: { this.AI.Player.executeAnimation("psycho crusher p2"); break; }
+            case 3: { this.AI.Player.executeAnimation("psycho crusher p3"); break; }
         }
 
         return true;
@@ -256,38 +261,14 @@
         if(!this.AI.Player.isMobile() && !this.AI.Player.allowInterupt())
             return false;
 
-        this.AI.reset();
+        //this.AI.reset();
 
         this.AI.Player.executeAnimation("head stomp");
 
         return true;
     }
+    */
 
-    MBisonAI.prototype.parseAndSendInput = function()
-    {
-        if(this.AI.Actions.length > 0 && !!this.AI.Actions[0].Move)
-        {
-            switch(this.AI.Actions[0].Move)
-            {
-                case "pc1" : this.executePsychoCrusher(1); break;
-                case "pc2" : this.executePsychoCrusher(2); break;
-                case "pc3" : this.executePsychoCrusher(3); break;
-                case "fb1" : this.executeFireball(1); break;
-                case "fb2" : this.executeFireball(2); break;
-                case "fb3" : this.executeFireball(3); break;
-                case "sk1" : this.executeScissorKick(1); break;
-                case "sk2" : this.executeScissorKick(2); break;
-                case "sk3" : this.executeScissorKick(3); break;
-                case "hs1" : this.executeHeadStomp(1); break;
-                case "hs2" : this.executeHeadStomp(2); break;
-                case "hs3" : this.executeHeadStomp(3); break;
-                default: break;
-            }
-            this.AI.Actions.splice(0,1);
-            return null;
-        }
-        return this.AI.parseAndSendInput();
-    }
 
     MBisonAI.prototype.onNewRound = function()
     {
@@ -338,6 +319,8 @@
     {
         //just before the projectile is actually thrown, the attacker will be used instead of the projectile
         //if the player is facing the projectile, then counter it
+        var dist = this.AI.Player.getDistanceFromSq(x,y);
+
         if(!this.AI.isAttackReactBusy() 
             && !this.AI.Player.isAirborne() 
             && !this.AI.Player.isBlocking() 
@@ -345,16 +328,19 @@
             && !isSuperMove
             && this.AI.Player.isFacingPlayer(player))
         {
-            var dist = this.AI.Player.getDistanceFromSq(x,y);
 
             var rnd = getRand();
 
-            if(dist < 40000)
+            if(dist < 100000)
             {
                 this.reset();
-                this.doCounterCloseAttackCombo();
+                this.doEvadeAttack();
                 this.AI.setAttackReactBusy();
             }
+        }
+        else
+        {
+            this.react(frame, player, false, x, y);
         }
     }
     //fired every frame an enemy projectile is pending
@@ -377,7 +363,7 @@
             if(player.isAirborne())
             {
                 this.reset();
-                this.doMove("tf");
+                this.doMove("tb");
                 this.AI.setProjectileReactBusy();
             }
             else if(dist < 170000 && dist > 40000)
@@ -406,6 +392,7 @@
             && this.AI.Actions.length == 0 
             && !!this.AI.Player.isMobile()
             && !isSuperMove
+            && !this.AI.Player.isBlocking()
             && this.AI.Player.isFacingProjectile(projectile))
         {
             var dist = this.AI.Player.getDistanceFromSq(x,y);
@@ -418,6 +405,10 @@
                 this.doCounterProjectileMovedCombo();
                 this.AI.IgnoreProjectileGone = true;
                 return;
+            }
+            else
+            {
+                this.reset();
             }
         }
         this.AI.onEnemyProjectileMoved(frame,x,y,projectile,isSuperMove);
@@ -436,7 +427,6 @@
     MBisonAI.prototype.onEnemyContinueAttack = function(frame, attacker, hitPoints)
     {
         this.AI.onEnemyContinueAttack(frame,attacker,hitPoints);
-        this.reactAirborne(frame,attacker);
     }
 
     //fired at the start of any enemy attack
@@ -452,23 +442,36 @@
     }
 
     //fired at the end of any attack
-    MBisonAI.prototype.onAnimationEnded = function(name)
+    MBisonAI.prototype.onEndAnimation = function(name)
     {
-        this.AI.onAnimationEnded();
+        this.AI.onEndAnimation();
     }
 
-    //fired at the start of any attack
-    MBisonAI.prototype.onAnimationChanged = function(name)
+    //fired at the start of any animation
+    MBisonAI.prototype.onStartAnimation = function(name)
     {
-        this.AI.onAnimationChanged(name);
+        this.AI.onStartAnimation(name);
+    }
+
+    //fired at the end of any animation
+    MBisonAI.prototype.onEndAnimation = function(name)
+    {
+        //if(name == "turn" || name == "crouch turn")
+        //if the TurnBusyFrame is set, then we must clear it here
+        if(this.AI.isTurnBusy())
+            this.AI.clearTurnBusy();
     }
 
     MBisonAI.prototype.reactAirborne = function(frame,attacker,isEnemyVulernerable,x,y)
     {
         var retVal = false;
 
+        if(!attacker.isAirborne())
+            return false;
+
         if(!this.AI.AllowOverrideBlock)
             return true;
+
         if(!this.AI.Player.isBlocking())
         {
             if(!!this.AI.isAirborneReactBusy())
@@ -480,7 +483,7 @@
         }
         
         //react to a vulnerable enemy
-        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker, true))
+        if(this.AI.Player.isFacingPlayer(attacker, true))
         {
             if(!!isEnemyVulernerable)
             {
@@ -516,14 +519,20 @@
                 if(rnd > 50)
                 {
                     this.AI.reset();
-                    this.doMove("tf");
+                    this.doMove("tb");
                     retVal = true;
                     this.AI.setAirborneReactBusy();
+                }
+                else
+                {
+                    //TBD
+                    //default behavior will be to block
                 }
             }
             else
             {
                 //TBD
+                //default behavior will be to block
             }
         }
         return retVal;
@@ -562,6 +571,13 @@
                 return retVal;
             }
         }
+        else
+        {
+            this.reset();
+            this.doEvadeAttack();
+            this.AI.setAttackReactBusy();
+            return retVal;
+        }
 
         return retVal;
     }
@@ -577,21 +593,38 @@
     MBisonAI.prototype.doCounterCloseAttackCombo = function(key) { this.execute(this.AI.CounterAttackCombos[getRand(this.AI.CounterAttackCombos.length-1)]); }
     MBisonAI.prototype.doCounterAirborneCombo = function(key) { this.execute(this.AI.ReactAirborneCombos[getRand(this.AI.ReactAirborneCombos.length-1)]); }
     MBisonAI.prototype.doCounterNotAirborneCombo = function(key) { this.execute(this.AI.ReactNotAirborneCombos[getRand(this.AI.ReactNotAirborneCombos.length-1)]); }
+    MBisonAI.prototype.doEvadeAttack = function(key) { this.execute(this.AI.EvadeAttack[getRand(this.AI.EvadeAttack.length-1)]); }
 
     MBisonAI.prototype.execute = function(sequence)
     {
         var input = null;
         var move = null;
+        var mustHit = true;
+        var autoCombo = false;
+        var flags = 0;
         for(var i = 0; i < sequence.length; ++i)
         {
+            flags = 0;
+
+            autoCombo = sequence[i].AC === undefined
+                ? autoCombo
+                : sequence[i].AC;
+
+            mustHit = sequence[i].H === undefined
+                ? mustHit
+                : sequence[i].H;
+
             input = null;
+
+            requiredState = this.AI.getRequiredState(sequence[i].B);
+
             switch(sequence[i].B)
             {
-                case "fb1" : case "fb2" : case "fb3" : { move = sequence[i].B; break; }
-                case "sk1" : case "sk2" : case "sk3" : { move = sequence[i].B; break; }
-                case "hs1" : case "hs2" : case "hs3" : { move = sequence[i].B; break; }
-                case "pc1" : case "pc2" : case "pc3" : { move = sequence[i].B; break; }
-                case "hs1" : case "hs2" : case "hs3" : { move = sequence[i].B; break; }
+                case "fb1" : { move = "fireball p1"; flags = FLAGS.EXECUTE_MOVE; break; } case "fb2" : { move = "fireball p1"; flags = FLAGS.EXECUTE_MOVE; break; } case "fb3" : { move = "fireball p3"; flags = FLAGS.EXECUTE_MOVE; break; }
+                case "sk1" : { move = "flip kick k1"; flags = FLAGS.EXECUTE_MOVE; break; } case "sk2" : { move = "flip kick k2"; flags = FLAGS.EXECUTE_MOVE; break; } case "sk3" : { move = "flip kick k3"; flags = FLAGS.EXECUTE_MOVE; break; }
+                case "pc1" : { move = "psycho crusher p1"; flags = FLAGS.EXECUTE_MOVE; break; } case "pc2" : { move = "psycho crusher p2"; flags = FLAGS.EXECUTE_MOVE; break; } case "pc3" : { move = "psycho crusher p3"; flags = FLAGS.EXECUTE_MOVE; break; }
+                case "hs" :{ move = "head stomp"; flags = FLAGS.EXECUTE_MOVE; break; }
+
                 case "b" : { input = bk_; break; } case "f" : { input = fwd_; break; } case "c" : { input = crouch_; break; } case "cb" : { input = crouchBack_; break; }
                 case "j" : { this.AI.jumpUp(); break; } case "fj" : { this.AI.jumpTowardEnemy(); break; } case "bj" : { this.AI.jumpAwayFromEnemy(); break; }
                 case "get_close" : { this.AI.moveToEnemy(0,sequence[i].C); break; } case "jump_in" : { if(this.AI.getClosestEnemy().X < (sequence[i].D || this.AI.TOO_CLOSE)) { return; }; this.AI.jumpInToEnemy(0,sequence[i].C); break; }
@@ -604,7 +637,19 @@
                 case "tf" : { input = teleportFarInput_; break; } case "tm" : { input = teleportMiddleInput_; break; } case "ti" : { input = teleportFrontInput_; break; } case "tb" : { input = teleportBehindInput_; break; }
                 case "t1" : { this.executeThrow(0,true); break; }
             };
-            this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,sequence[i].H,move);
+
+            //this.AI.sendInput(FLAGS.CLEAR_INPUT,sequence[i].A || 0,input,mustHit,move);
+
+            this.AI.sendInputWithParams({
+                flags:FLAGS.CLEAR_INPUT | flags
+                ,frame:sequence[i].A || 0
+                ,input:input
+                ,mustHit:mustHit
+                ,autoCombo:autoCombo
+                ,requiredState:requiredState
+                ,name:move
+            });
+
         }
         this.AI.sendInput(FLAGS.CLEAR_INPUT,2);
     }
@@ -641,20 +686,41 @@
 
         var item = this.AI.getClosestEnemy();
 
+        var isUnHittable = item.Player.isUnhittable();
+        var isAirborne = item.Player.isAirborne();
+
         var rnd = getRand();
         var ignoreSetBusy = false;
 
         if(this.AI.Actions.length != 0)
             return;
 
-        if((item.X < (CONSTANTS.GRAPPLE_DISTANCE+50)))
+        if(!this.AI.Player.isFacingPlayer(item.Player, true) && !this.AI.isTurnBusy())
         {
-            if(item.Player.isThrowable())
+            this.AI.setTurnBusy();
+            this.AI.Player.targetPlayer(item.Player);
+            return;   
+        }
+
+        //Quit until his turn animation ends
+        if(this.AI.isTurnBusy())
+            return;
+
+        //If necessary, make MBison turn around to face the closest opponent.
+        if(item.X < (CONSTANTS.GRAPPLE_DISTANCE) && !isAirborne && !isUnHittable)
+        {
+            if(item.Player.isInThrowableState())
+            {
+                this.AI.reset();
+                this.executeThrow(0,true);
+                return;
+            }
+            else
             {
                 this.AI.reset();
                 this.doVeryCloseCombo(rnd > 80 ? undefined : 0);
-                return;
             }
+
         }
         if(!!this.AI.isBusy() || (this.AI.Actions.length > 0))
         {
@@ -733,7 +799,7 @@
         {
             if((this.AI.Actions[0].Frame == 0))
             {
-                var retVal = this.parseAndSendInput();
+                var retVal = this.AI.parseAndSendInput();
                 switch(retVal)
                 {
                     case 1: { this.handleCombo(frame); break; }

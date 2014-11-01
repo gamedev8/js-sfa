@@ -35,10 +35,13 @@ var CreateCharSelect = function(users)
         {
             teamA_.push(0);
             users[0].ShowSelectIcon = true;
-            if(users[0].isRequestingCharSelect())
+            if(!!users[0].IsRequestingCharSelect)
+            {
                 for(var i = 2; i < users.length; ++i)
                     if((users[i].Team == 1))
                         users[i].reset();
+
+            }
         }
         if(users[1].isRequestingCharSelect() || users[1].hasSelectedPlayer() || users[1].isInCharSelect())
         {
@@ -168,6 +171,31 @@ var CreateCharSelect = function(users)
         animations_["show_next_foe"].addFrame(this,"",CONSTANTS.MAX_FRAME);
     }
 
+    CharSelect.prototype.setupSelectedChar = function(user)
+    {
+        if(user.Selected !== undefined)
+        {
+            user.SelectScreenData.Row = undefined;
+            user.SelectScreenData.Row = this.getRow(user);
+
+            user.SelectScreenData.Col = undefined;
+            user.SelectScreenData.Col = this.getColumn(user);
+
+            user.SelectIcon.Y = this.rowToY(user.SelectScreenData.Row);
+            user.SelectIcon.X = this.rowToX(user.SelectScreenData.Col);
+        }
+    }
+
+    CharSelect.prototype.rowToY = function(row)
+    {
+        return CONSTANTS.CHARSELECT_Y - (row * CONSTANTS.CHARSELECT_HEIGHT);
+    }
+
+    CharSelect.prototype.rowToX = function(col)
+    {
+        return CONSTANTS.CHARSELECT_X + (col * CONSTANTS.CHARSELECT_WIDTH);
+    }
+
     CharSelect.prototype.getRow = function(user)
     {
         if(user.SelectScreenData.Row !== undefined)
@@ -276,8 +304,8 @@ var CreateCharSelect = function(users)
                 
             }
 
-            who.SelectIcon.Y = CONSTANTS.CHARSELECT_Y - (row * CONSTANTS.CHARSELECT_HEIGHT);
-            who.SelectIcon.X = CONSTANTS.CHARSELECT_X + (col * CONSTANTS.CHARSELECT_WIDTH);
+            who.SelectIcon.Y = this.rowToY(row);
+            who.SelectIcon.X = this.rowToX(col);
         }
         
         return {Row:row,Col:col};
@@ -394,11 +422,12 @@ var CreateCharSelect = function(users)
         if(!!u1_ && (u1_.isRequestingCharSelect() || u1_.isInStoryMode()))
         {
             this.enableUser1();
+            this.setupSelectedChar(u1_);
         }
-
         if(!!u2_ && (u2_.isRequestingCharSelect() || u2_.isInStoryMode()))
         {
             this.enableUser2();
+            this.setupSelectedChar(u2_);
         }
     }
 
@@ -441,6 +470,7 @@ var CreateCharSelect = function(users)
     {
         determineTeams();
         this.enableUser(user,slot,slot == 1 ? teamB_ : teamA_);
+        user.IsRequestingCharSelect = false;
     }
 
     CharSelect.prototype.enableUser1 = function()
@@ -474,7 +504,7 @@ var CreateCharSelect = function(users)
         }
 
         otherUser = (slot == 1) ? this.getUser2() : this.getUser1();
-        if(!!user.isRequestingCharSelect())
+        if(user.isRequestingCharSelect())
             user.useCredit();
 
         var changeCharacterFn = function(thisValue) { return function(direction) { return thisValue.tryChangeCharacter(this,direction); } };
@@ -567,6 +597,14 @@ var CreateCharSelect = function(users)
             this.LastPicked = users[teamA_[0]].getName();
             this.showNextFoe(users[teamA_[0]].Selected);
         }
+        else
+        {
+            this.LastPicked = !!this.LastPicked 
+                ? this.LastPicked
+                : !!users[teamA_[0]] 
+                    ? users[teamA_[0]].getName()
+                    : users[teamB_[0]].getName();
+        }
     }
 
     CharSelect.prototype.getTeamA = function()
@@ -593,26 +631,24 @@ var CreateCharSelect = function(users)
                 break;
             }
         }
+
+        if(j >= users.length)
+            return;
+
         var teamMember = users[playerIndex];
         if(!ch)
         {
-            ch = CHARACTERS.RYU;
-
-            var isRyu = team.some(function(a) { return (users[a].Selected == CHARACTERS.RYU); });
-            var isAkuma = team.some(function(a) { return (users[a].ForceAkumaTeamMate == true); });
-
-            if(!!isAkuma)
-                ch = CHARACTERS.AKUMA;
-            else if(!!isRyu)
-                ch = CHARACTERS.KEN;
-            else
-                ch = CHARACTERS.RYU;
-
+            ch = users[team[0]].TeamMates.pop() || CHARACTERS.RYU;
         }
-        var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
+        var isAlternate = otherTeam.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); })
+         || team.some(function(a) { return (users[a].Selected == ch) && !users[a].isAlternateChar(); });
 
         teamMember.setChar(ch,isAlternate,true);
         team.push(playerIndex);
+
+        //keep adding teammates
+        if(users[team[0]].TeamMates.length > 0)
+            this.addAiUser(team, otherTeam);
     }
 
     CharSelect.prototype.getAiTeam = function(otherTeam)

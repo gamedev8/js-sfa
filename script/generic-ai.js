@@ -61,6 +61,7 @@ var CreateGenericAI = function(player)
         ,JUMP_IN: 1 << 8
         ,CANCEL_IF_ANIMATION_CHANGED: 1 << 9
         ,ROLL_TO_ENEMY: 1 << 10
+        ,EXECUTE_MOVE: 1 << 11
     };
 
 
@@ -69,24 +70,26 @@ var CreateGenericAI = function(player)
         this.Player = player;
         this.Actions = [];
         this.HitState = null;
-        this.REAL_CLOSE = -60;
+        this.REAL_CLOSE = -50;
         this.CLOSE = 0;
         this.TOO_CLOSE = 90;
         this.JUMP_IN_DIST = 280;
 
-        this.GET_CLOSE = {A:0,B:"get_close", C:-60,D:-999};
-        this.GET_REAL_CLOSE = {A:0,B:"get_close", C:-70,D:-999};
+        this.GET_CLOSE = {A:0,B:"get_close", C:-50,D:-999};
         this.CLEARED_INPUT = [{IsDown:false,Button:BUTTONS.BACK},{IsDown:false,Button:BUTTONS.JUMP},{IsDown:false,Button:BUTTONS.CROUCH},{IsDown:false,Button:BUTTONS.FORWARD},{IsDown:false,Button:BUTTONS.LIGHT_PUNCH},{IsDown:false,Button:BUTTONS.MEDIUM_PUNCH},{IsDown:false,Button:BUTTONS.HARD_PUNCH},{IsDown:false,Button:BUTTONS.LIGHT_KICK},{IsDown:false,Button:BUTTONS.MEDIUM_KICK},{IsDown:false,Button:BUTTONS.HARD_KICK}];
 
         this.BusyFrame = 0;
+        this.ForceBusyFrame = 0; //overrides all other busy frames
         this.AirborneReactBusyFrame = 0;
         this.ProjectileReactBusyFrame = 0;
         this.WanderBusyFrame = 0;
         this.ProactBusyFrame = 0;
         this.AttackReactBusyFrame = 0;
+        this.TurnBusyFrame = 0;
         this.JustAttacked = false;
-        this.JustBecameMobile = 0;
+        this.nbMobileDelay = 0;
         this.DidHit = false;
+        this.SetForceBusy = false;
         this.SingleMoves = {};
         this.VeryCloseCombos = [];
         this.CloseCombos = [];
@@ -107,21 +110,48 @@ var CreateGenericAI = function(player)
         return {Flags:flags||0, MoveName:name||0, Frame:frame||(autoCombo ? 1 : 0), Input:input||[], Distance:dist, IsActive:false, MustHit:mustHit, Move:move, AutoCombo:autoCombo, RequiredState:requiredState};
     }
 
+    GenericAI.prototype.createActionWithParams = function(params)
+    {
+        return {Flags:params.flags||0, MoveName:params.name||0, Frame:params.frame||(params.autoCombo ? 1 : 0), Input:params.input||[], Distance:params.dist, IsActive:false, SetForceBusy:params.forceBusy, MustHit:params.forceBusy || params.mustHit, Move:params.move, AutoCombo:params.autoCombo, RequiredState:params.requiredState};
+    }
+
 
     GenericAI.prototype.getForwardKey = function() {this.Player.MustChangeDirection ? BUTTONS.BACK : BUTTONS.FORWARD;}
     GenericAI.prototype.getOtherInputCleared = function(button) { return this.CLEARED_INPUT.filter(function(a) { return a.Button != button; }); }
     GenericAI.prototype.setAttackReactBusy = function() { this.AttackReactBusyFrame = game_.getCurrentFrame(); }
-    GenericAI.prototype.isAttackReactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.AttackReactBusyFrame) < (nbFrames || 20); }
+    GenericAI.prototype.isAttackReactBusy = function(nbFrames) {  return this.isForceBusy() || (game_.getCurrentFrame() - this.AttackReactBusyFrame) < (nbFrames || 20); }
     GenericAI.prototype.setAirborneReactBusy = function() { this.AirborneReactBusyFrame = game_.getCurrentFrame(); }
-    GenericAI.prototype.isAirborneReactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.AirborneReactBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.isAirborneReactBusy = function(nbFrames) {  return this.isForceBusy() || (game_.getCurrentFrame() - this.AirborneReactBusyFrame) < (nbFrames || 50); }
     GenericAI.prototype.setWanderBusy = function() { this.WanderBusyFrame = game_.getCurrentFrame(); }
-    GenericAI.prototype.isWanderBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.WanderBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.isWanderBusy = function(nbFrames) { return this.isForceBusy() || (game_.getCurrentFrame() - this.WanderBusyFrame) < (nbFrames || 50); }
     GenericAI.prototype.setProactBusy = function() { this.ProactBusyFrame = game_.getCurrentFrame(); }
-    GenericAI.prototype.isProactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.ProactBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.isProactBusy = function(nbFrames) { return this.isForceBusy() || (game_.getCurrentFrame() - this.ProactBusyFrame) < (nbFrames || 50); }
     GenericAI.prototype.setProjectileReactBusy = function() { this.IgnoreProjectileGone = true; this.ProjectileReactBusyFrame = game_.getCurrentFrame(); }
-    GenericAI.prototype.isProjectileReactBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.ProjectileReactBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.isProjectileReactBusy = function(nbFrames) { return this.isForceBusy() || (game_.getCurrentFrame() - this.ProjectileReactBusyFrame) < (nbFrames || 50); }
     GenericAI.prototype.setBusy = function() { this.BusyFrame = game_.getCurrentFrame(); }
-    GenericAI.prototype.isBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.BusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.isBusy = function(nbFrames) { return this.isForceBusy() || (game_.getCurrentFrame() - this.ForceBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.setForceBusy = function() { this.ForceBusyFrame = game_.getCurrentFrame(); }
+    GenericAI.prototype.isForceBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.ForceBusyFrame) < (nbFrames || 50); }
+    GenericAI.prototype.clearTurnBusy = function() { this.TurnBusyFrame = 0; }
+    GenericAI.prototype.setTurnBusy = function() { this.TurnBusyFrame = game_.getCurrentFrame(); }
+    GenericAI.prototype.isTurnBusy = function(nbFrames) { return (game_.getCurrentFrame() - this.TurnBusyFrame) < (nbFrames || 50); }
+
+    GenericAI.prototype.getRequiredState = function(value)
+    {
+        switch(value)
+        {
+        case "lp1": case "lp2": case "lp3": case "lk1": case "lk2": case "lk3": { return POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        case "p1": case "p3": case "k1": case "k3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        case "u1": case "u2": case "u3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        case "hk1": case "hk2": case "hk3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        case "jr1": case "jr2": case "jr3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.PENDING_JUMP; }
+        case "fb1": case "fb2": case "fb3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
+        case "rfb1": case "rfb2": case "rfb3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        case "sfb1": case "sfb2": case "sfb3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        case "su1": case "su2": case "su3": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.ALLOW_INTERUPT_3; }
+        case "p2": case "k2": { return POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.ALLOW_INTERUPT_1; }
+        }        
+    }
 
     GenericAI.prototype.reset = function()
     {
@@ -132,12 +162,15 @@ var CreateGenericAI = function(player)
         this.AutoCombo.reset();
         this.Player.clearInput(true);
         this.AllowOverrideBlock = true;
+        this.SetForceBusy = false;
         this.MustHit = false;
         this.HitState = null;
         this.BusyFrame = 0;
+        this.ForceBusyFrame = 0;
         this.AirborneReactBusyFrame = 0;
         this.ProjectileReactBusyFrame = 0;
         this.AttackReactBusyFrame = 0;
+        this.TurnBusyFrame = 0;
         this.IgnoreProjectileGone = false;
     }
 
@@ -165,7 +198,7 @@ var CreateGenericAI = function(player)
         var retVal = {Player:null,X:999999};
         for(var i = 0; i < otherPlayers.length; ++i)
         {
-            var temp = this.Player.getPhysics().getOffsetDistanceX(this.Player,otherPlayers[i],true);
+            var temp = this.Player.getCDHelper().getImgDistanceX(this.Player,otherPlayers[i]);
             if(temp < retVal.X)
             {
                 if((isAirborne === undefined || isAirborne == otherPlayers[i].isAirborne()) 
@@ -190,7 +223,7 @@ var CreateGenericAI = function(player)
         {
             if(!!otherPlayers[i].isAirborne()) 
             {
-                var temp = this.Player.getPhysics().getOffsetDistanceX(this.Player,otherPlayers[i],true);
+                var temp = this.Player.getCDHelper().getImgDistanceX(this.Player,otherPlayers[i]);
                 if(temp < retVal.X)
                 {
                     retVal.Player = otherPlayers[i];
@@ -252,7 +285,9 @@ var CreateGenericAI = function(player)
 
         if(!!this.Actions[0].AutoCombo)
         {
-            if(!!this.AutoCombo.isWaiting() || (!this.Player.isMobile() && !this.Player.allowInterupt()) || (!!this.Actions[0].RequiredState && !this.Player.Flags.Pose.has(this.Actions[0].RequiredState)))
+            if(!!this.AutoCombo.isWaiting() 
+                || (!this.Player.isMobile() && !this.Player.allowInterupt())
+                || (!!this.Actions[0].RequiredState && !this.Player.Flags.Pose.has(this.Actions[0].RequiredState)))
             {
                 return null;
             }
@@ -282,6 +317,10 @@ var CreateGenericAI = function(player)
         if(!!this.Actions[0].MustHit)
         {
             this.MustHit = true;
+        }
+        if(!!this.Actions[0].SetForceBusy)
+        {
+            this.setForceBusy();
         }
         if(hasFlag(this.Actions[0].Flags, FLAGS.MOVE_TO_ENEMY))
         {
@@ -327,6 +366,12 @@ var CreateGenericAI = function(player)
                 retVal = null;
             }
         }
+        else if(hasFlag(this.Actions[0].Flags, FLAGS.EXECUTE_MOVE) && !!this.Actions[0].MoveName)
+        {
+            this.Player.executeAnimation(this.Actions[0].MoveName);
+            canClear = true;
+            canSendInput = false;
+        }
 
         if(!!canSendInput)
             this.Player.sendInput(this.Actions[0].Input);
@@ -342,6 +387,11 @@ var CreateGenericAI = function(player)
     GenericAI.prototype.sendInput = function(flags, frame, input, mustHit,move,autoCombo,requiredState)
     {
         this.Actions.push(this.createAction(frame,flags,input,undefined,undefined,mustHit,move,autoCombo,requiredState));
+    }
+
+    GenericAI.prototype.sendInputWithParams = function(params)
+    {
+        this.Actions.push(this.createActionWithParams(params));
     }
 
     GenericAI.prototype.pressBlock = function()
@@ -377,19 +427,21 @@ var CreateGenericAI = function(player)
         {
             case ATTACK_STATE.BLOCKED:
             {
-                if(!!this.MustHit || !!this.AutoCombo.isEnabled())
+                if(!!this.MustHit || !!this.AutoCombo.isEnabled() || !!this.SetForceBusy)
                     this.reset();
                 break;
             }
             case ATTACK_STATE.HIT:
             {
                 this.MustHit = false;
+                this.ForceBusyFrame = 0;
+                this.SetForceBusy = false;
                 this.AutoCombo.hit(true);
                 break;
             }
             case ATTACK_STATE.DONE:
             {
-                if(!!this.MustHit || !!this.AutoCombo.isEnabled())
+                if(!!this.MustHit || !!this.AutoCombo.isEnabled() || !!this.SetForceBusy)
                     this.reset();
                 break;
             }
@@ -423,7 +475,7 @@ var CreateGenericAI = function(player)
     }
 
     //fired at the end of any attack
-    GenericAI.prototype.onAnimationEnded = function(name)
+    GenericAI.prototype.onEndAnimation = function(name)
     {
     }
 
@@ -432,7 +484,7 @@ var CreateGenericAI = function(player)
     }
 
     //fired at the start of any attack
-    GenericAI.prototype.onAnimationChanged = function(name)
+    GenericAI.prototype.onStartAnimation = function(name)
     {
         this.HitState = null;
         if(this.Actions.length > 0 
@@ -536,12 +588,12 @@ var CreateGenericAI = function(player)
             if(!player.isMobile())
             {
                 if(!!this.JustAttacked)
-                    this.JustBecameMobile = 3;
+                    this.nbMobileDelay = 3;
                 return;
             }
 
             this.JustAttacked = false;
-            this.JustBecameMobile = (this.JustBecameMobile > 0) ? this.JustBecameMobile - 1 : 0;
+            this.nbMobileDelay = (this.nbMobileDelay > 0) ? this.nbMobileDelay - 1 : 0;
         }
     }
 

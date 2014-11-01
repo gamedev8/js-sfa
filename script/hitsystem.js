@@ -99,6 +99,8 @@ HitSystem.prototype.canHit = function(key,index)
     var retVal = true;
     if(!!victimA.OtherPlayer && !!victimA.Player.CurrentAnimation.Animation && !victimA.IsProjectile)
     {
+        if(victimA.Player.isUnhittable())
+            return false;
         //grapples can not be overriden
         if(victimA.Player.isGrappling())
             return false;

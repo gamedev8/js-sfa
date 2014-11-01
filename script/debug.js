@@ -3,24 +3,9 @@ function GetDebugInstance(game)
     /*private member*/
     var game_ = game;
 
-    var Debug = function()
-    {
-
-    }
-
-
-    Debug.prototype.maxOutEnergy = function()
-    {
-        game_.getMatch().getTeamA().getEnergybar().change(1000);
-        game_.getMatch().getTeamB().getEnergybar().change(1000);
-    }
-
-    //test player battle 
-    Debug.prototype.practice = function (t1, t2, stage)
+    var setupMatch = function(t1, t2, stage, state)
     {
         game_.end();
-        window.document.getElementById("chkPracticeMode").checked = "checked";
-        this.setPracticeMode(true);
 
         t1 = t1 || [];
         t2 = t2 || [];
@@ -121,10 +106,35 @@ function GetDebugInstance(game)
             user8_.resetChar(t2[3].A, t2[3].B, t2[3].C);
             teamB.push(7);
         }
+        game_.startMatch(state === undefined ? MATCH_STATES.PRACTICE : 0, teamA, teamB, stages_[stage || "guy"]);
+    }
 
+    var Debug = function()
+    {
+
+    }
+
+
+    Debug.prototype.maxOutEnergy = function()
+    {
+        game_.getMatch().getTeamA().getEnergybar().change(1000);
+        game_.getMatch().getTeamB().getEnergybar().change(1000);
+    }
+
+    //test player battle 
+    Debug.prototype.practice = function (t1, t2, stage)
+    {
+        this.setPracticeMode(true);
         __noDamage = true;
+        setupMatch(t1, t2, stage);
+    }
 
-        game_.startMatch(MATCH_STATES.PRACTICE_MODE, teamA, teamB, stages_[stage || "guy"]);
+    //test player battle 
+    Debug.prototype.startMatch = function (t1, t2, stage)
+    {
+        this.setPracticeMode(false);
+        __noDamage = false;
+        setupMatch(t1, t2, stage, 0);
     }
 
 
@@ -159,16 +169,22 @@ function GetDebugInstance(game)
     Debug.prototype.p1Execute = function(input)
     {
         if(!!game_.getMatch())
-            if(this.p1().Ai.isRunning())
-                return this.p1().Ai.getManaged().execute(input);
+        {
+            if(!this.p1().Ai.isRunning())
+                this.p1().enableAI();
+            return this.p1().Ai.getManaged().execute(input);
+        }
         return null;
     }
 
-    Debug.prototype.p2Execute = function()
+    Debug.prototype.p2Execute = function(input)
     {
         if(!!game_.getMatch())
-            if(this.p2().Ai.isRunning())
-                return this.p2().Ai.getManaged().execute(input);
+        {
+            if(!this.p2().Ai.isRunning())
+                this.p2().enableAI();
+            return this.p2().Ai.getManaged().execute(input);
+        }
         return null;
     }
 
@@ -332,6 +348,19 @@ function GetDebugInstance(game)
     Debug.prototype.setPracticeMode = function(flag)
     {
         __noDamage = flag;
+        window.document.getElementById("chkPracticeMode").checked = flag;
+    }
+
+    Debug.prototype.setFallingDamage = function(flag)
+    {
+        __noFallDamage = !flag;
+        window.document.getElementById("chkFallDamageMode").checked = flag;
+    }
+
+    Debug.prototype.setTeamMode = function(flag)
+    {
+        game_.setTeamMode(flag);
+        window.document.getElementById("chkTeamMode").checked = flag;
     }
 
     Debug.prototype.keyCount = 1000;
@@ -344,7 +373,6 @@ function GetDebugInstance(game)
             return;
         }
 
-        game_.pause();
         right = Debug.prototype.keyCount++;
         up = Debug.prototype.keyCount++;
         left = Debug.prototype.keyCount++;

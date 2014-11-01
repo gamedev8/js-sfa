@@ -136,7 +136,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
 
     this.HasPendingGrapple = false;
     this.LandedOnFrame = 0;
-    this.MobileOnFrame = 0;
+    this.GotUpOnFrame = 0;
 
     this.SlideFactor = slideFactor || 30;
     this.Index = 0;
@@ -239,7 +239,7 @@ Player.prototype.ndx = function(key)
     return retVal;
 }
 Player.prototype.getMatch = function() { return game_.getMatch(); }
-Player.prototype.getPhysics = function() { return this.getMatch().getPhysics(); }
+Player.prototype.getCDHelper = function() { return this.getMatch().getCDHelper(); }
 Player.prototype.getStage = function() { return this.getMatch().getStage(); }
 Player.prototype.getGame = function() { return game_; }
 Player.prototype.getHealth = function() { return !!this.getHealthFn ? this.getHealthFn() : -1; }
@@ -255,15 +255,11 @@ Player.prototype.setBeingGrappled = function(value) { this.IsBeingThrown = value
 Player.prototype.getNameImageSrc = function() { return this.NameImageSrc; }
 Player.prototype.getPortriatImageSrc = function() { return this.PortriatImageSrc; }
 Player.prototype.getName = function() { return this.Name; }
-Player.prototype.takeDamage = function(amount, ignoreNoDamage, attackDirection)
+Player.prototype.takeDamage = function(amount, attackDirection, ignoreNoDamage)
 {
     if(!!amount && !this.isDead() && (!__noDamage || !!ignoreNoDamage))
     {
         this.takeDamageFn(amount);
-        if(this.isDead())
-        {
-            this.forceTeamLose(attackDirection);
-        }
     }
 }
 
@@ -345,7 +341,7 @@ Player.prototype.reset = function(ignoreDirection)
 {
     this.ShakeUntilFrame = 0;
     this.LandedOnFrame = 0;
-    this.MobileOnFrame = 0;
+    this.GotUpOnFrame = 0;
     this.TeleportX = 0;
     this.TeleportFramesLeft = 0;
     this.IgnoreHoldFrame = false;
@@ -442,6 +438,9 @@ Player.prototype.reset = function(ignoreDirection)
     this.clearDizzy();
     this.CanEndRound = false;
     this.OtherTeamDead = false;
+    this.HandledDead = false;
+
+    this.DeadContext = {};
 }
 
 Player.prototype.createElement = function(x,y,parentElement)
@@ -718,7 +717,7 @@ Player.prototype.onPreFrameMove = function(frame)
 
 Player.prototype.handleAI = function(frame)
 {
-    if(this.Ai.isRunning())
+    if(this.Ai.isRunning() && !this.isDead())
         this.Ai.frameMove(frame);
 }
 
@@ -730,10 +729,6 @@ Player.prototype.isVulnerable = function()
         && !this.IsInAttackFrame
         && !this.isBlocking()
         && !this.isMobile()
-        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_ATTACKS)
-        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.IGNORE_COLLISIONS)
-        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.INVULNERABLE)
-        && !hasFlag(this.Flags.Player.Value, PLAYER_FLAGS.SUPER_INVULNERABLE)
         )
     {
         return true;
@@ -805,7 +800,7 @@ Player.prototype.onFrameMove = function(frame,stageX,stageY)
             this.handleGrapple(this.CurrentAnimation.FrameIndex - 1,frame,stageX,stageY);
         if(!!this.CurrentAnimation.Animation && !!this.CurrentAnimation.Animation.Trail)
             this.frameMoveTrail(frame,this.getStage().DeltaX,stageY);
-        if(!this.ForceImmobile && this.isDead())
+        if(!this.HandledDead && this.isDead())
             this.forceTeamLose(frame);
     }
     else
@@ -1060,6 +1055,10 @@ Player.prototype.release = function()
     if(!!this.User)
     {
         this.User.Player = null;
+        if(this.Ai.isRunning())
+        {
+            this.User.reset(true);
+        }
         this.User = null;
     }
     this.Flags.release();
@@ -1083,5 +1082,5 @@ Player.prototype.resume = function()
 
 Player.prototype.justWon = function(frame)
 {
-    this.WinAnimationFrame = frame + CONSTANTS.ROUND_OVER_DELAY + (getRand(40) - 10);
+    //this.WinAnimationFrame = frame + CONSTANTS.ROUND_OVER_DELAY + (getRand(40) - 10);
 }

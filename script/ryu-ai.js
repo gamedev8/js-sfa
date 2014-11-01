@@ -136,7 +136,7 @@ var CreateRyuAI = function(player)
             ,[this.AI.GET_CLOSE, {A:0,B:"p2", MH:true}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2", MH:true}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"lp3", MH:true}, {A:4,B:"p2"},{A:9,B:"u1"}]
-            ,[this.AI.GET_REAL_CLOSE, {A:0,B:"p2", MH:true}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2", MH:true}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
             ];
 
         this.AI.CloseCombos = [
@@ -483,15 +483,15 @@ var CreateRyuAI = function(player)
     }
 
     //fired at the end of any attack
-    RyuAI.prototype.onAnimationEnded = function(name)
+    RyuAI.prototype.onEndAnimation = function(name)
     {
-        this.AI.onAnimationEnded();
+        this.AI.onEndAnimation();
     }
 
     //fired at the start of any attack
-    RyuAI.prototype.onAnimationChanged = function(name)
+    RyuAI.prototype.onStartAnimation = function(name)
     {
-        this.AI.onAnimationChanged(name);
+        this.AI.onStartAnimation(name);
     }
 
     RyuAI.prototype.reactAirborne = function(frame, attacker, isVulnerable)
@@ -661,6 +661,9 @@ var CreateRyuAI = function(player)
 
         var item = this.AI.getClosestEnemy();
 
+        if(item.Player.isUnhittable())
+            return;
+
         var rnd = getRand();
         var ignoreSetBusy = false;
 
@@ -670,7 +673,7 @@ var CreateRyuAI = function(player)
         if(item.X < CONSTANTS.GRAPPLE_DISTANCE)
         {
             this.AI.reset();
-            if(item.Player.isThrowable() && (this.AI.JustBecameMobile > 0))
+            if(item.Player.isInThrowableState() && (this.AI.JustBecameMobile > 0))
             {
                 if (rnd > 50)
                     this.doVeryCloseCombo(0);
@@ -679,9 +682,9 @@ var CreateRyuAI = function(player)
             }
             else
             {
-                if (item.Player.isThrowable() && (rnd > 66))
+                if (item.Player.isInThrowableState() && (rnd > 66))
                     this.doVeryCloseCombo(0);
-                else if(item.Player.isThrowable() && (rnd > 33))
+                else if(item.Player.isInThrowableState() && (rnd > 33))
                     this.doVeryCloseCombo(1);
                 else if(rnd > 10)
                     this.wanderBackward(50);
@@ -697,9 +700,9 @@ var CreateRyuAI = function(player)
             this.AI.reset();
             if(rnd > 70)
                 this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
-            else if (item.Player.isThrowable() && (rnd > 60))
+            else if (item.Player.isInThrowableState() && (rnd > 60))
                 this.doVeryCloseCombo(0);
-            else if(item.Player.isThrowable() && (rnd > 50))
+            else if(item.Player.isInThrowableState() && (rnd > 50))
                 this.doVeryCloseCombo(1);
             else if(rnd > 30)
                 this.wanderBackward(50);

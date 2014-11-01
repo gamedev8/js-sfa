@@ -1,5 +1,5 @@
 ﻿
-Player.prototype.createMBison = function(user)
+var createMBison = function(user)
 {
     var player = new Player("mbison",160,247,user);
     var folder = "images/misc/" + player.Folder;
@@ -71,17 +71,17 @@ Player.prototype.createMBison = function(user)
         }
     });
 
-    win3.addFrame(player, 0, "", folder + "/teleport-0.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
-    win3.addFrame(player, 0, "", folder + "/teleport-1.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
-    win3.addFrame(player, 0, "", folder + "/teleport-2.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
-    win3.addFrame(player, 0, "", folder + "/teleport-3.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
-    win3.addFrame(player, 0, "", folder + "/teleport-4.png", 3, MISC_FLAGS.NONE, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
-    win3.addFrame(player, 0, "", folder + "/teleport-4.png", 20, {Player:PLAYER_FLAGS.INVISIBLE}, MISC_FLAGS.NONE, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-0.png", 3, {Player:PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-1.png", 3, {Player:PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-2.png", 3, {Player:PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-3.png", 3, {Player:PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-4.png", 3, {Player:PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+    win3.addFrame(player, 0, "", folder + "/teleport-4.png", 20, {Player:PLAYER_FLAGS.INVISIBLE|PLAYER_FLAGS.IGNORE_COLLISIONS}, MISC_FLAGS.NONE, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
 
-    win3.addFrameWithSound(player, 1, "audio/mbison/laugh-1.zzz",0,"",folder + "/x-win-2-0.png",1,{Pose: POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
-    win3.addFrame(player,0,"",folder + "/x-win-2-0.png",1,{Pose: POSE_FLAGS.AIRBORNE},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
-    win3.addFrame(player,0,"",folder + "/x-win-2-0.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
-    win3.addFrame(player,0,"",folder + "/x-win-2-1.png",4,MISC_FLAGS.NONE,MISC_FLAGS.NONE,0,0,0,0,null,-82,0);
+    win3.addFrameWithSound(player, 1, "audio/mbison/laugh-1.zzz",0,"",folder + "/x-win-2-0.png",1,{Pose: POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.IGNORE_COLLISIONS},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
+    win3.addFrame(player,0,"",folder + "/x-win-2-0.png",1,{Pose: POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.IGNORE_COLLISIONS},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
+    win3.addFrame(player,0,"",folder + "/x-win-2-0.png",4,{Player:PLAYER_FLAGS.IGNORE_COLLISIONS},MISC_FLAGS.NONE,0,0,0,0,null,-96,0);
+    win3.addFrame(player,0,"",folder + "/x-win-2-1.png",4,{Player:PLAYER_FLAGS.IGNORE_COLLISIONS},MISC_FLAGS.NONE,0,0,0,0,null,-82,0);
     win3.chain(win3,7);
 
     var crouch = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_BACKWARD|POSE_FLAGS.WALKING_FORWARD,"crouch",5,[BUTTONS.CROUCH],99,false);
@@ -152,21 +152,21 @@ Player.prototype.createMBison = function(user)
 
     var getup = player.addAnimation(MISC_FLAGS.NONE,"getup",0,["hr_getup"],0,false);
     getup.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
-    getup.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/hit-trip-3.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
-    getup.addFrame(player,0,"",folder + "/down.png",4,{Player:PLAYER_FLAGS.INVULNERABLE}, 0, 0, 0, 0, 0, null, 0, -15);
-    getup.addFrame(player,0,"",folder + "/getup-0.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-1.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-3.png",4,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/r-crouch-0.png",4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.MOBILE},MISC_FLAGS.NONE,0,0,0,0,null,-38,-18);
+    getup.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/hit-trip-3.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
+    getup.addFrame(player,0,"",folder + "/down.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS}, 0, 0, 0, 0, 0, null, 0, -15);
+    getup.addFrame(player,0,"",folder + "/getup-0.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-1.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-2.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-3.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/r-crouch-0.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS},MISC_FLAGS.NONE,0,0,0,0,null,-38,-18);
 
     var hitReact_bounce = player.addAnimation(MISC_FLAGS.NONE,"bounce",0,["hr_bounce"],0,false);
     hitReact_bounce.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX | PLAYER_FLAGS.USE_CURRENT_VX});
     hitReact_bounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_bounce.chainVyFn = (function(v){ return v * 0.5; });
     hitReact_bounce.Vy = (80);
-    hitReact_bounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-trip-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_bounce.addFrame(player,0,"200",folder + "/hit-trip-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.INVULNERABLE},{Player: PLAYER_FLAGS.MOBILE});
+    hitReact_bounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-trip-2.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
+    hitReact_bounce.addFrame(player,0,"200",folder + "/hit-trip-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS},{Player: PLAYER_FLAGS.MOBILE});
     hitReact_bounce.chain(getup);
 
     var hitReact_trip = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"tripped",0,["hr_trip"],0,false);
@@ -189,13 +189,13 @@ Player.prototype.createMBison = function(user)
 
     var getup_dizzy = player.addAnimation(MISC_FLAGS.NONE,"getup dizzy",0,["hr_getupdizzy"],0,false);
     getup_dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX });
-    getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/hit-trip-3.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
-    getup_dizzy.addFrame(player,0,"200",folder + "/down.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-1.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-3.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
-    getup_dizzy.addFrame(player,0,"",folder + "/crouch-0.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE });
+    getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",0,"200",folder + "/hit-trip-3.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
+    getup_dizzy.addFrame(player,0,"200",folder + "/down.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-0.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-1.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-2.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-3.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
+    getup_dizzy.addFrame(player,0,"",folder + "/crouch-0.png",4,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS });
     getup_dizzy.chain(dizzy);
 
     var hitReact_dizzyBounce = player.addAnimation(MISC_FLAGS.NONE,"dizzy bounce",0,["hr_dizzybounce"],0,false);
@@ -203,14 +203,14 @@ Player.prototype.createMBison = function(user)
     hitReact_dizzyBounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_dizzyBounce.Vy = (80);
     hitReact_dizzyBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-trip-2.png",4,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_COLLISIONS,Spawn: SPAWN_FLAGS.SPAWN_BIGDIRT },{ Player: PLAYER_FLAGS.MOBILE },0,1);
-    hitReact_dizzyBounce.addFrame(player,0,"",folder + "/hit-trip-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS });
+    hitReact_dizzyBounce.addFrame(player,0,"",folder + "/hit-trip-3.png",CONSTANTS.FRAME_MAX,{ Pose: POSE_FLAGS.AIRBORNE,Player: PLAYER_FLAGS.USE_ATTACK_DIRECTION | PLAYER_FLAGS.IGNORE_ATTACKS });
     hitReact_dizzyBounce.chain(getup_dizzy);
 
     var hitReact_dizzy = player.addAnimation(POSE_FLAGS.STANDING,"dizzy",0,["hr_dizzy"],0,false);
     hitReact_dizzy.Flags = ({ Player: PLAYER_FLAGS.MOVE_TO_FRONT });
     hitReact_dizzy.Vx = (35);
     hitReact_dizzy.Vy = (200);
-    hitReact_dizzy.addFrame(player,0,"200",folder + "/hit-floored-0.png",32,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE} ,1, 0, 0, 0, null, -26, 0, 0, 0, 0, 0, 0, 0);
+    hitReact_dizzy.addFrame(player,0,"200",folder + "/hit-floored-0.png",32,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE} ,1, 0, 0, 0, null, -26, 0, 0, 0, 0, 0, 0, 0);
     hitReact_dizzy.addFrame(player,0,"200",folder + "/hit-floored-1.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS }, MISC_FLAGS.NONE, 0, 0, 0, 0, null, -37, -17, 0, 0, 0, 0, 0, 0);
     hitReact_dizzy.chain(hitReact_dizzyBounce);
 
@@ -262,7 +262,7 @@ Player.prototype.createMBison = function(user)
     hitReact_deadBounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_deadBounce.Vy = (80);
     hitReact_deadBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-trip-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_deadBounce.addFrame(player,0,"200",folder + "/hit-trip-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS},{Player:PLAYER_FLAGS.MOBILE});
+    hitReact_deadBounce.addFrame(player,0,"200",folder + "/hit-trip-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS},{Player:PLAYER_FLAGS.MOBILE});
     hitReact_deadBounce.chain(down);
 
     var hitReact_dead = player.addAnimation(POSE_FLAGS.STANDING,"hr dead",0,["hr_dead"],0,false);
@@ -653,7 +653,7 @@ Player.prototype.createMBison = function(user)
     throw1.addAlternateKeySequence([BUTTONS.FORWARD|BUTTONS.CHARGE,BUTTONS.FORWARD|BUTTONS.HARD_PUNCH]);
     throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.HARD_PUNCH]);
     throw1.addAlternateKeySequence([BUTTONS.BACK|BUTTONS.CHARGE,BUTTONS.BACK|BUTTONS.MEDIUM_PUNCH]);
-    throw1.setGrappleDistance(CONSTANTS.GRAPPLE_DISTANCE+50);
+    throw1.setGrappleDistance(CONSTANTS.GRAPPLE_DISTANCE);
     throw1.setOtherPlayerAirborneFlags(AIRBORNE_FLAGS.NO);
     throw1.addFrame(player,0,"",folder + "/r-crouch-0.png",3,MISC_FLAGS.NONE,{Player:PLAYER_FLAGS.MOBILE},0,0,0,0,null,0,0,ATTACK_FLAGS.THROW_START,[{state:HIT_FLAGS.LOW,x:130,y:145},{state:HIT_FLAGS.HIGH,x:170,y:185}],ATTACK_FLAGS.NONE,1);
     throw1.addFrame(player,0,"",folder + "/throw-0.png",8,MISC_FLAGS.NONE,MISC_FLAGS.NONE);
@@ -930,12 +930,13 @@ Player.prototype.createMBison = function(user)
 
         var teleport_start = player.addAnimation(POSE_FLAGS.ALLOW_INTERUPT_1|POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"",50,[],1,false,false,0,null);
         teleport_start.ButtonCount = 5;
+        teleport_start.OverrideFlags = new MoveOverrideFlags(OVERRIDE_FLAGS.SHORYUKEN,OVERRIDE_FLAGS.ALL | OVERRIDE_FLAGS.THROW);
         teleport_start.Flags = {Pose:POSE_FLAGS.STANDING,Combat: COMBAT_FLAGS.TELEPORT_START};
-        teleport_start.addFrameWithSound(player, 1, "audio/mbison/teleport.zzz", 0, "", folder + "/teleport-0.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
-        teleport_start.addFrame(player, 0, "", folder + "/teleport-1.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
-        teleport_start.addFrame(player, 0, "", folder + "/teleport-2.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
-        teleport_start.addFrame(player, 0, "", folder + "/teleport-3.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
-        teleport_start.addFrame(player, 0, "", folder + "/teleport-4.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+        teleport_start.addFrameWithSound(player, 1, "audio/mbison/teleport.zzz", 0, "", folder + "/teleport-0.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+        teleport_start.addFrame(player, 0, "", folder + "/teleport-1.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+        teleport_start.addFrame(player, 0, "", folder + "/teleport-2.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
+        teleport_start.addFrame(player, 0, "", folder + "/teleport-3.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
+        teleport_start.addFrame(player, 0, "", folder + "/teleport-4.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
 
         switch(i)
         {
@@ -987,12 +988,12 @@ Player.prototype.createMBison = function(user)
 
         var teleport_end = player.addAnimation(POSE_FLAGS.CROUCHING|POSE_FLAGS.STANDING|POSE_FLAGS.WALKING_FORWARD|POSE_FLAGS.WALKING_BACKWARD,"teleport end",0,["teleport_end"],1,false,false,0,null);
         teleport_end.Flags = {Combat: COMBAT_FLAGS.TELEPORT_END,Pose:POSE_FLAGS.STANDING|POSE_FLAGS.QUICK_CHANGE_DIRECTION};
-        teleport_end.addFrame(player, 0, "", "", 10, {Combat:flags,Player:PLAYER_FLAGS.INVISIBLE|PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
-        teleport_end.addFrameWithSound(player, 1, "audio/mbison/teleport.zzz", 0, "", folder + "/teleport-4.png", 2, {Player:PLAYER_FLAGS.INVISIBLE|PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
-        teleport_end.addFrame(player, 0, "", folder + "/teleport-3.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
-        teleport_end.addFrame(player, 0, "", folder + "/teleport-2.png", 2, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
-        teleport_end.addFrame(player, 0, "", folder + "/teleport-1.png", 3, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
-        teleport_end.addFrame(player, 0, "", folder + "/teleport-0.png", 5, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS|PLAYER_FLAGS.MOBILE}, MISC_FLAGS.NONE, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+        teleport_end.addFrame(player, 0, "", "", 10, {Combat:flags,Player:PLAYER_FLAGS.INVISIBLE|PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+        teleport_end.addFrameWithSound(player, 1, "audio/mbison/teleport.zzz", 0, "", folder + "/teleport-4.png", 2, {Player:PLAYER_FLAGS.INVISIBLE|PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 7, 26, 0, 0, 0, 0, 0, 0);
+        teleport_end.addFrame(player, 0, "", folder + "/teleport-3.png", 1, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, 2, 21, 0, 0, 0, 0, 0, 0);
+        teleport_end.addFrame(player, 0, "", folder + "/teleport-2.png", 2, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 11, 0, 0, 0, 0, 0, 0);
+        teleport_end.addFrame(player, 0, "", folder + "/teleport-1.png", 3, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS}, {Player:PLAYER_FLAGS.MOBILE}, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
+        teleport_end.addFrame(player, 0, "", folder + "/teleport-0.png", 5, {Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS|PLAYER_FLAGS.MOBILE, Pose:POSE_FLAGS.FORCE_FACE_TARGET}, MISC_FLAGS.NONE, 0, 0, 0, 0, null, -96, 0, 0, 0, 0, 0, 0, 0);
 
         teleport_start.chain(teleport_end);
     }

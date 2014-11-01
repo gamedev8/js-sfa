@@ -47,30 +47,16 @@ var PlayerFlags = function(owner)
 
 PlayerFlags.prototype.clear = function()
 {
-    this.Pose.clear();
-    this.Combat.clear();
-    this.Combo.clear();
-    this.Spawn.clear();
-    this.Juggle.clear();
-    this.SwingSound.clear();
-    this.HitSound.clear();
-    this.BlockSound.clear();
-    this.MotionSound.clear();
-    this.HitReact.clear();
+    for(var i in this)
+        if(!!this[i] && !!this[i].clear)
+            this[i].clear();
 }
 PlayerFlags.prototype.release = function()
 {
     this.Owner = null;
-    this.Pose.release();
-    this.Combat.release();
-    this.Combo.release();
-    this.Spawn.release();
-    this.Juggle.release();
-    this.SwingSound.release();
-    this.HitSound.release();
-    this.BlockSound.release();
-    this.MotionSound.release();
-    this.HitReact.release();
+    for(var i in this)
+        if(!!this[i] && !!this[i].release)
+            this[i].release();
 }
 
 var FrameFlags = function()

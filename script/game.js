@@ -36,7 +36,7 @@ var CreateGame = function()
     var keyboardState_ = {};
     var buttonState_ = {};
     var lastTime_ = 0;
-    var speed_ = BrowserDetect.browser == "Chrome" ? CONSTANTS.FAST_SPEED : CONSTANTS.NORMAL_SPEED;
+    var speed_ = CONSTANTS.FAST_SPEED;
     var defaultSpeed_ = speed_;
     var targetFPS_ = CONSTANTS.TARGET_FPS;
     var text_ = null;
@@ -48,8 +48,6 @@ var CreateGame = function()
     var insertCoinScreen_ = null;
     var pnlLoadingProgress_ = window.document.getElementById("pnlLoadingProgress");
     var pnlLoading_ = window.document.getElementById("pnlLoading");
-    var vcr_ = CreateVCR();
-    var mustRecordNextRound_ = true;
     var gameLoopState_ = GAME_STATES.INSERT_COIN;
     var start_ = 0;
     var end_ = 0;
@@ -71,7 +69,6 @@ var CreateGame = function()
         this.initGame();
         match_ = null;
         this.UsingGamepads = !!window.Gamepad && !!Gamepad.supported;
-        this.VCR = vcr_;
     }
 
     Game.prototype.getDifficulty = function() { return difficulty_; }
@@ -85,12 +82,6 @@ var CreateGame = function()
         }
     }
     Game.prototype.gameLoopState = function() { return gameLoopState_; }
-    Game.prototype.isRecording = function() { return vcr_.isRecording(); }
-    Game.prototype.isPlayingVHS = function() { return vcr_.isPlaying(); }
-    Game.prototype.recordInput = function(team,index,folder,isDown,keyCode,frame,funcName) { vcr_.recordInput(team,index,folder,isDown,keyCode,frame,funcName); }
-    Game.prototype.recordNextRound = function() { mustRecordNextRound_ = true; }
-    Game.prototype.stopRecording = function() { mustRecordNextRound_ = false; vcr_.stop(); }
-    Game.prototype.stopPlaying = function() { mustRecordNextRound_ = false; vcr_.stop(); }
     Game.prototype.getMaxWinsPerMatch = function() { return maxWinsPerMatch_; }
     Game.prototype.getMatch = function() { return match_; }
     Game.prototype.getCharSelect = function() { return charSelect_; }
@@ -100,6 +91,11 @@ var CreateGame = function()
             return CONSTANTS.TEAMMODE_DAMAGE_MULTIPLIER;
         return 1;
     }
+    
+    Game.prototype.startRandomMatch = function()
+    {
+    }
+
     Game.prototype.startRandomMatch = function()
     {
         var chars = [CHARACTERS.RYU,CHARACTERS.KEN,CHARACTERS.MBISON,CHARACTERS.SAGAT,CHARACTERS.AKUMA];
@@ -163,42 +159,6 @@ var CreateGame = function()
         }
     }
 
-    Game.prototype.loadVHS = function(id)
-    {
-        //function to call when the vhs is done playing
-        var onPlaybackDone = (function(thisValue)
-        {
-            return function()
-            {
-                thisValue.onVHSPlaybackDone();
-            }
-        })(this);
-
-        //function to call when the vcr has loaded its data
-        var onLoadingDone = (function(thisValue)
-        {
-            return function(teamA,teamB,stage)
-            {
-                thisValue.onVHSLoadingDone(teamA,teamB,stage);
-            }
-        })(this);
-
-        //start loading the vhs
-        vcr_.load(onLoadingDone,onPlaybackDone,id);
-    }
-
-    Game.prototype.onVHSLoadingDone = function(teamA,teamB,stage)
-    {
-        //go to match
-        this.startMatch(false,teamA,teamB,stages_[stage]);
-    }
-
-    Game.prototype.onVHSPlaybackDone = function()
-    {
-        //go to insert coin screen
-        this.startInsertCoinScreen();
-    }
-
     Game.prototype.isGameOver = function()
     {
         return frame_ >= CONSTANTS.MAX_FRAME;
@@ -225,9 +185,7 @@ var CreateGame = function()
 
     Game.prototype.resetDefaultSpeed = function()
     {
-        defaultSpeed_ = BrowserDetect.browser == "Chrome" 
-            ? CONSTANTS.FAST_SPEED 
-            : CONSTANTS.NORMAL_SPEED;
+        defaultSpeed_ = CONSTANTS.FAST_SPEED;
 
         this.resetSpeed();
     }
@@ -260,16 +218,6 @@ var CreateGame = function()
     /*Resets the timer*/
     Game.prototype.resetFrame = function()
     {
-        if(vcr_.isRecording())
-        {
-            mustRecordNextRound_ = false;
-            vcr_.save();
-        }
-        else if(mustRecordNextRound_)
-        {
-            mustRecordNextRound_ = false;
-            vcr_.record();
-        }
         frame_ = 0;
     }
 
@@ -420,6 +368,7 @@ var CreateGame = function()
         charSelect_.loadUserAssets(teamB);
 
         this.startLoading(null,fn(this));
+        this.resume();
     }
 
 
@@ -491,7 +440,7 @@ var CreateGame = function()
         this.preloadTextImages();
         centerScreen();
         isInitialized_ = true;
-        frame_ = 0;
+        this.resetFrame();
         this.startLoading(loopFn, callback);
     }
     /*shows the loading screen*/
@@ -536,10 +485,19 @@ var CreateGame = function()
         else
             pnlLoading_.innerHTML = nbRemaining;
     }
+    Game.prototype.resetPlayers = function()
+    {
+        for(var i = 0; i < users_.length; ++i)
+        {
+            users_[i].disableStoryMode();
+            users_[i].reset();
+        }
+    }
     /*resets common data*/
     Game.prototype.resetGameData = function()
     {
         gameLoopState_ = GAME_STATES.NONE;
+        soundManager_.reset();
         this.hideElements();
         this.stop();
         this.releaseText();
@@ -736,7 +694,10 @@ var CreateGame = function()
     {
         this.releaseText();
         this.resetKeys();
-        managed_.kill()
+        if(!!managed_)
+        {
+            managed_.kill()
+        }
         managed_ = null;
         announcer_.release();
         this.stop();
@@ -814,6 +775,11 @@ var CreateGame = function()
         nextTimeout_ = null;
     }
 
+    Game.prototype.clearAIUsers = function()
+    {
+        
+    }
+
     /*Basic game loop*/
     Game.prototype.runGameLoop = function(start)
     {
@@ -828,10 +794,6 @@ var CreateGame = function()
                 speed_ = defaultSpeed_;
                 this.showSpeed();
             }
-
-            //frame move
-            if(!!vcr_.isPlaying())
-                vcr_.onFrameMove(frame_);
 
             //pre fame move
             match_.preFrameMove(frame_);

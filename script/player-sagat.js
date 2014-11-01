@@ -1,5 +1,5 @@
 ﻿
-Player.prototype.createSagat = function(user)
+var createSagat = function(user)
 {
     var player = new Player("sagat",131,247,user);
     var folder = "images/misc/" + player.Folder;
@@ -139,14 +139,14 @@ Player.prototype.createSagat = function(user)
 
     var getup = player.addAnimation(MISC_FLAGS.NONE,"getup",0,["hr_getup"],0,false);
     getup.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
-    getup.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",{X:10,Y:0},"200",folder + "/hit-air-3.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
-    getup.addFrame(player,{X:10,Y:-15},"304",folder + "/down.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-0.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-1.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-2.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-3.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup.addFrame(player,0,"",folder + "/getup-4.png",3,{Player:PLAYER_FLAGS.INVULNERABLE},0,0,0,0,0,0,0,66);
-    getup.addFrame(player,0,"",folder + "/crouch-0.png",4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.MOBILE},0,0,0,0,0,0,0,0);
+    getup.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",{X:10,Y:0},"200",folder + "/hit-air-3.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
+    getup.addFrame(player,{X:10,Y:-15},"304",folder + "/down.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-0.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-1.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-2.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-3.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup.addFrame(player,0,"",folder + "/getup-4.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS},0,0,0,0,0,0,0,66);
+    getup.addFrame(player,0,"",folder + "/crouch-0.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS},0,0,0,0,0,0,0,0);
 
     var dizzy = player.addAnimation(MISC_FLAGS.NONE,"so dizzy",0,["hr_sodizzy"],0,false);
     dizzy.Flags = ({ Player: PLAYER_FLAGS.HOLD_ZINDEX, Alert: ALERT_FLAGS.DIZZY });
@@ -163,14 +163,14 @@ Player.prototype.createSagat = function(user)
 
     var getup_dizzy = player.addAnimation(MISC_FLAGS.NONE,"getup dizzy",0,["hr_getupdizzy"],0,false);
     getup_dizzy.Flags = ({Player:PLAYER_FLAGS.HOLD_ZINDEX});
-    getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",{X:10,Y:0},"200",folder + "/hit-air-3.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
-    getup_dizzy.addFrame(player,{X:10,Y:-15},"304",folder + "/down.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-0.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-1.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-2.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-3.png",3,{Player:PLAYER_FLAGS.INVULNERABLE});
-    getup_dizzy.addFrame(player,0,"",folder + "/getup-4.png",3,{Player:PLAYER_FLAGS.INVULNERABLE},0,0,0,0,0,0,0,66);
-    getup_dizzy.addFrame(player,0,"",folder + "/crouch-0.png",4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.MOBILE},0,0,0,0,0,0,0,0);
+    getup_dizzy.addFrameWithSound(player,1,"audio/misc/floored-1.zzz",{X:10,Y:0},"200",folder + "/hit-air-3.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_SMALLDIRT},{Player:PLAYER_FLAGS.MOBILE});
+    getup_dizzy.addFrame(player,{X:10,Y:-15},"304",folder + "/down.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-0.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-1.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-2.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-3.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS});
+    getup_dizzy.addFrame(player,0,"",folder + "/getup-4.png",3,{Player:PLAYER_FLAGS.IGNORE_ATTACKS},0,0,0,0,0,0,0,66);
+    getup_dizzy.addFrame(player,0,"",folder + "/crouch-0.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS},0,0,0,0,0,0,0,0);
     getup_dizzy.chain(dizzy);
 
     var hitReact_dizzyBounce = player.addAnimation(MISC_FLAGS.NONE,"dizzy bounce",0,["hr_dizzybounce"],0,false);
@@ -178,15 +178,15 @@ Player.prototype.createSagat = function(user)
     hitReact_dizzyBounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_dizzyBounce.chainVyFn = (function(v){ return v * 0.5; });
     hitReact_dizzyBounce.Vy = (80);
-    hitReact_dizzyBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-air-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_dizzyBounce.addFrame(player,{X:10,Y:0},"200",folder + "/hit-air-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.INVULNERABLE},{Player: PLAYER_FLAGS.MOBILE});
+    hitReact_dizzyBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-air-2.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
+    hitReact_dizzyBounce.addFrame(player,{X:10,Y:0},"200",folder + "/hit-air-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS},{Player: PLAYER_FLAGS.MOBILE});
     hitReact_dizzyBounce.chain(getup_dizzy);
 
     var hitReact_dizzy = player.addAnimation(POSE_FLAGS.STANDING,"dizzy",0,["hr_dizzy"],0,false);
     hitReact_dizzy.Flags = ({ Player: PLAYER_FLAGS.MOVE_TO_FRONT });
     hitReact_dizzy.Vx = (35);
     hitReact_dizzy.Vy = (200);
-    hitReact_dizzy.addFrame(player,0,"200",folder + "/hit-air-4.png",32,{ Player: PLAYER_FLAGS.INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE},1);
+    hitReact_dizzy.addFrame(player,0,"200",folder + "/hit-air-4.png",32,{ Player: PLAYER_FLAGS.IGNORE_ATTACKS },{Player: PLAYER_FLAGS.MOBILE},1);
     hitReact_dizzy.addFrame(player,0,"200",folder + "/hit-air-5.png",CONSTANTS.FRAME_MAX,{ Player: PLAYER_FLAGS.SUPER_INVULNERABLE | PLAYER_FLAGS.IGNORE_ATTACKS });
     hitReact_dizzy.chain(hitReact_dizzyBounce);
 
@@ -195,8 +195,8 @@ Player.prototype.createSagat = function(user)
     hitReact_bounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_bounce.chainVyFn = (function(v){ return v * 0.5; });
     hitReact_bounce.Vy = (80);
-    hitReact_bounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-air-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_bounce.addFrame(player,{X:10,Y:0},"200",folder + "/hit-air-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.INVULNERABLE},{Player: PLAYER_FLAGS.MOBILE});
+    hitReact_bounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-air-2.png",4,{Player:PLAYER_FLAGS.IGNORE_ATTACKS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
+    hitReact_bounce.addFrame(player,{X:10,Y:0},"200",folder + "/hit-air-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS},{Player: PLAYER_FLAGS.MOBILE});
     hitReact_bounce.chain(getup);
 
     var hitReact_trip = player.addAnimation(POSE_FLAGS.STANDING|POSE_FLAGS.CROUCHING,"tripped",0,["hr_trip"],0,false);
@@ -254,7 +254,7 @@ Player.prototype.createSagat = function(user)
     hitReact_deadBounce.chainVxFn = (function(v){ return v * 0.75; });
     hitReact_deadBounce.Vy = (80);
     hitReact_deadBounce.addFrameWithSound(player,1,"audio/misc/floored-2.zzz",0,"200",folder + "/hit-air-2.png",4,{Player:PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_COLLISIONS,Spawn:SPAWN_FLAGS.SPAWN_BIGDIRT},{Player:PLAYER_FLAGS.MOBILE},0,1);
-    hitReact_deadBounce.addFrame(player,0,"200",folder + "/hit-air-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.INVULNERABLE|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS},{Player:PLAYER_FLAGS.MOBILE});
+    hitReact_deadBounce.addFrame(player,0,"200",folder + "/hit-air-3.png",CONSTANTS.FRAME_MAX,{Pose:POSE_FLAGS.AIRBORNE,Player:PLAYER_FLAGS.USE_ATTACK_DIRECTION|PLAYER_FLAGS.IGNORE_ATTACKS|PLAYER_FLAGS.IGNORE_COLLISIONS},{Player:PLAYER_FLAGS.MOBILE});
     hitReact_deadBounce.chain(down);
 
     var hitReact_dead = player.addAnimation(POSE_FLAGS.STANDING,"hr dead",0,["hr_dead"],0,false);

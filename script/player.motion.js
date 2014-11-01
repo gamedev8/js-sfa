@@ -27,6 +27,18 @@ Player.prototype.getDistanceFromPlayer = function(otherPlayer)
 
     return {Dsq:distSq,Dx:Math.abs(dx),Dy:Math.abs(dy)};
 }
+Player.prototype.isWithinDistanceX = function(x, distance)
+{
+    return (
+        this.Direction == 1 
+            ? Math.abs(this.getRect().Left - x)
+            : Math.abs(this.getRect().Right - x)
+    ) < distance;
+}
+Player.prototype.isImgWithinDistanceX = function(x, distance, direction)
+{
+    return (Math.abs(x - (direction < 1 ? this.LeftOffset : this.RightOffset)) < distance) || (x > this.LeftOffset && x < this.RightOffset);
+}
 Player.prototype.getMidX = function()
 {
     var left = this.getLeftX();
@@ -49,7 +61,7 @@ Player.prototype.getYDir = function() { return (this.Y - this.LastY) / Math.abs(
 
 Player.prototype.getLeftX = function(useImageWidth) { if(this.Direction > 0){return STAGE.MAX_STAGEX - (this.getX() + (!!useImageWidth ? this.getBoxWidth() : this.getConstWidth()));}else{return this.getX();}}
 Player.prototype.getRightX = function(useImageWidth)  { if(this.Direction > 0){return STAGE.MAX_STAGEX - this.getX();}else{return this.getX() + (!!useImageWidth ? this.getBoxWidth() : this.getConstWidth());}}
-Player.prototype.getAbsFrontX = function(useImageWidth) { if(this.Direction > 0){ return this.getLeftX(useImageWidth); } else { return this.getRightX(useImageWidth); } }
+Player.prototype.getImgFrontX = function(useImageWidth) { if(this.Direction > 0){ return this.getLeftX(useImageWidth); } else { return this.getRightX(useImageWidth); } }
 Player.prototype.getAbsBackX = function(useImageWidth)  { if(this.Direction > 0){ return this.getRightX(useImageWidth); } else { return this.getLeftX(useImageWidth); } }
 
 Player.prototype.getBoxTop = function() { return this.Y + (this.getBoxHeight()); }
@@ -320,6 +332,8 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
         this.Shadow.style.left = this.SpriteElement.style.left;
         this.Shadow.style.right = "";
 
+        this.LastRight = null;
+
         this.Direction = -1;
         //swap the left and right buttons
         this.Buttons[this.LeftKey].Bit = 2;
@@ -343,6 +357,8 @@ Player.prototype.changeDirection = function(quick,ignoreSetAnimation)
 
         this.Shadow.style.left = "";
         this.Shadow.style.right = this.SpriteElement.style.right;
+
+        this.LastLeft = null;
 
         this.Direction = 1;
         //swap the left and right buttons
@@ -546,13 +562,13 @@ Player.prototype.advanceTeleportation = function()
         }
         else
         {
-            if(!foe || !game_.getMatch().getPhysics().isWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ) || (this.Teleport0GapX == "t"))
+            if(!foe || !game_.getMatch().getCDHelper().isWithinDistanceX(this,foe,CONSTANTS.MIN_TELEPORT_DISTANCE_SQ) || (this.Teleport0GapX == "t"))
                 this.moveX(this.TeleportX);
         }
     }
 }
 //returns true if player is facing his target
-Player.prototype.isFacingTarget = function()
+Player.prototype.isFacingTarget = function(ignorePendingDirectionChange)
 {
     var otherPlayer = null;
 
@@ -565,10 +581,9 @@ Player.prototype.isFacingTarget = function()
     var flipToPos1 = false;
     var myRect = this.getRect();
 
-    if((this.Direction == -1) && (!this.MustChangeDirection) && (myRect.Left > otherRect.Left) && (myRect.Right > otherRect.Right))
+    if((this.Direction == -1) && (!this.MustChangeDirection || !!ignorePendingDirectionChange) && (myRect.Left > otherRect.Left) && (myRect.Right > otherRect.Right))
         flipToPos1 = true;
-
-    if((this.Direction == 1) && (!this.MustChangeDirection) && (myRect.Right < otherRect.Right) && (myRect.Left < otherRect.Left))
+    else if((this.Direction == 1) && (!this.MustChangeDirection || !!ignorePendingDirectionChange) && (myRect.Right < otherRect.Right) && (myRect.Left < otherRect.Left))
         flipToNeg1 = true;
 
     //if both cases are false, or both cases are true, then the player should not do anything
@@ -586,12 +601,17 @@ Player.prototype.checkDirection = function()
         this.turnAround();
 }
 //player faces his target
-Player.prototype.faceTarget = function()
+Player.prototype.faceTarget = function(force)
 {
-    if(!this.isFacingTarget())
-        this.turnAround();
+    if(!this.isFacingTarget(force))
+    {
+        if(!force)
+            this.turnAround();
+        else
+            this.changeDirection(true);
+    }
 }
-Player.prototype.targetLastAttacker = function(record)
+Player.prototype.targetLastAttacker = function()
 {
     if(!!this.RegisteredHit.OtherPlayer)
     {
@@ -601,16 +621,18 @@ Player.prototype.targetLastAttacker = function(record)
             this.faceTarget();
         }
     }
-
-    if(!!record)
+}
+Player.prototype.targetPlayer = function(player)
+{
+    if(this.Target != player.getIndex())
     {
-        if(game_.isRecording())
-            game_.recordInput(this.Team,this.Index,this.Folder,null,null,this.getFrame(),"targetLastAttacker");
+        this.Target = player.getIndex();
+        this.faceTarget();
     }
 }
 Player.prototype.targetRearEnemy = function()
 {
-    var target = this.getPhysics().getRearEnemy(this.Team, this.Direction, this.getRect(), this.Target);
+    var target = this.getCDHelper().getRearEnemy(this.Team, this.Direction, this.getRect(), this.Target);
     if(target != this.Target)
     {
         this.Target = target;
@@ -675,7 +697,7 @@ Player.prototype.convertX = function(x)
 }
 Player.prototype.pushOtherPlayers = function()
 {
-    this.getPhysics().moveOtherPlayers(this);
+    this.getCDHelper().moveOtherPlayers(this);
 }
 Player.prototype.convertY = function(y)
 {
@@ -819,9 +841,10 @@ Player.prototype.advanceJump = function(ignoreYCheck)
         ? this.Y
         : this.peakY;
 
-
+    //did the player just hit the ground
     if((this.JumpT > this.JumpSpeed) && this.getY() <= game_.getMatch().getStage().getGroundY() && !(this.Flags.Player.has(PLAYER_FLAGS.HUMAN_PROJECTILE)))
     {
+        this.IsLosing = false;
         this.clearAirborneFlags();
         this.vxFn = null;
         this.vyFn = null;

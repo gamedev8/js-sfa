@@ -126,7 +126,7 @@
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk2"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:6,B:"p3"}, {A:16,B:"p1"}, {A:15,B:"lk3"}]
             ,[this.AI.GET_CLOSE, {A:0,B:"lp3"}, {A:4,B:"p2", H:true},{A:9,B:"u1"}]
-            ,[this.AI.GET_REAL_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
+            ,[this.AI.GET_CLOSE, {A:0,B:"p2"}, {A:3,B:"p1"}, {A:15,B:"k2"}, {A:29,B:"k3"}]
             ];
         this.AI.CloseCombos = [
              [{A:0,B:"get_close", C:110,D:-999}, {A:0,B:"lk2"}]
@@ -204,9 +204,9 @@
              [{A:0,B:"u3"}]
             ,[{A:0,B:"u3"}]
             ,[{A:0,B:"u3"}]
-            ,[{A:0,B:"u3"}]
-            ,[{A:0,B:"u3"}]
-            ,[{A:0,B:"u3"}]
+            ,[{A:0,B:"k3"}]
+            ,[{A:0,B:"k3"}]
+            ,[{A:0,B:"p2"}]
             ,[{A:0,B:"sfb3"}]
         ];
 
@@ -340,12 +340,14 @@
     //fired when any enemy attack ends
     SagatAI.prototype.onEnemyVulnerable = function(frame, attacker, x, y)
     {
-        this.react(frame, attacker, true, x, y)
+        if(this.AI.Player.isMobile())
+            this.react(frame, attacker, true, x, y)
     }
     //fired when any enemy attack ends in the air
     SagatAI.prototype.onEnemyFloating = function(frame, attacker, x, y)
     {
-        this.reactFloat(frame, attacker, x, y)
+        if(this.AI.Player.isMobile())
+            this.reactFloat(frame, attacker, x, y)
     }
     //fired every frame an enemy attack is pending
     SagatAI.prototype.onEnemyAttackPending = function(frame,x,y,player,isSuperMove)
@@ -417,7 +419,7 @@
     //fired every frame an ememy projectile is active
     SagatAI.prototype.onEnemyProjectileMoved = function(frame,id,x,y,projectile,isSuperMove)
     {
-        if(!!this.AI.IgnoreProjectileGone)
+        if(!!this.AI.IgnoreProjectileGone || !this.AI.Player.isMobile())
             return;
         if(!this.AI.Player.isAirborne()
             && this.AI.Actions.length == 0 
@@ -462,36 +464,39 @@
     //fired every attack frame
     SagatAI.prototype.onEnemyContinueAttack = function(frame, attacker, hitPoints)
     {
-        this.AI.onEnemyContinueAttack(frame,attacker,hitPoints);
+        if(this.AI.Player.isMobile())
+            this.AI.onEnemyContinueAttack(frame,attacker,hitPoints);
     }
 
     //fired at the start of any enemy attack
     SagatAI.prototype.onEnemyStartAttack = function(frame, attacker)
     {
-        this.AI.onEnemyStartAttack(frame,attacker);
+        if(this.AI.Player.isMobile())
+            this.AI.onEnemyStartAttack(frame,attacker);
     }
 
     //fired at the start of any enemy attack
     SagatAI.prototype.onStartAttack = function()
     {
-        this.AI.onStartAttack();
+        if(this.AI.Player.isMobile())
+            this.AI.onStartAttack();
     }
 
     //fired at the end of any attack
-    SagatAI.prototype.onAnimationEnded = function(name)
+    SagatAI.prototype.onEndAnimation = function(name)
     {
-        this.AI.onAnimationEnded();
+        this.AI.onEndAnimation();
     }
 
     //fired at the start of any attack
-    SagatAI.prototype.onAnimationChanged = function(name)
+    SagatAI.prototype.onStartAnimation = function(name)
     {
-        this.AI.onAnimationChanged(name);
+        this.AI.onStartAnimation(name);
     }
 
     SagatAI.prototype.reactFloat = function(frame,attacker,x,y)
     {
-        if(this.AI.Player.isFacingPlayer(attacker, true))
+        if(this.AI.Player.isMobile() && this.AI.Player.isFacingPlayer(attacker, true) && !this.AI.isAttackReactBusy())
         {
             retVal = true;
 
@@ -523,7 +528,7 @@
     SagatAI.prototype.reactAirborne = function(frame,attacker,isEnemyVulernerable,x,y)
     {
         var retVal = false;
-        if(attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker, true))
+        if(this.AI.Player.isMobile() && attacker.isAirborne() && this.AI.Player.isFacingPlayer(attacker, true))
         {
             if(!!isEnemyVulernerable)
             {
@@ -677,6 +682,10 @@
             return;
 
         var item = this.AI.getClosestEnemy();
+        if(item.Player.isUnhittable())
+            return;
+
+        var isEnemyAirborne = item.Player.isAirborne();
 
         var rnd = getRand();
         var ignoreSetBusy = false;
@@ -687,21 +696,21 @@
         if(item.X < CONSTANTS.GRAPPLE_DISTANCE)
         {
             this.AI.reset();
-            if (item.Player.isThrowable() && (rnd > 60))
+            if (!isEnemyAirborne && item.Player.isInThrowableState() && (rnd > 60))
                 this.doVeryCloseCombo(0);
-            else if(rnd > 20)
+            else if(!isEnemyAirborne && rnd > 20)
                 this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
             else if(rnd > 10)
                 this.wanderBackward(50);
 
             /*
-            if(item.Player.isThrowable() && (this.AI.JustBecameMobile > 0))
+            if(item.Player.isInThrowableState() && (this.AI.JustBecameMobile > 0))
             {
                 this.doVeryCloseCombo(0);
             }
             else
             {
-                if (item.Player.isThrowable() && (rnd > 60))
+                if (item.Player.isInThrowableState() && (rnd > 60))
                     this.doVeryCloseCombo(0);
                 else if(rnd > 20)
                     this.doCloseCombo(getRand(this.AI.CloseCombos.length-1));
@@ -718,14 +727,17 @@
         else if(item.X < 100)
         {
             this.AI.reset();
-            if(rnd > 70)
+            if(!isEnemyAirborne && rnd > 70)
                 this.doRandomCloseCombo();
             else if(rnd > 30)
                 this.wanderBackward(50);
-            else if(rnd > 15)
+            else if(!isEnemyAirborne && rnd > 15)
                 this.executeFireball(getRand());
-            else
+            else if(!isEnemyAirborne)
                 this.executeLowFireball(getRand());
+            else
+                this.wanderBackward(50);
+
             this.AI.setBusy();
         }
         else if(item.X < 350)
@@ -733,14 +745,16 @@
             this.AI.reset();
             if(rnd > 95)
                 this.wanderBackward(50);
-            else if(rnd > 80)
+            else if(!isEnemyAirborne &&rnd > 80)
                 this.doRandomVeryCloseCombo();
-            else if(rnd > 50)
+            else if(!isEnemyAirborne &&rnd > 50)
                 this.doRandomCloseCombo();
-            else if(rnd > 25)
+            else if(!isEnemyAirborne &&rnd > 25)
                 this.executeFireball(getRand());
-            else
+            else if(!isEnemyAirborne)
                 this.executeLowFireball(getRand());
+            else
+                this.wanderBackward(50);
             this.AI.setBusy();
         }
         else

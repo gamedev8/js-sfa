@@ -9,7 +9,7 @@ var CreateMatch = function(team1,team2,stage)
     var isRoundOver_ = false;
     var gotoNewRoundFrame_ = CONSTANTS.NO_FRAME;
     var playerCount_ = -1;
-    var physics_ = CreatePhysics();
+    var cdHelper_ = CreateCDHelper();
     var actionSystem_ = new HitSystem();
     var isSuperMoveActive_ = false;
     var dimBackground_ = window.document.getElementById("pnlDimBackground");
@@ -62,6 +62,7 @@ var CreateMatch = function(team1,team2,stage)
     }
     Match.prototype.setState = function(state) { state_ = state || MATCH_STATES.NONE; }
     Match.prototype.clearState = function() { state_ = 0; }
+    Match.prototype.isInPracticeMode = function() { return hasFlag(state_, MATCH_STATES.PRACTICE); }
     Match.prototype.forceQuit = function(reason) { forceQuit_ = true; forceQuitReason_ = reason; }
     Match.prototype.mustQuit = function() { return forceQuit_; }
     Match.prototype.getQuitReason = function() { return forceQuitReason_; }
@@ -74,7 +75,7 @@ var CreateMatch = function(team1,team2,stage)
             stage_.requestScrollY(false,0,true);
     }
     Match.prototype.getStage = function() { return stage_; }
-    Match.prototype.getPhysics = function() { return physics_; }
+    Match.prototype.getCDHelper = function() { return cdHelper_; }
     Match.prototype.getTeamA = function() { return teamA_; }
     Match.prototype.getTeamB = function() { return teamB_; }
     Match.prototype.getDefeatedTeam = function() { return defeatedTeam_; }
@@ -188,13 +189,13 @@ var CreateMatch = function(team1,team2,stage)
             retVal = teamB_.getPlayer(i).Y > retVal ? teamB_.getPlayer(i).Y : retVal;
         return retVal;
     }
-    /*Gets the current frame*/
-    Match.prototype.getCurrentFrame = function()
+    Match.prototype.getNbFigters = function()
     {
-        return game_.getCurrentFrame();
+        return teamA_.getNbPlayers() + teamB_.getNbPlayers();
     }
+
     /*A team has just been defeated*/
-    Match.prototype.defeatTeam = function(team,attackDirection,loseIgnoreId)
+    Match.prototype.onTeamLost = function(team,attackDirection,loseIgnoreId)
     {
         announcer_.kO();
         this.releaseAllInput();
@@ -204,22 +205,16 @@ var CreateMatch = function(team1,team2,stage)
         game_.setSpeed(CONSTANTS.ROUND_OVER_SPEED);
         this.setDefeatedTeam(team);
 
-        switch(this.getDefeatedTeam())
+        switch(team)
         {
             case CONSTANTS.TEAM1:
             {
-                for(var i = 0; i < teamA_.getPlayers().length; ++i)
-                    if(teamA_.getPlayer(i).Id != loseIgnoreId)
-                        teamA_.getPlayer(i).forceLose(attackDirection);
                 for(var i = 0; i < teamB_.getPlayers().length; ++i)
                     teamB_.getPlayer(i).onOtherTeamDead(frame);
                 break;
             }
             case CONSTANTS.TEAM2:
             {
-                for(var i = 0; i < teamB_.getPlayers().length; ++i)
-                    if(teamB_.getPlayer(i).Id != loseIgnoreId)
-                        teamB_.getPlayer(i).forceLose(attackDirection);
                 for(var i = 0; i < teamA_.getPlayers().length; ++i)
                     teamA_.getPlayer(i).onOtherTeamDead(frame);
                 break;
@@ -313,7 +308,7 @@ var CreateMatch = function(team1,team2,stage)
         if(this.getGotoNewRoundFrame() != CONSTANTS.NO_FRAME)
         {
             //check to see if the match is over
-            if(state_ != MATCH_STATES.PRACTICE_MODE)
+            if(state_ != MATCH_STATES.PRACTICE)
             {
                 if(teamA_.getWins() == game_.getMaxWinsPerMatch())
                 {
@@ -400,7 +395,8 @@ var CreateMatch = function(team1,team2,stage)
     /**/
     Match.prototype.resume = function()
     {
-        stage_.resume();
+        if(!!startedTheme_)
+            stage_.resume();
         teamA_.resume();
         teamB_.resume();
     }
@@ -411,10 +407,10 @@ var CreateMatch = function(team1,team2,stage)
     Match.prototype.setupPlayer = function(player,team)
     {
         var moveStageX           = function(thisValue,otherTeam) { return function(amount,dontOverrideSign) { for(var i = 0; i < otherTeam.getPlayers().length;++i) {amount = thisValue.getStage().scrollX(amount,this,otherTeam.getPlayer(i),thisValue,dontOverrideSign);}; return amount; } };
-        /*var fixX               = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().fixX(amount,this,false,true);  return 0; } };*/
-        var fixX                 = function(thisValue,otherTeam) { return function(amount) {thisValue.getPhysics().moveOtherPlayers(this);  return 0; } };
-        var moveX                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getStage().scrollX(amount,this,null,thisValue); thisValue.getPhysics().moveX(amount,this,false,true); return 0; } };
-        var moveY                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getPhysics().moveY(amount,this); return 0; } };
+        /*var fixX               = function(thisValue,otherTeam) { return function(amount) {thisValue.getCDHelper().fixX(amount,this,false,true);  return 0; } };*/
+        var fixX                 = function(thisValue,otherTeam) { return function(amount) {thisValue.getCDHelper().moveOtherPlayers(this);  return 0; } };
+        var moveX                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getStage().scrollX(amount,this,null,thisValue); thisValue.getCDHelper().moveX(amount,this,false,true); return 0; } };
+        var moveY                = function(thisValue,otherTeam) { return function(amount) {amount = thisValue.getCDHelper().moveY(amount,this); return 0; } };
         var moveToBack           = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayer(i).moveToBack(true);} } }
         var moveToFront          = function(thisValue,otherTeam) { return function() { for(var i = 0; i < otherTeam.getPlayers().length;++i) {otherTeam.getPlayer(i).moveToFront(true);} } }
         var attackPending        = function(thisValue,otherTeam) { return function(frame,x,y,isSuperMove) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).onEnemyAttackPending(frame,x,y,this,isSuperMove); } } }
@@ -425,8 +421,8 @@ var CreateMatch = function(team1,team2,stage)
         var endAttack            = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_BLOCKED); otherTeam.getPlayer(i).removeBlock(id,thisValue.getGame().getCurrentFrame(),false,undefined,undefined,undefined,this); } } }
         var startAirAttack       = function(thisValue,otherTeam) { return function(id,hitPoints) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { otherTeam.getPlayer(i).allowAirBlock(id,thisValue.getGame().getCurrentFrame(),true,this.getMidX(),this.getMidY(),hitPoints); } } }
         var endAirAttack         = function(thisValue,otherTeam) { return function(id) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { this.Flags.Combat.remove(COMBAT_FLAGS.CAN_BE_AIR_BLOCKED); otherTeam.getPlayer(i).removeAirBlock(id,thisValue.getGame().getCurrentFrame(),false,undefined,undefined,undefined,this); } } }
-        var attack               = function(thisValue,otherTeam) { return function(hitStop,hitID,attackID,maxNbHits,frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryAttack(hitStop,hitID,attackID,maxNbHits,frame,points,flags,state,this,otherTeam.getPlayer(i),damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams); } } }
-        var projectileAttack     = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getPhysics().tryProjectileAttack(frame,projectile,this,otherTeam.getPlayer(i)); } } }
+        var attack               = function(thisValue,otherTeam) { return function(hitStop,hitID,attackID,maxNbHits,frame,points,flags,state,damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getCDHelper().tryAttack(hitStop,hitID,attackID,maxNbHits,frame,points,flags,state,this,otherTeam.getPlayer(i),damage,moveOverrideFlags,frameEnergyToAdd,behaviorFlags,invokedAnimationName,hitSound,blockSound,nbFreeze,otherParams); } } }
+        var projectileAttack     = function(thisValue,otherTeam) { return function(frame,projectile) { for(var i = 0; i < otherTeam.getPlayers().length;++i) { thisValue.getCDHelper().tryProjectileAttack(frame,projectile,this,otherTeam.getPlayer(i)); } } }
         var changeHealth         = function(thisValue)           { return function(amount) { thisValue.changeHealth(this.Team,amount); } }
         var getHealth            = function(thisValue)           { return function() { return thisValue.getHealth(this.Team); } }
         var changeEnergy         = function(thisValue)           { return function(amount) { thisValue.changeEnergy(this.Team,amount); } }
@@ -550,14 +546,6 @@ var CreateMatch = function(team1,team2,stage)
     /*Handles key state changes*/
     Match.prototype.onKeyStateChanged = function(isDown,keyCode,frame)
     {
-        if(game_.isPlayingVHS())
-            game_.stopPlaying();
-        //if(!!isAIMatch_ && !game_.isPaused())
-        //{
-        //    forceQuit_ = true;
-        //    return;
-        //}
-
         for(var i = 0; i < teamA_.getPlayers().length; ++i)
             teamA_.getPlayer(i).onKeyStateChanged(isDown,keyCode,frame);
         for(var i = 0; i < teamB_.getPlayers().length; ++i)
@@ -751,7 +739,7 @@ var CreateMatch = function(team1,team2,stage)
             faceoff_.render(frame);
 
 
-        if(isAIMatch_ && !!mustUpdate_)
+        if(isAIMatch_ && !!mustUpdate_ && !!insertCoinElement_ && !!pressStartElement_)
         {
             mustUpdate_ = false;
             if(user1_.hasCredits())

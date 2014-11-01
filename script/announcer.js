@@ -155,6 +155,7 @@ var CreateAnnouncer = function()
         fight_.Element.style.display = "none";
         ko_.Element.style.display = "none";
         perfect_.Element.style.display = "none";
+        scf_.Element.style.display = "none";
     }
 
 
@@ -282,8 +283,8 @@ var CreateAnnouncer = function()
             fight_.IsAnimating = fight_.Animation.tryRender(frame, fight_);
         if(perfect_.IsAnimating && perfect_.StartFrame <= frame)
             perfect_.IsAnimating = perfect_.Animation.tryRender(frame, perfect_);
-        //if(scf_.IsAnimating)
-        //    scf_.IsAnimating = scf_.Animation.tryRender(frame, scf_);
+        if(scf_.IsAnimating && game_.getMatch().getNbFigters() < 4)
+            scf_.IsAnimating = scf_.Animation.tryRender(frame, scf_);
     }
 
     return new Announcer();
