@@ -378,7 +378,6 @@ Player.prototype.goToStance = function(frame)
 
         if((this.WinAnimationFrame != CONSTANTS.NO_FRAME) && (frame > this.WinAnimationFrame))
         {
-            this.WinAnimationFrame = CONSTANTS.NO_FRAME;
             this.forceWinAnimation(frame);
             return;
         }

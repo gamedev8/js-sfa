@@ -239,4 +239,7 @@ Player.prototype.loadAssets("akuma","akuma2",true);
 //play
 //StartInsertCoin();
 //game_.startRandomMatch();
-debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.MBISON, C:true}], "dramatic_battle");
+if(getRand(100) > 50)
+    debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.AKUMA, C:true}], "akuma");
+else
+    debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.MBISON, C:true}], "dramatic_battle");
