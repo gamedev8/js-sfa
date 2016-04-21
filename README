@@ -50,4 +50,6 @@ debug_.showProjectileEditor();
 
 //hides the projectile editor
 debug_.hideProjectileEditor();
+
+
 Join the chat at https://gitter.im/gamedev8/js-sfa
