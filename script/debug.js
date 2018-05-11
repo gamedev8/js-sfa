@@ -5,6 +5,7 @@ function GetDebugInstance(game)
 
     var setupMatch = function(t1, t2, stage, state)
     {
+        $$init();
         game_.end();
 
         t1 = t1 || [];
@@ -80,7 +81,7 @@ function GetDebugInstance(game)
                 user3_.resetChar(t2[0].A, t2[0].B, t2[0].C);
             else
                 user3_.resetChar(CHARACTERS.RYU);
-            
+
             teamB.push(2);
         }
         else
@@ -121,7 +122,7 @@ function GetDebugInstance(game)
         game_.getMatch().getTeamB().getEnergybar().change(1000);
     }
 
-    //test player battle 
+    //test player battle
     Debug.prototype.practice = function (t1, t2, stage)
     {
         this.setPracticeMode(true);
@@ -129,7 +130,7 @@ function GetDebugInstance(game)
         setupMatch(t1, t2, stage);
     }
 
-    //test player battle 
+    //test player battle
     Debug.prototype.startMatch = function (t1, t2, stage)
     {
         this.setPracticeMode(false);
@@ -291,7 +292,7 @@ function GetDebugInstance(game)
 
             selProjectile.appendChild(o);
         }
-    }    
+    }
 
     Debug.prototype.loadProjectileData = function()
     {

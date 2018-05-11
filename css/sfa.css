@@ -113,7 +113,7 @@ div.team1 .portriat,.flipped
 	-o-transform:scale(-1,1);
 	-ms-transform:rotateY(180deg);
 	filter:progid:DXImageTransform.Microsoft.BasicImage(mirror=1);
-}	
+}
 
 div.team2{right:0px;}
 div.team2 div.health-bar{right:59px;}
@@ -158,3 +158,24 @@ div div.Text img{vertical-align:top;z-index:5000;background:Tranparent;}
 .projectile-editor .selected-projectile .item .label {float:left; width:50px; text-align:right;}
 .projectile-editor .selected-projectile .item .input {float:left; margin-left:10px;}
 .button{width:100px;margin:5px;}
+.start-game-container {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: #000;
+	text-align: center;
+}
+.start-game-container img {
+	width: 50%;
+	margin: 15px 0;
+}
+.start-game-container button {
+	position: relative;
+    font-size: 600%;
+    background-color: #f1f1f1;
+    border-radius: 15px;
+    border: none;
+    padding: 15px;
+}

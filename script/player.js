@@ -71,10 +71,10 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.RearHitReport = [];
     this.DirtIndices = [];
     this.BigDirtIndices = [];
-    
+
     this.FrontHitReportImages = []
     this.RearHitReportImages = []
-    
+
     this.CurrentAnimation = null;
     this.CurrentFrame = null;
 
@@ -109,7 +109,7 @@ var Player = function (name,width,height,user,nameImageSrc,portriatImageSrc,slid
     this.onDecComboRefCountFn = null;
     this.getCurrentComboCountFn = null;
 
-    this._showCurrentFrameImageHelperParams = 
+    this._showCurrentFrameImageHelperParams =
     {
         ImageOffsetX:0
         ,ImageOffsetY:0
@@ -317,7 +317,7 @@ Player.prototype.getFrame = function() { return this.getGame().getCurrentFrame()
 
 Player.prototype.resetCombo = function()
 {
-    if(!!this.onDecComboRefCountFn)    
+    if(!!this.onDecComboRefCountFn)
         this.onDecComboRefCountFn();
     this.ComboCount = 0;
 
@@ -733,7 +733,7 @@ Player.prototype.isVulnerable = function()
     {
         return true;
     }
-    return false;    
+    return false;
 }
 
 Player.prototype.checkVulnerable = function(frame)
@@ -893,7 +893,7 @@ Player.prototype.frameMove = function(frame,stageX,stageY)
 
                         var fx = !!currentFrame.Jump ? currentFrame.Jump.Fx : this.CurrentAnimation.Vx;
                         var fy = !!currentFrame.Jump ? currentFrame.Jump.Fy : this.CurrentAnimation.Vy;
-                        
+
                         this.performJump(direction * fx,fy,this.CurrentAnimation.Animation.getXModifier(),this.CurrentAnimation.Animation.getYModifier(),this.CurrentAnimation.Animation.NbFramesAirborneAdvance,this.CurrentAnimation.Animation.AirborneStartDeltaY,this.CurrentAnimation.Animation.UseJumpSpeed,this.CurrentAnimation.Animation.UseJumpT);
                     }
                     else

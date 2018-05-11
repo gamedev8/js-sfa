@@ -93,7 +93,7 @@ function Alert(text)
 {
     //if(!!console && !!console.log)
         //console.log(text);
-    
+
 }
 function AlertError(text)
 {
@@ -223,23 +223,38 @@ stuffLoader_.queue("images/misc/misc/head-sprites.png",RESOURCE_TYPES.IMAGE);
 stuffLoader_.queue("images/misc/misc/char-select-sprites.png",RESOURCE_TYPES.IMAGE);
 stuffLoader_.queue("images/misc/misc/char-sprites.png",RESOURCE_TYPES.IMAGE);
 
-//preload characters
-Player.prototype.loadAssets("ryu","ryu",true);
-Player.prototype.loadAssets("ryu","ryu2",true);
-Player.prototype.loadAssets("ken","ken",true);
-Player.prototype.loadAssets("ken","ken2",true);
-Player.prototype.loadAssets("sagat","sagat",true);
-Player.prototype.loadAssets("sagat","sagat2",true);
-Player.prototype.loadAssets("mbison","mbison",true);
-Player.prototype.loadAssets("mbison","mbison2",true);
-Player.prototype.loadAssets("akuma","akuma",true);
-Player.prototype.loadAssets("akuma","akuma2",true);
+// Needed due to changes in Google Chrome https://goo.gl/7K7WLu
+// The user must interact with the page before audio can be played... ugh
+var startUpGame = function () {
+    $$init();
 
+    if(getRand(100) > 50)
+        debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.AKUMA, C:true}], "akuma");
+    else
+        debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.MBISON, C:true}], "dramatic_battle");
+}
 
-//play
-//StartInsertCoin();
-//game_.startRandomMatch();
-if(getRand(100) > 50)
-    debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.AKUMA, C:true}], "akuma");
-else
-    debug_.startMatch([{A:CHARACTERS.RYU, C:true},{A:CHARACTERS.KEN, C:true}], [{A:CHARACTERS.MBISON, C:true}], "dramatic_battle");
+$$wasAudioInitialized = false;
+var $$init = function () {
+    if (!$$wasAudioInitialized) {
+        var container = document.querySelector(".start-game-container");
+        if (container) {
+            container.style.display = "none";
+
+            $$wasAudioInitialized = true;
+            soundManager_ = CreateSoundManager();
+
+            //preload characters
+            Player.prototype.loadAssets("ryu","ryu",true);
+            Player.prototype.loadAssets("ryu","ryu2",true);
+            Player.prototype.loadAssets("ken","ken",true);
+            Player.prototype.loadAssets("ken","ken2",true);
+            Player.prototype.loadAssets("sagat","sagat",true);
+            Player.prototype.loadAssets("sagat","sagat2",true);
+            Player.prototype.loadAssets("mbison","mbison",true);
+            Player.prototype.loadAssets("mbison","mbison2",true);
+            Player.prototype.loadAssets("akuma","akuma",true);
+            Player.prototype.loadAssets("akuma","akuma2",true);
+        }
+    }
+}

@@ -408,5 +408,4 @@ var CreateSoundManager = function()
 
     return new SoundManager();
 }
-var soundManager_ = CreateSoundManager();
-soundManager_.preload();
+var soundManager_ = null;
