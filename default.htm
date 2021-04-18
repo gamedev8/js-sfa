@@ -9,6 +9,158 @@
         <script type="text/javascript">
             function OnStageImagesLoaded() {}
         </script>
+        <div id="pnlDebugModal" class="debug-modal" style="display: none">
+            <div class="modal-header">
+                <span class="title">Street Fighter Alpha</span>
+                <span class="close">
+						<button class="close-button" id="cmdCloseDebugModal">Close</button>
+					</span>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="tab-menu">
+                        <span class="subtitle tab selected"><button id="cmdMain">Main</button></span>
+                        <span class="subtitle tab"><button id="cmdQuickMatch">Quick Match</button></span>
+                        <span class="subtitle tab"><button id="cmdProjectileEditor">Projectile Editor</button></span>
+                        <span class="subtitle tab"><button id="cmdOther">Other</button></span>
+                    </div>
+                    <div class="debug-main-container" id="pnlMainContainer" style="">
+                        <label for="chkDamage"><input id="chkDamage" type="checkbox" /> Disable all damage</label>
+                        <div>
+                            <div id="pnlJoystick" style="display: none">
+                                <h3>Joystick:</h3>
+                                <label for="chkUserController"><input type="checkbox" id="chkUserController" /> Use joystick</label>
+                            </div>
+                            <h3 class="error" id="pnlNoJoystick">
+                                <strong>Joystick not detected <small><em>(try pressing a button first)</em></small></strong>
+                            </h3>
+                            <div id="pnlKeyboardKeys">
+                                <h3>Keyboard keys:</h3>
+                                <ul>
+                                    <li>[O] - pause (press repeatedly to advance 1 frame)</li>
+                                    <li>[P] - resume</li>
+                                    <li>[CTRL] - Insert coin</li>
+                                    <li>[ENTER] - Start</li>
+                                    <li>[A] - Hard punch</li>
+                                    <li>[S] - Medium punch</li>
+                                    <li>[D] - Light punch</li>
+                                    <li>[Z] - Hard kick</li>
+                                    <li>[X] - Medium kick</li>
+                                    <li>[C] - Light kick</li>
+                                    <li>[← → ↑ ↓] - Move, Jump, Crouch</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="debug-qm-container" id="pnlQuickMenuContainer" style="display: none">
+                        <div class="debug-qm-stage-selector-container">
+                            <div class="debug-qm-stage-selector">
+                                <span>STAGE</span>
+                            </div>
+                        </div>
+                        <div class="debug-qm-teams-container">
+                            <div class="debug-qm-team">
+                                <span>TEAM 1 (Your team)</span>
+                                <div class="player-selectors-container" id="pnlTeam1PlayerSelectors"></div>
+                                <div class="debug-qm-team-controls">
+                                    <button id="cmdAddPlayerSelectorTeam1">Add Another</button>
+                                    <button id="cmdRemovePlayerSelectorTeam1">Remove</button>
+                                </div>
+                            </div>
+                            <div class="debug-qm-team">
+                                <span>TEAM 2</span>
+                                <div class="player-selectors-container" id="pnlTeam2PlayerSelectors"></div>
+                                <div class="debug-qm-team-controls">
+                                    <button id="cmdAddPlayerSelectorTeam2">Add Another</button>
+                                    <button id="cmdRemovePlayerSelectorTeam2">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="debug-qm-details">
+                            <div>Match will be...</div>
+                            <span class="team-desc" id="team1Desc"></span>
+                            <span>vs.</span>
+                            <span class="team-desc" id="team2Desc"></span>
+                            <span class="stage-desc" id="stageDesc"></span>
+                            <div class="debug-qm-controls">
+                                <button id="cmdStartQuickMatch">Start Quick Match!</button>
+                                <button id="cmdStartPracticeMatch">Practice (no AI)</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="debug-pe-container" id="pnlPEContainer" style="display: none">
+                        <button id="cmdLoadProjectiles">Load projectiles (player 1)</button>
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <select class="item-row" id="ddlProjectiles"></select>
+                        <div id="pnlProjectileData">
+                            <div class="item-row">
+                                <div class="label">Name:</div>
+                                <div class="input"><span id="txtProjectileName">???</span></div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">Juggle:</div>
+                                <div class="input">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input type="checkbox" id="chkCanJuggle"/>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">Max hits:</div>
+                                <div class="input">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input id="txtProjectileMaxHits"/>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">Delay:</div>
+                                <div class="input">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input id="txtProjectileHitDelay" />
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">Flags:</div>
+                                <div class="input-multi">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input type="hidden" id="txtProjectileComboFlags" />
+                                    <div class="projectile-flags">
+                                        <label><input type="checkbox" id="chkProjectileFlag2" />2: BLUE_FIRE_ON_FIRST_HIT</label>
+                                        <label><input type="checkbox" id="chkProjectileFlag4" />4: RED_FIRE_ON_MAX_HIT</label>
+                                        <label><input type="checkbox" id="chkProjectileFlag8" />8: RED_FIRE_SOUND_ON_MAX_HIT</label>
+                                        <label><input type="checkbox" id="chkProjectileFlag16" />16: SHORT_DELAY_ON_FIRST_HIT</label>
+                                        <label><input type="checkbox" id="chkProjectileFlag32" />32: KNOCKDOWN_ON_MAX_HIT</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">Vx:</div>
+                                <div class="input">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input id="txtProjectileXSpeed" />
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">Vy:</div>
+                                <div class="input">
+                                    <!--suppress HtmlFormInputWithoutLabel -->
+                                    <input id="txtProjectileYSpeed" />
+                                </div>
+                            </div>
+                            <div class="item-row">
+                                <div class="label">&nbsp;</div>
+                                <div class="input">
+                                    <button id="cmdSaveProjectileData">Save</button>
+                                    <span class="error">FYI: Settings are reset after each match!</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="debug-other-container" id="pnlOtherContainer" style="display: none">
+                        <button class="reset-game" id="cmdResetGame">Reset Game</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="pnlDimBackground" class="dimBackground" style="display:none">&nbsp;</div>
         <div id="pnlLoadingProgress" class="loadingBackground" style="display:none"></div>
         <img onload="OnStageImagesLoaded()" id="bg0" style="left:0px" />
@@ -48,6 +200,9 @@
             <span style="display:none;" id="pnlKO" class="KO">&nbsp;</span>
         </div>
         <div class="superComboFinish" id="pnlSuperComboFinish" style="display:none;">&nbsp;</div>
+        <div class="show-debug-modal">
+            <button onclick="__debugModal.open()">Help & Settings</button>
+        </div>
     </div>
     <div id="pnlStatus">
         <br /><span class="frame-rate">Game speed: <span id="spnSpeed">?</span>/100</span>
@@ -68,13 +223,6 @@
     <div class="loading">Audio loading (<span id="pnlAudio" class="loading">done</span>)</div>
     <div id="pnlTeam1Keys" class="team1Keys"></div>
     <div id="pnlTeam2Keys" class="team2Keys"></div>
-    <div id="pnlMenu" class="menu">
-        <br /><input type="checkbox" id="chkPracticeMode" onchange="debug_.setPracticeMode(this.checked);" /><label for="chkPracticeMode">No damage</label>
-        <br /><input checked type="checkbox" id="chkFallDamageMode" onchange="debug_.setFallingDamage(this.checked);" /><label for="chkFallDamageMode">High fall damage</label>
-        <br /><input checked type="checkbox" id="chkTeamMode" onchange="debug_.setTeamMode(this.checked);" /><label for="chkTeamMode">Dramatic battles</label>
-        <br /><input class="button" type="button" onclick="debug_.practice();this.blur();" value="practice" />
-        <br /><input class="button" type="button" onclick="ResetGame();this.blur();" value="reset" />
-    </div>
     <!--
     <div id="pnlAnimationDebug" class="animation-debug">
         <input type="button" onclick="debug_.p1ReverseFrame();" value="<<"/>
@@ -88,46 +236,6 @@
         <input type="button" onclick="debug_.setFrameData()" value="Set"/>
     </div>
     -->
-    <div id="pnlProjectiles" class="projectile-editor" style="display:none;">
-        <hr style="clear:both" />
-        <button onclick="debug_.loadProjectiles()">Load Projectiles</button>
-        <select id="selProjectile"></select>
-        <br style="clear:both" />
-        <div id="pnlSelectedProjectile" class="selected-projectile">
-            <div class="item">
-                <div class="label">Name:</div>
-                <div class="input"><span id="spnProjectileName"></span></div>
-            </div>
-            <div class="item">
-                <div class="label">Juggle:</div>
-                <div class="input"><input type="checkbox" id="chkCanJuggle" /></div>
-            </div>
-            <div class="item">
-                <div class="label">Max hits:</div>
-                <div class="input"><input id="txtProjectileMaxHits" /></div>
-            </div>
-            <div class="item">
-                <div class="label">Delay:</div>
-                <div class="input"><input id="txtProjectileHitDelay"></span></div>
-            </div>
-            <div class="item">
-                <div class="label">Flags:</div>
-                <div class="input"><input id="txtProjectileComboFlags"></span></div>
-            </div>
-            <div class="item">
-                <div class="label">Vx:</div>
-                <div class="input"><input id="txtProjectileXSpeed"></span></div>
-            </div>
-            <div class="item">
-                <div class="label">Vy:</div>
-                <div class="input"><input id="txtProjectileYSpeed"></span></div>
-            </div>
-            <div class="item">
-                <div class="label">&nbsp;</div>
-                <div class="input"><button onclick="debug_.saveProjectileData()">Save</button></div>
-            </div>
-        </div>
-    </div>
     <div class="start-game-container">
         <a title="Start game!" href="javascript:;" onclick="startUpGame()"><img src="images/misc/misc/splash.jpg" /></a>
         <br />
@@ -215,6 +323,7 @@
     <script type="text/javascript" src="script/player-akuma-spritedata.js"></script>
     <script type="text/javascript" src="script/player-akuma2-spritedata.js"></script>
     <script type="text/javascript" src="script/init.js"></script>
+    <script type="text/javascript" src="script/debug-modal.js"></script>
     <!-- <script type="text/javascript" src="script/audio/guy-theme.ogg.js"></script>
     <script type="text/javascript" src="script/audio/ryu-theme.ogg.js"></script>
     <script type="text/javascript" src="script/audio/ken-theme.ogg.js"></script>

@@ -579,21 +579,11 @@ var CreateCharSelect = function(users)
 
         if(teamA_.some(function(a) { return users[a].isInStoryMode(); }))
         {
-            if(game_.isTeamMode() && teamA_.length == 1)
-            {
-                this.addAiUser(teamA_,teamB_);
-            }
-
             this.LastPicked = users[teamB_[0]].getName();
             this.showNextFoe(users[teamB_[0]].Selected);
         }
         else if(teamB_.some(function(a) { return users[a].isInStoryMode(); }))
         {
-            if(game_.isTeamMode() && teamA_.length == 1)
-            {
-                this.addAiUser(teamB_,teamA_);
-            }
-
             this.LastPicked = users[teamA_[0]].getName();
             this.showNextFoe(users[teamA_[0]].Selected);
         }
