@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69b4833a-d98c-4e3a-a4bb-0504547d6c65" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change afterPath="$PROJECT_DIR$/script/debug-modal.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/css/sfa.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/sfa.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/default.htm" beforeDir="false" afterPath="$PROJECT_DIR$/default.htm" afterDir="false" />
@@ -33,6 +34,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/script" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -48,7 +50,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1618771075965</updated>
-      <workItem from="1618771077298" duration="2742000" />
+      <workItem from="1618771077298" duration="4734000" />
     </task>
     <servers />
   </component>
