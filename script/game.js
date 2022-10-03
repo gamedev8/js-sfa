@@ -60,7 +60,7 @@ var CreateGame = function() {
         lastTime_ = this.getCurrentTime();
         this.initGame();
         match_ = null;
-        this.UsingGamepads = !!window.Gamepad && !!Gamepad.supported;
+        this.UsingGamepads = !!navigator.getGamepads();
     };
 
     Game.prototype.getDifficulty = function() {
@@ -533,11 +533,10 @@ var CreateGame = function() {
         return (keyCode === key && !!keyboardState_["_" + key] && !isDown)
     };
 
-    Game.prototype.handleGamePadHelper = function (pad, key) {
-        var button = pad[key];
-        if (!!button && (button.pressed !== !!keyboardState_["_" + key])) {
+    Game.prototype.handleGamePadHelper = function (isPressed, key) {
+        if (isPressed !== !!keyboardState_["_" + key]) {
             if (!!managed_) {
-                this.handleKeyPress({which: key}, button.pressed);
+                this.handleKeyPress({which: key}, isPressed);
             }
         }
     };
@@ -545,24 +544,22 @@ var CreateGame = function() {
     Game.prototype.handleGamePadButtonPresses = function () {
         if (!!this.UsingGamepads) {
             for (var i = 0, length = users_.length; i < length; ++i) {
-                if (users_[i].GamepadIndex !== undefined) {
-                    var pad = Gamepad.getState([users_[i].GamepadIndex]);
-                    if (!!pad) {
-                        this.handleGamePadHelper(pad, GAMEPAD.DOWN);
-                        this.handleGamePadHelper(pad, GAMEPAD.LEFT);
-                        this.handleGamePadHelper(pad, GAMEPAD.RIGHT);
-                        this.handleGamePadHelper(pad, GAMEPAD.UP);
-                        this.handleGamePadHelper(pad, GAMEPAD.B0);
-                        this.handleGamePadHelper(pad, GAMEPAD.B1);
-                        this.handleGamePadHelper(pad, GAMEPAD.B2);
-                        this.handleGamePadHelper(pad, GAMEPAD.B3);
-                        this.handleGamePadHelper(pad, GAMEPAD.LS0);
-                        this.handleGamePadHelper(pad, GAMEPAD.LS1);
-                        this.handleGamePadHelper(pad, GAMEPAD.RS0);
-                        this.handleGamePadHelper(pad, GAMEPAD.RS1);
-                        this.handleGamePadHelper(pad, GAMEPAD.START);
-                        this.handleGamePadHelper(pad, GAMEPAD.SELECT);
-                    }
+                var pad = navigator.getGamepads()[users_[i].GamepadIndex];
+                if (!!pad) {
+                    this.handleGamePadHelper(pad.axes[5] === 1, GAMEPAD.DOWN);
+                    this.handleGamePadHelper(pad.axes[4] === -1, GAMEPAD.LEFT);
+                    this.handleGamePadHelper(pad.axes[4] === 1, GAMEPAD.RIGHT);
+                    this.handleGamePadHelper(pad.axes[5] === -1, GAMEPAD.UP);
+                    this.handleGamePadHelper(pad.buttons[0].pressed, GAMEPAD.B0);
+                    this.handleGamePadHelper(pad.buttons[1].pressed, GAMEPAD.B1);
+                    this.handleGamePadHelper(pad.buttons[2].pressed, GAMEPAD.B2);
+                    this.handleGamePadHelper(pad.buttons[3].pressed, GAMEPAD.B3);
+                    this.handleGamePadHelper(pad.buttons[6].pressed, GAMEPAD.LS0);
+                    this.handleGamePadHelper(pad.buttons[4].pressed, GAMEPAD.LS1);
+                    this.handleGamePadHelper(pad.buttons[7].pressed, GAMEPAD.RS0);
+                    this.handleGamePadHelper(pad.buttons[5].pressed, GAMEPAD.RS1);
+                    this.handleGamePadHelper(pad.buttons[8].pressed, GAMEPAD.START);
+                    this.handleGamePadHelper(pad.buttons[9].pressed, GAMEPAD.SELECT);
                 }
             }
         }
