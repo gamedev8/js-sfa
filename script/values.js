@@ -592,20 +592,18 @@ var RESOURCE_TYPES =
 
 var GAMEPAD = 
 {
-    LEFT:"dpadLeft"
-    ,UP:"dpadUp"
-    ,RIGHT:"dpadRight"
-    ,DOWN:"dpadDown"
-    ,B0:"faceButton0"
-    ,B1:"faceButton1"
-    ,B2:"faceButton2"
-    ,B3:"faceButton3"
-    ,LS0:"leftShoulder0"
-    ,LS1:"leftShoulder1"
-    ,RS0:"rightShoulder0"
-    ,RS1:"rightShoulder1"
-    ,SELECT:"select"
-    ,START:"start"
+    LEFT: "LEFT"
+    ,JUMP: "JUMP"
+    ,RIGHT: "RIGHT"
+    ,CROUCH: "CROUCH"
+    ,HK: "HK"
+    ,MK: "MK"
+    ,MP: "MP"
+    ,HP: "HP"
+    ,LP: "LP"
+    ,LK: "LK"
+    ,SELECT: "SELECT"
+    ,START: "START"
 }
 
 var KEYS = 

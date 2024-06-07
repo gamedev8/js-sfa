@@ -401,7 +401,8 @@ var ProjectileEditorWindow = function () {
 	this.init();
 }
 
-var MainEditorWindow = function (fn) {
+var MainEditorWindow = function (fn, setJoyPadListener, cancelJoyPadListener, hideCancelButtons, setHighlight) {
+	var self = this;
 	var closeModalFn = fn;
 	var chkDamage = window.document.querySelector("#chkDamage")
 	var chkUserController = window.document.querySelector("#chkUserController")
@@ -413,16 +414,20 @@ var MainEditorWindow = function (fn) {
 		var self = this;
 		chkDamage.addEventListener("input", function () { __noDamage = !__noDamage });
 		chkUserController.addEventListener("input", function () { self.useJoystick(!!chkUserController.checked) });
-		window.addEventListener("gamepadconnected", function () {
+
+		joypad.on("connect", function (e) {
+			self.checkGamepads(e.gamepad);
+			self.useJoystick(true);
+		});
+
+		joypad.on("disconnect", function (e) {
 			self.checkGamepads();
 		});
-		window.addEventListener("gamepaddisconnected", function () {
-			self.checkGamepads();
-		});
+
+		setupJoyPadMappings();
 	};
 
-	this.checkGamepads = function () {
-		var gamepad = (navigator.getGamepads() || [])[0];
+	this.checkGamepads = function (gamepad) {
 		if (!gamepad) {
 			pnlJoystick.style.display = "none";
 			pnlNoJoystick.style.display = "";
@@ -430,16 +435,141 @@ var MainEditorWindow = function (fn) {
 		} else {
 			pnlNoJoystick.style.display = "none";
 			pnlJoystick.style.display = "";
+
+			showJoyPadMappings();
 		}
+	};
+
+	var setupJoyPadMappings = function () {
+		var showCancelButton = function (selector) {
+			hideCancelButtons();
+			document.querySelector(selector + " button").style.visibility = "visible";
+		};
+
+		var mapJoyPad = function (selector, key) {
+			cancelJoyPadListener();
+
+			setHighlight(selector);
+			showCancelButton(selector);
+
+			var fn = (function (key) {
+				return function (e) {
+					var btn = Number(e.detail.buttonName.split("_")[1]);
+
+					switch (key) {
+						case "select":
+							user1_.jm.SELECT = btn;
+							break;
+						case "start":
+							user1_.jm.START = btn;
+							break;
+						case "hp":
+							user1_.jm.HP = btn;
+							break;
+						case "mp":
+							user1_.jm.MP = btn;
+							break;
+						case "lp":
+							user1_.jm.LP = btn;
+							break;
+						case "hk":
+							user1_.jm.HK = btn;
+							break;
+						case "mk":
+							user1_.jm.MK = btn;
+							break;
+						case "lk":
+							user1_.jm.LK = btn;
+							break;
+						case "l":
+							user1_.jm.LEFT = btn;
+							break;
+						case "r":
+							user1_.jm.RIGHT = btn;
+							break;
+						case "u":
+							user1_.jm.JUMP = btn;
+							break;
+						case "d":
+							user1_.jm.CROUCH = btn;
+							break;
+					}
+
+					self.useJoystick(true);
+					cancelJoyPadListener();
+					setHighlight();
+					hideCancelButtons();
+					showJoyPadMappings();
+				}
+			})(key);
+
+			setJoyPadListener(joypad.on("button_press", fn));
+		};
+
+
+		document.querySelector("#liJoyPadCoin").addEventListener("click", function () { mapJoyPad("#liJoyPadCoin", "select"); });
+		document.querySelector("#liJoyPadStart").addEventListener("click", function () { mapJoyPad("#liJoyPadStart", "start"); });
+		document.querySelector("#liJoyPadHP").addEventListener("click", function () { mapJoyPad("#liJoyPadHP", "hp"); });
+		document.querySelector("#liJoyPadMP").addEventListener("click", function () { mapJoyPad("#liJoyPadMP", "mp"); });
+		document.querySelector("#liJoyPadLP").addEventListener("click", function () { mapJoyPad("#liJoyPadLP", "lp"); });
+		document.querySelector("#liJoyPadHK").addEventListener("click", function () { mapJoyPad("#liJoyPadHK", "hk"); });
+		document.querySelector("#liJoyPadMK").addEventListener("click", function () { mapJoyPad("#liJoyPadMK", "mk"); });
+		document.querySelector("#liJoyPadLK").addEventListener("click", function () { mapJoyPad("#liJoyPadLK", "lk"); });
+		document.querySelector("#liJoyPadL").addEventListener("click", function () { mapJoyPad("#liJoyPadL", "l"); });
+		document.querySelector("#liJoyPadR").addEventListener("click", function () { mapJoyPad("#liJoyPadR", "r"); });
+		document.querySelector("#liJoyPadU").addEventListener("click", function () { mapJoyPad("#liJoyPadU", "u"); });
+		document.querySelector("#liJoyPadD").addEventListener("click", function () { mapJoyPad("#liJoyPadD", "d"); });
+
+		var cancel = function (e) {
+			cancelJoyPadListener();
+			hideCancelButtons();
+			setHighlight();
+			// e.preventDefault && e.preventDefault();
+			e.stopPropagation && e.stopPropagation();
+		};
+
+		document.querySelector("#liJoyPadCoin button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadStart button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadHP button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadMP button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadLP button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadHK button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadMK button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadLK button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadL button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadR button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadU button").addEventListener("click", function (e) { cancel(e); });
+		document.querySelector("#liJoyPadD button").addEventListener("click", function (e) { cancel(e); });
+	};
+
+	var showJoyPadMappings = function () {
+		document.querySelector("#spnJoyPadCoin").innerText = "button_" + user1_.jm.SELECT;
+		document.querySelector("#spnJoyPadStart").innerText = "button_" + user1_.jm.START;
+		document.querySelector("#spnJoyPadHP").innerText = "button_" + user1_.jm.HP;
+		document.querySelector("#spnJoyPadMP").innerText = "button_" + user1_.jm.MP;
+		document.querySelector("#spnJoyPadLP").innerText = "button_" + user1_.jm.LP;
+		document.querySelector("#spnJoyPadHK").innerText = "button_" + user1_.jm.HK;
+		document.querySelector("#spnJoyPadMK").innerText = "button_" + user1_.jm.MK;
+		document.querySelector("#spnJoyPadLK").innerText = "button_" + user1_.jm.LK;
+		document.querySelector("#spnJoyPadL").innerText = "button_" + user1_.jm.LEFT;
+		document.querySelector("#spnJoyPadR").innerText = "button_" + user1_.jm.RIGHT;
+		document.querySelector("#spnJoyPadU").innerText = "button_" + user1_.jm.JUMP;
+		document.querySelector("#spnJoyPadD").innerText = "button_" + user1_.jm.CROUCH;
 	};
 
 	this.useJoystick = function (value) {
 		if (value) {
 			user1_.useGamePad();
 			pnlKeyboardKeys.className = "grayed-out";
+			if (!chkUserController.checked) {
+				chkUserController.checked = true;
+			}
 		} else {
 			user1_.useKeyboard();
 			pnlKeyboardKeys.className = "";
+			if (chkUserController.checked) {
+				chkUserController.checked = false;
+			}
 		}
 	};
 
@@ -480,6 +610,7 @@ var DebugModal = function () {
 	var cmdQuickMatch = window.document.querySelector("#cmdQuickMatch")
 	var cmdProjectileEditor = window.document.querySelector("#cmdProjectileEditor")
 	var cmdOther = window.document.querySelector("#cmdOther");
+	var joyPadListener;
 
 	/**
 	 * Closes the debug modal
@@ -487,12 +618,43 @@ var DebugModal = function () {
 	var close = function () {
 		pnlContainer.style.display = "none";
 		game_.resume();
+		cancelJoyPadListener();
+		hideCancelButtons();
+		setHighlight();
 	}
 
+	var hideCancelButtons = function () {
+		var items = document.querySelectorAll(".joypad-mappings li button");
+		for (var i = 0; i < items.length; ++i) {
+			items[i].style.visibility = "hidden";
+		}
+	};
+
+	var setHighlight = function (selector) {
+		var items = document.querySelectorAll(".joypad-mappings li");
+		for (var i = 0; i < items.length; ++i) {
+			items[i].classList.remove("selected");
+		}
+
+		if (selector) {
+			document.querySelector(selector).classList.add("selected");
+		}
+	};
+
+	var setJoyPadListener = function (j) {
+		joyPadListener = j;
+	};
+
+	var cancelJoyPadListener = function (j) {
+		joyPadListener && joyPadListener.unsubscribe();
+	};
+
+
 	var other = new OtherWindow(close);
-	var mainEditor = new MainEditorWindow(close);
+	var mainEditor = new MainEditorWindow(close, setJoyPadListener, cancelJoyPadListener, hideCancelButtons, setHighlight);
 	var quickMatchConfigurator = new QuickMatchConfiguratorWindow(close);
 	var projectileEditor = new ProjectileEditorWindow();
+
 
 	/**
 	 * Just a handler for menu clicks

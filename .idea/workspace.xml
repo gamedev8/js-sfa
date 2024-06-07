@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="69b4833a-d98c-4e3a-a4bb-0504547d6c65" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/script/debug-modal.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/script/joypad.min.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/css/sfa.css" beforeDir="false" afterPath="$PROJECT_DIR$/css/sfa.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/default.htm" beforeDir="false" afterPath="$PROJECT_DIR$/default.htm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/char-select.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/char-select.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/debug.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/debug.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/debug-modal.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/debug-modal.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/game.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/game.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/init.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/init.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/player.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/player.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/script/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/user.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/values.js" beforeDir="false" afterPath="$PROJECT_DIR$/script/values.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="1rM1JpVCPyTeE1dG3yCVM1WBLiA" />
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -29,14 +41,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/script" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="vue.rearranger.settings.migration" value="true" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/dre/projects/js-sfa&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/script" />
@@ -51,6 +68,19 @@
       <option name="presentableId" value="Default" />
       <updated>1618771075965</updated>
       <workItem from="1618771077298" duration="4734000" />
+      <workItem from="1716395192777" duration="684000" />
+      <workItem from="1716577680085" duration="15000" />
+      <workItem from="1716599277235" duration="5000" />
+      <workItem from="1716657020121" duration="3000" />
+      <workItem from="1716691545557" duration="3000" />
+      <workItem from="1716833140144" duration="10000" />
+      <workItem from="1716950678564" duration="6000" />
+      <workItem from="1716950689949" duration="5000" />
+      <workItem from="1716996660702" duration="12000" />
+      <workItem from="1717017890668" duration="1000" />
+      <workItem from="1717032596742" duration="1000" />
+      <workItem from="1717032607532" duration="12000" />
+      <workItem from="1717768519617" duration="12490000" />
     </task>
     <servers />
   </component>

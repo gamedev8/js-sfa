@@ -779,6 +779,7 @@ html .start-game-container button {
 	background-color: #fff;
 	border-radius: 5px;
 	box-shadow: #aaa 0 0 10px 5px;
+    overflow: auto;
 }
 
 .subtitle {
@@ -941,4 +942,20 @@ button.close-button {
 }
 .grayed-out {
 	color: #bbb;
+}
+.joypad-mappings li.selected {
+    font-weight: 600;
+    color: #00c;
+}
+.joypad-mappings li.conflict {
+    font-weight: 600;
+    color: #a00;
+}
+.joypad-mappings li button {
+    background-color: #aaa;
+    padding: 2px;
+    border: 0;
+    outline: 0;
+    margin-left: 5px;
+    visibility: hidden;
 }

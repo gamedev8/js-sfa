@@ -104,6 +104,23 @@ var User = function (right, up, left, down, p1, p2, p3, k1, k2, k3, turn, coin, 
     this.Coin = coin;
     this.Start = start;
 
+    /*  jm = JoyPad Mappings */
+    this.jm = {
+        LEFT: 14,
+        JUMP: 12,
+        RIGHT: 15,
+        CROUCH: 13,
+        LK: 5,
+        MK: 1,
+        HK: 0,
+        MP: 2,
+        HP: 3,
+        LP: 4,
+        SELECT: 8,
+        START: 9
+    };
+
+
     this.initialKeys = {
         right: this.Right,
         up: this.Up,
@@ -1026,19 +1043,18 @@ User.prototype.useKeyboard = function () {
  */
 User.prototype.useGamePad = function () {
     this.GamepadIndex = 0;
-    this.Right = GAMEPAD.RIGHT;
-    this.Up = GAMEPAD.UP;
-    this.Left = GAMEPAD.LEFT;
-    this.Down = GAMEPAD.DOWN;
-    this.P1 = GAMEPAD.LS0;
-    this.P2 = GAMEPAD.B0;
-    this.P3 = GAMEPAD.B3;
-    this.K1 = GAMEPAD.RS0;
-    this.K2 = GAMEPAD.B1;
-    this.K3 = GAMEPAD.B2;
-    this.Turn = GAMEPAD.RS1;
-    this.Coin = GAMEPAD.SELECT;
-    this.Start = GAMEPAD.START;
+    this.Right = this.jm.RIGHT;
+    this.Up = this.jm.JUMP;
+    this.Left = this.jm.LEFT;
+    this.Down = this.jm.CROUCH;
+    this.P1 = this.jm.LP;
+    this.P2 = this.jm.MP;
+    this.P3 = this.jm.HP;
+    this.K1 = this.jm.LK;
+    this.K2 = this.jm.MK;
+    this.K3 = this.jm.HK;
+    this.Coin = this.jm.SELECT;
+    this.Start = this.jm.START;
 
     if (this.Player) {
         this.Player.setButtons(this);

@@ -546,27 +546,27 @@ var CreateGame = function() {
             for (var i = 0, length = users_.length; i < length; ++i) {
                 var pad = navigator.getGamepads()[users_[i].GamepadIndex];
                 if (!!pad) {
-                    this.handleGamePadHelper(pad.axes[5] === 1, GAMEPAD.DOWN);
-                    this.handleGamePadHelper(pad.axes[4] === -1, GAMEPAD.LEFT);
-                    this.handleGamePadHelper(pad.axes[4] === 1, GAMEPAD.RIGHT);
-                    this.handleGamePadHelper(pad.axes[5] === -1, GAMEPAD.UP);
-                    this.handleGamePadHelper(pad.buttons[0].pressed, GAMEPAD.B0);
-                    this.handleGamePadHelper(pad.buttons[1].pressed, GAMEPAD.B1);
-                    this.handleGamePadHelper(pad.buttons[2].pressed, GAMEPAD.B2);
-                    this.handleGamePadHelper(pad.buttons[3].pressed, GAMEPAD.B3);
-                    this.handleGamePadHelper(pad.buttons[6].pressed, GAMEPAD.LS0);
-                    this.handleGamePadHelper(pad.buttons[4].pressed, GAMEPAD.LS1);
-                    this.handleGamePadHelper(pad.buttons[7].pressed, GAMEPAD.RS0);
-                    this.handleGamePadHelper(pad.buttons[5].pressed, GAMEPAD.RS1);
-                    this.handleGamePadHelper(pad.buttons[8].pressed, GAMEPAD.START);
-                    this.handleGamePadHelper(pad.buttons[9].pressed, GAMEPAD.SELECT);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.CROUCH].pressed, users_[i].jm.CROUCH);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.LEFT].pressed, users_[i].jm.LEFT);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.RIGHT].pressed, users_[i].jm.RIGHT);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.JUMP].pressed, users_[i].jm.JUMP);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.HK].pressed, users_[i].jm.HK);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.MK].pressed, users_[i].jm.MK);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.MP].pressed, users_[i].jm.MP);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.HP].pressed, users_[i].jm.HP);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.LP].pressed, users_[i].jm.LP);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.LK].pressed, users_[i].jm.LK);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.START].pressed, users_[i].jm.START);
+                    this.handleGamePadHelper(pad.buttons[users_[i].jm.SELECT].pressed, users_[i].jm.SELECT);
+                    // this.handleGamePadHelper(pad.buttons[4].pressed, GAMEPAD.LS1);
+                    // this.handleGamePadHelper(pad.buttons[5].pressed, GAMEPAD.RS1);
                 }
             }
         }
     };
 
     Game.prototype.handleKeyPress = function (e, isDown) {
-        var keyCode = e.which || e.keyCode;
+        var keyCode = isNaN(e.which) ? e.keyCode : e.which;
         //Alert(keyCode);
 
 

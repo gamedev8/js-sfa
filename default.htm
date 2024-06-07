@@ -26,30 +26,49 @@
                         <span class="subtitle tab"><button id="cmdOther">Other</button></span>
                     </div>
                     <div class="debug-main-container" id="pnlMainContainer" style="">
-                        <label for="chkDamage"><input id="chkDamage" type="checkbox" /> Disable all damage</label>
                         <div>
-                            <div id="pnlJoystick" style="display: none">
-                                <h3>Joystick:</h3>
-                                <label for="chkUserController"><input type="checkbox" id="chkUserController" /> Use joystick</label>
-                            </div>
-                            <h3 class="error" id="pnlNoJoystick">
-                                <strong>Joystick not detected <small><em>(try pressing a button first)</em></small></strong>
-                            </h3>
-                            <div id="pnlKeyboardKeys">
-                                <h3>Keyboard keys:</h3>
-                                <ul>
-                                    <li>[O] - pause (press repeatedly to advance 1 frame)</li>
-                                    <li>[P] - resume</li>
-                                    <li>[CTRL] - Insert coin</li>
-                                    <li>[ENTER] - Start</li>
-                                    <li>[A] - Hard punch</li>
-                                    <li>[S] - Medium punch</li>
-                                    <li>[D] - Light punch</li>
-                                    <li>[Z] - Hard kick</li>
-                                    <li>[X] - Medium kick</li>
-                                    <li>[C] - Light kick</li>
-                                    <li>[← → ↑ ↓] - Move, Jump, Crouch</li>
-                                </ul>
+                            <label for="chkDamage"><input id="chkDamage" type="checkbox" /> Disable all damage</label>
+                            <div>
+                                <div id="pnlJoystick" style="display: none">
+                                    <h3>Joystick:</h3>
+                                    <label for="chkUserController"><input type="checkbox" id="chkUserController" /> Use joystick</label>
+                                    <div><em>Click on a control then press a button on the joypad to change it (ESC to cancel)</em></div>
+                                    <div>
+                                        <ul class="joypad-mappings">
+                                            <li id="liJoyPadCoin">[<span id="spnJoyPadCoin">?</span>] - Insert coin <button>cancel</button></li>
+                                            <li id="liJoyPadStart">[<span id="spnJoyPadStart">?</span>] - Start <button>cancel</button></li>
+                                            <li id="liJoyPadHP">[<span id="spnJoyPadHP">?</span>] - Hard punch <button>cancel</button></li>
+                                            <li id="liJoyPadMP">[<span id="spnJoyPadMP">?</span>] - Medium punch <button>cancel</button></li>
+                                            <li id="liJoyPadLP">[<span id="spnJoyPadLP">?</span>] - Light punch <button>cancel</button></li>
+                                            <li id="liJoyPadHK">[<span id="spnJoyPadHK">?</span>] - Hard kick <button>cancel</button></li>
+                                            <li id="liJoyPadMK">[<span id="spnJoyPadMK">?</span>] - Medium kick <button>cancel</button></li>
+                                            <li id="liJoyPadLK">[<span id="spnJoyPadLK">?</span>] - Light kick <button>cancel</button></li>
+                                            <li id="liJoyPadL">[<span id="spnJoyPadL">?</span>] - Left <button>cancel</button></li>
+                                            <li id="liJoyPadR">[<span id="spnJoyPadR">?</span>] - Right <button>cancel</button></li>
+                                            <li id="liJoyPadU">[<span id="spnJoyPadU">?</span>] - Jump <button>cancel</button></li>
+                                            <li id="liJoyPadD">[<span id="spnJoyPadD">?</span>] - Crouch <button>cancel</button></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <h3 class="error" id="pnlNoJoystick">
+                                    <strong>Joystick not detected <small><em>(try pressing a button first)</em></small></strong>
+                                </h3>
+                                <div id="pnlKeyboardKeys">
+                                    <h3>Keyboard keys:</h3>
+                                    <ul>
+                                        <li>[O] - pause (press repeatedly to advance 1 frame)</li>
+                                        <li>[P] - resume</li>
+                                        <li>[CTRL] - Insert coin</li>
+                                        <li>[ENTER] - Start</li>
+                                        <li>[A] - Hard punch</li>
+                                        <li>[S] - Medium punch</li>
+                                        <li>[D] - Light punch</li>
+                                        <li>[Z] - Hard kick</li>
+                                        <li>[X] - Medium kick</li>
+                                        <li>[C] - Light kick</li>
+                                        <li>[← → ↑ ↓] - Move, Jump, Crouch</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -262,6 +281,7 @@
         }
         */
     </script>
+    <script type="text/javascript" src="script/joypad.min.js"></script>
     <script type="text/javascript" src="script/browserDetect.js"></script>
     <script type="text/javascript" src="script/values.js"></script>
     <script type="text/javascript" src="script/flags.js"></script>
